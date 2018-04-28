@@ -3,10 +3,14 @@
 #####################################################################
 
 file(GLOB header_module_lib
-./include/Console.hpp)
+./include/Console.hpp
+./include/LocalConsole.hpp
+./include/LocalConsoleWindows.hpp
+./include/ConsoleStream.hpp)
 
 file(GLOB source_module_lib
 ./src/Console.cpp
+./src/LocalConsoleWindows.cpp
 ./src/main.cpp)
 
 #####################################################################

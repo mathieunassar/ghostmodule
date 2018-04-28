@@ -1,30 +1,25 @@
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <Windows.h>
+#include "../include/ConsoleStream.hpp"
+#include "../include/LocalConsoleWindows.hpp"
+#include "../include/Console.hpp"
+
+void mycallback(const char *ptr, std::streamsize count)
+{
+	printf("%s", ptr);
+}
 
 int main()
 {
-	std::cout << "start" << std::endl;
-	std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
-	std::stringstream strCout;
-	std::cout.rdbuf(strCout.rdbuf());
+	//redirect std::cout to the callback function
+	Ghost::ConsoleStream<> redirect(std::cout, mycallback);
 
 	std::cout << "Hello, World!" << std::endl;
 	std::cout << "john " << std::flush;
 	std::cout << "is not here" << std::endl;
-	std::cout << "not here either!";
+	std::cout << "not here either!" << std::endl;
 
-	// Restore old cout.
-	//std::cout.rdbuf(oldCoutStreamBuf);
+	Ghost::Console console;
 
-	std::string str;
-	while (std::getline(strCout, str))
-	{
-		if (!strCout.eof())
-		{
-			str += "\n";
-		}
-		printf(str.c_str());
-	}
+	Sleep(100000);
+
+	return 0;
 }
