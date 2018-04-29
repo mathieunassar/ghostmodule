@@ -2,50 +2,44 @@
 #include "../include/LocalConsoleWindows.hpp"
 
 #include <iostream>
+#include <functional>
 
 using namespace Ghost;
 
 Console::Console()
 	: _device(new LocalConsoleWindows())
-	, _mode(LocalConsole::OUTPUT)
 {
-	_device->setConsoleMode(LocalConsole::OUTPUT);
-	_inputThread = std::thread(&Console::inputListener, this);
+	std::function<void(const std::string&)> cmdCallback = std::bind(&Console::onNewInput, this, std::placeholders::_1);
+	std::function<void(LocalConsole::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
+	_inputController = std::make_shared<InputController>(_device, LocalConsole::OUTPUT, cmdCallback, modeCallback);
 }
 
-void Console::printPrompt() const
+void Console::start()
 {
-	printf("> ");
+	_inputController->start();
 }
 
-void Console::inputListener()
+void Console::stop()
 {
-	std::string s = "";
-	while (std::getline(std::cin, s)) {
-		onNewInput(s);
-	}
+	_inputController->stop();
+}
+
+void Console::setPrompt(const std::string& prompt)
+{
+	_inputController->setPrompt(prompt);
+}
+
+void Console::setInputMode(InputController::InputMode mode)
+{
+	_inputController->setInputMode(mode);
 }
 
 void Console::onNewInput(const std::string& str)
 {
-	if (str.empty() || _mode == LocalConsole::OUTPUT) // toggle mode
-	{
-		if (_mode == LocalConsole::OUTPUT)
-		{
-			_device->setConsoleMode(LocalConsole::INPUT);
-			_mode = LocalConsole::INPUT;
-			printf("Switched to INPUT mode\n");
-			printPrompt();
-		}
-		else
-		{
-			_device->setConsoleMode(LocalConsole::OUTPUT);
-			_mode = LocalConsole::OUTPUT;
-			printf("Switched to OUTPUT mode\n");
-		}
-	}
-	else if (_mode == LocalConsole::INPUT)
-	{
-		printPrompt();
-	}
+	printf("on new input: %s\n", str.c_str());
+}
+
+void Console::onNewMode(LocalConsole::ConsoleMode mode)
+{
+	//printf("new mode received");
 }

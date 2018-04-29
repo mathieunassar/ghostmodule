@@ -18,8 +18,13 @@ int main()
 	std::cout << "not here either!" << std::endl;
 
 	Ghost::Console console;
+	console.setPrompt("Mathieu>");
+	console.setInputMode(Ghost::InputController::SEQUENTIAL);
+	console.start();
 
 	Sleep(100000);
+
+	console.stop();
 
 	return 0;
 }

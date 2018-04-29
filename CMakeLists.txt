@@ -6,11 +6,13 @@ file(GLOB header_module_lib
 ./include/Console.hpp
 ./include/LocalConsole.hpp
 ./include/LocalConsoleWindows.hpp
+./include/InputController.hpp
 ./include/ConsoleStream.hpp)
 
 file(GLOB source_module_lib
 ./src/Console.cpp
 ./src/LocalConsoleWindows.cpp
+./src/InputController.cpp
 ./src/main.cpp)
 
 #####################################################################

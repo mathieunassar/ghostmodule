@@ -1,10 +1,8 @@
 #ifndef GHOST_CONSOLE_HPP
 #define GHOST_CONSOLE_HPP
 
-#include <string>
-#include <thread>
-#include <memory>
 #include "LocalConsole.hpp"
+#include "InputController.hpp"
 
 namespace Ghost
 {
@@ -13,15 +11,19 @@ namespace Ghost
 	public:
 		Console();
 
+		void start();
+		void stop();
+
+		void setPrompt(const std::string& prompt);
+		void setInputMode(InputController::InputMode mode);
+
 	private:
-		void printPrompt() const;
-		void inputListener();
+		/* Callbacks for the input controller */
 		void onNewInput(const std::string& str);
+		void onNewMode(LocalConsole::ConsoleMode mode);
 
-		std::thread _inputThread;
-
-		std::unique_ptr<LocalConsole> _device;
-		LocalConsole::ConsoleMode _mode;
+		std::shared_ptr<LocalConsole> _device;
+		std::shared_ptr<InputController> _inputController;
 	};
 }
 
