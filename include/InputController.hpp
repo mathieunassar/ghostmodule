@@ -4,12 +4,18 @@
 #include <string>
 #include <thread>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <memory>
+#include <map>
 
-#include "LocalConsole.hpp"
+#include "ConsoleDevice.hpp"
+#include "BlockingQueue.hpp"
+#include "InputEvent.hpp"
 
 namespace Ghost
 {
+	// split to processor interface and public interface
 	class InputController
 	{
 	public:
@@ -20,10 +26,10 @@ namespace Ghost
 			NEVER // never prompts except on read
 		};
 
-		InputController(std::shared_ptr<LocalConsole> device,
-			LocalConsole::ConsoleMode initialMode,
+		InputController(std::shared_ptr<ConsoleDevice> device,
+			ConsoleDevice::ConsoleMode initialMode,
 			std::function<void(const std::string&)> cmdCallback,
-			std::function<void(LocalConsole::ConsoleMode)> modeCallback);
+			std::function<void(ConsoleDevice::ConsoleMode)> modeCallback);
 
 		void start();
 		void stop();
@@ -33,24 +39,44 @@ namespace Ghost
 		/// selects the behavior of the console among the possible modes
 		void setInputMode(InputMode mode);
 
-		// implement here the "explicit read"
 		std::string getLine();
 
-	private:
 		void printPrompt() const;
-		void switchConsoleMode(LocalConsole::ConsoleMode newMode);
+		void switchConsoleMode(ConsoleDevice::ConsoleMode newMode);
 		std::string readLine();
-		void inputListenerThread();
+		InputMode getInputMode() const;
+		ConsoleDevice::ConsoleMode getConsoleMode() const;
+		void onNewInput(const std::string& input);
+		std::promise<bool>& onNewEvent(std::shared_ptr<InputEvent> event);
+		void setLineRequestResult(const std::string& line);
 
+	private:
+		void registerEventHandlers();
+
+		void inputListenerThread();
+		void enterPressedThread();
+
+		/* thread stuff */
 		std::thread _inputThread;
+		std::thread _enterPressedThread;
 		std::atomic<bool> _threadEnable;
 
-		std::shared_ptr<LocalConsole> _device;
+		/* explicit read stuff */
+		std::atomic<bool> _explicitRead;
+		std::condition_variable _explicitTrigger;
+		std::mutex _explicitTriggerLock;
+		std::shared_ptr<std::string> _explicitInput;
+
+		BlockingQueue<std::shared_ptr<InputEvent>> _eventQueue;
+
+		/* configuration */
+		std::shared_ptr<ConsoleDevice> _device;
 		std::string _prompt;
-		LocalConsole::ConsoleMode _consoleMode;
+		ConsoleDevice::ConsoleMode _consoleMode;
 		InputMode _inputMode;
 		std::function<void(const std::string&)> _commandCallback;
-		std::function<void(LocalConsole::ConsoleMode)> _modeCallback;
+		std::function<void(ConsoleDevice::ConsoleMode)> _modeCallback;
+		std::map<std::string, std::shared_ptr<InputEvent::InputEventHandler>> _eventHandlers;
 	};
 }
 
