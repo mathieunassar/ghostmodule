@@ -15,7 +15,6 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	std::function<void(const std::string&)> cmdCallback,
 	std::function<void(ConsoleDevice::ConsoleMode)> modeCallback)
 	: _threadEnable(false)
-	, _explicitRead(false)
 	, _device(device)
 	, _prompt("> ")
 	, _consoleMode(initialMode)
@@ -109,56 +108,6 @@ void InputController::inputListenerThread()
 			std::cout << "Failed to handle event of type: " << event.element->getEventName() << std::endl;
 		}
 	}
-
-	/*std::string str = "";
-	while (_threadEnable)
-	{
-		if (_explicitRead)
-		{
-			str = readLine();
-			std::unique_lock<std::mutex> lock(_explicitTriggerLock);
-			_explicitInput = std::make_shared<std::string>(str);
-			_explicitRead = false;
-			_explicitTrigger.notify_all();
-			continue;
-		}
-
-		if (_consoleMode == ConsoleDevice::OUTPUT) // we are in output console mode, we need to wait for input console mode
-		{
-			bool isSwitch = _device->awaitInputMode();
-			if (isSwitch)
-			{
-				switchConsoleMode(ConsoleDevice::INPUT);
-				printPrompt();
-			}
-			continue;
-		}
-
-		str = readLine(); // at this point we can only be in input console mode
-
-		printf("o");
-		if (_inputMode == NEVER)
-		{
-			continue;
-		}
-
-		if (str.empty()) // switch back to input
-		{
-			switchConsoleMode(ConsoleDevice::OUTPUT);
-		}
-		else
-		{
-			_commandCallback(str);
-
-			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to output
-			if (_inputMode == SEQUENTIAL)
-			{
-				printPrompt();
-			}
-			else
-				switchConsoleMode(ConsoleDevice::OUTPUT);
-		}
-	}*/
 }
 
 void InputController::enterPressedThread()

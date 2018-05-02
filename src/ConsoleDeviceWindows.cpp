@@ -1,5 +1,5 @@
 #include "../include/ConsoleDeviceWindows.hpp"
-#include <strsafe.h>
+#include <thread>
 
 using namespace Ghost;
 
@@ -24,12 +24,6 @@ bool ConsoleDeviceWindows::start()
 	return true;
 }
 
-VOID ErrorExit(LPSTR lpszMessage)
-{
-	fprintf(stderr, "%s\n", lpszMessage);
-
-}
-
 bool ConsoleDeviceWindows::setConsoleMode(ConsoleMode mode)
 {
 	DWORD consoleMode = 0;
@@ -39,9 +33,9 @@ bool ConsoleDeviceWindows::setConsoleMode(ConsoleMode mode)
 		return false;
 
 	if (mode == INPUT)
-		targetMode = consoleMode | ENABLE_ECHO_INPUT & (~ENABLE_WINDOW_INPUT);
+		targetMode = consoleMode | ENABLE_ECHO_INPUT;
 	else
-		targetMode = consoleMode & (~ENABLE_ECHO_INPUT) | ENABLE_WINDOW_INPUT;
+		targetMode = consoleMode & (~ENABLE_ECHO_INPUT);
 
 	return SetConsoleMode(_hStdin, targetMode);
 }
@@ -53,6 +47,13 @@ bool ConsoleDeviceWindows::awaitInputMode()
 
 	while (true)
 	{
+		DWORD number;
+		if (GetNumberOfConsoleInputEvents(_hStdin, &number) && number == 0) // don't start to read if there is nothing to read
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // but don't wait too long to stay reactive
+			continue;
+		}
+
 		if (!ReadConsoleInput(
 			_hStdin,      // input buffer handle 
 			irInBuf,     // buffer to read into 

@@ -61,13 +61,9 @@ namespace Ghost
 		std::thread _enterPressedThread;
 		std::atomic<bool> _threadEnable;
 
-		/* explicit read stuff */
-		std::atomic<bool> _explicitRead;
-		std::condition_variable _explicitTrigger;
-		std::mutex _explicitTriggerLock;
-		std::shared_ptr<std::string> _explicitInput;
-
+		/* Runtime variables */
 		BlockingQueue<std::shared_ptr<InputEvent>> _eventQueue;
+		std::shared_ptr<std::string> _explicitInput;
 
 		/* configuration */
 		std::shared_ptr<ConsoleDevice> _device;
