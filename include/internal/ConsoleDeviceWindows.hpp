@@ -5,6 +5,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <atomic>
 
 #include "ConsoleDevice.hpp"
 
@@ -31,6 +32,7 @@ namespace Ghost
 		private:
 			HANDLE _hStdin;
 			DWORD _originalConsoleMode;
+			std::atomic<bool> _enable;
 		};
 	}
 }

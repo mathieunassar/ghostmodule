@@ -4,12 +4,15 @@
 using namespace Ghost::internal;
 
 ConsoleDeviceWindows::ConsoleDeviceWindows()
+	: _enable(false)
 {
 
 }
 
 bool ConsoleDeviceWindows::start()
 {
+	_enable = true;
+
 	_hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	if (_hStdin == INVALID_HANDLE_VALUE)
 		return false;
@@ -45,7 +48,7 @@ bool ConsoleDeviceWindows::awaitInputMode()
 	DWORD cNumRead, i;
 	INPUT_RECORD irInBuf[128];
 
-	while (true)
+	while (_enable)
 	{
 		DWORD number;
 		if (GetNumberOfConsoleInputEvents(_hStdin, &number) && number == 0) // don't start to read if there is nothing to read
@@ -77,5 +80,6 @@ bool ConsoleDeviceWindows::awaitInputMode()
 
 void ConsoleDeviceWindows::stop()
 {
+	_enable = false;
 	SetConsoleMode(_hStdin, _originalConsoleMode);
 }

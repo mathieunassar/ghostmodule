@@ -4,6 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <deque>
+#include <chrono>
 #include <future>
 #include <memory>
 
@@ -40,6 +41,20 @@ namespace Ghost
 				QueueElement<T> rc(std::move(_queue.back()));
 				_queue.pop_back();
 				return rc;
+			}
+
+			bool tryPop(std::chrono::milliseconds timeout, QueueElement<T>& result)
+			{
+				std::unique_lock<std::mutex> lock(_mutex);
+				if (size() == 0)
+					_condition.wait_for(lock, timeout, [=] { return !_queue.empty(); });
+	
+				if (size() == 0)
+					return false;
+
+				result = std::move(_queue.back());
+				_queue.pop_back();
+				return true;
 			}
 
 			size_t size()

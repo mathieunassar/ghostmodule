@@ -96,8 +96,10 @@ void OutputController::writerThread()
 		std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
 		BlockingQueue<std::string>* queue = _activeOutputQueue; // choose the queue with the lock in case of flush
 		lock.unlock();
+		QueueElement<std::string> entry;
 
-		QueueElement<std::string> entry = queue->pop();
+		if (!queue->tryPop(std::chrono::milliseconds(1000), entry))
+			continue;
 		
 		if (!awaitOutput()) // wait again since pop() is blocking and could take a while
 			return;

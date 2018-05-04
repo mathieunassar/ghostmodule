@@ -26,10 +26,7 @@ void Console::start()
 void Console::stop()
 {
 	_inputController->stop();
-	printf("input finished");
 	_outputController->stop();
-
-	printf("output finished");
 }
 
 void Console::setPrompt(const std::string& prompt)
