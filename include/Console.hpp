@@ -6,6 +6,7 @@
 
 #include "internal/ConsoleDevice.hpp"
 #include "InputController.hpp"
+#include "OutputController.hpp"
 
 namespace Ghost
 {
@@ -20,6 +21,7 @@ namespace Ghost
 		void setPrompt(const std::string& prompt);
 		void setInputMode(InputController::InputMode mode);
 
+		void write(const std::string& line);
 		std::string getLine();
 
 	private:
@@ -29,6 +31,7 @@ namespace Ghost
 
 		std::shared_ptr<internal::ConsoleDevice> _device;
 		std::shared_ptr<InputController> _inputController;
+		std::shared_ptr<OutputController> _outputController;
 	};
 }
 

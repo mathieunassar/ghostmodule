@@ -150,7 +150,7 @@ std::string InputController::readLine()
 
 		return future.get();
 	}
-	else // the program must exit, t is detached and will die peacefully without triggering exceptions on this one (->legal??)
+	else // the program must exit, t is detached and will die peacefully without triggering exceptions on this one (->legal?? update yes but does not free allocated resources -> mem leak)
 	{
 		t.detach();
 		return "";

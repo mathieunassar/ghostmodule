@@ -42,6 +42,11 @@ namespace Ghost
 				return rc;
 			}
 
+			size_t size()
+			{
+				return _queue.size();
+			}
+
 		private:
 			std::mutex _mutex;
 			std::condition_variable _condition;

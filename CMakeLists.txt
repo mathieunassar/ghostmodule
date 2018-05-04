@@ -5,6 +5,7 @@
 file(GLOB header_module_lib
 ./include/Console.hpp
 ./include/InputController.hpp
+./include/OutputController.hpp
 )
 
 file(GLOB header_module_lib_internal
@@ -18,12 +19,14 @@ file(GLOB header_module_lib_internal
 ./include/internal/EnterPressedInputEvent.hpp
 ./include/internal/InputModeInputEvent.hpp
 ./include/internal/LineRequestInputEvent.hpp
+./include/internal/OutputController.hpp
 )
 
 file(GLOB source_module_lib
 ./src/Console.cpp
 ./src/ConsoleDeviceWindows.cpp
 ./src/InputController.cpp
+./src/OutputController.cpp
 ./src/EnterPressedInputEvent.cpp
 ./src/InputModeInputEvent.cpp
 ./src/LineRequestInputEvent.cpp
