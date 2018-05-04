@@ -1,9 +1,9 @@
-#include "../include/InputModeInputEvent.hpp"
-#include "../include/InputController.hpp"
+#include "../include/internal/InputModeInputEvent.hpp"
+#include "../include/internal/InputController.hpp"
 
-using namespace Ghost;
+using namespace Ghost::internal;
 
-InputModeInputEvent::InputModeInputEventHandler::InputModeInputEventHandler(InputController* controller)
+InputModeInputEvent::InputModeInputEventHandler::InputModeInputEventHandler(InputControllerAccess* controller)
 	: InputEventHandler(controller)
 {
 
@@ -12,7 +12,7 @@ InputModeInputEvent::InputModeInputEventHandler::InputModeInputEventHandler(Inpu
 bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& event)
 {
 	const InputModeInputEvent& enterEvent = getEvent(event);
-	InputController& controller = getController();
+	InputControllerAccess& controller = getController();
 
 	std::string line;
 	bool loop = true;

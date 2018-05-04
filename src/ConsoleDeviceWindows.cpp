@@ -1,7 +1,7 @@
-#include "../include/ConsoleDeviceWindows.hpp"
+#include "../include/internal/ConsoleDeviceWindows.hpp"
 #include <thread>
 
-using namespace Ghost;
+using namespace Ghost::internal;
 
 ConsoleDeviceWindows::ConsoleDeviceWindows()
 {

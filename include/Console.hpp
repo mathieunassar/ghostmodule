@@ -1,7 +1,10 @@
 #ifndef GHOST_CONSOLE_HPP
 #define GHOST_CONSOLE_HPP
 
-#include "ConsoleDevice.hpp"
+#include <string>
+#include <memory>
+
+#include "internal/ConsoleDevice.hpp"
 #include "InputController.hpp"
 
 namespace Ghost
@@ -22,9 +25,9 @@ namespace Ghost
 	private:
 		/* Callbacks for the input controller */
 		void onNewInput(const std::string& str);
-		void onNewMode(ConsoleDevice::ConsoleMode mode);
+		void onNewMode(internal::ConsoleDevice::ConsoleMode mode);
 
-		std::shared_ptr<ConsoleDevice> _device;
+		std::shared_ptr<internal::ConsoleDevice> _device;
 		std::shared_ptr<InputController> _inputController;
 	};
 }

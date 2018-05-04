@@ -1,9 +1,9 @@
-#include "../include/LineRequestInputEvent.hpp"
-#include "../include/InputController.hpp"
+#include "../include/internal/LineRequestInputEvent.hpp"
+#include "../include/internal/InputController.hpp"
 
-using namespace Ghost;
+using namespace Ghost::internal;
 
-LineRequestInputEvent::LineRequestInputEventHandler::LineRequestInputEventHandler(InputController* controller)
+LineRequestInputEvent::LineRequestInputEventHandler::LineRequestInputEventHandler(InputControllerAccess* controller)
 	: InputEventHandler(controller)
 {
 
@@ -12,7 +12,7 @@ LineRequestInputEvent::LineRequestInputEventHandler::LineRequestInputEventHandle
 bool LineRequestInputEvent::LineRequestInputEventHandler::handle(const InputEvent& event)
 {
 	const LineRequestInputEvent& enterEvent = getEvent(event);
-	InputController& controller = getController();
+	InputControllerAccess& controller = getController();
 
 	ConsoleDevice::ConsoleMode oldState = controller.getConsoleMode();
 	controller.switchConsoleMode(ConsoleDevice::INPUT);

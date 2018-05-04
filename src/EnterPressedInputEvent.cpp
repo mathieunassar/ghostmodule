@@ -1,10 +1,10 @@
-#include "../include/EnterPressedInputEvent.hpp"
-#include "../include/InputController.hpp"
-#include "../include/InputModeInputEvent.hpp"
+#include "../include/internal/EnterPressedInputEvent.hpp"
+#include "../include/internal/InputController.hpp"
+#include "../include/internal/InputModeInputEvent.hpp"
 
-using namespace Ghost;
+using namespace Ghost::internal;
 
-EnterPressedInputEvent::EnterPressedInputEventHandler::EnterPressedInputEventHandler(InputController* controller)
+EnterPressedInputEvent::EnterPressedInputEventHandler::EnterPressedInputEventHandler(InputControllerAccess* controller)
 	: InputEventHandler(controller)
 {
 
@@ -13,7 +13,7 @@ EnterPressedInputEvent::EnterPressedInputEventHandler::EnterPressedInputEventHan
 bool EnterPressedInputEvent::EnterPressedInputEventHandler::handle(const InputEvent& event)
 {
 	const EnterPressedInputEvent& enterEvent = getEvent(event);
-	InputController& controller = getController();
+	InputControllerAccess& controller = getController();
 
 	controller.switchConsoleMode(ConsoleDevice::INPUT);
 	controller.printPrompt();

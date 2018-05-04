@@ -1,14 +1,14 @@
-#include "../include/InputController.hpp"
+#include "../include/internal/InputController.hpp"
 
 #include <iostream>
 #include <future>
 #include <chrono>
 
-#include "../include/EnterPressedInputEvent.hpp"
-#include "../include/LineRequestInputEvent.hpp"
-#include "../include/InputModeInputEvent.hpp"
+#include "../include/internal/EnterPressedInputEvent.hpp"
+#include "../include/internal/LineRequestInputEvent.hpp"
+#include "../include/internal/InputModeInputEvent.hpp"
 
-using namespace Ghost;
+using namespace Ghost::internal;
 
 InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	ConsoleDevice::ConsoleMode initialMode,

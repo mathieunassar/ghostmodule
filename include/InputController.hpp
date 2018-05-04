@@ -2,20 +2,12 @@
 #define GHOST_INPUTCONTROLLER_HPP
 
 #include <string>
-#include <thread>
-#include <atomic>
-#include <condition_variable>
-#include <mutex>
-#include <memory>
-#include <map>
-
-#include "ConsoleDevice.hpp"
-#include "BlockingQueue.hpp"
-#include "InputEvent.hpp"
 
 namespace Ghost
 {
-	// split to processor interface and public interface
+	/**
+	 *	Interface defining methods to manage user input.
+	 */
 	class InputController
 	{
 	public:
@@ -26,53 +18,16 @@ namespace Ghost
 			NEVER // never prompts except on read
 		};
 
-		InputController(std::shared_ptr<ConsoleDevice> device,
-			ConsoleDevice::ConsoleMode initialMode,
-			std::function<void(const std::string&)> cmdCallback,
-			std::function<void(ConsoleDevice::ConsoleMode)> modeCallback);
-
-		void start();
-		void stop();
-
+		/// starts the input control
+		virtual void start() = 0;
+		/// stops the input control
+		virtual void stop() = 0;
 		/// changes the text displayed by the prompt
-		void setPrompt(const std::string& prompt);
+		virtual void setPrompt(const std::string& prompt) = 0;
 		/// selects the behavior of the console among the possible modes
-		void setInputMode(InputMode mode);
-
-		std::string getLine();
-
-		void printPrompt() const;
-		void switchConsoleMode(ConsoleDevice::ConsoleMode newMode);
-		std::string readLine();
-		InputMode getInputMode() const;
-		ConsoleDevice::ConsoleMode getConsoleMode() const;
-		void onNewInput(const std::string& input);
-		std::promise<bool>& onNewEvent(std::shared_ptr<InputEvent> event);
-		void setLineRequestResult(const std::string& line);
-
-	private:
-		void registerEventHandlers();
-
-		void inputListenerThread();
-		void enterPressedThread();
-
-		/* thread stuff */
-		std::thread _inputThread;
-		std::thread _enterPressedThread;
-		std::atomic<bool> _threadEnable;
-
-		/* Runtime variables */
-		BlockingQueue<std::shared_ptr<InputEvent>> _eventQueue;
-		std::shared_ptr<std::string> _explicitInput;
-
-		/* configuration */
-		std::shared_ptr<ConsoleDevice> _device;
-		std::string _prompt;
-		ConsoleDevice::ConsoleMode _consoleMode;
-		InputMode _inputMode;
-		std::function<void(const std::string&)> _commandCallback;
-		std::function<void(ConsoleDevice::ConsoleMode)> _modeCallback;
-		std::map<std::string, std::shared_ptr<InputEvent::InputEventHandler>> _eventHandlers;
+		virtual void setInputMode(InputMode mode) = 0;
+		/// gets a line from the user.
+		virtual std::string getLine() = 0;
 	};
 }
 
