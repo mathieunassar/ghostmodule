@@ -105,7 +105,7 @@ void OutputController::writerThread()
 			return;
 		
 		printf(entry.element.c_str()); // print
-		entry.result->set_value(true);
+		entry.result->set_value(true); // (idea) the promise could be used to know when the entry is effectively executed...
 	}
 }
 

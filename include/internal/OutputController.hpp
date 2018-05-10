@@ -35,7 +35,7 @@ namespace Ghost
 			void stdcoutCallback(const char *ptr, std::streamsize count);
 			std::unique_ptr<ConsoleStream<>> _redirecter;
 
-			/* Write queue - double buffered */
+			/* Write queue - double buffered for efficient flushing */
 			void swapQueues(BlockingQueue<std::string>* queue);
 			BlockingQueue<std::string> _writeQueue1;
 			BlockingQueue<std::string> _writeQueue2;

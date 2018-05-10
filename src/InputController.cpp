@@ -37,6 +37,11 @@ void InputController::setInputMode(InputMode mode)
 	_inputMode = mode;
 }
 
+void InputController::setCommandCallback(std::function<void(const std::string&)> cmdCallback)
+{
+	_commandCallback = cmdCallback;
+}
+
 void InputController::start()
 {
 	if (!_threadEnable)

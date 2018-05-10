@@ -39,6 +39,8 @@ namespace Ghost
 			void setPrompt(const std::string& prompt) override;
 			/// selects the behavior of the console among the possible modes
 			void setInputMode(InputMode mode) override;
+			/// sets the callback that will be called when the user enters a new command
+			void setCommandCallback(std::function<void(const std::string&)> cmdCallback) override;
 
 			std::string getLine() override;
 

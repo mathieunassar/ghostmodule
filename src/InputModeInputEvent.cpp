@@ -28,17 +28,18 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 		}
 		else
 		{
+			controller.switchConsoleMode(ConsoleDevice::OUTPUT);
 			controller.onNewInput(line);
 
 			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to output
 			if (controller.getInputMode() == InputController::SEQUENTIAL)
 			{
+				controller.switchConsoleMode(ConsoleDevice::INPUT);
 				controller.printPrompt();
 				// loop is true
 			}
 			else
 			{
-				controller.switchConsoleMode(ConsoleDevice::OUTPUT);
 				loop = false;
 			}
 		}

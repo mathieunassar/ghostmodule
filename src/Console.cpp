@@ -1,12 +1,18 @@
-#include "../include/Console.hpp"
+#include "../include/internal/Console.hpp"
 #include "../include/internal/ConsoleDeviceWindows.hpp"
 #include "../include/internal/InputController.hpp"
 #include "../include/internal/OutputController.hpp"
 
 #include <iostream>
 #include <functional>
+#include <exception>
 
-using namespace Ghost;
+using namespace Ghost::internal;
+
+std::shared_ptr<Ghost::Console> Ghost::Console::create()
+{
+	return std::shared_ptr<Ghost::Console>(new Ghost::internal::Console());
+}
 
 Console::Console()
 	: _device(new internal::ConsoleDeviceWindows())
@@ -39,6 +45,11 @@ void Console::setInputMode(InputController::InputMode mode)
 	_inputController->setInputMode(mode);
 }
 
+void Console::setCommandCallback(std::function<void(const std::string&)> cmdCallback)
+{
+	_inputController->setCommandCallback(cmdCallback);
+}
+
 void Console::write(const std::string& line)
 {
 	_outputController->write(line);
@@ -46,16 +57,41 @@ void Console::write(const std::string& line)
 
 std::string Console::getLine()
 {
-	_outputController->flush();
+	flush();
 	return _inputController->getLine();
+}
+
+void Console::flush()
+{
+	_outputController->flush();
+}
+
+bool Console::hasCommands() const
+{
+	std::unique_lock<std::mutex> lock(_commandQueueLock);
+	return _commands.size() != 0;
+}
+
+std::string Console::getCommand()
+{
+	std::unique_lock<std::mutex> lock(_commandQueueLock);
+
+	if (_commands.size() == 0)
+		throw std::logic_error("No command available");
+
+	std::string res = std::move(_commands.front());
+	_commands.pop();
+
+	return res;
 }
 
 void Console::onNewInput(const std::string& str)
 {
-	printf("on new input: %s\n", str.c_str());
+	std::unique_lock<std::mutex> lock(_commandQueueLock);
+	_commands.push(str);
 }
 
-void Console::onNewMode(internal::ConsoleDevice::ConsoleMode mode)
+void Console::onNewMode(ConsoleDevice::ConsoleMode mode)
 {
 	
 	if (mode == internal::ConsoleDevice::OUTPUT)
