@@ -13,6 +13,7 @@ file(GLOB header_module_lib
 ./include/User.hpp
 ./include/UserGroup.hpp
 ./include/UserManager.hpp
+./include/Module.hpp
 )
 
 file(GLOB header_module_lib_internal
@@ -33,6 +34,7 @@ file(GLOB header_module_lib_internal
 ./include/internal/User.hpp
 ./include/internal/UserGroup.hpp
 ./include/internal/UserManager.hpp
+./include/internal/Module.hpp
 )
 
 file(GLOB header_module_lib_internal_commands
@@ -54,6 +56,7 @@ file(GLOB source_module_lib
 ./src/User.cpp
 ./src/UserGroup.cpp
 ./src/UserManager.cpp
+./src/Module.cpp
 ./src/main.cpp)
 
 file(GLOB source_module_lib_commands
