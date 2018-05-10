@@ -3,6 +3,7 @@
 #include "../include/internal/CommandLineParser.hpp"
 
 #include "../include/internal/commands/LoginCommand.hpp"
+#include "../include/internal/commands/HelpCommand.hpp"
 
 using namespace Ghost::internal;
 
@@ -15,6 +16,7 @@ CommandLineInterpreter::CommandLineInterpreter(std::shared_ptr<Ghost::UserManage
 	: _userManager(userManager)
 {
 	registerCommand(std::shared_ptr<Ghost::Command>(new LoginCommand(userManager)), {});
+	registerCommand(std::shared_ptr<Ghost::Command>(new HelpCommand(this)), {});
 }
 
 bool CommandLineInterpreter::execute(const std::string& commandLine)
@@ -45,7 +47,18 @@ void CommandLineInterpreter::registerCommand(std::shared_ptr<Ghost::Command> com
 
 void CommandLineInterpreter::printHelp(std::ostream& stream) const
 {
-
+	std::ostringstream oss;
+	oss << "List of registered commands:" << std::endl;
+	for (auto it = _commands.begin(); it != _commands.end(); ++it)
+	{
+		if (executionPermitted(it->second))
+		{
+			oss << it->second.command->getName()
+				<< " [" << it->second.command->getShortcut() << "] - "
+				<< it->second.command->getDescription() << std::endl;
+		}
+	}
+	stream << oss.str();
 }
 
 bool CommandLineInterpreter::executionPermitted(const CommandEntry& entry) const

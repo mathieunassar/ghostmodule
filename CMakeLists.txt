@@ -37,6 +37,7 @@ file(GLOB header_module_lib_internal
 
 file(GLOB header_module_lib_internal_commands
 ./include/internal/commands/LoginCommand.hpp
+./include/internal/commands/HelpCommand.hpp
 )
 
 file(GLOB source_module_lib
@@ -57,6 +58,7 @@ file(GLOB source_module_lib
 
 file(GLOB source_module_lib_commands
 ./src/commands/LoginCommand.cpp
+./src/commands/HelpCommand.cpp
 )
 
 

@@ -65,10 +65,10 @@ std::string LoginCommand::getName() const
 
 std::string LoginCommand::getShortcut() const
 {
-	return "login";
+	return _SHORTCUT;
 }
 
 std::string LoginCommand::getDescription() const
 {
-	return "changes the connected user.";
+	return _DESCRIPTION;
 }

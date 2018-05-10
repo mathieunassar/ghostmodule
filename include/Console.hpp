@@ -48,8 +48,10 @@ namespace Ghost
 		virtual std::string getLine() = 0;
 		/// flushes the write queue by printing everything
 		virtual void flush() = 0;
-		/// maybe obsolete
+		/// if the command callback is not set with "setCommandCallback", user commands are collected by the console
 		virtual bool hasCommands() const = 0;
+		/// if the command callback is not set with "setCommandCallback", user commands are collected by the console
+		/// getting a command removes it from the command queue.
 		virtual std::string getCommand() = 0;
 	};
 }

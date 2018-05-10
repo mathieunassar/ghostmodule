@@ -31,6 +31,7 @@ void Console::start()
 
 void Console::stop()
 {
+	_outputController->flush();
 	_inputController->stop();
 	_outputController->stop();
 }
