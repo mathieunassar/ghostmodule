@@ -16,7 +16,7 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	std::function<void(ConsoleDevice::ConsoleMode)> modeCallback)
 	: _threadEnable(false)
 	, _device(device)
-	, _prompt("> ")
+	, _prompt(new Prompt(">"))
 	, _consoleMode(initialMode)
 	, _inputMode(DISCRETE)
 	, _commandCallback(cmdCallback)
@@ -27,9 +27,9 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	_device->setConsoleMode(initialMode);
 }
 
-void InputController::setPrompt(const std::string& prompt)
+Prompt& InputController::getPrompt()
 {
-	_prompt = prompt;
+	return *_prompt;
 }
 
 void InputController::setInputMode(InputMode mode)
@@ -82,7 +82,7 @@ std::string InputController::getLine()
 
 void InputController::printPrompt() const
 {
-	printf(_prompt.c_str());
+	printf(_prompt->str().c_str());
 }
 
 void InputController::switchConsoleMode(ConsoleDevice::ConsoleMode newMode)

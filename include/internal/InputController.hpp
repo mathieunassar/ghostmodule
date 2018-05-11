@@ -15,6 +15,7 @@
 #include "ConsoleDevice.hpp"
 #include "BlockingQueue.hpp"
 #include "InputEvent.hpp"
+#include "Prompt.hpp"
 
 namespace Ghost
 {
@@ -36,7 +37,7 @@ namespace Ghost
 			void stop() override;
 
 			/// changes the text displayed by the prompt
-			void setPrompt(const std::string& prompt) override;
+			Prompt& getPrompt();
 			/// selects the behavior of the console among the possible modes
 			void setInputMode(InputMode mode) override;
 			/// sets the callback that will be called when the user enters a new command
@@ -70,7 +71,7 @@ namespace Ghost
 
 			/* configuration */
 			std::shared_ptr<ConsoleDevice> _device;
-			std::string _prompt;
+			std::unique_ptr<Prompt> _prompt;
 			ConsoleDevice::ConsoleMode _consoleMode;
 			InputMode _inputMode;
 			std::function<void(const std::string&)> _commandCallback;

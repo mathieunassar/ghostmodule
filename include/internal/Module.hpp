@@ -37,7 +37,7 @@ namespace Ghost
 		private:
 			std::string _name;
 			State _state;
-			std::shared_ptr<Ghost::Console> _console;
+			std::shared_ptr<Console> _console;
 			std::shared_ptr<Ghost::UserManager> _userManager;
 			std::shared_ptr<Ghost::CommandLineInterpreter> _interpreter;
 		};

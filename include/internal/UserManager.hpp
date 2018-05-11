@@ -24,6 +24,7 @@ namespace Ghost
 			void disconnect() override;
 			bool isUserConnected() const override;
 			User& getConnectedUser() const override;
+			void setConnectedUserCallback(std::function<void(const Ghost::User&)> callback) override;
 
 			std::vector<std::shared_ptr<Ghost::UserGroup>> getUserGroups() const override;
 
@@ -31,6 +32,7 @@ namespace Ghost
 			std::vector<std::shared_ptr<User>> _users;
 			std::vector<std::shared_ptr<UserGroup>> _groups;
 			std::shared_ptr<User> _connectedUser;
+			std::function<void(const User&)> _connectedUserCallback;
 		};
 	}
 }

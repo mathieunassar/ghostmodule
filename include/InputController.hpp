@@ -22,8 +22,6 @@ namespace Ghost
 		virtual void start() = 0;
 		/// stops the input control
 		virtual void stop() = 0;
-		/// changes the text displayed by the prompt
-		virtual void setPrompt(const std::string& prompt) = 0;
 		/// selects the behavior of the console among the possible modes
 		virtual void setInputMode(InputMode mode) = 0;
 		/// sets the callback that will be called when the user enters a new command

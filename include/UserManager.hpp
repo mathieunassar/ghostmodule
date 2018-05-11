@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 #include "User.hpp"
 #include "UserGroup.hpp"
 
@@ -22,6 +23,7 @@ namespace Ghost
 		virtual void disconnect() = 0;
 		virtual bool isUserConnected() const = 0;
 		virtual User& getConnectedUser() const = 0;
+		virtual void setConnectedUserCallback(std::function<void(const User&)> callback) = 0;
 		
 		virtual std::vector<std::shared_ptr<Ghost::UserGroup>> getUserGroups() const = 0;
 	};

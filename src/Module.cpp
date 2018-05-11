@@ -1,6 +1,8 @@
 #include "../include/internal/Module.hpp"
 #include "../include/Module.hpp"
 
+#include "../include/internal/commands/ExitCommand.hpp"
+
 using namespace Ghost::internal;
 
 Module::Module(const std::string& name)
@@ -9,6 +11,10 @@ Module::Module(const std::string& name)
 {
 	_userManager = Ghost::UserManager::create();
 	_interpreter = Ghost::CommandLineInterpreter::create(_userManager);
+
+	// add useful commands
+	_interpreter->registerCommand(std::shared_ptr<Ghost::Command>(new ExitCommand(this)), {});
+
 }
 
 Module::~Module()
@@ -22,7 +28,7 @@ bool Module::setState(State state)
 	switch (state)
 	{
 	case INITIALIZING:
-		if (_state != STOPPED)
+		if (_state != STOPPED) // cannot initialize if alread initialized
 			return false;
 		break;
 	case RUNNING:
@@ -30,7 +36,7 @@ bool Module::setState(State state)
 			return false;
 		break;
 	case DISPOSING:
-		if (_state != RUNNING || _state != INITIALIZING)
+		if (_state == STOPPED) // cannot dispose if already stopped
 			return false;
 		break;
 	default: break;
@@ -47,12 +53,19 @@ Module::State Module::getState() const
 
 void Module::initializeConsole()
 {
-	_console = Ghost::Console::create();
+	_console = std::shared_ptr<Console>(new Console());
+
 	_console->setCommandCallback([this](const std::string& str)
 		{ 
 			_interpreter->execute(str);
 			_console->flush();
 		});
+	
+	_userManager->setConnectedUserCallback([this](const Ghost::User& user)
+		{
+			_console->getPrompt().setUser(user.getName());
+		});
+
 	_console->start();
 }
 
@@ -100,7 +113,7 @@ void Ghost::Module::start()
 		Ghost::internal::Module::State currentState = _internal->getState();
 		while (!runFinshed && currentState == Ghost::internal::Module::RUNNING)
 		{
-			runFinshed = run(); // run as long as the return value is true and the module state is running
+			runFinshed = !run(); // run as long as the return value is true and the module state is running
 			currentState = _internal->getState();
 		}
 

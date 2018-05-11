@@ -18,6 +18,7 @@ file(GLOB header_module_lib
 
 file(GLOB header_module_lib_internal
 ./include/internal/Console.hpp
+./include/internal/Prompt.hpp
 ./include/internal/InputController.hpp
 ./include/internal/InputControllerAccess.hpp
 ./include/internal/ConsoleDevice.hpp
@@ -40,10 +41,12 @@ file(GLOB header_module_lib_internal
 file(GLOB header_module_lib_internal_commands
 ./include/internal/commands/LoginCommand.hpp
 ./include/internal/commands/HelpCommand.hpp
+./include/internal/commands/ExitCommand.hpp
 )
 
 file(GLOB source_module_lib
 ./src/Console.cpp
+./src/Prompt.cpp
 ./src/ConsoleDeviceWindows.cpp
 ./src/InputController.cpp
 ./src/OutputController.cpp
@@ -62,6 +65,7 @@ file(GLOB source_module_lib
 file(GLOB source_module_lib_commands
 ./src/commands/LoginCommand.cpp
 ./src/commands/HelpCommand.cpp
+./src/commands/ExitCommand.cpp
 )
 
 

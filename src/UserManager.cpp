@@ -49,6 +49,10 @@ bool UserManager::connect(const std::string& username, const std::string& passwo
 		if (user->getName() == username && user->isPasswordCorrect(password))
 		{
 			_connectedUser = user;
+
+			if (_connectedUserCallback)
+				_connectedUserCallback(*user);
+
 			return true;
 		}
 	}
@@ -71,6 +75,11 @@ User& UserManager::getConnectedUser() const
 		throw std::logic_error("No connected user.");
 
 	return *_connectedUser;
+}
+
+void UserManager::setConnectedUserCallback(std::function<void(const Ghost::User&)> callback)
+{
+	_connectedUserCallback = callback;
 }
 
 std::vector<std::shared_ptr<Ghost::UserGroup>> UserManager::getUserGroups() const

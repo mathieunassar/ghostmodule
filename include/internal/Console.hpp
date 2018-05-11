@@ -23,7 +23,7 @@ namespace Ghost
 			void start() override;
 			void stop() override;
 
-			void setPrompt(const std::string& prompt) override;
+			void setPromptFormat(const std::string& prompt) override;
 			void setInputMode(InputController::InputMode mode) override;
 			void setCommandCallback(std::function<void(const std::string&)> cmdCallback) override;
 
@@ -32,6 +32,8 @@ namespace Ghost
 			void flush() override;
 			bool hasCommands() const override;
 			std::string getCommand() override;
+
+			Prompt& getPrompt();
 
 		private:
 			/* Callbacks for the input controller */

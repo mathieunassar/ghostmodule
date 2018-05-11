@@ -35,7 +35,7 @@ namespace Ghost
 		virtual void stop() = 0;
 
 		/// Sets the text that will be displayed as a prompt in the input mode
-		virtual void setPrompt(const std::string& prompt) = 0;
+		virtual void setPromptFormat(const std::string& prompt) = 0;
 		/// sets the input mode, see {@ref InputController::InputMode} for a description of the modes
 		virtual void setInputMode(InputController::InputMode mode) = 0;
 		/// sets the callback that will be called when the user enters a new command

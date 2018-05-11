@@ -36,9 +36,9 @@ void Console::stop()
 	_outputController->stop();
 }
 
-void Console::setPrompt(const std::string& prompt)
+void Console::setPromptFormat(const std::string& prompt)
 {
-	_inputController->setPrompt(prompt);
+	_inputController->getPrompt().setFormat(prompt);
 }
 
 void Console::setInputMode(InputController::InputMode mode)
@@ -84,6 +84,11 @@ std::string Console::getCommand()
 	_commands.pop();
 
 	return res;
+}
+
+Prompt& Console::getPrompt()
+{
+	return _inputController->getPrompt();
 }
 
 void Console::onNewInput(const std::string& str)

@@ -2,8 +2,8 @@
 #include "../include/Command.hpp"
 #include "../include/internal/CommandLineParser.hpp"
 
-#include "../include/internal/commands/LoginCommand.hpp"
 #include "../include/internal/commands/HelpCommand.hpp"
+#include "../include/internal/commands/LoginCommand.hpp"
 
 using namespace Ghost::internal;
 
@@ -15,8 +15,8 @@ std::shared_ptr<Ghost::CommandLineInterpreter> Ghost::CommandLineInterpreter::cr
 CommandLineInterpreter::CommandLineInterpreter(std::shared_ptr<Ghost::UserManager> userManager)
 	: _userManager(userManager)
 {
-	registerCommand(std::shared_ptr<Ghost::Command>(new LoginCommand(userManager)), {});
 	registerCommand(std::shared_ptr<Ghost::Command>(new HelpCommand(this)), {});
+	registerCommand(std::shared_ptr<Ghost::Command>(new LoginCommand(userManager)), {});
 }
 
 bool CommandLineInterpreter::execute(const std::string& commandLine)
