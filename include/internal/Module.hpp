@@ -34,12 +34,15 @@ namespace Ghost
 			/* Command line interpretor access */
 			std::shared_ptr<Ghost::CommandLineInterpreter> getInterpreter();
 
+			/* User manager access */
+			std::shared_ptr<Ghost::UserManager> getUserManager();
+
 		private:
 			std::string _name;
 			State _state;
 			std::shared_ptr<Console> _console;
-			std::shared_ptr<Ghost::UserManager> _userManager;
-			std::shared_ptr<Ghost::CommandLineInterpreter> _interpreter;
+			std::shared_ptr<UserManager> _userManager;
+			std::shared_ptr<CommandLineInterpreter> _interpreter;
 		};
 	}
 }

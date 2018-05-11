@@ -9,8 +9,8 @@ Module::Module(const std::string& name)
 	: _name(name)
 	, _state(Module::STOPPED)
 {
-	_userManager = Ghost::UserManager::create();
-	_interpreter = Ghost::CommandLineInterpreter::create(_userManager);
+	_userManager = std::shared_ptr<UserManager>(new UserManager());
+	_interpreter = std::shared_ptr<CommandLineInterpreter>(new CommandLineInterpreter(_userManager));
 
 	// add useful commands
 	_interpreter->registerCommand(std::shared_ptr<Ghost::Command>(new ExitCommand(this)), {});
@@ -82,6 +82,11 @@ std::shared_ptr<Ghost::Console> Module::getConsole()
 std::shared_ptr<Ghost::CommandLineInterpreter> Module::getInterpreter()
 {
 	return _interpreter;
+}
+
+std::shared_ptr<Ghost::UserManager> Module::getUserManager()
+{
+	return _userManager;
 }
 
 /////////////////////////////////////////////////////////////////
@@ -157,4 +162,9 @@ std::shared_ptr<Ghost::Console> Ghost::Module::getConsole()
 std::shared_ptr<Ghost::CommandLineInterpreter> Ghost::Module::getInterpreter()
 {
 	return _internal->getInterpreter();
+}
+
+std::shared_ptr<Ghost::UserManager> Ghost::Module::getUserManager()
+{
+	return _internal->getUserManager();
 }
