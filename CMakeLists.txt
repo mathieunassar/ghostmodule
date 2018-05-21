@@ -11,6 +11,11 @@ file(GLOB header_connection2_lib
 )
 
 file(GLOB header_connection2_lib_internal
+./include/internal/Connection.hpp
+./include/internal/Server.hpp
+./include/internal/Client.hpp
+./include/internal/Publisher.hpp
+./include/internal/Subscriber.hpp
 )
 
 file(GLOB source_connection2_lib

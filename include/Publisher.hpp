@@ -1,6 +1,9 @@
 #ifndef GHOST_PUBLISHER_HPP
 #define GHOST_PUBLISHER_HPP
 
+#include <memory>
+
+#include "internal/Publisher.hpp"
 #include "Connection.hpp"
 
 namespace Ghost
@@ -15,7 +18,10 @@ namespace Ghost
 		 * @date	21.05.2018
 		 * @param	message	The message.
 		 */
-		virtual void publish(const MessageType& message) = 0;
+		void publish(const MessageType& message);
+
+	private:
+		std::shared_ptr<internal::Publisher<MessageType>> _internal;
 	};
 }
 

@@ -1,6 +1,9 @@
 #ifndef GHOST_SUBSCRIBER_HPP
 #define GHOST_SUBSCRIBER_HPP
 
+#include <memory>
+
+#include "internal/Subscriber.hpp"
 #include "Connection.hpp"
 
 namespace Ghost
@@ -17,6 +20,9 @@ namespace Ghost
 		 * @return	True if it succeeds, false if it fails.
 		 */
 		virtual bool onNewMessage(const MessageType& message) = 0;
+
+	private:
+		std::shared_ptr<internal::Subscriber<MessageType>> _internal;
 	};
 }
 

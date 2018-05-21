@@ -1,12 +1,15 @@
 #ifndef GHOST_SERVER_HPP
 #define GHOST_SERVER_HPP
 
+#include <memory>
+
+#include "internal/Server.hpp"
 #include "Connection.hpp"
 #include "Client.hpp"
 
 namespace Ghost
 {
-	class AbstractServer : public Connection
+	class Server : public Connection
 	{
 	protected:
 		/**
@@ -30,6 +33,9 @@ namespace Ghost
 		 * @param	client	The client.
 		 */
 		void releaseClient(const Client& client);
+
+	private:
+		std::shared_ptr<internal::Server> _internal;
 	};
 }
 

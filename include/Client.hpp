@@ -1,6 +1,9 @@
 #ifndef GHOST_CLIENT_HPP
 #define GHOST_CLIENT_HPP
 
+#include <memory>
+
+#include "internal/Client.hpp"
 #include "Connection.hpp"
 
 namespace Ghost
@@ -17,7 +20,7 @@ namespace Ghost
 		 * @param [in,out]	message	variable containing the output message.
 		 * @return	True if it succeeds, false if it fails.
 		 */
-		virtual bool receive(Message& message) = 0;
+		bool receive(Message& message);
 
 		/**
 		 * Encodes and sends the message given as argument.
@@ -26,7 +29,10 @@ namespace Ghost
 		 * @param	message	message to send.
 		 * @return	A long.
 		 */
-		virtual long send(const Message& message) = 0;
+		long send(const Message& message);
+
+	private:
+		std::shared_ptr<internal::Client> _internal;
 	};
 }
 
