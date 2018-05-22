@@ -9,6 +9,11 @@ namespace Ghost
 	Process: Instanciation of template parameter -> core creation using parameters -> core assignment to the instance -> return
 	Problem: user cannot use a complex constructor
 	*/
+
+	/* Goal update: user can derive any connection type, and create them without connection manager.
+	USer needs however to provide the connection core manually -> needs abstraction layers (NetworkServer for example, which takes directly connection parameters
+	and creates the core correspondingly */
+
 	namespace internal
 	{
 		/**

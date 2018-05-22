@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option java_multiple_files = true;
+
+package Ghost.internal.protobuf;
+
+service PublisherSubscriberService
+{
+	rpc publications(GhostMessageHeader) returns (stream GhostMessage) {}
+}
+
+service ServerClientService
+{
+	rpc connect(stream GhostMessage) returns (stream GhostMessage) {}
+}
+
+// this message defines the structure that encapsulates the message being sent.
+message GhostMessage
+{
+	// message header
+	GhostMessageHeader header = 1;
+	
+	// the name of the message
+	string name = 2;
+	
+	// the actual message being transported
+	google.protobuf.Any message = 3;
+}
+
+// header of a GhostMessage
+message GhostMessageHeader
+{
+	// timestamp in ms
+	int64 timestamp = 1;
+	
+	// emitting machine
+	string hostname = 2;
+}
