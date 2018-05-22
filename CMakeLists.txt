@@ -2,6 +2,23 @@
 
 #####################################################################
 
+set(PROTOC_SOURCE_CUSTOM ./protobuf/)
+set(PROTOC_SOURCE_LIB ${PROJECT_SOURCE_DIR}/ExternalLibs/protobuf/include)
+set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
+set(PROTOC_OUTPUT ./protobuf/)
+set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/ExternalLibs/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
+set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/ExternalLibs/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
+
+message(STATUS "Generating grpc and protobuf files...")
+
+execute_process(
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND ${PROTOC_PATH} -I ${PROTOC_SOURCE_LIB} -I ${PROTOC_SOURCE_CUSTOM} --grpc_out=${PROTOC_OUTPUT} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} ${PROTOC_SOURCE_FILE}
+	COMMAND ${PROTOC_PATH} -I ${PROTOC_SOURCE_LIB} -I ${PROTOC_SOURCE_CUSTOM} --cpp_out=${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE}
+)
+
+#####################################################################
+
 file(GLOB header_connection2_lib
 ./include/Connection.hpp
 ./include/Server.hpp
