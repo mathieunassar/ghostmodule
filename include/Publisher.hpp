@@ -6,7 +6,7 @@
 #include "internal/Publisher.hpp"
 #include "Connection.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	template<typename MessageType>
 	class Publisher : public Connection

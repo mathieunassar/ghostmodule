@@ -35,6 +35,19 @@ file(GLOB header_connection2_lib_internal
 ./include/internal/Subscriber.hpp
 )
 
+file(GLOB header_connection2_lib_internal_network
+./include/internal/network/ServerCoreGRPC.hpp
+./include/internal/network/ClientCoreGRPC.hpp
+./include/internal/network/PublisherCoreGRPC.hpp
+./include/internal/network/SubscriberCoreGRPC.hpp
+)
+
+file(GLOB source_connection2_lib_network
+./src/network/ServerCoreGRPC.cpp
+./src/network/ClientCoreGRPC.cpp
+./src/network/PublisherCoreGRPC.cpp
+./src/network/SubscriberCoreGRPC.cpp)
+
 file(GLOB protobuf_connection2_lib
 ./protobuf/Ghost.pb.h
 ./protobuf/Ghost.grpc.pb.h
@@ -46,13 +59,17 @@ file(GLOB source_connection2_lib
 ./src/main.cpp)
 
 source_group("Header Files\\internal" FILES ${header_connection2_lib_internal})
+source_group("Header Files\\internal\\network" FILES ${header_connection2_lib_internal_network})
+source_group("Source Files\\network" FILES ${source_connection2_lib_network})
 source_group("Protobuf" FILES ${protobuf_connection2_lib})
 
 #####################################################################
 
 add_executable(GhostConnection2 ${header_connection2_lib}
-	${source_connection2_lib}
 	${header_connection2_lib_internal}
+	${header_connection2_lib_internal_network}
+	${source_connection2_lib_network}
+	${source_connection2_lib}
 	${protobuf_connection2_lib}
 	)
 

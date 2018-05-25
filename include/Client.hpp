@@ -6,7 +6,7 @@
 #include "internal/Client.hpp"
 #include "Connection.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	class Message; // todo replace with protobuf version of it or wrap it if necessary
 

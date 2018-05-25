@@ -3,7 +3,7 @@
 
 #include "Connection.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

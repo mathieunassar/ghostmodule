@@ -6,7 +6,7 @@
 #include "internal/Subscriber.hpp"
 #include "Connection.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	template<typename MessageType>
 	class Subscriber : public Connection

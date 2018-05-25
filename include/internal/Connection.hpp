@@ -1,7 +1,7 @@
 #ifndef GHOST_INTERNAL_CONNECTION_HPP
 #define GHOST_INTERNAL_CONNECTION_HPP
 
-namespace Ghost
+namespace ghost
 {
 	/* goal: create a connection like: std::shared_ptr<MySubscriber> subscriber = _connectionManager->create<MySubscriber>(config);
 	the connection manager would instantiate the class, create the corresponding core (using the config & the connection type).

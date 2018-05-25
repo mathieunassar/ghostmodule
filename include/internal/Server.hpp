@@ -4,7 +4,7 @@
 #include "Connection.hpp"
 #include "Client.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
