@@ -1,7 +1,7 @@
 #include "../include/internal/Prompt.hpp"
 #include <regex>
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 Prompt::Prompt(const std::string& format)
 	: _format(format)

@@ -3,7 +3,7 @@
 
 #include "CommandLine.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	class Command
 	{

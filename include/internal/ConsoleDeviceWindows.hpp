@@ -9,7 +9,7 @@
 
 #include "ConsoleDevice.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

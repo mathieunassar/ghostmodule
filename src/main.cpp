@@ -3,13 +3,13 @@
 
 #include "../include/Module.hpp"
 
-class TestModule : public Ghost::Module
+class TestModule : public ghost::Module
 {
 	bool init() override
 	{
 		initializeConsole();
 		getConsole()->setPromptFormat("$u>");
-		getConsole()->setInputMode(Ghost::InputController::SEQUENTIAL);
+		getConsole()->setInputMode(ghost::InputController::SEQUENTIAL);
 
 		std::cout << " _______ _      _  ______  ________ _________" << std::endl;
 		std::cout << "|  _____ |______| |      | |_______     |" << std::endl;

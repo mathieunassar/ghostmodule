@@ -8,7 +8,7 @@
 
 #include "PermissionEntity.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	class Command;
 	class UserManager;

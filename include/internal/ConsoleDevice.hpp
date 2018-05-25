@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

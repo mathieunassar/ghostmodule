@@ -6,7 +6,7 @@
 #include <sstream>
 #include <functional>
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

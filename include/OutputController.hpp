@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Ghost
+namespace ghost
 {
 	/**
 	 *	Interface defining methods to manage user input.

@@ -9,7 +9,7 @@
 #include "UserManager.hpp"
 #include "CommandLineInterpreter.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	class Module
 	{
@@ -36,7 +36,7 @@ namespace Ghost
 		std::shared_ptr<UserManager> getUserManager();
 
 	private:
-		std::shared_ptr<Ghost::internal::Module> _internal;
+		std::shared_ptr<ghost::internal::Module> _internal;
 	};
 }
 

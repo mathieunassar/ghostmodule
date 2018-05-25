@@ -2,22 +2,22 @@
 #include <iostream>
 #include "../../include/internal/Module.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 const std::string ExitCommand::NAME = "ExitCommand";
 const std::string ExitCommand::_SHORTCUT = "exit";
 const std::string ExitCommand::_DESCRIPTION = "Switches the module state to 'DISPOSING'. The module will exit before the next call to run.";
 
-ExitCommand::ExitCommand(Ghost::internal::Module* module)
+ExitCommand::ExitCommand(ghost::internal::Module* module)
 	: _module(module)
 {
 
 }
 
-bool ExitCommand::execute(const Ghost::CommandLine& commandLine)
+bool ExitCommand::execute(const ghost::CommandLine& commandLine)
 {
-	_module->setState(Ghost::internal::Module::DISPOSING);
-	_module->getConsole()->setInputMode(Ghost::InputController::DISCRETE); // do that to stop expecting user input
+	_module->setState(ghost::internal::Module::DISPOSING);
+	_module->getConsole()->setInputMode(ghost::InputController::DISCRETE); // do that to stop expecting user input
 	return true;
 }
 

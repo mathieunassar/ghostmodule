@@ -7,7 +7,7 @@
 #include "User.hpp"
 #include "PermissionEntity.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	/**
 	 *	Represents a group of users which share permissions.

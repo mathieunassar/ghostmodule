@@ -7,7 +7,7 @@
 #include "User.hpp"
 #include "UserGroup.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	/// separate between normal interface and superuser interface
 	class UserManager
@@ -25,7 +25,7 @@ namespace Ghost
 		virtual User& getConnectedUser() const = 0;
 		virtual void setConnectedUserCallback(std::function<void(const User&)> callback) = 0;
 		
-		virtual std::vector<std::shared_ptr<Ghost::UserGroup>> getUserGroups() const = 0;
+		virtual std::vector<std::shared_ptr<ghost::UserGroup>> getUserGroups() const = 0;
 	};
 }
 

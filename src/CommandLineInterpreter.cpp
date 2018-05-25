@@ -5,18 +5,18 @@
 #include "../include/internal/commands/HelpCommand.hpp"
 #include "../include/internal/commands/LoginCommand.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
-std::shared_ptr<Ghost::CommandLineInterpreter> Ghost::CommandLineInterpreter::create(std::shared_ptr<UserManager> userManager)
+std::shared_ptr<ghost::CommandLineInterpreter> ghost::CommandLineInterpreter::create(std::shared_ptr<UserManager> userManager)
 {
-	return std::shared_ptr<Ghost::CommandLineInterpreter>(new Ghost::internal::CommandLineInterpreter(userManager));
+	return std::shared_ptr<ghost::CommandLineInterpreter>(new ghost::internal::CommandLineInterpreter(userManager));
 }
 
-CommandLineInterpreter::CommandLineInterpreter(std::shared_ptr<Ghost::UserManager> userManager)
+CommandLineInterpreter::CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager)
 	: _userManager(userManager)
 {
-	registerCommand(std::shared_ptr<Ghost::Command>(new HelpCommand(this)), {});
-	registerCommand(std::shared_ptr<Ghost::Command>(new LoginCommand(userManager)), {});
+	registerCommand(std::shared_ptr<ghost::Command>(new HelpCommand(this)), {});
+	registerCommand(std::shared_ptr<ghost::Command>(new LoginCommand(userManager)), {});
 }
 
 bool CommandLineInterpreter::execute(const std::string& commandLine)
@@ -36,7 +36,7 @@ bool CommandLineInterpreter::execute(const std::string& commandLine)
 	return false;
 }
 
-void CommandLineInterpreter::registerCommand(std::shared_ptr<Ghost::Command> command, const std::list<std::shared_ptr<Ghost::PermissionEntity>>& permissions)
+void CommandLineInterpreter::registerCommand(std::shared_ptr<ghost::Command> command, const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions)
 {
 	CommandEntry entry;
 	entry.command = command;
@@ -69,7 +69,7 @@ bool CommandLineInterpreter::executionPermitted(const CommandEntry& entry) const
 	if (!_userManager->isUserConnected())
 		return false; // some permissions were configured, but the user is not connected -> no
 
-	Ghost::User& user = _userManager->getConnectedUser();
+	ghost::User& user = _userManager->getConnectedUser();
 
 	if (user.getName() == "superuser")
 		return true; // superuser can do everything

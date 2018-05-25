@@ -11,11 +11,11 @@
 #include "InputController.hpp"
 #include "OutputController.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
-		class Console : public Ghost::Console
+		class Console : public ghost::Console
 		{
 		public:
 			Console();

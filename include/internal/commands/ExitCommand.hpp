@@ -3,13 +3,13 @@
 
 #include "../../Command.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
 		class Module;
 
-		class ExitCommand : public Ghost::Command
+		class ExitCommand : public ghost::Command
 		{
 		public:
 			static const std::string NAME;

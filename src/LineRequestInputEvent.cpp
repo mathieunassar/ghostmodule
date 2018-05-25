@@ -1,7 +1,7 @@
 #include "../include/internal/LineRequestInputEvent.hpp"
 #include "../include/internal/InputController.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 LineRequestInputEvent::LineRequestInputEventHandler::LineRequestInputEventHandler(InputControllerAccess* controller)
 	: InputEventHandler(controller)

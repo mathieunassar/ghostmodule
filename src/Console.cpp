@@ -7,11 +7,11 @@
 #include <functional>
 #include <exception>
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
-std::shared_ptr<Ghost::Console> Ghost::Console::create()
+std::shared_ptr<ghost::Console> ghost::Console::create()
 {
-	return std::shared_ptr<Ghost::Console>(new Ghost::internal::Console());
+	return std::shared_ptr<ghost::Console>(new ghost::internal::Console());
 }
 
 Console::Console()

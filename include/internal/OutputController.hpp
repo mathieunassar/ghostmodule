@@ -11,14 +11,14 @@
 #include "BlockingQueue.hpp"
 #include "ConsoleDevice.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
 		/**
 		 *	Implementation of the OutputController.
 		 */
-		class OutputController : public ::Ghost::OutputController
+		class OutputController : public ghost::OutputController
 		{
 		public:
 			OutputController(bool redirectStdCout = true);

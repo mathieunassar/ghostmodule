@@ -1,6 +1,6 @@
 #include "../include/CommandLine.hpp"
 
-using namespace Ghost;
+using namespace ghost;
 
 CommandLine::CommandLine(const std::string& commandName, std::map<std::string, std::string>& parameters)
 	: _commandName(commandName)

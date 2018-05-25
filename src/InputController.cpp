@@ -8,7 +8,7 @@
 #include "../include/internal/LineRequestInputEvent.hpp"
 #include "../include/internal/InputModeInputEvent.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	ConsoleDevice::ConsoleMode initialMode,

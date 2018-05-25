@@ -1,7 +1,7 @@
 #ifndef GHOST_PERMISSIONENTITY_HPP
 #define GHOST_PERMISSIONENTITY_HPP
 
-namespace Ghost
+namespace ghost
 {
 	/**
 	*	Represents a user or a group, or anything that has access rights.

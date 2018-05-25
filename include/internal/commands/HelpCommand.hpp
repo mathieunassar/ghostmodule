@@ -3,13 +3,13 @@
 
 #include "../../Command.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
 		class CommandLineInterpreter;
 
-		class HelpCommand : public Ghost::Command
+		class HelpCommand : public ghost::Command
 		{
 		public:
 			static const std::string NAME;

@@ -5,7 +5,7 @@
 #include "UserManager.hpp"
 #include "CommandLineInterpreter.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
@@ -29,13 +29,13 @@ namespace Ghost
 			/* Console access */
 			void initializeConsole();
 			bool hasConsole() const;
-			std::shared_ptr<Ghost::Console> getConsole();
+			std::shared_ptr<ghost::Console> getConsole();
 
 			/* Command line interpretor access */
-			std::shared_ptr<Ghost::CommandLineInterpreter> getInterpreter();
+			std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter();
 
 			/* User manager access */
-			std::shared_ptr<Ghost::UserManager> getUserManager();
+			std::shared_ptr<ghost::UserManager> getUserManager();
 
 		private:
 			std::string _name;

@@ -1,6 +1,6 @@
 #include "../include/internal/UserGroup.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 UserGroup::UserGroup(const std::string& name)
 	: _name(name)
@@ -18,12 +18,12 @@ const std::string& UserGroup::getName() const
 	return _name;
 }
 
-std::vector<std::shared_ptr<Ghost::User>> UserGroup::getUsers() const
+std::vector<std::shared_ptr<ghost::User>> UserGroup::getUsers() const
 {
-	return std::vector<std::shared_ptr<Ghost::User>>(_users.begin(), _users.end());
+	return std::vector<std::shared_ptr<ghost::User>>(_users.begin(), _users.end());
 }
 
-bool UserGroup::containsUser(const Ghost::User& user) const
+bool UserGroup::containsUser(const ghost::User& user) const
 {
 	for (auto& usr : _users)
 	{

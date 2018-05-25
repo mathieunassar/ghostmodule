@@ -4,7 +4,7 @@
 #include <string>
 
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

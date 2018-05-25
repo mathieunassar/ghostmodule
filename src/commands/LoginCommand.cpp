@@ -1,7 +1,7 @@
 #include "../../include/internal/commands/LoginCommand.hpp"
 #include <iostream>
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 const std::string LoginCommand::NAME = "LoginCommand";
 const std::string LoginCommand::_SHORTCUT = "login";
@@ -11,13 +11,13 @@ const std::string LoginCommand::_PARAM_PASSWORD = "password";
 const std::string LoginCommand::_PARAM_USERNAME_SHORT = "u";
 const std::string LoginCommand::_PARAM_PASSWORD_SHORT = "p";
 
-LoginCommand::LoginCommand(std::shared_ptr<Ghost::UserManager> userManager)
+LoginCommand::LoginCommand(std::shared_ptr<ghost::UserManager> userManager)
 	: _userManager(userManager)
 {
 
 }
 
-bool LoginCommand::execute(const Ghost::CommandLine& commandLine)
+bool LoginCommand::execute(const ghost::CommandLine& commandLine)
 {
 	std::string username, password;
 	if (commandLine.hasParameter(_PARAM_USERNAME))

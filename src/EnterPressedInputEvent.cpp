@@ -2,7 +2,7 @@
 #include "../include/internal/InputController.hpp"
 #include "../include/internal/InputModeInputEvent.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 EnterPressedInputEvent::EnterPressedInputEventHandler::EnterPressedInputEventHandler(InputControllerAccess* controller)
 	: InputEventHandler(controller)

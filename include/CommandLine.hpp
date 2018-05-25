@@ -6,7 +6,7 @@
 #include <exception>
 #include <map>
 
-namespace Ghost
+namespace ghost
 {
 	/**
 	 *	This class represents a set of parameters used as an input for a command.

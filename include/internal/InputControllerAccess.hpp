@@ -8,7 +8,7 @@
 #include "ConsoleDevice.hpp"
 #include "InputEvent.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
@@ -25,7 +25,7 @@ namespace Ghost
 			/// Reads a line from stdin
 			virtual std::string readLine() = 0;
 			/// Returns the input mode of the input controller, a.k.a. whether commands are entered sequentially or not
-			virtual ::Ghost::InputController::InputMode getInputMode() const = 0;
+			virtual ghost::InputController::InputMode getInputMode() const = 0;
 			/// Returns the console mode, a.k.a. input or output
 			virtual ConsoleDevice::ConsoleMode getConsoleMode() const = 0;
 			/// Notifies the input controller that the user entered a new command line

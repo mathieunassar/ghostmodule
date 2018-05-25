@@ -2,9 +2,9 @@
 
 #include <exception>
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
-Ghost::CommandLine CommandLineParser::parseCommandLine(const std::string& commandLine)
+ghost::CommandLine CommandLineParser::parseCommandLine(const std::string& commandLine)
 {
 	if (commandLine.empty())
 		throw std::invalid_argument("the command line is empty");
@@ -44,7 +44,7 @@ Ghost::CommandLine CommandLineParser::parseCommandLine(const std::string& comman
 	if (!tmpParameterName.empty()) // the last split element was a parameter
 		addParameter(params, tmpParameterName, "");
 
-	return Ghost::CommandLine(commandName, params);
+	return ghost::CommandLine(commandName, params);
 }
 
 void CommandLineParser::split(std::vector<std::string>& tokens, const std::string& str, const std::string& del)

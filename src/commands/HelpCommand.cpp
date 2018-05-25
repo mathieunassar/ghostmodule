@@ -2,7 +2,7 @@
 #include <iostream>
 #include "../../include/internal/CommandLineInterpreter.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 const std::string HelpCommand::NAME = "HelpCommand";
 const std::string HelpCommand::_SHORTCUT = "help";
@@ -14,7 +14,7 @@ HelpCommand::HelpCommand(CommandLineInterpreter* interpreter)
 
 }
 
-bool HelpCommand::execute(const Ghost::CommandLine& commandLine)
+bool HelpCommand::execute(const ghost::CommandLine& commandLine)
 {
 	_interpreter->printHelp(std::cout);
 	return true;

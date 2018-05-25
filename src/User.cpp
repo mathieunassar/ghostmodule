@@ -1,6 +1,6 @@
 #include "../include/internal/User.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 User::User(const std::string& name, const std::string& password)
 	: _name(name)

@@ -3,7 +3,7 @@
 
 #include "../include/internal/commands/ExitCommand.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 Module::Module(const std::string& name)
 	: _name(name)
@@ -13,7 +13,7 @@ Module::Module(const std::string& name)
 	_interpreter = std::shared_ptr<CommandLineInterpreter>(new CommandLineInterpreter(_userManager));
 
 	// add useful commands
-	_interpreter->registerCommand(std::shared_ptr<Ghost::Command>(new ExitCommand(this)), {});
+	_interpreter->registerCommand(std::shared_ptr<ghost::Command>(new ExitCommand(this)), {});
 
 }
 
@@ -61,7 +61,7 @@ void Module::initializeConsole()
 			_console->flush();
 		});
 	
-	_userManager->setConnectedUserCallback([this](const Ghost::User& user)
+	_userManager->setConnectedUserCallback([this](const ghost::User& user)
 		{
 			_console->getPrompt().setUser(user.getName());
 		});
@@ -74,17 +74,17 @@ bool Module::hasConsole() const
 	return _console.operator bool();
 }
 
-std::shared_ptr<Ghost::Console> Module::getConsole()
+std::shared_ptr<ghost::Console> Module::getConsole()
 {
 	return _console;
 }
 
-std::shared_ptr<Ghost::CommandLineInterpreter> Module::getInterpreter()
+std::shared_ptr<ghost::CommandLineInterpreter> Module::getInterpreter()
 {
 	return _interpreter;
 }
 
-std::shared_ptr<Ghost::UserManager> Module::getUserManager()
+std::shared_ptr<ghost::UserManager> Module::getUserManager()
 {
 	return _userManager;
 }
@@ -92,79 +92,79 @@ std::shared_ptr<Ghost::UserManager> Module::getUserManager()
 /////////////////////////////////////////////////////////////////
 //////////// DEFINITION OF PUBLIC CLASS MODULE //////////////////
 
-Ghost::Module::Module(const std::string& name)
-	: _internal(std::shared_ptr<Ghost::internal::Module>(new Ghost::internal::Module(name)))
+ghost::Module::Module(const std::string& name)
+	: _internal(std::shared_ptr<ghost::internal::Module>(new ghost::internal::Module(name)))
 {
 
 }
 
-void Ghost::Module::start()
+void ghost::Module::start()
 {
-	if (_internal->getState() != Ghost::internal::Module::STOPPED) // only start if module is stopped
+	if (_internal->getState() != ghost::internal::Module::STOPPED) // only start if module is stopped
 		return;
 
-	_internal->setState(Ghost::internal::Module::INITIALIZING);
+	_internal->setState(ghost::internal::Module::INITIALIZING);
 	bool initSuccess = init(); // initialize the module
 	if (!initSuccess)
 	{
-		_internal->setState(Ghost::internal::Module::DISPOSING);
+		_internal->setState(ghost::internal::Module::DISPOSING);
 		dispose(); // if initialization failed, dispose the module
-		_internal->setState(Ghost::internal::Module::STOPPED);
+		_internal->setState(ghost::internal::Module::STOPPED);
 	}
 	else
 	{
-		_internal->setState(Ghost::internal::Module::RUNNING);
+		_internal->setState(ghost::internal::Module::RUNNING);
 		bool runFinshed = false;
-		Ghost::internal::Module::State currentState = _internal->getState();
-		while (!runFinshed && currentState == Ghost::internal::Module::RUNNING)
+		ghost::internal::Module::State currentState = _internal->getState();
+		while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
 		{
 			runFinshed = !run(); // run as long as the return value is true and the module state is running
 			currentState = _internal->getState();
 		}
 
-		_internal->setState(Ghost::internal::Module::DISPOSING);
+		_internal->setState(ghost::internal::Module::DISPOSING);
 		dispose();
-		_internal->setState(Ghost::internal::Module::STOPPED);
+		_internal->setState(ghost::internal::Module::STOPPED);
 	}
 }
 
-void Ghost::Module::sleepMillisecond(int ms)
+void ghost::Module::sleepMillisecond(int ms)
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-bool Ghost::Module::init()
+bool ghost::Module::init()
 {
 	// per default do nothing
 	return true;
 }
 
-void Ghost::Module::dispose()
+void ghost::Module::dispose()
 {
 	// per default do nothing
 }
 
-void Ghost::Module::initializeConsole()
+void ghost::Module::initializeConsole()
 {
 	return _internal->initializeConsole();
 }
 
-bool Ghost::Module::hasConsole() const
+bool ghost::Module::hasConsole() const
 {
 	return _internal->hasConsole();
 }
 
-std::shared_ptr<Ghost::Console> Ghost::Module::getConsole()
+std::shared_ptr<ghost::Console> ghost::Module::getConsole()
 {
 	return _internal->getConsole();
 }
 
-std::shared_ptr<Ghost::CommandLineInterpreter> Ghost::Module::getInterpreter()
+std::shared_ptr<ghost::CommandLineInterpreter> ghost::Module::getInterpreter()
 {
 	return _internal->getInterpreter();
 }
 
-std::shared_ptr<Ghost::UserManager> Ghost::Module::getUserManager()
+std::shared_ptr<ghost::UserManager> ghost::Module::getUserManager()
 {
 	return _internal->getUserManager();
 }

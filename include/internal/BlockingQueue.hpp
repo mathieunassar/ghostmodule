@@ -8,7 +8,7 @@
 #include <future>
 #include <memory>
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

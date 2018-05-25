@@ -4,11 +4,11 @@
 #include <string>
 #include "../User.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
-		class User : public ::Ghost::User
+		class User : public ghost::User
 		{
 		public:
 			User(const std::string& name, const std::string& password);

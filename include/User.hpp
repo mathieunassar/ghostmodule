@@ -5,7 +5,7 @@
 
 #include "PermissionEntity.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	/**
 	 *	Represents a user of the application.

@@ -6,7 +6,7 @@
 
 #include "internal/ConsoleDevice.hpp"
 #include "InputController.hpp"
-namespace Ghost
+namespace ghost
 {
 	/**
 	 *	Makes abstraction of the program console and allows user i/o with ease.

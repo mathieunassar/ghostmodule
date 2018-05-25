@@ -1,11 +1,11 @@
 #include "../include/internal/UserManager.hpp"
 #include <exception>
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
-std::shared_ptr<Ghost::UserManager> Ghost::UserManager::create()
+std::shared_ptr<ghost::UserManager> ghost::UserManager::create()
 {
-	return std::shared_ptr<Ghost::UserManager>(new Ghost::internal::UserManager());
+	return std::shared_ptr<ghost::UserManager>(new ghost::internal::UserManager());
 }
 
 UserManager::UserManager()
@@ -13,7 +13,7 @@ UserManager::UserManager()
 	createUser("superuser", "superuser");
 }
 
-void UserManager::addUserToGroup(const Ghost::User& user, Ghost::UserGroup& group)
+void UserManager::addUserToGroup(const ghost::User& user, ghost::UserGroup& group)
 {
 
 }
@@ -77,12 +77,12 @@ User& UserManager::getConnectedUser() const
 	return *_connectedUser;
 }
 
-void UserManager::setConnectedUserCallback(std::function<void(const Ghost::User&)> callback)
+void UserManager::setConnectedUserCallback(std::function<void(const ghost::User&)> callback)
 {
 	_connectedUserCallback = callback;
 }
 
-std::vector<std::shared_ptr<Ghost::UserGroup>> UserManager::getUserGroups() const
+std::vector<std::shared_ptr<ghost::UserGroup>> UserManager::getUserGroups() const
 {
-	return std::vector<std::shared_ptr<Ghost::UserGroup>>(_groups.begin(), _groups.end());
+	return std::vector<std::shared_ptr<ghost::UserGroup>>(_groups.begin(), _groups.end());
 }

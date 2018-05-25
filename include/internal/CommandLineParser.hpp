@@ -6,7 +6,7 @@
 
 #include "../CommandLine.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{

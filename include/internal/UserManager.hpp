@@ -7,26 +7,26 @@
 #include "UserGroup.hpp"
 #include "../UserManager.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
-		class UserManager : public Ghost::UserManager
+		class UserManager : public ghost::UserManager
 		{
 		public:
 			UserManager();
 
 			bool createUser(const std::string& name, const std::string& password) override;
 			bool createUserGroup(const std::string& name) override;
-			void addUserToGroup(const Ghost::User& user, Ghost::UserGroup& group) override;
+			void addUserToGroup(const ghost::User& user, ghost::UserGroup& group) override;
 
 			bool connect(const std::string& username, const std::string& password) override;
 			void disconnect() override;
 			bool isUserConnected() const override;
 			User& getConnectedUser() const override;
-			void setConnectedUserCallback(std::function<void(const Ghost::User&)> callback) override;
+			void setConnectedUserCallback(std::function<void(const ghost::User&)> callback) override;
 
-			std::vector<std::shared_ptr<Ghost::UserGroup>> getUserGroups() const override;
+			std::vector<std::shared_ptr<ghost::UserGroup>> getUserGroups() const override;
 
 		private:
 			std::vector<std::shared_ptr<User>> _users;

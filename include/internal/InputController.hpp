@@ -17,7 +17,7 @@
 #include "InputEvent.hpp"
 #include "Prompt.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
@@ -25,7 +25,7 @@ namespace Ghost
 		 *	Implementation of the InputController.
 		 *	Realizes the interface InputControllerAccess which is used by InputEvent objects to access the controller's functionality.
 		 */
-		class InputController : public ::Ghost::InputController, public InputControllerAccess
+		class InputController : public ghost::InputController, public InputControllerAccess
 		{
 		public:
 			InputController(std::shared_ptr<ConsoleDevice> device,

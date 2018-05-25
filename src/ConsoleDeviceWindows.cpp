@@ -1,7 +1,7 @@
 #include "../include/internal/ConsoleDeviceWindows.hpp"
 #include <thread>
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 ConsoleDeviceWindows::ConsoleDeviceWindows()
 	: _enable(false)

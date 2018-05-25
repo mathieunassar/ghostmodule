@@ -8,11 +8,11 @@
 #include "../UserGroup.hpp"
 #include "User.hpp"
 
-namespace Ghost
+namespace ghost
 {
 	namespace internal
 	{
-		class UserGroup : public Ghost::UserGroup
+		class UserGroup : public ghost::UserGroup
 		{
 		public:
 			UserGroup(const std::string& name);
@@ -20,8 +20,8 @@ namespace Ghost
 			void addUser(std::shared_ptr<User> user);
 
 			const std::string& getName() const override;
-			std::vector<std::shared_ptr<Ghost::User>> getUsers() const override;
-			bool containsUser(const Ghost::User& user) const override;
+			std::vector<std::shared_ptr<ghost::User>> getUsers() const override;
+			bool containsUser(const ghost::User& user) const override;
 
 			bool contains(const PermissionEntity& other) const override;
 

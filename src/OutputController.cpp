@@ -1,6 +1,6 @@
 #include "../include/internal/OutputController.hpp"
 
-using namespace Ghost::internal;
+using namespace ghost::internal;
 
 OutputController::OutputController(bool redirectStdCout)
 	: _redirecter(nullptr)
