@@ -19,24 +19,24 @@
 #include "third_party/protobuf/version.h"
 #endif
 // @@protoc_insertion_point(includes)
-namespace Ghost {
+namespace ghost {
 namespace internal {
 namespace protobuf {
-class GhostMessageDefaultTypeInternal {
+class GenericMessageDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<GhostMessage>
+  ::google::protobuf::internal::ExplicitlyConstructed<GenericMessage>
       _instance;
-} _GhostMessage_default_instance_;
-class GhostMessageHeaderDefaultTypeInternal {
+} _GenericMessage_default_instance_;
+class GenericMessageHeaderDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<GhostMessageHeader>
+  ::google::protobuf::internal::ExplicitlyConstructed<GenericMessageHeader>
       _instance;
-} _GhostMessageHeader_default_instance_;
+} _GenericMessageHeader_default_instance_;
 }  // namespace protobuf
 }  // namespace internal
-}  // namespace Ghost
+}  // namespace ghost
 namespace protobuf_Ghost_2eproto {
-void InitDefaultsGhostMessageImpl() {
+void InitDefaultsGenericMessageImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 #ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
@@ -44,22 +44,21 @@ void InitDefaultsGhostMessageImpl() {
 #else
   ::google::protobuf::internal::InitProtobufDefaults();
 #endif  // GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  protobuf_Ghost_2eproto::InitDefaultsGhostMessageHeader();
-  protobuf_google_2fprotobuf_2fany_2eproto::InitDefaultsAny();
+  protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeader();
   {
-    void* ptr = &::Ghost::internal::protobuf::_GhostMessage_default_instance_;
-    new (ptr) ::Ghost::internal::protobuf::GhostMessage();
+    void* ptr = &::ghost::internal::protobuf::_GenericMessage_default_instance_;
+    new (ptr) ::ghost::internal::protobuf::GenericMessage();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::Ghost::internal::protobuf::GhostMessage::InitAsDefaultInstance();
+  ::ghost::internal::protobuf::GenericMessage::InitAsDefaultInstance();
 }
 
-void InitDefaultsGhostMessage() {
+void InitDefaultsGenericMessage() {
   static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsGhostMessageImpl);
+  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsGenericMessageImpl);
 }
 
-void InitDefaultsGhostMessageHeaderImpl() {
+void InitDefaultsGenericMessageHeaderImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 #ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
@@ -68,45 +67,45 @@ void InitDefaultsGhostMessageHeaderImpl() {
   ::google::protobuf::internal::InitProtobufDefaults();
 #endif  // GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
   {
-    void* ptr = &::Ghost::internal::protobuf::_GhostMessageHeader_default_instance_;
-    new (ptr) ::Ghost::internal::protobuf::GhostMessageHeader();
+    void* ptr = &::ghost::internal::protobuf::_GenericMessageHeader_default_instance_;
+    new (ptr) ::ghost::internal::protobuf::GenericMessageHeader();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::Ghost::internal::protobuf::GhostMessageHeader::InitAsDefaultInstance();
+  ::ghost::internal::protobuf::GenericMessageHeader::InitAsDefaultInstance();
 }
 
-void InitDefaultsGhostMessageHeader() {
+void InitDefaultsGenericMessageHeader() {
   static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsGhostMessageHeaderImpl);
+  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsGenericMessageHeaderImpl);
 }
 
 ::google::protobuf::Metadata file_level_metadata[2];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessage, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessage, header_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessage, name_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessage, message_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, header_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, serial_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, format_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessageHeader, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessageHeader, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessageHeader, timestamp_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Ghost::internal::protobuf::GhostMessageHeader, hostname_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessageHeader, timestamp_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessageHeader, hostname_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::Ghost::internal::protobuf::GhostMessage)},
-  { 8, -1, sizeof(::Ghost::internal::protobuf::GhostMessageHeader)},
+  { 0, -1, sizeof(::ghost::internal::protobuf::GenericMessage)},
+  { 8, -1, sizeof(::ghost::internal::protobuf::GenericMessageHeader)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::Ghost::internal::protobuf::_GhostMessage_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::Ghost::internal::protobuf::_GhostMessageHeader_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::ghost::internal::protobuf::_GenericMessage_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::ghost::internal::protobuf::_GenericMessageHeader_default_instance_),
 };
 
 void protobuf_AssignDescriptors() {
@@ -131,22 +130,20 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\013Ghost.proto\022\027Ghost.internal.protobuf\032\031"
-      "google/protobuf/any.proto\"\200\001\n\014GhostMessa"
-      "ge\022;\n\006header\030\001 \001(\0132+.Ghost.internal.prot"
-      "obuf.GhostMessageHeader\022\014\n\004name\030\002 \001(\t\022%\n"
-      "\007message\030\003 \001(\0132\024.google.protobuf.Any\"9\n\022"
-      "GhostMessageHeader\022\021\n\ttimestamp\030\001 \001(\003\022\020\n"
-      "\010hostname\030\002 \001(\t2\204\001\n\032PublisherSubscriberS"
-      "ervice\022f\n\014publications\022+.Ghost.internal."
-      "protobuf.GhostMessageHeader\032%.Ghost.inte"
-      "rnal.protobuf.GhostMessage\"\0000\0012t\n\023Server"
-      "ClientService\022]\n\007connect\022%.Ghost.interna"
-      "l.protobuf.GhostMessage\032%.Ghost.internal"
-      ".protobuf.GhostMessage\"\000(\0010\001B\002P\001b\006proto3"
+      "\n\013Ghost.proto\022\027ghost.internal.protobuf\032\031"
+      "google/protobuf/any.proto\"o\n\016GenericMess"
+      "age\022=\n\006header\030\001 \001(\0132-.ghost.internal.pro"
+      "tobuf.GenericMessageHeader\022\016\n\006serial\030\002 \001"
+      "(\t\022\016\n\006format\030\003 \001(\t\";\n\024GenericMessageHead"
+      "er\022\021\n\ttimestamp\030\001 \001(\003\022\020\n\010hostname\030\002 \001(\t2"
+      "\\\n\032PublisherSubscriberService\022>\n\014publica"
+      "tions\022\024.google.protobuf.Any\032\024.google.pro"
+      "tobuf.Any\"\0000\0012R\n\023ServerClientService\022;\n\007"
+      "connect\022\024.google.protobuf.Any\032\024.google.p"
+      "rotobuf.Any\"\000(\0010\001B\002P\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 520);
+      descriptor, 429);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Ghost.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fany_2eproto::AddDescriptors();
@@ -163,131 +160,118 @@ struct StaticDescriptorInitializer {
   }
 } static_descriptor_initializer;
 }  // namespace protobuf_Ghost_2eproto
-namespace Ghost {
+namespace ghost {
 namespace internal {
 namespace protobuf {
 
 // ===================================================================
 
-void GhostMessage::InitAsDefaultInstance() {
-  ::Ghost::internal::protobuf::_GhostMessage_default_instance_._instance.get_mutable()->header_ = const_cast< ::Ghost::internal::protobuf::GhostMessageHeader*>(
-      ::Ghost::internal::protobuf::GhostMessageHeader::internal_default_instance());
-  ::Ghost::internal::protobuf::_GhostMessage_default_instance_._instance.get_mutable()->message_ = const_cast< ::google::protobuf::Any*>(
-      ::google::protobuf::Any::internal_default_instance());
-}
-void GhostMessage::clear_message() {
-  if (GetArenaNoVirtual() == NULL && message_ != NULL) {
-    delete message_;
-  }
-  message_ = NULL;
+void GenericMessage::InitAsDefaultInstance() {
+  ::ghost::internal::protobuf::_GenericMessage_default_instance_._instance.get_mutable()->header_ = const_cast< ::ghost::internal::protobuf::GenericMessageHeader*>(
+      ::ghost::internal::protobuf::GenericMessageHeader::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int GhostMessage::kHeaderFieldNumber;
-const int GhostMessage::kNameFieldNumber;
-const int GhostMessage::kMessageFieldNumber;
+const int GenericMessage::kHeaderFieldNumber;
+const int GenericMessage::kSerialFieldNumber;
+const int GenericMessage::kFormatFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-GhostMessage::GhostMessage()
+GenericMessage::GenericMessage()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    ::protobuf_Ghost_2eproto::InitDefaultsGhostMessage();
+    ::protobuf_Ghost_2eproto::InitDefaultsGenericMessage();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(constructor:ghost.internal.protobuf.GenericMessage)
 }
-GhostMessage::GhostMessage(const GhostMessage& from)
+GenericMessage::GenericMessage(const GenericMessage& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.name().size() > 0) {
-    name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
+  serial_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.serial().size() > 0) {
+    serial_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.serial_);
+  }
+  format_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.format().size() > 0) {
+    format_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.format_);
   }
   if (from.has_header()) {
-    header_ = new ::Ghost::internal::protobuf::GhostMessageHeader(*from.header_);
+    header_ = new ::ghost::internal::protobuf::GenericMessageHeader(*from.header_);
   } else {
     header_ = NULL;
   }
-  if (from.has_message()) {
-    message_ = new ::google::protobuf::Any(*from.message_);
-  } else {
-    message_ = NULL;
-  }
-  // @@protoc_insertion_point(copy_constructor:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(copy_constructor:ghost.internal.protobuf.GenericMessage)
 }
 
-void GhostMessage::SharedCtor() {
-  name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&header_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&message_) -
-      reinterpret_cast<char*>(&header_)) + sizeof(message_));
+void GenericMessage::SharedCtor() {
+  serial_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  format_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  header_ = NULL;
   _cached_size_ = 0;
 }
 
-GhostMessage::~GhostMessage() {
-  // @@protoc_insertion_point(destructor:Ghost.internal.protobuf.GhostMessage)
+GenericMessage::~GenericMessage() {
+  // @@protoc_insertion_point(destructor:ghost.internal.protobuf.GenericMessage)
   SharedDtor();
 }
 
-void GhostMessage::SharedDtor() {
-  name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+void GenericMessage::SharedDtor() {
+  serial_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  format_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete header_;
-  if (this != internal_default_instance()) delete message_;
 }
 
-void GhostMessage::SetCachedSize(int size) const {
+void GenericMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* GhostMessage::descriptor() {
+const ::google::protobuf::Descriptor* GenericMessage::descriptor() {
   ::protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_Ghost_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
 }
 
-const GhostMessage& GhostMessage::default_instance() {
-  ::protobuf_Ghost_2eproto::InitDefaultsGhostMessage();
+const GenericMessage& GenericMessage::default_instance() {
+  ::protobuf_Ghost_2eproto::InitDefaultsGenericMessage();
   return *internal_default_instance();
 }
 
-GhostMessage* GhostMessage::New(::google::protobuf::Arena* arena) const {
-  GhostMessage* n = new GhostMessage;
+GenericMessage* GenericMessage::New(::google::protobuf::Arena* arena) const {
+  GenericMessage* n = new GenericMessage;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void GhostMessage::Clear() {
-// @@protoc_insertion_point(message_clear_start:Ghost.internal.protobuf.GhostMessage)
+void GenericMessage::Clear() {
+// @@protoc_insertion_point(message_clear_start:ghost.internal.protobuf.GenericMessage)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  serial_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  format_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (GetArenaNoVirtual() == NULL && header_ != NULL) {
     delete header_;
   }
   header_ = NULL;
-  if (GetArenaNoVirtual() == NULL && message_ != NULL) {
-    delete message_;
-  }
-  message_ = NULL;
   _internal_metadata_.Clear();
 }
 
-bool GhostMessage::MergePartialFromCodedStream(
+bool GenericMessage::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(parse_start:ghost.internal.protobuf.GenericMessage)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // .Ghost.internal.protobuf.GhostMessageHeader header = 1;
+      // .ghost.internal.protobuf.GenericMessageHeader header = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
@@ -299,28 +283,32 @@ bool GhostMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // string name = 2;
+      // string serial = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_name()));
+                input, this->mutable_serial()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->name().data(), static_cast<int>(this->name().length()),
+            this->serial().data(), static_cast<int>(this->serial().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "Ghost.internal.protobuf.GhostMessage.name"));
+            "ghost.internal.protobuf.GenericMessage.serial"));
         } else {
           goto handle_unusual;
         }
         break;
       }
 
-      // .google.protobuf.Any message = 3;
+      // string format = 3;
       case 3: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
-               input, mutable_message()));
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_format()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->format().data(), static_cast<int>(this->format().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "ghost.internal.protobuf.GenericMessage.format"));
         } else {
           goto handle_unusual;
         }
@@ -339,91 +327,99 @@ bool GhostMessage::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(parse_success:ghost.internal.protobuf.GenericMessage)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(parse_failure:ghost.internal.protobuf.GenericMessage)
   return false;
 #undef DO_
 }
 
-void GhostMessage::SerializeWithCachedSizes(
+void GenericMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(serialize_start:ghost.internal.protobuf.GenericMessage)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .Ghost.internal.protobuf.GhostMessageHeader header = 1;
+  // .ghost.internal.protobuf.GenericMessageHeader header = 1;
   if (this->has_header()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, *this->header_, output);
   }
 
-  // string name = 2;
-  if (this->name().size() > 0) {
+  // string serial = 2;
+  if (this->serial().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->name().data(), static_cast<int>(this->name().length()),
+      this->serial().data(), static_cast<int>(this->serial().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "Ghost.internal.protobuf.GhostMessage.name");
+      "ghost.internal.protobuf.GenericMessage.serial");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->name(), output);
+      2, this->serial(), output);
   }
 
-  // .google.protobuf.Any message = 3;
-  if (this->has_message()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, *this->message_, output);
+  // string format = 3;
+  if (this->format().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->format().data(), static_cast<int>(this->format().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "ghost.internal.protobuf.GenericMessage.format");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->format(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(serialize_end:ghost.internal.protobuf.GenericMessage)
 }
 
-::google::protobuf::uint8* GhostMessage::InternalSerializeWithCachedSizesToArray(
+::google::protobuf::uint8* GenericMessage::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(serialize_to_array_start:ghost.internal.protobuf.GenericMessage)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .Ghost.internal.protobuf.GhostMessageHeader header = 1;
+  // .ghost.internal.protobuf.GenericMessageHeader header = 1;
   if (this->has_header()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
         1, *this->header_, deterministic, target);
   }
 
-  // string name = 2;
-  if (this->name().size() > 0) {
+  // string serial = 2;
+  if (this->serial().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->name().data(), static_cast<int>(this->name().length()),
+      this->serial().data(), static_cast<int>(this->serial().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "Ghost.internal.protobuf.GhostMessage.name");
+      "ghost.internal.protobuf.GenericMessage.serial");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->name(), target);
+        2, this->serial(), target);
   }
 
-  // .google.protobuf.Any message = 3;
-  if (this->has_message()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageToArray(
-        3, *this->message_, deterministic, target);
+  // string format = 3;
+  if (this->format().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->format().data(), static_cast<int>(this->format().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "ghost.internal.protobuf.GenericMessage.format");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->format(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(serialize_to_array_end:ghost.internal.protobuf.GenericMessage)
   return target;
 }
 
-size_t GhostMessage::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Ghost.internal.protobuf.GhostMessage)
+size_t GenericMessage::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ghost.internal.protobuf.GenericMessage)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -431,25 +427,25 @@ size_t GhostMessage::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // string name = 2;
-  if (this->name().size() > 0) {
+  // string serial = 2;
+  if (this->serial().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->name());
+        this->serial());
   }
 
-  // .Ghost.internal.protobuf.GhostMessageHeader header = 1;
+  // string format = 3;
+  if (this->format().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->format());
+  }
+
+  // .ghost.internal.protobuf.GenericMessageHeader header = 1;
   if (this->has_header()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSize(
         *this->header_);
-  }
-
-  // .google.protobuf.Any message = 3;
-  if (this->has_message()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSize(
-        *this->message_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -459,72 +455,73 @@ size_t GhostMessage::ByteSizeLong() const {
   return total_size;
 }
 
-void GhostMessage::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Ghost.internal.protobuf.GhostMessage)
+void GenericMessage::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ghost.internal.protobuf.GenericMessage)
   GOOGLE_DCHECK_NE(&from, this);
-  const GhostMessage* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const GhostMessage>(
+  const GenericMessage* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const GenericMessage>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ghost.internal.protobuf.GenericMessage)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ghost.internal.protobuf.GenericMessage)
     MergeFrom(*source);
   }
 }
 
-void GhostMessage::MergeFrom(const GhostMessage& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Ghost.internal.protobuf.GhostMessage)
+void GenericMessage::MergeFrom(const GenericMessage& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:ghost.internal.protobuf.GenericMessage)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.name().size() > 0) {
+  if (from.serial().size() > 0) {
 
-    name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
+    serial_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.serial_);
+  }
+  if (from.format().size() > 0) {
+
+    format_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.format_);
   }
   if (from.has_header()) {
-    mutable_header()->::Ghost::internal::protobuf::GhostMessageHeader::MergeFrom(from.header());
-  }
-  if (from.has_message()) {
-    mutable_message()->::google::protobuf::Any::MergeFrom(from.message());
+    mutable_header()->::ghost::internal::protobuf::GenericMessageHeader::MergeFrom(from.header());
   }
 }
 
-void GhostMessage::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Ghost.internal.protobuf.GhostMessage)
+void GenericMessage::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ghost.internal.protobuf.GenericMessage)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void GhostMessage::CopyFrom(const GhostMessage& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Ghost.internal.protobuf.GhostMessage)
+void GenericMessage::CopyFrom(const GenericMessage& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ghost.internal.protobuf.GenericMessage)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool GhostMessage::IsInitialized() const {
+bool GenericMessage::IsInitialized() const {
   return true;
 }
 
-void GhostMessage::Swap(GhostMessage* other) {
+void GenericMessage::Swap(GenericMessage* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void GhostMessage::InternalSwap(GhostMessage* other) {
+void GenericMessage::InternalSwap(GenericMessage* other) {
   using std::swap;
-  name_.Swap(&other->name_);
+  serial_.Swap(&other->serial_);
+  format_.Swap(&other->format_);
   swap(header_, other->header_);
-  swap(message_, other->message_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
 }
 
-::google::protobuf::Metadata GhostMessage::GetMetadata() const {
+::google::protobuf::Metadata GenericMessage::GetMetadata() const {
   protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_Ghost_2eproto::file_level_metadata[kIndexInFileMessages];
 }
@@ -532,22 +529,22 @@ void GhostMessage::InternalSwap(GhostMessage* other) {
 
 // ===================================================================
 
-void GhostMessageHeader::InitAsDefaultInstance() {
+void GenericMessageHeader::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int GhostMessageHeader::kTimestampFieldNumber;
-const int GhostMessageHeader::kHostnameFieldNumber;
+const int GenericMessageHeader::kTimestampFieldNumber;
+const int GenericMessageHeader::kHostnameFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-GhostMessageHeader::GhostMessageHeader()
+GenericMessageHeader::GenericMessageHeader()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    ::protobuf_Ghost_2eproto::InitDefaultsGhostMessageHeader();
+    ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeader();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(constructor:ghost.internal.protobuf.GenericMessageHeader)
 }
-GhostMessageHeader::GhostMessageHeader(const GhostMessageHeader& from)
+GenericMessageHeader::GenericMessageHeader(const GenericMessageHeader& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL),
       _cached_size_(0) {
@@ -557,49 +554,49 @@ GhostMessageHeader::GhostMessageHeader(const GhostMessageHeader& from)
     hostname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.hostname_);
   }
   timestamp_ = from.timestamp_;
-  // @@protoc_insertion_point(copy_constructor:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(copy_constructor:ghost.internal.protobuf.GenericMessageHeader)
 }
 
-void GhostMessageHeader::SharedCtor() {
+void GenericMessageHeader::SharedCtor() {
   hostname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   timestamp_ = GOOGLE_LONGLONG(0);
   _cached_size_ = 0;
 }
 
-GhostMessageHeader::~GhostMessageHeader() {
-  // @@protoc_insertion_point(destructor:Ghost.internal.protobuf.GhostMessageHeader)
+GenericMessageHeader::~GenericMessageHeader() {
+  // @@protoc_insertion_point(destructor:ghost.internal.protobuf.GenericMessageHeader)
   SharedDtor();
 }
 
-void GhostMessageHeader::SharedDtor() {
+void GenericMessageHeader::SharedDtor() {
   hostname_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
-void GhostMessageHeader::SetCachedSize(int size) const {
+void GenericMessageHeader::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* GhostMessageHeader::descriptor() {
+const ::google::protobuf::Descriptor* GenericMessageHeader::descriptor() {
   ::protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_Ghost_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
 }
 
-const GhostMessageHeader& GhostMessageHeader::default_instance() {
-  ::protobuf_Ghost_2eproto::InitDefaultsGhostMessageHeader();
+const GenericMessageHeader& GenericMessageHeader::default_instance() {
+  ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeader();
   return *internal_default_instance();
 }
 
-GhostMessageHeader* GhostMessageHeader::New(::google::protobuf::Arena* arena) const {
-  GhostMessageHeader* n = new GhostMessageHeader;
+GenericMessageHeader* GenericMessageHeader::New(::google::protobuf::Arena* arena) const {
+  GenericMessageHeader* n = new GenericMessageHeader;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void GhostMessageHeader::Clear() {
-// @@protoc_insertion_point(message_clear_start:Ghost.internal.protobuf.GhostMessageHeader)
+void GenericMessageHeader::Clear() {
+// @@protoc_insertion_point(message_clear_start:ghost.internal.protobuf.GenericMessageHeader)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -609,11 +606,11 @@ void GhostMessageHeader::Clear() {
   _internal_metadata_.Clear();
 }
 
-bool GhostMessageHeader::MergePartialFromCodedStream(
+bool GenericMessageHeader::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(parse_start:ghost.internal.protobuf.GenericMessageHeader)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -642,7 +639,7 @@ bool GhostMessageHeader::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->hostname().data(), static_cast<int>(this->hostname().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "Ghost.internal.protobuf.GhostMessageHeader.hostname"));
+            "ghost.internal.protobuf.GenericMessageHeader.hostname"));
         } else {
           goto handle_unusual;
         }
@@ -661,17 +658,17 @@ bool GhostMessageHeader::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(parse_success:ghost.internal.protobuf.GenericMessageHeader)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(parse_failure:ghost.internal.protobuf.GenericMessageHeader)
   return false;
 #undef DO_
 }
 
-void GhostMessageHeader::SerializeWithCachedSizes(
+void GenericMessageHeader::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(serialize_start:ghost.internal.protobuf.GenericMessageHeader)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -685,7 +682,7 @@ void GhostMessageHeader::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->hostname().data(), static_cast<int>(this->hostname().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "Ghost.internal.protobuf.GhostMessageHeader.hostname");
+      "ghost.internal.protobuf.GenericMessageHeader.hostname");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       2, this->hostname(), output);
   }
@@ -694,13 +691,13 @@ void GhostMessageHeader::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(serialize_end:ghost.internal.protobuf.GenericMessageHeader)
 }
 
-::google::protobuf::uint8* GhostMessageHeader::InternalSerializeWithCachedSizesToArray(
+::google::protobuf::uint8* GenericMessageHeader::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(serialize_to_array_start:ghost.internal.protobuf.GenericMessageHeader)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -714,7 +711,7 @@ void GhostMessageHeader::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->hostname().data(), static_cast<int>(this->hostname().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "Ghost.internal.protobuf.GhostMessageHeader.hostname");
+      "ghost.internal.protobuf.GenericMessageHeader.hostname");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         2, this->hostname(), target);
@@ -724,12 +721,12 @@ void GhostMessageHeader::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(serialize_to_array_end:ghost.internal.protobuf.GenericMessageHeader)
   return target;
 }
 
-size_t GhostMessageHeader::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Ghost.internal.protobuf.GhostMessageHeader)
+size_t GenericMessageHeader::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ghost.internal.protobuf.GenericMessageHeader)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -758,23 +755,23 @@ size_t GhostMessageHeader::ByteSizeLong() const {
   return total_size;
 }
 
-void GhostMessageHeader::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Ghost.internal.protobuf.GhostMessageHeader)
+void GenericMessageHeader::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ghost.internal.protobuf.GenericMessageHeader)
   GOOGLE_DCHECK_NE(&from, this);
-  const GhostMessageHeader* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const GhostMessageHeader>(
+  const GenericMessageHeader* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const GenericMessageHeader>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ghost.internal.protobuf.GenericMessageHeader)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ghost.internal.protobuf.GenericMessageHeader)
     MergeFrom(*source);
   }
 }
 
-void GhostMessageHeader::MergeFrom(const GhostMessageHeader& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Ghost.internal.protobuf.GhostMessageHeader)
+void GenericMessageHeader::MergeFrom(const GenericMessageHeader& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:ghost.internal.protobuf.GenericMessageHeader)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -789,29 +786,29 @@ void GhostMessageHeader::MergeFrom(const GhostMessageHeader& from) {
   }
 }
 
-void GhostMessageHeader::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Ghost.internal.protobuf.GhostMessageHeader)
+void GenericMessageHeader::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ghost.internal.protobuf.GenericMessageHeader)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void GhostMessageHeader::CopyFrom(const GhostMessageHeader& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Ghost.internal.protobuf.GhostMessageHeader)
+void GenericMessageHeader::CopyFrom(const GenericMessageHeader& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ghost.internal.protobuf.GenericMessageHeader)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool GhostMessageHeader::IsInitialized() const {
+bool GenericMessageHeader::IsInitialized() const {
   return true;
 }
 
-void GhostMessageHeader::Swap(GhostMessageHeader* other) {
+void GenericMessageHeader::Swap(GenericMessageHeader* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void GhostMessageHeader::InternalSwap(GhostMessageHeader* other) {
+void GenericMessageHeader::InternalSwap(GenericMessageHeader* other) {
   using std::swap;
   hostname_.Swap(&other->hostname_);
   swap(timestamp_, other->timestamp_);
@@ -819,7 +816,7 @@ void GhostMessageHeader::InternalSwap(GhostMessageHeader* other) {
   swap(_cached_size_, other->_cached_size_);
 }
 
-::google::protobuf::Metadata GhostMessageHeader::GetMetadata() const {
+::google::protobuf::Metadata GenericMessageHeader::GetMetadata() const {
   protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_Ghost_2eproto::file_level_metadata[kIndexInFileMessages];
 }
@@ -828,6 +825,6 @@ void GhostMessageHeader::InternalSwap(GhostMessageHeader* other) {
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace protobuf
 }  // namespace internal
-}  // namespace Ghost
+}  // namespace ghost
 
 // @@protoc_insertion_point(global_scope)

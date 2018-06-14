@@ -32,7 +32,7 @@ namespace ghost
 			* @date	21.05.2018
 			* @return	true if the start sequence was successful, false otherwise.
 			*/
-			bool start();
+			virtual bool start() = 0;
 
 			/**
 			* If the stop sequence is successful, then the connection is stopped.
@@ -40,7 +40,7 @@ namespace ghost
 			* @date	21.05.2018
 			* @return	true if the stop sequence was successful, false otherwise.
 			*/
-			bool stop();
+			virtual bool stop() = 0;
 
 			/**
 			* Query if this object is running.
@@ -48,7 +48,7 @@ namespace ghost
 			* @date	21.05.2018
 			* @return	true if the connection is currently running, false otherwise.
 			*/
-			bool isRunning() const;
+			virtual bool isRunning() const = 0;
 		};
 	}
 }

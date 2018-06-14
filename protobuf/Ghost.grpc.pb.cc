@@ -13,12 +13,12 @@
 #include <grpcpp/impl/codegen/rpc_service_method.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
-namespace Ghost {
+namespace ghost {
 namespace internal {
 namespace protobuf {
 
 static const char* PublisherSubscriberService_method_names[] = {
-  "/Ghost.internal.protobuf.PublisherSubscriberService/publications",
+  "/ghost.internal.protobuf.PublisherSubscriberService/publications",
 };
 
 std::unique_ptr< PublisherSubscriberService::Stub> PublisherSubscriberService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -31,30 +31,30 @@ PublisherSubscriberService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInt
   : channel_(channel), rpcmethod_publications_(PublisherSubscriberService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
-::grpc::ClientReader< ::Ghost::internal::protobuf::GhostMessage>* PublisherSubscriberService::Stub::publicationsRaw(::grpc::ClientContext* context, const ::Ghost::internal::protobuf::GhostMessageHeader& request) {
-  return ::grpc::internal::ClientReaderFactory< ::Ghost::internal::protobuf::GhostMessage>::Create(channel_.get(), rpcmethod_publications_, context, request);
+::grpc::ClientReader< ::google::protobuf::Any>* PublisherSubscriberService::Stub::publicationsRaw(::grpc::ClientContext* context, const ::google::protobuf::Any& request) {
+  return ::grpc::internal::ClientReaderFactory< ::google::protobuf::Any>::Create(channel_.get(), rpcmethod_publications_, context, request);
 }
 
-::grpc::ClientAsyncReader< ::Ghost::internal::protobuf::GhostMessage>* PublisherSubscriberService::Stub::AsyncpublicationsRaw(::grpc::ClientContext* context, const ::Ghost::internal::protobuf::GhostMessageHeader& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::Ghost::internal::protobuf::GhostMessage>::Create(channel_.get(), cq, rpcmethod_publications_, context, request, true, tag);
+::grpc::ClientAsyncReader< ::google::protobuf::Any>* PublisherSubscriberService::Stub::AsyncpublicationsRaw(::grpc::ClientContext* context, const ::google::protobuf::Any& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::google::protobuf::Any>::Create(channel_.get(), cq, rpcmethod_publications_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncReader< ::Ghost::internal::protobuf::GhostMessage>* PublisherSubscriberService::Stub::PrepareAsyncpublicationsRaw(::grpc::ClientContext* context, const ::Ghost::internal::protobuf::GhostMessageHeader& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::Ghost::internal::protobuf::GhostMessage>::Create(channel_.get(), cq, rpcmethod_publications_, context, request, false, nullptr);
+::grpc::ClientAsyncReader< ::google::protobuf::Any>* PublisherSubscriberService::Stub::PrepareAsyncpublicationsRaw(::grpc::ClientContext* context, const ::google::protobuf::Any& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::google::protobuf::Any>::Create(channel_.get(), cq, rpcmethod_publications_, context, request, false, nullptr);
 }
 
 PublisherSubscriberService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       PublisherSubscriberService_method_names[0],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< PublisherSubscriberService::Service, ::Ghost::internal::protobuf::GhostMessageHeader, ::Ghost::internal::protobuf::GhostMessage>(
+      new ::grpc::internal::ServerStreamingHandler< PublisherSubscriberService::Service, ::google::protobuf::Any, ::google::protobuf::Any>(
           std::mem_fn(&PublisherSubscriberService::Service::publications), this)));
 }
 
 PublisherSubscriberService::Service::~Service() {
 }
 
-::grpc::Status PublisherSubscriberService::Service::publications(::grpc::ServerContext* context, const ::Ghost::internal::protobuf::GhostMessageHeader* request, ::grpc::ServerWriter< ::Ghost::internal::protobuf::GhostMessage>* writer) {
+::grpc::Status PublisherSubscriberService::Service::publications(::grpc::ServerContext* context, const ::google::protobuf::Any* request, ::grpc::ServerWriter< ::google::protobuf::Any>* writer) {
   (void) context;
   (void) request;
   (void) writer;
@@ -63,7 +63,7 @@ PublisherSubscriberService::Service::~Service() {
 
 
 static const char* ServerClientService_method_names[] = {
-  "/Ghost.internal.protobuf.ServerClientService/connect",
+  "/ghost.internal.protobuf.ServerClientService/connect",
 };
 
 std::unique_ptr< ServerClientService::Stub> ServerClientService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -76,37 +76,37 @@ ServerClientService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>
   : channel_(channel), rpcmethod_connect_(ServerClientService_method_names[0], ::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
   {}
 
-::grpc::ClientReaderWriter< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>* ServerClientService::Stub::connectRaw(::grpc::ClientContext* context) {
-  return ::grpc::internal::ClientReaderWriterFactory< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>::Create(channel_.get(), rpcmethod_connect_, context);
+::grpc::ClientReaderWriter< ::google::protobuf::Any, ::google::protobuf::Any>* ServerClientService::Stub::connectRaw(::grpc::ClientContext* context) {
+  return ::grpc::internal::ClientReaderWriterFactory< ::google::protobuf::Any, ::google::protobuf::Any>::Create(channel_.get(), rpcmethod_connect_, context);
 }
 
-::grpc::ClientAsyncReaderWriter< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>* ServerClientService::Stub::AsyncconnectRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>::Create(channel_.get(), cq, rpcmethod_connect_, context, true, tag);
+::grpc::ClientAsyncReaderWriter< ::google::protobuf::Any, ::google::protobuf::Any>* ServerClientService::Stub::AsyncconnectRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::google::protobuf::Any, ::google::protobuf::Any>::Create(channel_.get(), cq, rpcmethod_connect_, context, true, tag);
 }
 
-::grpc::ClientAsyncReaderWriter< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>* ServerClientService::Stub::PrepareAsyncconnectRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>::Create(channel_.get(), cq, rpcmethod_connect_, context, false, nullptr);
+::grpc::ClientAsyncReaderWriter< ::google::protobuf::Any, ::google::protobuf::Any>* ServerClientService::Stub::PrepareAsyncconnectRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::google::protobuf::Any, ::google::protobuf::Any>::Create(channel_.get(), cq, rpcmethod_connect_, context, false, nullptr);
 }
 
 ServerClientService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ServerClientService_method_names[0],
       ::grpc::internal::RpcMethod::BIDI_STREAMING,
-      new ::grpc::internal::BidiStreamingHandler< ServerClientService::Service, ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>(
+      new ::grpc::internal::BidiStreamingHandler< ServerClientService::Service, ::google::protobuf::Any, ::google::protobuf::Any>(
           std::mem_fn(&ServerClientService::Service::connect), this)));
 }
 
 ServerClientService::Service::~Service() {
 }
 
-::grpc::Status ServerClientService::Service::connect(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Ghost::internal::protobuf::GhostMessage, ::Ghost::internal::protobuf::GhostMessage>* stream) {
+::grpc::Status ServerClientService::Service::connect(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::google::protobuf::Any, ::google::protobuf::Any>* stream) {
   (void) context;
   (void) stream;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 
-}  // namespace Ghost
+}  // namespace ghost
 }  // namespace internal
 }  // namespace protobuf
 

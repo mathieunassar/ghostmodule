@@ -8,29 +8,29 @@ package ghost.internal.protobuf;
 
 service PublisherSubscriberService
 {
-	rpc publications(GhostMessageHeader) returns (stream GhostMessage) {}
+	rpc publications(google.protobuf.Any) returns (stream google.protobuf.Any) {}
 }
 
 service ServerClientService
 {
-	rpc connect(stream GhostMessage) returns (stream GhostMessage) {}
+	rpc connect(stream google.protobuf.Any) returns (stream google.protobuf.Any) {}
 }
 
-// this message defines the structure that encapsulates the message being sent.
-message GhostMessage
+// this message defines the structure that encapsulates a message with user specifc format
+message GenericMessage
 {
 	// message header
-	GhostMessageHeader header = 1;
+	GenericMessageHeader header = 1;
 	
-	// the name of the message
-	string name = 2;
+	// serialized version of the message
+	string serial = 2;
 	
-	// the actual message being transported
-	google.protobuf.Any message = 3;
+	// format name of the message
+	string format = 3;
 }
 
-// header of a GhostMessage
-message GhostMessageHeader
+// header of a GenericMessage
+message GenericMessageHeader
 {
 	// timestamp in ms
 	int64 timestamp = 1;

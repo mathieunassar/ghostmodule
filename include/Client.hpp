@@ -5,11 +5,10 @@
 
 #include "internal/Client.hpp"
 #include "Connection.hpp"
+#include "Message.hpp"
 
 namespace ghost
 {
-	class Message; // todo replace with protobuf version of it or wrap it if necessary
-
 	class Client : public Connection
 	{
 	public:

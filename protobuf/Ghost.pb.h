@@ -43,51 +43,51 @@ struct TableStruct {
   static const ::google::protobuf::uint32 offsets[];
 };
 void AddDescriptors();
-void InitDefaultsGhostMessageImpl();
-void InitDefaultsGhostMessage();
-void InitDefaultsGhostMessageHeaderImpl();
-void InitDefaultsGhostMessageHeader();
+void InitDefaultsGenericMessageImpl();
+void InitDefaultsGenericMessage();
+void InitDefaultsGenericMessageHeaderImpl();
+void InitDefaultsGenericMessageHeader();
 inline void InitDefaults() {
-  InitDefaultsGhostMessage();
-  InitDefaultsGhostMessageHeader();
+  InitDefaultsGenericMessage();
+  InitDefaultsGenericMessageHeader();
 }
 }  // namespace protobuf_Ghost_2eproto
-namespace Ghost {
+namespace ghost {
 namespace internal {
 namespace protobuf {
-class GhostMessage;
-class GhostMessageDefaultTypeInternal;
-extern GhostMessageDefaultTypeInternal _GhostMessage_default_instance_;
-class GhostMessageHeader;
-class GhostMessageHeaderDefaultTypeInternal;
-extern GhostMessageHeaderDefaultTypeInternal _GhostMessageHeader_default_instance_;
+class GenericMessage;
+class GenericMessageDefaultTypeInternal;
+extern GenericMessageDefaultTypeInternal _GenericMessage_default_instance_;
+class GenericMessageHeader;
+class GenericMessageHeaderDefaultTypeInternal;
+extern GenericMessageHeaderDefaultTypeInternal _GenericMessageHeader_default_instance_;
 }  // namespace protobuf
 }  // namespace internal
-}  // namespace Ghost
-namespace Ghost {
+}  // namespace ghost
+namespace ghost {
 namespace internal {
 namespace protobuf {
 
 // ===================================================================
 
-class GhostMessage : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Ghost.internal.protobuf.GhostMessage) */ {
+class GenericMessage : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ghost.internal.protobuf.GenericMessage) */ {
  public:
-  GhostMessage();
-  virtual ~GhostMessage();
+  GenericMessage();
+  virtual ~GenericMessage();
 
-  GhostMessage(const GhostMessage& from);
+  GenericMessage(const GenericMessage& from);
 
-  inline GhostMessage& operator=(const GhostMessage& from) {
+  inline GenericMessage& operator=(const GenericMessage& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  GhostMessage(GhostMessage&& from) noexcept
-    : GhostMessage() {
+  GenericMessage(GenericMessage&& from) noexcept
+    : GenericMessage() {
     *this = ::std::move(from);
   }
 
-  inline GhostMessage& operator=(GhostMessage&& from) noexcept {
+  inline GenericMessage& operator=(GenericMessage&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -97,30 +97,30 @@ class GhostMessage : public ::google::protobuf::Message /* @@protoc_insertion_po
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const GhostMessage& default_instance();
+  static const GenericMessage& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const GhostMessage* internal_default_instance() {
-    return reinterpret_cast<const GhostMessage*>(
-               &_GhostMessage_default_instance_);
+  static inline const GenericMessage* internal_default_instance() {
+    return reinterpret_cast<const GenericMessage*>(
+               &_GenericMessage_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
     0;
 
-  void Swap(GhostMessage* other);
-  friend void swap(GhostMessage& a, GhostMessage& b) {
+  void Swap(GenericMessage* other);
+  friend void swap(GenericMessage& a, GenericMessage& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline GhostMessage* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline GenericMessage* New() const PROTOBUF_FINAL { return New(NULL); }
 
-  GhostMessage* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  GenericMessage* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
   void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
   void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const GhostMessage& from);
-  void MergeFrom(const GhostMessage& from);
+  void CopyFrom(const GenericMessage& from);
+  void MergeFrom(const GenericMessage& from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
@@ -136,7 +136,7 @@ class GhostMessage : public ::google::protobuf::Message /* @@protoc_insertion_po
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(GhostMessage* other);
+  void InternalSwap(GenericMessage* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -152,69 +152,74 @@ class GhostMessage : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // string name = 2;
-  void clear_name();
-  static const int kNameFieldNumber = 2;
-  const ::std::string& name() const;
-  void set_name(const ::std::string& value);
+  // string serial = 2;
+  void clear_serial();
+  static const int kSerialFieldNumber = 2;
+  const ::std::string& serial() const;
+  void set_serial(const ::std::string& value);
   #if LANG_CXX11
-  void set_name(::std::string&& value);
+  void set_serial(::std::string&& value);
   #endif
-  void set_name(const char* value);
-  void set_name(const char* value, size_t size);
-  ::std::string* mutable_name();
-  ::std::string* release_name();
-  void set_allocated_name(::std::string* name);
+  void set_serial(const char* value);
+  void set_serial(const char* value, size_t size);
+  ::std::string* mutable_serial();
+  ::std::string* release_serial();
+  void set_allocated_serial(::std::string* serial);
 
-  // .Ghost.internal.protobuf.GhostMessageHeader header = 1;
+  // string format = 3;
+  void clear_format();
+  static const int kFormatFieldNumber = 3;
+  const ::std::string& format() const;
+  void set_format(const ::std::string& value);
+  #if LANG_CXX11
+  void set_format(::std::string&& value);
+  #endif
+  void set_format(const char* value);
+  void set_format(const char* value, size_t size);
+  ::std::string* mutable_format();
+  ::std::string* release_format();
+  void set_allocated_format(::std::string* format);
+
+  // .ghost.internal.protobuf.GenericMessageHeader header = 1;
   bool has_header() const;
   void clear_header();
   static const int kHeaderFieldNumber = 1;
-  const ::Ghost::internal::protobuf::GhostMessageHeader& header() const;
-  ::Ghost::internal::protobuf::GhostMessageHeader* release_header();
-  ::Ghost::internal::protobuf::GhostMessageHeader* mutable_header();
-  void set_allocated_header(::Ghost::internal::protobuf::GhostMessageHeader* header);
+  const ::ghost::internal::protobuf::GenericMessageHeader& header() const;
+  ::ghost::internal::protobuf::GenericMessageHeader* release_header();
+  ::ghost::internal::protobuf::GenericMessageHeader* mutable_header();
+  void set_allocated_header(::ghost::internal::protobuf::GenericMessageHeader* header);
 
-  // .google.protobuf.Any message = 3;
-  bool has_message() const;
-  void clear_message();
-  static const int kMessageFieldNumber = 3;
-  const ::google::protobuf::Any& message() const;
-  ::google::protobuf::Any* release_message();
-  ::google::protobuf::Any* mutable_message();
-  void set_allocated_message(::google::protobuf::Any* message);
-
-  // @@protoc_insertion_point(class_scope:Ghost.internal.protobuf.GhostMessage)
+  // @@protoc_insertion_point(class_scope:ghost.internal.protobuf.GenericMessage)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr name_;
-  ::Ghost::internal::protobuf::GhostMessageHeader* header_;
-  ::google::protobuf::Any* message_;
+  ::google::protobuf::internal::ArenaStringPtr serial_;
+  ::google::protobuf::internal::ArenaStringPtr format_;
+  ::ghost::internal::protobuf::GenericMessageHeader* header_;
   mutable int _cached_size_;
   friend struct ::protobuf_Ghost_2eproto::TableStruct;
-  friend void ::protobuf_Ghost_2eproto::InitDefaultsGhostMessageImpl();
+  friend void ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageImpl();
 };
 // -------------------------------------------------------------------
 
-class GhostMessageHeader : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Ghost.internal.protobuf.GhostMessageHeader) */ {
+class GenericMessageHeader : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ghost.internal.protobuf.GenericMessageHeader) */ {
  public:
-  GhostMessageHeader();
-  virtual ~GhostMessageHeader();
+  GenericMessageHeader();
+  virtual ~GenericMessageHeader();
 
-  GhostMessageHeader(const GhostMessageHeader& from);
+  GenericMessageHeader(const GenericMessageHeader& from);
 
-  inline GhostMessageHeader& operator=(const GhostMessageHeader& from) {
+  inline GenericMessageHeader& operator=(const GenericMessageHeader& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  GhostMessageHeader(GhostMessageHeader&& from) noexcept
-    : GhostMessageHeader() {
+  GenericMessageHeader(GenericMessageHeader&& from) noexcept
+    : GenericMessageHeader() {
     *this = ::std::move(from);
   }
 
-  inline GhostMessageHeader& operator=(GhostMessageHeader&& from) noexcept {
+  inline GenericMessageHeader& operator=(GenericMessageHeader&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -224,30 +229,30 @@ class GhostMessageHeader : public ::google::protobuf::Message /* @@protoc_insert
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const GhostMessageHeader& default_instance();
+  static const GenericMessageHeader& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const GhostMessageHeader* internal_default_instance() {
-    return reinterpret_cast<const GhostMessageHeader*>(
-               &_GhostMessageHeader_default_instance_);
+  static inline const GenericMessageHeader* internal_default_instance() {
+    return reinterpret_cast<const GenericMessageHeader*>(
+               &_GenericMessageHeader_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
     1;
 
-  void Swap(GhostMessageHeader* other);
-  friend void swap(GhostMessageHeader& a, GhostMessageHeader& b) {
+  void Swap(GenericMessageHeader* other);
+  friend void swap(GenericMessageHeader& a, GenericMessageHeader& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline GhostMessageHeader* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline GenericMessageHeader* New() const PROTOBUF_FINAL { return New(NULL); }
 
-  GhostMessageHeader* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  GenericMessageHeader* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
   void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
   void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const GhostMessageHeader& from);
-  void MergeFrom(const GhostMessageHeader& from);
+  void CopyFrom(const GenericMessageHeader& from);
+  void MergeFrom(const GenericMessageHeader& from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
@@ -263,7 +268,7 @@ class GhostMessageHeader : public ::google::protobuf::Message /* @@protoc_insert
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(GhostMessageHeader* other);
+  void InternalSwap(GenericMessageHeader* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -299,7 +304,7 @@ class GhostMessageHeader : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::int64 timestamp() const;
   void set_timestamp(::google::protobuf::int64 value);
 
-  // @@protoc_insertion_point(class_scope:Ghost.internal.protobuf.GhostMessageHeader)
+  // @@protoc_insertion_point(class_scope:ghost.internal.protobuf.GenericMessageHeader)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -307,7 +312,7 @@ class GhostMessageHeader : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::int64 timestamp_;
   mutable int _cached_size_;
   friend struct ::protobuf_Ghost_2eproto::TableStruct;
-  friend void ::protobuf_Ghost_2eproto::InitDefaultsGhostMessageHeaderImpl();
+  friend void ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeaderImpl();
 };
 // ===================================================================
 
@@ -318,40 +323,40 @@ class GhostMessageHeader : public ::google::protobuf::Message /* @@protoc_insert
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// GhostMessage
+// GenericMessage
 
-// .Ghost.internal.protobuf.GhostMessageHeader header = 1;
-inline bool GhostMessage::has_header() const {
+// .ghost.internal.protobuf.GenericMessageHeader header = 1;
+inline bool GenericMessage::has_header() const {
   return this != internal_default_instance() && header_ != NULL;
 }
-inline void GhostMessage::clear_header() {
+inline void GenericMessage::clear_header() {
   if (GetArenaNoVirtual() == NULL && header_ != NULL) {
     delete header_;
   }
   header_ = NULL;
 }
-inline const ::Ghost::internal::protobuf::GhostMessageHeader& GhostMessage::header() const {
-  const ::Ghost::internal::protobuf::GhostMessageHeader* p = header_;
-  // @@protoc_insertion_point(field_get:Ghost.internal.protobuf.GhostMessage.header)
-  return p != NULL ? *p : *reinterpret_cast<const ::Ghost::internal::protobuf::GhostMessageHeader*>(
-      &::Ghost::internal::protobuf::_GhostMessageHeader_default_instance_);
+inline const ::ghost::internal::protobuf::GenericMessageHeader& GenericMessage::header() const {
+  const ::ghost::internal::protobuf::GenericMessageHeader* p = header_;
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.GenericMessage.header)
+  return p != NULL ? *p : *reinterpret_cast<const ::ghost::internal::protobuf::GenericMessageHeader*>(
+      &::ghost::internal::protobuf::_GenericMessageHeader_default_instance_);
 }
-inline ::Ghost::internal::protobuf::GhostMessageHeader* GhostMessage::release_header() {
-  // @@protoc_insertion_point(field_release:Ghost.internal.protobuf.GhostMessage.header)
+inline ::ghost::internal::protobuf::GenericMessageHeader* GenericMessage::release_header() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.GenericMessage.header)
   
-  ::Ghost::internal::protobuf::GhostMessageHeader* temp = header_;
+  ::ghost::internal::protobuf::GenericMessageHeader* temp = header_;
   header_ = NULL;
   return temp;
 }
-inline ::Ghost::internal::protobuf::GhostMessageHeader* GhostMessage::mutable_header() {
+inline ::ghost::internal::protobuf::GenericMessageHeader* GenericMessage::mutable_header() {
   
   if (header_ == NULL) {
-    header_ = new ::Ghost::internal::protobuf::GhostMessageHeader;
+    header_ = new ::ghost::internal::protobuf::GenericMessageHeader;
   }
-  // @@protoc_insertion_point(field_mutable:Ghost.internal.protobuf.GhostMessage.header)
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.GenericMessage.header)
   return header_;
 }
-inline void GhostMessage::set_allocated_header(::Ghost::internal::protobuf::GhostMessageHeader* header) {
+inline void GenericMessage::set_allocated_header(::ghost::internal::protobuf::GenericMessageHeader* header) {
   ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
   if (message_arena == NULL) {
     delete header_;
@@ -367,175 +372,184 @@ inline void GhostMessage::set_allocated_header(::Ghost::internal::protobuf::Ghos
     
   }
   header_ = header;
-  // @@protoc_insertion_point(field_set_allocated:Ghost.internal.protobuf.GhostMessage.header)
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.GenericMessage.header)
 }
 
-// string name = 2;
-inline void GhostMessage::clear_name() {
-  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// string serial = 2;
+inline void GenericMessage::clear_serial() {
+  serial_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& GhostMessage::name() const {
-  // @@protoc_insertion_point(field_get:Ghost.internal.protobuf.GhostMessage.name)
-  return name_.GetNoArena();
+inline const ::std::string& GenericMessage::serial() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.GenericMessage.serial)
+  return serial_.GetNoArena();
 }
-inline void GhostMessage::set_name(const ::std::string& value) {
+inline void GenericMessage::set_serial(const ::std::string& value) {
   
-  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:Ghost.internal.protobuf.GhostMessage.name)
+  serial_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.GenericMessage.serial)
 }
 #if LANG_CXX11
-inline void GhostMessage::set_name(::std::string&& value) {
+inline void GenericMessage::set_serial(::std::string&& value) {
   
-  name_.SetNoArena(
+  serial_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Ghost.internal.protobuf.GhostMessage.name)
+  // @@protoc_insertion_point(field_set_rvalue:ghost.internal.protobuf.GenericMessage.serial)
 }
 #endif
-inline void GhostMessage::set_name(const char* value) {
+inline void GenericMessage::set_serial(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
-  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Ghost.internal.protobuf.GhostMessage.name)
+  serial_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ghost.internal.protobuf.GenericMessage.serial)
 }
-inline void GhostMessage::set_name(const char* value, size_t size) {
+inline void GenericMessage::set_serial(const char* value, size_t size) {
   
-  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  serial_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Ghost.internal.protobuf.GhostMessage.name)
+  // @@protoc_insertion_point(field_set_pointer:ghost.internal.protobuf.GenericMessage.serial)
 }
-inline ::std::string* GhostMessage::mutable_name() {
+inline ::std::string* GenericMessage::mutable_serial() {
   
-  // @@protoc_insertion_point(field_mutable:Ghost.internal.protobuf.GhostMessage.name)
-  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.GenericMessage.serial)
+  return serial_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* GhostMessage::release_name() {
-  // @@protoc_insertion_point(field_release:Ghost.internal.protobuf.GhostMessage.name)
+inline ::std::string* GenericMessage::release_serial() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.GenericMessage.serial)
   
-  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return serial_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void GhostMessage::set_allocated_name(::std::string* name) {
-  if (name != NULL) {
+inline void GenericMessage::set_allocated_serial(::std::string* serial) {
+  if (serial != NULL) {
     
   } else {
     
   }
-  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
-  // @@protoc_insertion_point(field_set_allocated:Ghost.internal.protobuf.GhostMessage.name)
+  serial_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), serial);
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.GenericMessage.serial)
 }
 
-// .google.protobuf.Any message = 3;
-inline bool GhostMessage::has_message() const {
-  return this != internal_default_instance() && message_ != NULL;
+// string format = 3;
+inline void GenericMessage::clear_format() {
+  format_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::google::protobuf::Any& GhostMessage::message() const {
-  const ::google::protobuf::Any* p = message_;
-  // @@protoc_insertion_point(field_get:Ghost.internal.protobuf.GhostMessage.message)
-  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Any*>(
-      &::google::protobuf::_Any_default_instance_);
+inline const ::std::string& GenericMessage::format() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.GenericMessage.format)
+  return format_.GetNoArena();
 }
-inline ::google::protobuf::Any* GhostMessage::release_message() {
-  // @@protoc_insertion_point(field_release:Ghost.internal.protobuf.GhostMessage.message)
+inline void GenericMessage::set_format(const ::std::string& value) {
   
-  ::google::protobuf::Any* temp = message_;
-  message_ = NULL;
-  return temp;
+  format_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.GenericMessage.format)
 }
-inline ::google::protobuf::Any* GhostMessage::mutable_message() {
+#if LANG_CXX11
+inline void GenericMessage::set_format(::std::string&& value) {
   
-  if (message_ == NULL) {
-    message_ = new ::google::protobuf::Any;
-  }
-  // @@protoc_insertion_point(field_mutable:Ghost.internal.protobuf.GhostMessage.message)
-  return message_;
+  format_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ghost.internal.protobuf.GenericMessage.format)
 }
-inline void GhostMessage::set_allocated_message(::google::protobuf::Any* message) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete reinterpret_cast< ::google::protobuf::MessageLite*>(message_);
-  }
-  if (message) {
-    ::google::protobuf::Arena* submessage_arena = NULL;
-    if (message_arena != submessage_arena) {
-      message = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, message, submessage_arena);
-    }
+#endif
+inline void GenericMessage::set_format(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  format_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ghost.internal.protobuf.GenericMessage.format)
+}
+inline void GenericMessage::set_format(const char* value, size_t size) {
+  
+  format_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ghost.internal.protobuf.GenericMessage.format)
+}
+inline ::std::string* GenericMessage::mutable_format() {
+  
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.GenericMessage.format)
+  return format_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* GenericMessage::release_format() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.GenericMessage.format)
+  
+  return format_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void GenericMessage::set_allocated_format(::std::string* format) {
+  if (format != NULL) {
     
   } else {
     
   }
-  message_ = message;
-  // @@protoc_insertion_point(field_set_allocated:Ghost.internal.protobuf.GhostMessage.message)
+  format_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), format);
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.GenericMessage.format)
 }
 
 // -------------------------------------------------------------------
 
-// GhostMessageHeader
+// GenericMessageHeader
 
 // int64 timestamp = 1;
-inline void GhostMessageHeader::clear_timestamp() {
+inline void GenericMessageHeader::clear_timestamp() {
   timestamp_ = GOOGLE_LONGLONG(0);
 }
-inline ::google::protobuf::int64 GhostMessageHeader::timestamp() const {
-  // @@protoc_insertion_point(field_get:Ghost.internal.protobuf.GhostMessageHeader.timestamp)
+inline ::google::protobuf::int64 GenericMessageHeader::timestamp() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.GenericMessageHeader.timestamp)
   return timestamp_;
 }
-inline void GhostMessageHeader::set_timestamp(::google::protobuf::int64 value) {
+inline void GenericMessageHeader::set_timestamp(::google::protobuf::int64 value) {
   
   timestamp_ = value;
-  // @@protoc_insertion_point(field_set:Ghost.internal.protobuf.GhostMessageHeader.timestamp)
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.GenericMessageHeader.timestamp)
 }
 
 // string hostname = 2;
-inline void GhostMessageHeader::clear_hostname() {
+inline void GenericMessageHeader::clear_hostname() {
   hostname_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& GhostMessageHeader::hostname() const {
-  // @@protoc_insertion_point(field_get:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+inline const ::std::string& GenericMessageHeader::hostname() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.GenericMessageHeader.hostname)
   return hostname_.GetNoArena();
 }
-inline void GhostMessageHeader::set_hostname(const ::std::string& value) {
+inline void GenericMessageHeader::set_hostname(const ::std::string& value) {
   
   hostname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.GenericMessageHeader.hostname)
 }
 #if LANG_CXX11
-inline void GhostMessageHeader::set_hostname(::std::string&& value) {
+inline void GenericMessageHeader::set_hostname(::std::string&& value) {
   
   hostname_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+  // @@protoc_insertion_point(field_set_rvalue:ghost.internal.protobuf.GenericMessageHeader.hostname)
 }
 #endif
-inline void GhostMessageHeader::set_hostname(const char* value) {
+inline void GenericMessageHeader::set_hostname(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   hostname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+  // @@protoc_insertion_point(field_set_char:ghost.internal.protobuf.GenericMessageHeader.hostname)
 }
-inline void GhostMessageHeader::set_hostname(const char* value, size_t size) {
+inline void GenericMessageHeader::set_hostname(const char* value, size_t size) {
   
   hostname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+  // @@protoc_insertion_point(field_set_pointer:ghost.internal.protobuf.GenericMessageHeader.hostname)
 }
-inline ::std::string* GhostMessageHeader::mutable_hostname() {
+inline ::std::string* GenericMessageHeader::mutable_hostname() {
   
-  // @@protoc_insertion_point(field_mutable:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.GenericMessageHeader.hostname)
   return hostname_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* GhostMessageHeader::release_hostname() {
-  // @@protoc_insertion_point(field_release:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+inline ::std::string* GenericMessageHeader::release_hostname() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.GenericMessageHeader.hostname)
   
   return hostname_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void GhostMessageHeader::set_allocated_hostname(::std::string* hostname) {
+inline void GenericMessageHeader::set_allocated_hostname(::std::string* hostname) {
   if (hostname != NULL) {
     
   } else {
     
   }
   hostname_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), hostname);
-  // @@protoc_insertion_point(field_set_allocated:Ghost.internal.protobuf.GhostMessageHeader.hostname)
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.GenericMessageHeader.hostname)
 }
 
 #ifdef __GNUC__
@@ -548,7 +562,7 @@ inline void GhostMessageHeader::set_allocated_hostname(::std::string* hostname) 
 
 }  // namespace protobuf
 }  // namespace internal
-}  // namespace Ghost
+}  // namespace ghost
 
 // @@protoc_insertion_point(global_scope)
 

@@ -32,7 +32,7 @@ namespace ghost
 		 * @date	21.05.2018
 		 * @param	client	The client.
 		 */
-		void releaseClient(const Client& client);
+		virtual void releaseClient(const Client& client);
 
 	private:
 		std::shared_ptr<internal::Server> _internal;

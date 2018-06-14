@@ -25,6 +25,8 @@ file(GLOB header_connection2_lib
 ./include/Client.hpp
 ./include/Publisher.hpp
 ./include/Subscriber.hpp
+./include/Message.hpp
+./include/ProtobufMessage.hpp
 )
 
 file(GLOB header_connection2_lib_internal
@@ -33,18 +35,21 @@ file(GLOB header_connection2_lib_internal
 ./include/internal/Client.hpp
 ./include/internal/Publisher.hpp
 ./include/internal/Subscriber.hpp
+./include/internal/GenericMessageConverter.hpp
 )
 
 file(GLOB header_connection2_lib_internal_network
-./include/internal/network/ServerCoreGRPC.hpp
-./include/internal/network/ClientCoreGRPC.hpp
+./include/internal/network/ServerGRPC.hpp
+./include/internal/network/ClientGRPC.hpp
+./include/internal/network/RemoteClientGRPC.hpp
 ./include/internal/network/PublisherCoreGRPC.hpp
 ./include/internal/network/SubscriberCoreGRPC.hpp
 )
 
 file(GLOB source_connection2_lib_network
-./src/network/ServerCoreGRPC.cpp
-./src/network/ClientCoreGRPC.cpp
+./src/network/ServerGRPC.cpp
+./src/network/ClientGRPC.cpp
+./src/network/RemoteClientGRPC.cpp
 ./src/network/PublisherCoreGRPC.cpp
 ./src/network/SubscriberCoreGRPC.cpp)
 
@@ -56,7 +61,9 @@ file(GLOB protobuf_connection2_lib
 )
 
 file(GLOB source_connection2_lib
-./src/main.cpp)
+./src/ProtobufMessage.cpp
+./src/GenericMessageConverter.cpp
+)
 
 source_group("Header Files\\internal" FILES ${header_connection2_lib_internal})
 source_group("Header Files\\internal\\network" FILES ${header_connection2_lib_internal_network})
@@ -65,7 +72,7 @@ source_group("Protobuf" FILES ${protobuf_connection2_lib})
 
 #####################################################################
 
-add_executable(GhostConnection2 ${header_connection2_lib}
+add_library(GhostConnection2 ${header_connection2_lib}
 	${header_connection2_lib_internal}
 	${header_connection2_lib_internal_network}
 	${source_connection2_lib_network}
@@ -73,6 +80,26 @@ add_executable(GhostConnection2 ${header_connection2_lib}
 	${protobuf_connection2_lib}
 	)
 
-target_link_libraries(GhostConnection2 libprotobuf grpc grpc++)
+target_link_libraries(GhostConnection2 ws2_32 libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
 
 set_property(TARGET GhostConnection2 PROPERTY FOLDER "Libraries")
+
+#####################################################################
+
+# Unit tests: Primitive Serialization
+file(GLOB source_connection2_tests
+./tests/MessageTests.cpp)
+
+set(libraries_connection2_tests
+GhostConnection2)
+
+add_executable(Connection_MessageTests ${source_connection2_tests})
+target_link_libraries(Connection_MessageTests ${libraries_connection2_tests})
+set_property(TARGET Connection_MessageTests PROPERTY FOLDER "Tests/UnitTests")
+add_test(UnitTests_Connection_MessageTests Connection_MessageTests)
+
+add_executable(Test1 ./tests/app1.cpp)
+target_link_libraries(Test1 GhostConnection2 zlib)
+
+add_executable(Test2 ./tests/app2.cpp)
+target_link_libraries(Test2 GhostConnection2 zlib)

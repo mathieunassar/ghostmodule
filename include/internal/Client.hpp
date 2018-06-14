@@ -2,6 +2,7 @@
 #define GHOST_INTERNAL_CLIENT_HPP
 
 #include "Connection.hpp"
+#include "../Message.hpp"
 
 namespace ghost
 {
@@ -17,7 +18,7 @@ namespace ghost
 			* @param [in,out]	message	variable containing the output message.
 			* @return	True if it succeeds, false if it fails.
 			*/
-			bool receive(Message& message);
+			virtual bool receive(ghost::Message& message) = 0;
 
 			/**
 			* Encodes and sends the message given as argument.
@@ -26,7 +27,7 @@ namespace ghost
 			* @param	message	message to send.
 			* @return	A long.
 			*/
-			long send(const Message& message);
+			virtual long send(const ghost::Message& message) = 0;
 		};
 	}
 	
