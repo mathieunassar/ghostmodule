@@ -5,37 +5,20 @@
 
 #include "internal/Server.hpp"
 #include "Connection.hpp"
-#include "Client.hpp"
+#include "ClientHandler.hpp"
 
 namespace ghost
 {
 	class Server : public Connection
 	{
-	protected:
+	public:
 		/**
-		 * Processes a client received by the server.
-		 * The user can store the client by copying the Client object in an appropriate place and
-		 * setting the "keepClient" flag to true.
+		 * Sets the handler which will process the clients of this server.
 		 * @author	Mathieu Nassar
-		 * @date	21.05.2018
-		 * @param [in,out]	client	  	connected client to process.
-		 * @param [in,out]	keepClient	set keepClient to true to prevent the server from closing the
-		 * 								connection to the client.
-		 * @return	true to let the server continue processing clients. Returning false is equivalent to
-		 * 			calling "stop" method.
+		 * @date	15.06.2018
+		 * @param	handler	The handler.
 		 */
-		virtual bool onNewClient(Client& client, bool& keepClient) = 0;
-
-		/**
-		 * Releases the client described by client.
-		 * @author	Mathieu Nassar
-		 * @date	21.05.2018
-		 * @param	client	The client.
-		 */
-		virtual void releaseClient(const Client& client);
-
-	private:
-		std::shared_ptr<internal::Server> _internal;
+		virtual void setClientHandler(std::shared_ptr<ClientHandler> handler) = 0;
 	};
 }
 

@@ -1,10 +1,12 @@
 #ifndef GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 
+#include <functional>
+
 #include <grpcpp/server.h>
 #include "../../../protobuf/Ghost.pb.h"
 #include "../../../protobuf/Ghost.grpc.pb.h"
-#include "../Server.hpp"
+#include "../../Server.hpp"
 
 namespace ghost
 {
@@ -16,20 +18,37 @@ namespace ghost
 		 * @author	Mathieu Nassar
 		 * @date	25.05.2018
 		 */
-		class ServerGRPC : public Server, public protobuf::ServerClientService::Service
+		class ServerGRPC : public ghost::Server
 		{
 		public:
+			ServerGRPC();
+
 			bool start() override;
 			bool stop() override;
 			bool isRunning() const override;
 
-			void setNewClientCallback(std::function<bool(Client&)> callback) override;
+			void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
 
 		private:
-			grpc::Status connect(grpc::ServerContext* context, grpc::ServerReaderWriter<google::protobuf::Any, google::protobuf::Any>* stream) override;
+			void handleRpcs();
 
-			std::unique_ptr<::grpc::Server> _grpcServer;
-			std::function<bool(Client&)> _newClientCallback;
+			protobuf::ServerClientService::AsyncService _service;
+			std::unique_ptr<grpc::ServerCompletionQueue> _completionQueue;
+			std::unique_ptr<grpc::Server> _grpcServer;
+			
+			std::shared_ptr<ClientHandler> _clientHandler;
+		};
+
+		
+		/**
+		 * Tag information for the gRPC completion queue.
+		 * @author	Mathieu Nassar
+		 * @date	17.06.2018
+		 */
+		struct TagInfo
+		{
+			std::function<void(bool)>* processor;
+			bool ok;
 		};
 	}
 }

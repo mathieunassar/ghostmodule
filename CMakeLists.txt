@@ -22,6 +22,7 @@ execute_process(
 file(GLOB header_connection2_lib
 ./include/Connection.hpp
 ./include/Server.hpp
+./include/ClientHandler.hpp
 ./include/Client.hpp
 ./include/Publisher.hpp
 ./include/Subscriber.hpp
@@ -30,9 +31,6 @@ file(GLOB header_connection2_lib
 )
 
 file(GLOB header_connection2_lib_internal
-./include/internal/Connection.hpp
-./include/internal/Server.hpp
-./include/internal/Client.hpp
 ./include/internal/Publisher.hpp
 ./include/internal/Subscriber.hpp
 ./include/internal/GenericMessageConverter.hpp
@@ -51,7 +49,8 @@ file(GLOB source_connection2_lib_network
 ./src/network/ClientGRPC.cpp
 ./src/network/RemoteClientGRPC.cpp
 ./src/network/PublisherCoreGRPC.cpp
-./src/network/SubscriberCoreGRPC.cpp)
+./src/network/SubscriberCoreGRPC.cpp
+)
 
 file(GLOB protobuf_connection2_lib
 ./protobuf/Ghost.pb.h

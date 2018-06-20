@@ -1,7 +1,7 @@
 #ifndef GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP
 
-#include "../Client.hpp"
+#include "../../Client.hpp"
 
 #include "../../../protobuf/Ghost.pb.h"
 #include "../../../protobuf/Ghost.grpc.pb.h"
@@ -10,7 +10,7 @@ namespace ghost
 {
 	namespace internal
 	{
-		class ClientGRPC : public Client
+		class ClientGRPC : public ghost::Client
 		{
 		public:
 			bool start() override;

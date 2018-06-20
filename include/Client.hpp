@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "internal/Client.hpp"
 #include "Connection.hpp"
 #include "Message.hpp"
 
@@ -13,25 +12,31 @@ namespace ghost
 	{
 	public:
 		/**
-		 * Receives from the connection and decodes the message.
-		 * @author	Mathieu Nassar
-		 * @date	21.05.2018
-		 * @param [in,out]	message	variable containing the output message.
-		 * @return	True if it succeeds, false if it fails.
-		 */
-		bool receive(Message& message);
+		* Receives from the connection and decodes the message.
+		* @author	Mathieu Nassar
+		* @date	21.05.2018
+		* @param [in,out]	message	variable containing the output message.
+		* @return	True if it succeeds, false if it fails.
+		*/
+		virtual bool receive(ghost::Message& message) = 0;
 
 		/**
-		 * Encodes and sends the message given as argument.
-		 * @author	Mathieu Nassar
-		 * @date	21.05.2018
-		 * @param	message	message to send.
-		 * @return	A long.
-		 */
-		long send(const Message& message);
+		* Decodes the last message received.
+		* @author	Mathieu Nassar
+		* @date	20.06.2018
+		* @param [in,out]	message	variable containing the output message.
+		* @return	True if it succeeds, false if it fails.
+		*/
+		virtual bool lastReceived(ghost::Message& message) = 0;
 
-	private:
-		std::shared_ptr<internal::Client> _internal;
+		/**
+		* Encodes and sends the message given as argument.
+		* @author	Mathieu Nassar
+		* @date	21.05.2018
+		* @param	message	message to send.
+		* @return	A long.
+		*/
+		virtual bool send(const ghost::Message& message) = 0;
 	};
 }
 
