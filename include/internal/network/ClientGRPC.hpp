@@ -18,7 +18,7 @@ namespace ghost
 			bool isRunning() const override;
 
 			bool receive(ghost::Message& message) override;
-			long send(const ghost::Message& message) override;
+			bool send(const ghost::Message& message) override;
 
 		private:
 			std::unique_ptr<grpc::ClientReaderWriter<google::protobuf::Any, google::protobuf::Any>> _connection;

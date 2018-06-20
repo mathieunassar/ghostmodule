@@ -2,6 +2,7 @@
 #define GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 
 #include <functional>
+#include <thread>
 
 #include <grpcpp/server.h>
 #include "../../../protobuf/Ghost.pb.h"
@@ -37,6 +38,7 @@ namespace ghost
 			std::unique_ptr<grpc::Server> _grpcServer;
 			
 			std::shared_ptr<ClientHandler> _clientHandler;
+			std::list<std::thread> _threadPool;
 		};
 
 		

@@ -9,7 +9,7 @@
 using namespace ghost::internal;
 
 RemoteClientGRPC::RemoteClientGRPC(protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
-		std::shared_ptr<ClientHandler> callback)
+		std::shared_ptr<ghost::ClientHandler> callback)
 	: _operationsRunning(0)
 	, _writeOperationInProgress(false)
 	, _service(service)
@@ -31,14 +31,15 @@ RemoteClientGRPC::RemoteClientGRPC(protobuf::ServerClientService::AsyncService* 
 
 void RemoteClientGRPC::onStarted(bool ok)
 {
-	_operationsRunning--;
-
 	// restart the process of creating the request for the next client
 	new RemoteClientGRPC(_service, _completionQueue, _clientHandler);
 
+	if (!finishOperation())
+		return;
+
 	if (ok)
 	{
-		_operationsRunning++;
+		startOperation();
 		// start reading some stuff
 		_client.Read(&_incomingMessage, &_readProcessor);
 	}
@@ -50,7 +51,7 @@ void RemoteClientGRPC::onStarted(bool ok)
 
 void RemoteClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be deleted anyway
 {
-	_operationsRunning--;
+	finishOperation(); // don't care about the result, this method does not start more RPC operation
 
 	std::lock_guard<std::mutex> lock(_statusMutex);
 	_status = FINISHED;
@@ -58,7 +59,8 @@ void RemoteClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be
 
 void RemoteClientGRPC::onWriteFinished(bool ok)
 {
-	_operationsRunning--;
+	if (!finishOperation())
+		return;
 
 	{ // remove the item that has just been sent
 		std::lock_guard<std::mutex> lock(_writeQueueMutex);
@@ -78,14 +80,15 @@ void RemoteClientGRPC::onWriteFinished(bool ok)
 
 void RemoteClientGRPC::onReadFinished(bool ok)
 {
-	_operationsRunning--;
+	if (!finishOperation())
+		return;
 
 	if (ok)
 	{
 		std::lock_guard<std::mutex> lock(_readQueueMutex);
 		_readQueue.push_back(_incomingMessage); // TODO maybe, client callback instead of queue?
 
-		_operationsRunning++;
+		startOperation();
 		_client.Read(&_incomingMessage, &_readProcessor);
 	}
 	else
@@ -101,6 +104,18 @@ void RemoteClientGRPC::onDone(bool ok)
 	_status = FINISHED;
 }
 
+void RemoteClientGRPC::startOperation()
+{
+	_operationsRunning++;
+}
+
+bool RemoteClientGRPC::finishOperation()
+{
+	_operationsRunning--;
+
+	return !(_operationsRunning == 0 && getStatus() == FINISHED);
+}
+
 void RemoteClientGRPC::execute()
 {
 	if (_status == EXECUTING) // if the RPC failed during onStarted, its state is here FINISHED
@@ -113,7 +128,7 @@ void RemoteClientGRPC::execute()
 		stop();
 	}
 
-	while (getStatus() != FINISHED && _operationsRunning > 0)
+	while (getStatus() != FINISHED || _operationsRunning > 0)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
@@ -127,7 +142,8 @@ bool RemoteClientGRPC::start()
 	{
 		_status = EXECUTING;
 
-		_operationsRunning++;
+		startOperation();
+
 		// create the request, this will be available soon in the completion queue, which will call "proceedProcessor"
 		_service->Requestconnect(&_context, &_client, _completionQueue, _completionQueue, &_startedProcessor);
 
@@ -143,7 +159,7 @@ bool RemoteClientGRPC::stop()
 	{
 		_status = DISPOSING;
 
-		_operationsRunning++;
+		startOperation();
 		_client.Finish(grpc::Status::OK, &_finishProcessor);
 		
 		return true;
@@ -231,7 +247,7 @@ void RemoteClientGRPC::processWriteQueue()
 	std::lock_guard<std::mutex> lock(_writeQueueMutex);
 	if (!_writeOperationInProgress && !_writeQueue.empty())
 	{
-		_operationsRunning++;
+		startOperation();
 		_writeOperationInProgress = true;
 		_client.Write(_writeQueue.front(), &_writtenProcessor);
 	}

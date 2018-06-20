@@ -32,6 +32,11 @@ bool ServerGRPC::start()
 	// Finally assemble the server.
 	_grpcServer = builder.BuildAndStart();
 
+	for (size_t i = 0; i < 2; i++)
+	{
+		_threadPool.push_back(std::thread(&ServerGRPC::handleRpcs, this));
+	}
+
 	handleRpcs(); // here call this into many threads
 
 	return true;
@@ -41,6 +46,12 @@ bool ServerGRPC::stop()
 {
 	_grpcServer->Shutdown();
 	_completionQueue->Shutdown();
+
+	for (auto& t : _threadPool)
+	{
+		t.join();
+	}
+
 	return true;
 }
 
@@ -49,7 +60,7 @@ bool ServerGRPC::isRunning() const
 	return true;
 }
 
-void ServerGRPC::setClientHandler(std::shared_ptr<ClientHandler> handler)
+void ServerGRPC::setClientHandler(std::shared_ptr<ghost::ClientHandler> handler)
 {
 	_clientHandler = handler;
 }
@@ -68,7 +79,7 @@ void ServerGRPC::handleRpcs()
 		// The return value of Next should always be checked. This return value
 		// tells us whether there is any kind of event or cq_ is shutting down.
 		bool nextSuccess = _completionQueue->Next((void**)&tag.processor, &tag.ok);
-		if (!nextSuccess || !tag.ok)
+		if (!nextSuccess)
 		{
 			std::cout << "an error occurred!" << std::endl;
 			break;

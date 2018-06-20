@@ -44,15 +44,15 @@ bool ClientGRPC::receive(ghost::Message& message)
 	return GenericMessageConverter::parse(any, message);
 }
 
-long ClientGRPC::send(const ghost::Message& message)
+bool ClientGRPC::send(const ghost::Message& message)
 {
 	google::protobuf::Any any;
 
 	bool createSuccess = GenericMessageConverter::create(any, message);
 	if (!createSuccess)
 	{
-		return -1; // conversion failed, i.e. there is no protobuf message in the input or the serialization failed (in case of a user format)
+		return false; // conversion failed, i.e. there is no protobuf message in the input or the serialization failed (in case of a user format)
 	}
 
-	return _connection->Write(any) ? 1 : -1; // TODO return value
+	return _connection->Write(any);
 }

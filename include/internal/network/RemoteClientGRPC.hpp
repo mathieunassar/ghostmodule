@@ -44,6 +44,8 @@ namespace ghost
 			std::function<void(bool)> _readProcessor;
 			std::function<void(bool)> _doneProcessor;
 			std::atomic<int> _operationsRunning;
+			void startOperation();
+			bool finishOperation();
 
 			/* Write operations */
 			std::deque<google::protobuf::Any> _writeQueue;
