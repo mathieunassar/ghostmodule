@@ -31,7 +31,7 @@ int main()
 	server.setClientHandler(std::make_shared<TestClientHandler>());
 	server.start();
 	std::cout << "server started" << std::endl;
-	Sleep(10000000);
+	Sleep(10000);
 
 	server.stop();
 	std::cout << "exiting" << std::endl;

@@ -35,9 +35,12 @@ bool RemoteClientGRPC::start()
 
 void RemoteClientGRPC::onStarted(bool ok)
 {
-	// restart the process of creating the request for the next client
-	auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueue);
-	new RemoteClientGRPC(_service, cq, _clientHandler);
+	if (ok) // if not ok for this call, then the completion queue has been shut down
+	{
+		// restart the process of creating the request for the next client
+		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueue);
+		new RemoteClientGRPC(_service, cq, _clientHandler);
+	}
 
 	if (!finishOperation())
 		return;
