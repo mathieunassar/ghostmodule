@@ -8,6 +8,7 @@
 #include "../../../protobuf/Ghost.pb.h"
 #include "../../../protobuf/Ghost.grpc.pb.h"
 #include "../../Server.hpp"
+#include "CompletionQueueExecutor.hpp"
 
 namespace ghost
 {
@@ -31,26 +32,11 @@ namespace ghost
 			void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
 
 		private:
-			void handleRpcs();
-
 			protobuf::ServerClientService::AsyncService _service;
-			std::unique_ptr<grpc::ServerCompletionQueue> _completionQueue;
 			std::unique_ptr<grpc::Server> _grpcServer;
+			CompletionQueueExecutor _completionQueueExecutor;
 			
 			std::shared_ptr<ClientHandler> _clientHandler;
-			std::list<std::thread> _threadPool;
-		};
-
-		
-		/**
-		 * Tag information for the gRPC completion queue.
-		 * @author	Mathieu Nassar
-		 * @date	17.06.2018
-		 */
-		struct TagInfo
-		{
-			std::function<void(bool)>* processor;
-			bool ok;
 		};
 	}
 }

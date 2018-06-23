@@ -30,8 +30,8 @@ int main()
 	internal::ServerGRPC server;
 	server.setClientHandler(std::make_shared<TestClientHandler>());
 	server.start();
-	std::cout << "servers started" << std::endl;
-	Sleep(100000000);
+	std::cout << "server started" << std::endl;
+	Sleep(10000);
 
 	server.stop();
 	std::cout << "exiting" << std::endl;

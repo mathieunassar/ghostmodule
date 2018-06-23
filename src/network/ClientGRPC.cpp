@@ -10,49 +10,76 @@
 
 using namespace ghost::internal;
 
+ClientGRPC::ClientGRPC()
+	: BaseClientGRPC(new grpc::CompletionQueue()) // Will be owned by the executor
+	, _initialized(false)
+	, _executor(_completionQueue) // now owny the completion queue
+{
+	_startedProcessor = std::bind(&ClientGRPC::onStarted, this, std::placeholders::_1);
+	_finishProcessor = std::bind(&ClientGRPC::onFinished, this, std::placeholders::_1);
+
+	_executor.start(2);
+
+	/*start();*/
+}
+
+/**
+ *	Blocks until the client is connected thanks to the condition variable.
+ */
 bool ClientGRPC::start()
 {
+	if (!BaseClientGRPC::start())
+		return false;
+
+	startOperation();
 	auto channel = grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials());
-	auto stub = protobuf::ServerClientService::NewStub(channel);
+	_stub = protobuf::ServerClientService::NewStub(channel);
 
-	_connection = stub->connect(&_context);
+	std::unique_lock<std::mutex> lk(_initializedMutex);
+	
+	_client = _stub->Asyncconnect(_context.get(), _completionQueue, &_startedProcessor);
+	
+	_initializedConditionVariable.wait(lk, [this] {return _initialized; });
 
-	return true;
+	return getStatus() == EXECUTING; // could fail during statup
+}
+
+void ClientGRPC::onStarted(bool ok)
+{
+	if (!finishOperation())
+		return;
+
+	if (ok)
+		startReader();
+	else
+		setStatus(FINISHED); // RPC could not start, finish it!
+
+	_initialized = true;
+	_initializedConditionVariable.notify_one();
 }
 
 bool ClientGRPC::stop()
 {
-	_connection->Finish();
-	return true;
-}
-
-bool ClientGRPC::isRunning() const
-{
-	return true;
-}
-
-bool ClientGRPC::receive(ghost::Message& message)
-{
-	google::protobuf::Any any;
-	bool readResult = _connection->Read(&any);
-	if (!readResult)
+	if (!BaseClientGRPC::stop())
 	{
 		return false;
 	}
 
-	// maybe store the message somewhere to get the last received message
-	return GenericMessageConverter::parse(any, message);
+	startOperation();
+	grpc::Status status;
+	_client->Finish(&status, &_finishProcessor);
+
+	awaitFinished();
+	_executor.stop();
+	disposeGRPC();
+
+	return status.ok();
 }
 
-bool ClientGRPC::send(const ghost::Message& message)
+void ClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be deleted anyway
 {
-	google::protobuf::Any any;
+	finishOperation(); // don't care about the result, this method does not start more RPC operation
 
-	bool createSuccess = GenericMessageConverter::create(any, message);
-	if (!createSuccess)
-	{
-		return false; // conversion failed, i.e. there is no protobuf message in the input or the serialization failed (in case of a user format)
-	}
+	setStatus(FINISHED);
 
-	return _connection->Write(any);
 }

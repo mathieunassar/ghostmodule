@@ -5,6 +5,7 @@
 #include <grpcpp/security/server_credentials.h>
 
 #include "../../include/internal/network/RemoteClientGRPC.hpp"
+#include "../../include/internal/network/ServerGRPC.hpp"
 
 using namespace ghost::internal;
 
@@ -27,17 +28,19 @@ bool ServerGRPC::start()
 
 	// Get hold of the completion queue used for the asynchronous communication
 	// with the gRPC runtime.
-	_completionQueue = builder.AddCompletionQueue();
+	_completionQueueExecutor.setCompletionQueue(builder.AddCompletionQueue());
 
 	// Finally assemble the server.
 	_grpcServer = builder.BuildAndStart();
 
-	for (size_t i = 0; i < 2; i++)
-	{
-		_threadPool.push_back(std::thread(&ServerGRPC::handleRpcs, this));
-	}
+	_completionQueueExecutor.start(2);
 
-	handleRpcs(); // here call this into many threads
+	auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
+	for (size_t i = 0; i < 2; i++) // start as many calls as there can be concurrent rpcs
+	{
+		// Spawn a new CallData instance to serve new clients.
+		new RemoteClientGRPC(&_service, cq, _clientHandler);
+	}
 
 	return true;
 }
@@ -45,12 +48,7 @@ bool ServerGRPC::start()
 bool ServerGRPC::stop()
 {
 	_grpcServer->Shutdown();
-	_completionQueue->Shutdown();
-
-	for (auto& t : _threadPool)
-	{
-		t.join();
-	}
+	_completionQueueExecutor.stop(); // shutdowns the completion queue
 
 	return true;
 }
@@ -63,28 +61,4 @@ bool ServerGRPC::isRunning() const
 void ServerGRPC::setClientHandler(std::shared_ptr<ghost::ClientHandler> handler)
 {
 	_clientHandler = handler;
-}
-
-void ServerGRPC::handleRpcs()
-{
-	// Spawn a new CallData instance to serve new clients.
-	new RemoteClientGRPC(&_service, _completionQueue.get(), _clientHandler);
-
-	TagInfo tag;
-	while (true)
-	{
-		// Block waiting to read the next event from the completion queue. The
-		// event is uniquely identified by its tag, which in this case is the
-		// memory address of a CallData instance.
-		// The return value of Next should always be checked. This return value
-		// tells us whether there is any kind of event or cq_ is shutting down.
-		bool nextSuccess = _completionQueue->Next((void**)&tag.processor, &tag.ok);
-		if (!nextSuccess)
-		{
-			std::cout << "an error occurred!" << std::endl;
-			break;
-		}
-
-		(*tag.processor)(tag.ok);
-	}
 }

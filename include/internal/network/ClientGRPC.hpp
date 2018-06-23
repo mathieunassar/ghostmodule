@@ -1,28 +1,36 @@
 #ifndef GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP
 
-#include "../../Client.hpp"
-
-#include "../../../protobuf/Ghost.pb.h"
-#include "../../../protobuf/Ghost.grpc.pb.h"
+#include <mutex>
+#include <condition_variable>
+#include "BaseClientGRPC.hpp"
+#include "CompletionQueueExecutor.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
-		class ClientGRPC : public ghost::Client
+		class ClientGRPC : public BaseClientGRPC<grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ClientContext>
 		{
 		public:
+			ClientGRPC();
+
 			bool start() override;
 			bool stop() override;
-			bool isRunning() const override;
 
-			bool receive(ghost::Message& message) override;
-			bool send(const ghost::Message& message) override;
+		public:
+			void onStarted(bool ok);
+			void onFinished(bool ok);
 
-		private:
-			std::unique_ptr<grpc::ClientReaderWriter<google::protobuf::Any, google::protobuf::Any>> _connection;
-			grpc::ClientContext _context;
+			std::function<void(bool)> _startedProcessor;
+			std::function<void(bool)> _finishProcessor;
+			std::unique_ptr<protobuf::ServerClientService::Stub> _stub;
+			/*grpc::ClientContext* _context;*/
+			CompletionQueueExecutor _executor;
+
+			std::mutex _initializedMutex;
+			std::condition_variable _initializedConditionVariable;
+			bool _initialized;
 		};
 	}
 }

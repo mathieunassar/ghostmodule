@@ -38,10 +38,13 @@ file(GLOB header_connection2_lib_internal
 
 file(GLOB header_connection2_lib_internal_network
 ./include/internal/network/ServerGRPC.hpp
+./include/internal/network/BaseClientGRPC.hpp
+./include/internal/network/BaseClientGRPC.impl.hpp
 ./include/internal/network/ClientGRPC.hpp
 ./include/internal/network/RemoteClientGRPC.hpp
 ./include/internal/network/PublisherCoreGRPC.hpp
 ./include/internal/network/SubscriberCoreGRPC.hpp
+./include/internal/network/CompletionQueueExecutor.hpp
 )
 
 file(GLOB source_connection2_lib_network
@@ -50,6 +53,7 @@ file(GLOB source_connection2_lib_network
 ./src/network/RemoteClientGRPC.cpp
 ./src/network/PublisherCoreGRPC.cpp
 ./src/network/SubscriberCoreGRPC.cpp
+./src/network/CompletionQueueExecutor.cpp
 )
 
 file(GLOB protobuf_connection2_lib
