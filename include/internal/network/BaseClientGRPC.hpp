@@ -10,6 +10,7 @@
 
 #include "../GenericMessageConverter.hpp"
 #include "../../ClientHandler.hpp"
+#include "RPCStateMachine.hpp"
 
 namespace ghost
 {
@@ -56,27 +57,11 @@ namespace ghost
 			void onReadFinished(bool ok);
 
 			/* GRPC objects */
+			RPCStateMachine _statemachine;
 			grpc::CompletionQueue* _completionQueue;
 			std::unique_ptr<ReaderWriter> _client;
 			std::unique_ptr<ContextType> _context;
 			void disposeGRPC();
-
-			/* RPC status */
-			enum CallStatus
-			{
-				INIT,
-				EXECUTING, INACTIVE,
-				DISPOSING,
-				FINISHED
-			};
-			CallStatus _status;
-			mutable std::mutex _statusMutex;
-			CallStatus getStatus() const
-			{
-				std::lock_guard<std::mutex> lock(_statusMutex);
-				return _status;
-			}
-			void setStatus(CallStatus status);
 		};
 
 		#include "BaseClientGRPC.impl.hpp"

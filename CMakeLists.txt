@@ -45,6 +45,7 @@ file(GLOB header_connection2_lib_internal_network
 ./include/internal/network/PublisherCoreGRPC.hpp
 ./include/internal/network/SubscriberCoreGRPC.hpp
 ./include/internal/network/CompletionQueueExecutor.hpp
+./include/internal/network/RPCStateMachine.hpp
 )
 
 file(GLOB source_connection2_lib_network
@@ -54,6 +55,7 @@ file(GLOB source_connection2_lib_network
 ./src/network/PublisherCoreGRPC.cpp
 ./src/network/SubscriberCoreGRPC.cpp
 ./src/network/CompletionQueueExecutor.cpp
+./src/network/RPCStateMachine.cpp
 )
 
 file(GLOB protobuf_connection2_lib

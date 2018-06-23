@@ -4,7 +4,6 @@ BaseClientGRPC<ReaderWriter, ContextType>::BaseClientGRPC(grpc::CompletionQueue*
 	, _writeOperationInProgress(false)
 	, _completionQueue(completionQueue)
 	, _context(new ContextType())
-	, _status(INIT)
 {
 	_writtenProcessor = std::bind(&BaseClientGRPC<ReaderWriter, ContextType>::onWriteFinished, this, std::placeholders::_1);
 	_readProcessor = std::bind(&BaseClientGRPC<ReaderWriter, ContextType>::onReadFinished, this, std::placeholders::_1);
@@ -21,14 +20,11 @@ void BaseClientGRPC<ReaderWriter, ContextType>::onWriteFinished(bool ok)
 		_writeQueue.pop_front();
 	}
 	_writeOperationInProgress = false;
+
 	if (ok)
-	{
 		processWriteQueue();
-	}
 	else
-	{
-		setStatus(INACTIVE);
-	}
+		_statemachine.setState(RPCStateMachine::INACTIVE);
 }
 
 template<typename ReaderWriter, typename ContextType>
@@ -46,10 +42,7 @@ void BaseClientGRPC<ReaderWriter, ContextType>::onReadFinished(bool ok)
 		_client->Read(&_incomingMessage, &_readProcessor);
 	}
 	else
-	{
-		std::cout << "read not ok, setting to finished (current state: )" << getStatus() << std::endl;
-		setStatus(INACTIVE);
-	}
+		_statemachine.setState(RPCStateMachine::INACTIVE);
 }
 
 template<typename ReaderWriter, typename ContextType>
@@ -63,13 +56,13 @@ bool BaseClientGRPC<ReaderWriter, ContextType>::finishOperation()
 {
 	_operationsRunning--;
 
-	return !(_operationsRunning == 0 && getStatus() == FINISHED);
+	return !(_operationsRunning == 0 && _statemachine.getState() == RPCStateMachine::FINISHED);
 }
 
 template<typename ReaderWriter, typename ContextType>
 void BaseClientGRPC<ReaderWriter, ContextType>::awaitFinished()
 {
-	while (getStatus() != FINISHED || _operationsRunning > 0)
+	while (_statemachine.getState() != RPCStateMachine::FINISHED || _operationsRunning > 0)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
@@ -86,39 +79,43 @@ void BaseClientGRPC<ReaderWriter, ContextType>::startReader()
 template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::start()
 {
-	std::lock_guard<std::mutex> lock(_statusMutex);
-	if (_status == INIT) // No mutex is taken for _status here because at this point, the object is only monitored by its constructor
+	_statemachine.lock();
+	if (_statemachine.getState(false) == RPCStateMachine::INIT) // No mutex is taken for _status here because at this point, the object is only monitored by its constructor
 	{
-		_status = EXECUTING;
+		_statemachine.setState(RPCStateMachine::EXECUTING, false);
 
+		_statemachine.unlock();
 		return true;
 	}
+	_statemachine.unlock();
 	return false;
 }
 
 template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::stop()
 {
-	std::lock_guard<std::mutex> lock(_statusMutex); // mutex taken because user can call it concurrently - avoids entering twice in the if
-	if (_status == EXECUTING || _status == INACTIVE)
+	_statemachine.lock(); // mutex taken because user can call it concurrently - avoids entering twice in the if
+	if (_statemachine.getState(false) == RPCStateMachine::EXECUTING || _statemachine.getState(false) == RPCStateMachine::INACTIVE)
 	{
-		_status = DISPOSING;
+		_statemachine.setState(RPCStateMachine::DISPOSING, false);
 		
+		_statemachine.unlock();
 		return true;
 	}
+	_statemachine.unlock();
 	return false;
 }
 
 template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::isRunning() const
 {
-	return getStatus() == EXECUTING;
+	return _statemachine.getState() == RPCStateMachine::EXECUTING;
 }
 
 template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::receive(ghost::Message& message)
 {
-	if (getStatus() != EXECUTING)
+	if (_statemachine.getState() != RPCStateMachine::EXECUTING)
 	{
 		return false; // Rpc is finishing or had an error
 	}
@@ -152,7 +149,7 @@ bool BaseClientGRPC<ReaderWriter, ContextType>::lastReceived(ghost::Message& mes
 template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::send(const ghost::Message& message)
 {
-	if (getStatus() != EXECUTING)
+	if (_statemachine.getState() != RPCStateMachine::EXECUTING)
 	{
 		return false; // Rpc is finishing or had an error
 	}
@@ -204,31 +201,4 @@ void BaseClientGRPC<ReaderWriter, ContextType>::disposeGRPC()
 {
 	_client.reset();
 	_context.reset();
-}
-
-template<typename ReaderWriter, typename ContextType>
-void BaseClientGRPC<ReaderWriter, ContextType>::setStatus(CallStatus status)
-{
-	std::lock_guard<std::mutex> lock(_statusMutex);
-	bool transitionAllowed = false;
-	switch (_status)
-	{
-	case INIT:
-		transitionAllowed = true;
-		break;
-	case EXECUTING:
-	case INACTIVE:
-		transitionAllowed = (status == DISPOSING || status == FINISHED);
-		break;
-	case DISPOSING:
-		transitionAllowed = (status == FINISHED);
-		break;
-	case FINISHED:
-		transitionAllowed = false;
-		break;
-	default: break;
-	}
-
-	if (transitionAllowed)
-		_status = status;
 }

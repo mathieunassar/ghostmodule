@@ -20,11 +20,6 @@ RemoteClientGRPC::RemoteClientGRPC(protobuf::ServerClientService::AsyncService* 
 	start();
 }
 
-RemoteClientGRPC::~RemoteClientGRPC()
-{
-	std::cout << "destructor of remote client called: " << _operationsRunning << std::endl;
-}
-
 bool RemoteClientGRPC::start()
 {
 	if (!BaseClientGRPC::start())
@@ -50,7 +45,7 @@ void RemoteClientGRPC::onStarted(bool ok)
 	if (ok)
 		startReader();
 	else
-		setStatus(FINISHED); // RPC could not start, finish it!
+		_statemachine.setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
 
 	execute();
 }
@@ -59,7 +54,7 @@ void RemoteClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be
 {
 	finishOperation(); // don't care about the result, this method does not start more RPC operation
 
-	setStatus(FINISHED);
+	_statemachine.setState(RPCStateMachine::FINISHED);
 }
 
 bool RemoteClientGRPC::stop()
@@ -74,12 +69,12 @@ bool RemoteClientGRPC::stop()
 
 void RemoteClientGRPC::onDone(bool ok)
 {
-	setStatus(FINISHED);
+	_statemachine.setState(RPCStateMachine::FINISHED);
 }
 
 void RemoteClientGRPC::execute()
 {
-	if (getStatus() == EXECUTING) // if the RPC failed during onStarted, its state is here FINISHED
+	if (_statemachine.getState() == RPCStateMachine::EXECUTING) // if the RPC failed during onStarted, its state is here FINISHED
 	{
 		// call the application code
 		bool continueExecution = true;
@@ -93,6 +88,6 @@ void RemoteClientGRPC::execute()
 	// if operations were running after this gets deleted, function pointers to callbacks would be lead to segmentation faults.
 	awaitFinished();
 
-	disposeGRPC();
+	disposeGRPC(); // this method exists because it seems that gRPC needs a specific destruction order that the default destructor does not guarantee.
 	delete this;
 }

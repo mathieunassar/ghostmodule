@@ -18,14 +18,13 @@ namespace ghost
 			bool start() override;
 			bool stop() override;
 
-		public:
+		protected:
 			void onStarted(bool ok);
 			void onFinished(bool ok);
 
 			std::function<void(bool)> _startedProcessor;
 			std::function<void(bool)> _finishProcessor;
 			std::unique_ptr<protobuf::ServerClientService::Stub> _stub;
-			/*grpc::ClientContext* _context;*/
 			CompletionQueueExecutor _executor;
 
 			std::mutex _initializedMutex;

@@ -19,8 +19,6 @@ ClientGRPC::ClientGRPC()
 	_finishProcessor = std::bind(&ClientGRPC::onFinished, this, std::placeholders::_1);
 
 	_executor.start(2);
-
-	/*start();*/
 }
 
 /**
@@ -41,7 +39,7 @@ bool ClientGRPC::start()
 	
 	_initializedConditionVariable.wait(lk, [this] {return _initialized; });
 
-	return getStatus() == EXECUTING; // could fail during statup
+	return _statemachine.getState() == RPCStateMachine::EXECUTING; // could fail during statup
 }
 
 void ClientGRPC::onStarted(bool ok)
@@ -52,7 +50,7 @@ void ClientGRPC::onStarted(bool ok)
 	if (ok)
 		startReader();
 	else
-		setStatus(FINISHED); // RPC could not start, finish it!
+		_statemachine.setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
 
 	_initialized = true;
 	_initializedConditionVariable.notify_one();
@@ -80,6 +78,6 @@ void ClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be delet
 {
 	finishOperation(); // don't care about the result, this method does not start more RPC operation
 
-	setStatus(FINISHED);
+	_statemachine.setState(RPCStateMachine::FINISHED);
 
 }

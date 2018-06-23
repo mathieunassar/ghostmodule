@@ -59,7 +59,6 @@ void CompletionQueueExecutor::handleRpcs()
 		bool nextSuccess = _completionQueue->Next((void**)&tag.processor, &tag.ok);
 		if (!nextSuccess)
 		{
-			std::cout << "an error occurred!" << std::endl;
 			break;
 		}
 

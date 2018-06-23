@@ -17,7 +17,6 @@ namespace ghost
 		public:
 			RemoteClientGRPC(protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
 				std::shared_ptr<ClientHandler> callback);
-			~RemoteClientGRPC();
 
 			bool start() override;
 			bool stop() override;
@@ -33,7 +32,6 @@ namespace ghost
 			std::function<void(bool)> _doneProcessor;
 			protobuf::ServerClientService::AsyncService* _service;
 			std::shared_ptr<ClientHandler> _clientHandler;
-			//grpc::ServerContext _context;
 		};
 	}
 }

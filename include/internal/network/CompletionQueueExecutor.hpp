@@ -10,7 +10,6 @@ namespace ghost
 {
 	namespace internal
 	{
-		
 		class CompletionQueueExecutor
 		{
 		public:
