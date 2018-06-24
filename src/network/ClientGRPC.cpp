@@ -10,15 +10,15 @@
 
 using namespace ghost::internal;
 
-ClientGRPC::ClientGRPC()
-	: BaseClientGRPC(new grpc::CompletionQueue()) // Will be owned by the executor
+ClientGRPC::ClientGRPC(const ghost::NetworkConnectionConfiguration& config)
+	: BaseClientGRPC(config, new grpc::CompletionQueue()) // Will be owned by the executor
 	, _initialized(false)
 	, _executor(_completionQueue) // now owny the completion queue
 {
 	_startedProcessor = std::bind(&ClientGRPC::onStarted, this, std::placeholders::_1);
 	_finishProcessor = std::bind(&ClientGRPC::onFinished, this, std::placeholders::_1);
 
-	_executor.start(2);
+	_executor.start(_configuration.getThreadPoolSize());
 }
 
 /**
@@ -29,8 +29,11 @@ bool ClientGRPC::start()
 	if (!BaseClientGRPC::start())
 		return false;
 
+	std::ostringstream server_address;
+	server_address << _configuration.getServerIpAddress() << ":" << _configuration.getServerPortNumber();
+
 	startOperation();
-	auto channel = grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials());
+	auto channel = grpc::CreateChannel(server_address.str(), grpc::InsecureChannelCredentials());
 	_stub = protobuf::ServerClientService::NewStub(channel);
 
 	std::unique_lock<std::mutex> lk(_initializedMutex);

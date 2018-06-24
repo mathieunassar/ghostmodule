@@ -9,6 +9,7 @@
 #include <mutex>
 
 #include "../GenericMessageConverter.hpp"
+#include "../../NetworkConnectionConfiguration.hpp"
 #include "../../ClientHandler.hpp"
 #include "RPCStateMachine.hpp"
 
@@ -20,7 +21,7 @@ namespace ghost
 		class BaseClientGRPC : public ghost::Client
 		{
 		public:
-			BaseClientGRPC(grpc::CompletionQueue* completionQueue);
+			BaseClientGRPC(const ghost::NetworkConnectionConfiguration& config, grpc::CompletionQueue* completionQueue);
 			virtual ~BaseClientGRPC() = 0 {}
 
 			bool start() override;
@@ -56,7 +57,8 @@ namespace ghost
 			std::function<void(bool)> _readProcessor;
 			void onReadFinished(bool ok);
 
-			/* GRPC objects */
+			/* gRPC and connection objects */
+			ghost::NetworkConnectionConfiguration _configuration;
 			RPCStateMachine _statemachine;
 			grpc::CompletionQueue* _completionQueue;
 			std::unique_ptr<ReaderWriter> _client;

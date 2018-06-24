@@ -14,7 +14,11 @@ using namespace ghost;
 
 int main()
 {
-	internal::ClientGRPC client;
+	NetworkConnectionConfiguration config;
+	config.setServerIpAddress("127.0.0.1");
+	config.setServerPortNumber(50001);
+
+	internal::ClientGRPC client(config);
 
 	client.start();
 	ProtobufMessage message = ProtobufMessage::create<internal::protobuf::GenericMessageHeader>();

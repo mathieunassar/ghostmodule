@@ -9,18 +9,21 @@
 
 using namespace ghost::internal;
 
-ServerGRPC::ServerGRPC()
+ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config)
+	: _configuration(config)
 {
 
 }
 
 bool ServerGRPC::start()
 {
-	std::string server_address("127.0.0.1:50051");
+	std::ostringstream server_address;
+	server_address << _configuration.getServerIpAddress() << ":" << _configuration.getServerPortNumber();
+
 	grpc::ServerBuilder builder;
 
 	// Listen on the given address without any authentication mechanism.
-	builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+	builder.AddListeningPort(server_address.str(), ::grpc::InsecureServerCredentials());
 
 	// Register "_service" as the instance through which we'll communicate with
 	// clients. In this case it corresponds to an *asynchronous* service.
@@ -33,13 +36,13 @@ bool ServerGRPC::start()
 	// Finally assemble the server.
 	_grpcServer = builder.BuildAndStart();
 
-	_completionQueueExecutor.start(2);
+	_completionQueueExecutor.start(_configuration.getThreadPoolSize());
 
 	auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
-	for (size_t i = 0; i < 2; i++) // start as many calls as there can be concurrent rpcs
+	for (size_t i = 0; i < _configuration.getThreadPoolSize(); i++) // start as many calls as there can be concurrent rpcs
 	{
 		// Spawn a new CallData instance to serve new clients.
-		new RemoteClientGRPC(&_service, cq, _clientHandler);
+		new RemoteClientGRPC(_configuration, &_service, cq, _clientHandler);
 	}
 
 	return true;

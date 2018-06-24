@@ -1,7 +1,8 @@
 template<typename ReaderWriter, typename ContextType>
-BaseClientGRPC<ReaderWriter, ContextType>::BaseClientGRPC(grpc::CompletionQueue* completionQueue)
+BaseClientGRPC<ReaderWriter, ContextType>::BaseClientGRPC(const ghost::NetworkConnectionConfiguration& config, grpc::CompletionQueue* completionQueue)
 	: _operationsRunning(0)
 	, _writeOperationInProgress(false)
+	, _configuration(config)
 	, _completionQueue(completionQueue)
 	, _context(new ContextType())
 {
@@ -80,7 +81,7 @@ template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::start()
 {
 	_statemachine.lock();
-	if (_statemachine.getState(false) == RPCStateMachine::INIT) // No mutex is taken for _status here because at this point, the object is only monitored by its constructor
+	if (_statemachine.getState(false) == RPCStateMachine::INIT)
 	{
 		_statemachine.setState(RPCStateMachine::EXECUTING, false);
 

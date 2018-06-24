@@ -28,12 +28,16 @@ file(GLOB header_connection2_lib
 ./include/Subscriber.hpp
 ./include/Message.hpp
 ./include/ProtobufMessage.hpp
+./include/Configuration.hpp
+./include/ConnectionConfiguration.hpp
+./include/NetworkConnectionConfiguration.hpp
 )
 
 file(GLOB header_connection2_lib_internal
 ./include/internal/Publisher.hpp
 ./include/internal/Subscriber.hpp
 ./include/internal/GenericMessageConverter.hpp
+./include/internal/ProtobufConfiguration.hpp
 )
 
 file(GLOB header_connection2_lib_internal_network
@@ -68,6 +72,10 @@ file(GLOB protobuf_connection2_lib
 file(GLOB source_connection2_lib
 ./src/ProtobufMessage.cpp
 ./src/GenericMessageConverter.cpp
+./src/Configuration.cpp
+./src/ConnectionConfiguration.cpp
+./src/NetworkConnectionConfiguration.cpp
+./src/ProtobufConfiguration.cpp
 )
 
 source_group("Header Files\\internal" FILES ${header_connection2_lib_internal})
@@ -93,15 +101,16 @@ set_property(TARGET GhostConnection2 PROPERTY FOLDER "Libraries")
 
 # Unit tests: Primitive Serialization
 file(GLOB source_connection2_tests
-./tests/MessageTests.cpp)
+./tests/MessageTests.cpp
+./tests/ConfigurationTests.cpp)
 
 set(libraries_connection2_tests
 GhostConnection2)
 
-add_executable(Connection_MessageTests ${source_connection2_tests})
-target_link_libraries(Connection_MessageTests ${libraries_connection2_tests})
-set_property(TARGET Connection_MessageTests PROPERTY FOLDER "Tests/UnitTests")
-add_test(UnitTests_Connection_MessageTests Connection_MessageTests)
+add_executable(Connection_Tests ${source_connection2_tests})
+target_link_libraries(Connection_Tests ${libraries_connection2_tests})
+set_property(TARGET Connection_Tests PROPERTY FOLDER "Tests/UnitTests")
+add_test(UnitTests_Connection_Tests Connection_Tests)
 
 add_executable(Test1 ./tests/app1.cpp)
 target_link_libraries(Test1 GhostConnection2 zlib)

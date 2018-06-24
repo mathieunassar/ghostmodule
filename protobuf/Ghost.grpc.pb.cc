@@ -17,51 +17,6 @@ namespace ghost {
 namespace internal {
 namespace protobuf {
 
-static const char* PublisherSubscriberService_method_names[] = {
-  "/ghost.internal.protobuf.PublisherSubscriberService/publications",
-};
-
-std::unique_ptr< PublisherSubscriberService::Stub> PublisherSubscriberService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
-  (void)options;
-  std::unique_ptr< PublisherSubscriberService::Stub> stub(new PublisherSubscriberService::Stub(channel));
-  return stub;
-}
-
-PublisherSubscriberService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_publications_(PublisherSubscriberService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
-  {}
-
-::grpc::ClientReader< ::google::protobuf::Any>* PublisherSubscriberService::Stub::publicationsRaw(::grpc::ClientContext* context, const ::google::protobuf::Any& request) {
-  return ::grpc::internal::ClientReaderFactory< ::google::protobuf::Any>::Create(channel_.get(), rpcmethod_publications_, context, request);
-}
-
-::grpc::ClientAsyncReader< ::google::protobuf::Any>* PublisherSubscriberService::Stub::AsyncpublicationsRaw(::grpc::ClientContext* context, const ::google::protobuf::Any& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::google::protobuf::Any>::Create(channel_.get(), cq, rpcmethod_publications_, context, request, true, tag);
-}
-
-::grpc::ClientAsyncReader< ::google::protobuf::Any>* PublisherSubscriberService::Stub::PrepareAsyncpublicationsRaw(::grpc::ClientContext* context, const ::google::protobuf::Any& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::google::protobuf::Any>::Create(channel_.get(), cq, rpcmethod_publications_, context, request, false, nullptr);
-}
-
-PublisherSubscriberService::Service::Service() {
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      PublisherSubscriberService_method_names[0],
-      ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< PublisherSubscriberService::Service, ::google::protobuf::Any, ::google::protobuf::Any>(
-          std::mem_fn(&PublisherSubscriberService::Service::publications), this)));
-}
-
-PublisherSubscriberService::Service::~Service() {
-}
-
-::grpc::Status PublisherSubscriberService::Service::publications(::grpc::ServerContext* context, const ::google::protobuf::Any* request, ::grpc::ServerWriter< ::google::protobuf::Any>* writer) {
-  (void) context;
-  (void) request;
-  (void) writer;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-
 static const char* ServerClientService_method_names[] = {
   "/ghost.internal.protobuf.ServerClientService/connect",
 };

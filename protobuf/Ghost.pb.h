@@ -37,7 +37,7 @@ namespace protobuf_Ghost_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[2];
+  static const ::google::protobuf::internal::ParseTable schema[4];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -47,14 +47,26 @@ void InitDefaultsGenericMessageImpl();
 void InitDefaultsGenericMessage();
 void InitDefaultsGenericMessageHeaderImpl();
 void InitDefaultsGenericMessageHeader();
+void InitDefaultsConnectionConfigurationImpl();
+void InitDefaultsConnectionConfiguration();
+void InitDefaultsConnectionConfigurationFieldImpl();
+void InitDefaultsConnectionConfigurationField();
 inline void InitDefaults() {
   InitDefaultsGenericMessage();
   InitDefaultsGenericMessageHeader();
+  InitDefaultsConnectionConfiguration();
+  InitDefaultsConnectionConfigurationField();
 }
 }  // namespace protobuf_Ghost_2eproto
 namespace ghost {
 namespace internal {
 namespace protobuf {
+class ConnectionConfiguration;
+class ConnectionConfigurationDefaultTypeInternal;
+extern ConnectionConfigurationDefaultTypeInternal _ConnectionConfiguration_default_instance_;
+class ConnectionConfigurationField;
+class ConnectionConfigurationFieldDefaultTypeInternal;
+extern ConnectionConfigurationFieldDefaultTypeInternal _ConnectionConfigurationField_default_instance_;
 class GenericMessage;
 class GenericMessageDefaultTypeInternal;
 extern GenericMessageDefaultTypeInternal _GenericMessage_default_instance_;
@@ -314,6 +326,248 @@ class GenericMessageHeader : public ::google::protobuf::Message /* @@protoc_inse
   friend struct ::protobuf_Ghost_2eproto::TableStruct;
   friend void ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeaderImpl();
 };
+// -------------------------------------------------------------------
+
+class ConnectionConfiguration : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ghost.internal.protobuf.ConnectionConfiguration) */ {
+ public:
+  ConnectionConfiguration();
+  virtual ~ConnectionConfiguration();
+
+  ConnectionConfiguration(const ConnectionConfiguration& from);
+
+  inline ConnectionConfiguration& operator=(const ConnectionConfiguration& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ConnectionConfiguration(ConnectionConfiguration&& from) noexcept
+    : ConnectionConfiguration() {
+    *this = ::std::move(from);
+  }
+
+  inline ConnectionConfiguration& operator=(ConnectionConfiguration&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ConnectionConfiguration& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ConnectionConfiguration* internal_default_instance() {
+    return reinterpret_cast<const ConnectionConfiguration*>(
+               &_ConnectionConfiguration_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    2;
+
+  void Swap(ConnectionConfiguration* other);
+  friend void swap(ConnectionConfiguration& a, ConnectionConfiguration& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ConnectionConfiguration* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  ConnectionConfiguration* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const ConnectionConfiguration& from);
+  void MergeFrom(const ConnectionConfiguration& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(ConnectionConfiguration* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .ghost.internal.protobuf.ConnectionConfigurationField fields = 2;
+  int fields_size() const;
+  void clear_fields();
+  static const int kFieldsFieldNumber = 2;
+  const ::ghost::internal::protobuf::ConnectionConfigurationField& fields(int index) const;
+  ::ghost::internal::protobuf::ConnectionConfigurationField* mutable_fields(int index);
+  ::ghost::internal::protobuf::ConnectionConfigurationField* add_fields();
+  ::google::protobuf::RepeatedPtrField< ::ghost::internal::protobuf::ConnectionConfigurationField >*
+      mutable_fields();
+  const ::google::protobuf::RepeatedPtrField< ::ghost::internal::protobuf::ConnectionConfigurationField >&
+      fields() const;
+
+  // string name = 1;
+  void clear_name();
+  static const int kNameFieldNumber = 1;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  #if LANG_CXX11
+  void set_name(::std::string&& value);
+  #endif
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // @@protoc_insertion_point(class_scope:ghost.internal.protobuf.ConnectionConfiguration)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::ghost::internal::protobuf::ConnectionConfigurationField > fields_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  mutable int _cached_size_;
+  friend struct ::protobuf_Ghost_2eproto::TableStruct;
+  friend void ::protobuf_Ghost_2eproto::InitDefaultsConnectionConfigurationImpl();
+};
+// -------------------------------------------------------------------
+
+class ConnectionConfigurationField : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ghost.internal.protobuf.ConnectionConfigurationField) */ {
+ public:
+  ConnectionConfigurationField();
+  virtual ~ConnectionConfigurationField();
+
+  ConnectionConfigurationField(const ConnectionConfigurationField& from);
+
+  inline ConnectionConfigurationField& operator=(const ConnectionConfigurationField& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ConnectionConfigurationField(ConnectionConfigurationField&& from) noexcept
+    : ConnectionConfigurationField() {
+    *this = ::std::move(from);
+  }
+
+  inline ConnectionConfigurationField& operator=(ConnectionConfigurationField&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ConnectionConfigurationField& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ConnectionConfigurationField* internal_default_instance() {
+    return reinterpret_cast<const ConnectionConfigurationField*>(
+               &_ConnectionConfigurationField_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    3;
+
+  void Swap(ConnectionConfigurationField* other);
+  friend void swap(ConnectionConfigurationField& a, ConnectionConfigurationField& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ConnectionConfigurationField* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  ConnectionConfigurationField* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const ConnectionConfigurationField& from);
+  void MergeFrom(const ConnectionConfigurationField& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(ConnectionConfigurationField* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string name = 1;
+  void clear_name();
+  static const int kNameFieldNumber = 1;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  #if LANG_CXX11
+  void set_name(::std::string&& value);
+  #endif
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // string value = 2;
+  void clear_value();
+  static const int kValueFieldNumber = 2;
+  const ::std::string& value() const;
+  void set_value(const ::std::string& value);
+  #if LANG_CXX11
+  void set_value(::std::string&& value);
+  #endif
+  void set_value(const char* value);
+  void set_value(const char* value, size_t size);
+  ::std::string* mutable_value();
+  ::std::string* release_value();
+  void set_allocated_value(::std::string* value);
+
+  // @@protoc_insertion_point(class_scope:ghost.internal.protobuf.ConnectionConfigurationField)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  ::google::protobuf::internal::ArenaStringPtr value_;
+  mutable int _cached_size_;
+  friend struct ::protobuf_Ghost_2eproto::TableStruct;
+  friend void ::protobuf_Ghost_2eproto::InitDefaultsConnectionConfigurationFieldImpl();
+};
 // ===================================================================
 
 
@@ -552,9 +806,210 @@ inline void GenericMessageHeader::set_allocated_hostname(::std::string* hostname
   // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.GenericMessageHeader.hostname)
 }
 
+// -------------------------------------------------------------------
+
+// ConnectionConfiguration
+
+// string name = 1;
+inline void ConnectionConfiguration::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ConnectionConfiguration::name() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.ConnectionConfiguration.name)
+  return name_.GetNoArena();
+}
+inline void ConnectionConfiguration::set_name(const ::std::string& value) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.ConnectionConfiguration.name)
+}
+#if LANG_CXX11
+inline void ConnectionConfiguration::set_name(::std::string&& value) {
+  
+  name_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ghost.internal.protobuf.ConnectionConfiguration.name)
+}
+#endif
+inline void ConnectionConfiguration::set_name(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ghost.internal.protobuf.ConnectionConfiguration.name)
+}
+inline void ConnectionConfiguration::set_name(const char* value, size_t size) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ghost.internal.protobuf.ConnectionConfiguration.name)
+}
+inline ::std::string* ConnectionConfiguration::mutable_name() {
+  
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.ConnectionConfiguration.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ConnectionConfiguration::release_name() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.ConnectionConfiguration.name)
+  
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ConnectionConfiguration::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    
+  } else {
+    
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.ConnectionConfiguration.name)
+}
+
+// repeated .ghost.internal.protobuf.ConnectionConfigurationField fields = 2;
+inline int ConnectionConfiguration::fields_size() const {
+  return fields_.size();
+}
+inline void ConnectionConfiguration::clear_fields() {
+  fields_.Clear();
+}
+inline const ::ghost::internal::protobuf::ConnectionConfigurationField& ConnectionConfiguration::fields(int index) const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.ConnectionConfiguration.fields)
+  return fields_.Get(index);
+}
+inline ::ghost::internal::protobuf::ConnectionConfigurationField* ConnectionConfiguration::mutable_fields(int index) {
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.ConnectionConfiguration.fields)
+  return fields_.Mutable(index);
+}
+inline ::ghost::internal::protobuf::ConnectionConfigurationField* ConnectionConfiguration::add_fields() {
+  // @@protoc_insertion_point(field_add:ghost.internal.protobuf.ConnectionConfiguration.fields)
+  return fields_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::ghost::internal::protobuf::ConnectionConfigurationField >*
+ConnectionConfiguration::mutable_fields() {
+  // @@protoc_insertion_point(field_mutable_list:ghost.internal.protobuf.ConnectionConfiguration.fields)
+  return &fields_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ghost::internal::protobuf::ConnectionConfigurationField >&
+ConnectionConfiguration::fields() const {
+  // @@protoc_insertion_point(field_list:ghost.internal.protobuf.ConnectionConfiguration.fields)
+  return fields_;
+}
+
+// -------------------------------------------------------------------
+
+// ConnectionConfigurationField
+
+// string name = 1;
+inline void ConnectionConfigurationField::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ConnectionConfigurationField::name() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.ConnectionConfigurationField.name)
+  return name_.GetNoArena();
+}
+inline void ConnectionConfigurationField::set_name(const ::std::string& value) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.ConnectionConfigurationField.name)
+}
+#if LANG_CXX11
+inline void ConnectionConfigurationField::set_name(::std::string&& value) {
+  
+  name_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ghost.internal.protobuf.ConnectionConfigurationField.name)
+}
+#endif
+inline void ConnectionConfigurationField::set_name(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ghost.internal.protobuf.ConnectionConfigurationField.name)
+}
+inline void ConnectionConfigurationField::set_name(const char* value, size_t size) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ghost.internal.protobuf.ConnectionConfigurationField.name)
+}
+inline ::std::string* ConnectionConfigurationField::mutable_name() {
+  
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.ConnectionConfigurationField.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ConnectionConfigurationField::release_name() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.ConnectionConfigurationField.name)
+  
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ConnectionConfigurationField::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    
+  } else {
+    
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.ConnectionConfigurationField.name)
+}
+
+// string value = 2;
+inline void ConnectionConfigurationField::clear_value() {
+  value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ConnectionConfigurationField::value() const {
+  // @@protoc_insertion_point(field_get:ghost.internal.protobuf.ConnectionConfigurationField.value)
+  return value_.GetNoArena();
+}
+inline void ConnectionConfigurationField::set_value(const ::std::string& value) {
+  
+  value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ghost.internal.protobuf.ConnectionConfigurationField.value)
+}
+#if LANG_CXX11
+inline void ConnectionConfigurationField::set_value(::std::string&& value) {
+  
+  value_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ghost.internal.protobuf.ConnectionConfigurationField.value)
+}
+#endif
+inline void ConnectionConfigurationField::set_value(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ghost.internal.protobuf.ConnectionConfigurationField.value)
+}
+inline void ConnectionConfigurationField::set_value(const char* value, size_t size) {
+  
+  value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ghost.internal.protobuf.ConnectionConfigurationField.value)
+}
+inline ::std::string* ConnectionConfigurationField::mutable_value() {
+  
+  // @@protoc_insertion_point(field_mutable:ghost.internal.protobuf.ConnectionConfigurationField.value)
+  return value_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ConnectionConfigurationField::release_value() {
+  // @@protoc_insertion_point(field_release:ghost.internal.protobuf.ConnectionConfigurationField.value)
+  
+  return value_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ConnectionConfigurationField::set_allocated_value(::std::string* value) {
+  if (value != NULL) {
+    
+  } else {
+    
+  }
+  value_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set_allocated:ghost.internal.protobuf.ConnectionConfigurationField.value)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

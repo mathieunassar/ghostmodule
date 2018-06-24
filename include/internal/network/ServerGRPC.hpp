@@ -7,7 +7,9 @@
 #include <grpcpp/server.h>
 #include "../../../protobuf/Ghost.pb.h"
 #include "../../../protobuf/Ghost.grpc.pb.h"
+
 #include "../../Server.hpp"
+#include "../../NetworkConnectionConfiguration.hpp"
 #include "CompletionQueueExecutor.hpp"
 
 namespace ghost
@@ -23,7 +25,7 @@ namespace ghost
 		class ServerGRPC : public ghost::Server
 		{
 		public:
-			ServerGRPC();
+			ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;
 			bool stop() override;
@@ -32,6 +34,8 @@ namespace ghost
 			void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
 
 		private:
+			ghost::NetworkConnectionConfiguration _configuration;
+
 			protobuf::ServerClientService::AsyncService _service;
 			std::unique_ptr<grpc::Server> _grpcServer;
 			CompletionQueueExecutor _completionQueueExecutor;

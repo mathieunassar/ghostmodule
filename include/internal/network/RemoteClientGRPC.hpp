@@ -15,7 +15,8 @@ namespace ghost
 		class RemoteClientGRPC : public BaseClientGRPC<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ServerContext>
 		{
 		public:
-			RemoteClientGRPC(protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
+			RemoteClientGRPC(const NetworkConnectionConfiguration& config,
+				protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
 				std::shared_ptr<ClientHandler> callback);
 
 			bool start() override;

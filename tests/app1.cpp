@@ -27,7 +27,11 @@ int main()
 {
 	std::cout << "server starting" << std::endl;
 
-	internal::ServerGRPC server;
+	NetworkConnectionConfiguration config;
+	config.setServerIpAddress("127.0.0.1");
+	config.setServerPortNumber(50001);
+
+	internal::ServerGRPC server(config);
 	server.setClientHandler(std::make_shared<TestClientHandler>());
 	server.start();
 	std::cout << "server started" << std::endl;

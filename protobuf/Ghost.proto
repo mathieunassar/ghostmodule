@@ -6,11 +6,6 @@ option java_multiple_files = true;
 
 package ghost.internal.protobuf;
 
-service PublisherSubscriberService
-{
-	rpc publications(google.protobuf.Any) returns (stream google.protobuf.Any) {}
-}
-
 service ServerClientService
 {
 	rpc connect(stream google.protobuf.Any) returns (stream google.protobuf.Any) {}
@@ -37,4 +32,21 @@ message GenericMessageHeader
 	
 	// emitting machine
 	string hostname = 2;
+}
+
+// connection configuration structure
+message ConnectionConfiguration
+{
+	string name = 1;
+	
+	repeated ConnectionConfigurationField fields = 2;
+}
+
+message ConnectionConfigurationField
+{
+	// name of the configuration element
+	string name = 1;
+	
+	// serialized value of the element
+	string value = 2;
 }

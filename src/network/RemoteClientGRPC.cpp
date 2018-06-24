@@ -2,9 +2,10 @@
 
 using namespace ghost::internal;
 
-RemoteClientGRPC::RemoteClientGRPC(protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
+RemoteClientGRPC::RemoteClientGRPC(const ghost::NetworkConnectionConfiguration& config,
+		protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
 		std::shared_ptr<ghost::ClientHandler> callback)
-	: BaseClientGRPC(completionQueue)
+	: BaseClientGRPC(config, completionQueue)
 	, _service(service)
 	, _clientHandler(callback)
 {
@@ -39,7 +40,7 @@ void RemoteClientGRPC::onStarted(bool ok)
 	{
 		// restart the process of creating the request for the next client
 		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueue);
-		new RemoteClientGRPC(_service, cq, _clientHandler);
+		new RemoteClientGRPC(_configuration, _service, cq, _clientHandler);
 	}
 
 	if (!finishOperation())
