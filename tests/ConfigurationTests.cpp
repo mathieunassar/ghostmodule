@@ -78,4 +78,10 @@ TEST_CASE("test_connectionConfiguration")
 	config.setConnectionId(45);
 
 	REQUIRE(config.getConnectionId() == 45);
+
+	config.setOperationBlocking(false);
+	REQUIRE(!config.isOperationBlocking());
+
+	config.setOperationBlocking(true);
+	REQUIRE(config.isOperationBlocking());
 }

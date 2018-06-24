@@ -30,6 +30,7 @@ int main()
 	NetworkConnectionConfiguration config;
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(50001);
+	config.setThreadPoolSize(8);
 
 	internal::ServerGRPC server(config);
 	server.setClientHandler(std::make_shared<TestClientHandler>());

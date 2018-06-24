@@ -6,12 +6,15 @@ namespace ghost::internal
 {
 	static std::string CONNECTIONCONFIGURATION_ID = "CONNECTIONCONFIGURATION_ID";
 	static std::string CONNECTIONCONFIGURATION_THREADPOOLSIZE = "CONNECTIONCONFIGURATION_THREADPOOLSIZE";
+	static std::string CONNECTIONCONFIGURATION_BLOCKING = "CONNECTIONCONFIGURATION_BLOCKING";
 }
 
 ConnectionConfiguration::ConnectionConfiguration(const std::string& name)
 	: Configuration(name)
 {
 	addAttribute(internal::CONNECTIONCONFIGURATION_ID, (int)-1);
+	addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, (int)2);
+	addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, true);
 }
 
 int ConnectionConfiguration::getConnectionId() const
@@ -28,6 +31,13 @@ int ConnectionConfiguration::getThreadPoolSize() const
 	return res;
 }
 
+bool ConnectionConfiguration::isOperationBlocking() const
+{
+	bool res;
+	getAttribute<bool>(internal::CONNECTIONCONFIGURATION_BLOCKING, res, true); // if the field was removed, returns -1
+	return res;
+}
+
 // setters of connection configuration parameters
 void ConnectionConfiguration::setConnectionId(int id)
 {
@@ -37,4 +47,9 @@ void ConnectionConfiguration::setConnectionId(int id)
 void ConnectionConfiguration::setThreadPoolSize(int size)
 {
 	addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, size, true); // checks if the attribute is there as well
+}
+
+void ConnectionConfiguration::setOperationBlocking(bool value)
+{
+	addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, true); // checks if the attribute is there as well
 }

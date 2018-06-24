@@ -13,10 +13,12 @@ namespace ghost
 		// getters of connection configuration parameters
 		int getConnectionId() const;
 		int getThreadPoolSize() const;
+		bool isOperationBlocking() const;
 
 		// setters of connection configuration parameters
 		void setConnectionId(int id);
 		void setThreadPoolSize(int size);
+		void setOperationBlocking(bool value);
 	};
 }
 

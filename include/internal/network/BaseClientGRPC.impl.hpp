@@ -125,7 +125,11 @@ bool BaseClientGRPC<ReaderWriter, ContextType>::receive(ghost::Message& message)
 	size_t queueSize = _readQueue.size();
 	_readQueueMutex.unlock();
 
-	// TODO non blocking calls in connection configuration
+	if (!_configuration.isOperationBlocking() && queueSize == 0)
+		return false; // call is non blocking and there is nothing to read, return false. User can find out that there is no issue by calling "isRunnung()"
+
+	// else -> either connection is blocking or there is something to read
+
 	while (queueSize == 0) // blocks until a message is there, use blocking queue instead!
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -169,11 +173,15 @@ bool BaseClientGRPC<ReaderWriter, ContextType>::send(const ghost::Message& messa
 
 	processWriteQueue();
 
+	if (!_configuration.isOperationBlocking())
+		return true; // call is non-blocking, return directly
+
+	// else -> call is blocking, we wait here until the message is sent
+
 	_writeQueueMutex.lock();
 	size_t queueSize = _writeQueue.size();
 	_writeQueueMutex.unlock();
 
-	// TODO unblocking calls in the connection configuration
 	while (queueSize != 0) // blocks until the message is gone, use blocking queue instead!
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
