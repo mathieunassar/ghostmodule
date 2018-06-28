@@ -39,8 +39,9 @@ namespace ghost
 			std::function<void(bool)> _doneProcessor;
 			protobuf::ServerClientService::AsyncService* _service;
 			std::shared_ptr<ClientHandler> _clientHandler;
-			ClientManager* _clientManager;
 			std::thread _executionThread;
+
+			ClientManager* _clientManager;
 			ghost::Server* _server;
 		};
 	}
