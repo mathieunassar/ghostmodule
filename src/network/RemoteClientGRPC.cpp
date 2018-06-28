@@ -4,10 +4,14 @@ using namespace ghost::internal;
 
 RemoteClientGRPC::RemoteClientGRPC(const ghost::NetworkConnectionConfiguration& config,
 		protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
-		std::shared_ptr<ghost::ClientHandler> callback)
+		std::shared_ptr<ghost::ClientHandler> callback,
+		ClientManager* clientManager,
+		ghost::Server* server)
 	: BaseClientGRPC(config, completionQueue)
 	, _service(service)
 	, _clientHandler(callback)
+	, _clientManager(clientManager)
+	, _server(server)
 {
 	_client = std::unique_ptr<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>>
 		(new grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>(_context.get()));
@@ -19,6 +23,13 @@ RemoteClientGRPC::RemoteClientGRPC(const ghost::NetworkConnectionConfiguration& 
 	_context->AsyncNotifyWhenDone(&_doneProcessor);
 
 	start();
+}
+
+RemoteClientGRPC::~RemoteClientGRPC()
+{
+	if (_executionThread.joinable())
+		_executionThread.join();
+	std::cout << "remote client destructor called" << std::endl;
 }
 
 bool RemoteClientGRPC::start()
@@ -40,18 +51,24 @@ void RemoteClientGRPC::onStarted(bool ok)
 	{
 		// restart the process of creating the request for the next client
 		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueue);
-		new RemoteClientGRPC(_configuration, _service, cq, _clientHandler);
+		_clientManager->addClient(new RemoteClientGRPC(_configuration, _service, cq, _clientHandler, _clientManager, _server));
 	}
 
 	if (!finishOperation())
-		return;
+	{
+		disposeGRPC();
+		_clientManager->releaseClient(this);
+	}
 
 	if (ok)
+	{
+		_statemachine.setState(RPCStateMachine::EXECUTING);
 		startReader();
+	}
 	else
 		_statemachine.setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
 
-	execute();
+	_executionThread = std::thread(&RemoteClientGRPC::execute, this);
 }
 
 void RemoteClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be deleted anyway
@@ -66,8 +83,12 @@ bool RemoteClientGRPC::stop()
 	if (!BaseClientGRPC::stop())
 		return false;
 
-	startOperation();
-	_client->Finish(grpc::Status::OK, &_finishProcessor);
+	// if the state switched to DISPOSING, start the finish operation
+	if (_statemachine.getState() == RPCStateMachine::DISPOSING)
+	{
+		startOperation();
+		_client->Finish(grpc::Status::OK, &_finishProcessor);
+	}
 	return true;
 }
 
@@ -82,10 +103,18 @@ void RemoteClientGRPC::execute()
 	{
 		// call the application code
 		bool continueExecution = true;
+		bool keepClientAlive = false;
+		
 		if (_clientHandler)
-			continueExecution = _clientHandler->handle(*this);
+			continueExecution = _clientHandler->handle(*this, keepClientAlive);
 
-		stop();
+		// only stop the client if the user left "keepClientAlive" to false
+		if (!keepClientAlive)
+			stop();
+
+		// todo if continueExecution is false, stop the server
+		if (!continueExecution)
+			_server->stop();
 	}
 
 	// only delete this object when the state is finished and no other operations are running
@@ -93,5 +122,5 @@ void RemoteClientGRPC::execute()
 	awaitFinished();
 
 	disposeGRPC(); // this method exists because it seems that gRPC needs a specific destruction order that the default destructor does not guarantee.
-	delete this;
+	_clientManager->releaseClient(this);
 }

@@ -1,11 +1,14 @@
 #ifndef GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 
+#include <thread>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
 #include "BaseClientGRPC.hpp"
+#include "ClientManager.hpp"
+#include "../../Server.hpp"
 #include "../../ClientHandler.hpp"
 
 namespace ghost
@@ -17,7 +20,10 @@ namespace ghost
 		public:
 			RemoteClientGRPC(const NetworkConnectionConfiguration& config,
 				protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
-				std::shared_ptr<ClientHandler> callback);
+				std::shared_ptr<ClientHandler> callback,
+				ClientManager* clientManager,
+				ghost::Server* server);
+			~RemoteClientGRPC();
 
 			bool start() override;
 			bool stop() override;
@@ -33,6 +39,9 @@ namespace ghost
 			std::function<void(bool)> _doneProcessor;
 			protobuf::ServerClientService::AsyncService* _service;
 			std::shared_ptr<ClientHandler> _clientHandler;
+			ClientManager* _clientManager;
+			std::thread _executionThread;
+			ghost::Server* _server;
 		};
 	}
 }

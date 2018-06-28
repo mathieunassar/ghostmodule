@@ -81,9 +81,9 @@ template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::start()
 {
 	_statemachine.lock();
-	if (_statemachine.getState(false) == RPCStateMachine::INIT)
+	if (_statemachine.getState(false) == RPCStateMachine::CREATED)
 	{
-		_statemachine.setState(RPCStateMachine::EXECUTING, false);
+		_statemachine.setState(RPCStateMachine::INIT, false);
 
 		_statemachine.unlock();
 		return true;

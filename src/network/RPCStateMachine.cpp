@@ -3,7 +3,7 @@
 using namespace ghost::internal;
 
 RPCStateMachine::RPCStateMachine()
-	: _state(INIT)
+	: _state(CREATED)
 {
 
 }
@@ -27,8 +27,11 @@ void RPCStateMachine::setState(State state, bool lockk)
 	bool transitionAllowed = false;
 	switch (_state)
 	{
+	case CREATED:
+		transitionAllowed = (state != EXECUTING && state != INACTIVE);
+		break;
 	case INIT:
-		transitionAllowed = true;
+		transitionAllowed = (state != CREATED);
 		break;
 	case EXECUTING:
 	case INACTIVE:

@@ -9,7 +9,7 @@ using namespace ghost;
 class TestClientHandler : public ClientHandler
 {
 public:
-	bool handle(Client& client)
+	bool handle(Client& client, bool& keepClientAlive)
 	{
 		std::cout << "a cliant!" << std::endl;
 
@@ -19,7 +19,12 @@ public:
 		long sentResult = client.send(ProtobufMessage(msg));
 		std::cout << "sent a message to the lcient!! " << sentResult << std::endl;
 
-		return true;
+		//keepClientAlive = true;
+
+		static int john = 0;
+		john++;
+
+		return john < 2;
 	}
 };
 
@@ -30,13 +35,16 @@ int main()
 	NetworkConnectionConfiguration config;
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(50001);
-	config.setThreadPoolSize(8);
+	config.setThreadPoolSize(1);
 
 	internal::ServerGRPC server(config);
 	server.setClientHandler(std::make_shared<TestClientHandler>());
 	server.start();
 	std::cout << "server started" << std::endl;
-	Sleep(10000);
+	while (server.isRunning())
+	{
+		Sleep(100);
+	}
 
 	server.stop();
 	std::cout << "exiting" << std::endl;

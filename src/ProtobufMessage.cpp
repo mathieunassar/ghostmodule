@@ -4,7 +4,6 @@ using namespace ghost;
 
 //const std::string internal::GHOSTMESSAGE_FORMAT_NAME = "PROTOBUF";
 
-
 /**
  * Constructor of the message. The argument must not be nullptr or default initialized.
  * @author	Mathieu Nassar
@@ -17,7 +16,6 @@ ProtobufMessage::ProtobufMessage(std::shared_ptr<google::protobuf::Message> mess
 
 }
 
-
 /**
  * Gets the message format name.
  * @author	Mathieu Nassar
@@ -29,7 +27,6 @@ std::string ProtobufMessage::getMessageFormatName() const
 {
 	return internal::GHOSTMESSAGE_FORMAT_NAME;
 }
-
 
 /**
  * Gets the protobuf message type name.
@@ -44,7 +41,6 @@ std::string ProtobufMessage::getMessageTypeName() const
 
 	return _payload->GetTypeName();
 }
-
 
 /**
  * Gets the protobuf message.

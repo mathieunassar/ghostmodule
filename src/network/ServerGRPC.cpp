@@ -11,12 +11,23 @@ using namespace ghost::internal;
 
 ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config)
 	: _configuration(config)
+	, _running(false)
 {
 
 }
 
+ServerGRPC::~ServerGRPC()
+{
+	
+}
+
 bool ServerGRPC::start()
 {
+	if (_running)
+		return false;
+
+	_running = true;
+
 	std::ostringstream server_address;
 	server_address << _configuration.getServerIpAddress() << ":" << _configuration.getServerPortNumber();
 
@@ -42,14 +53,21 @@ bool ServerGRPC::start()
 	for (size_t i = 0; i < _configuration.getThreadPoolSize(); i++) // start as many calls as there can be concurrent rpcs
 	{
 		// Spawn a new CallData instance to serve new clients.
-		new RemoteClientGRPC(_configuration, &_service, cq, _clientHandler);
+		_clientManager.addClient(new RemoteClientGRPC(_configuration, &_service, cq, _clientHandler, &_clientManager, this));
 	}
+	_clientManager.start();
 
 	return true;
 }
 
 bool ServerGRPC::stop()
 {
+	if (!_running)
+		return false;
+
+	_running = false;
+
+	_clientManager.stop();
 	_grpcServer->Shutdown();
 	_completionQueueExecutor.stop(); // shutdowns the completion queue
 
@@ -58,7 +76,7 @@ bool ServerGRPC::stop()
 
 bool ServerGRPC::isRunning() const
 {
-	return true;
+	return _running;
 }
 
 void ServerGRPC::setClientHandler(std::shared_ptr<ghost::ClientHandler> handler)

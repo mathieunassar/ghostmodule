@@ -15,7 +15,7 @@ namespace ghost
 	public:
 		virtual ~ClientHandler() {}
 
-		virtual bool handle(Client& client) = 0;
+		virtual bool handle(Client& client, bool& keepClientAlive) = 0;
 	};
 }
 

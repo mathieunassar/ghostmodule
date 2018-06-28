@@ -51,7 +51,10 @@ void ClientGRPC::onStarted(bool ok)
 		return;
 
 	if (ok)
+	{
+		_statemachine.setState(RPCStateMachine::EXECUTING);
 		startReader();
+	}
 	else
 		_statemachine.setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
 
@@ -66,9 +69,12 @@ bool ClientGRPC::stop()
 		return false;
 	}
 
-	startOperation();
-	grpc::Status status;
-	_client->Finish(&status, &_finishProcessor);
+	grpc::Status status = grpc::Status::CANCELLED;
+	if (_statemachine.getState() == RPCStateMachine::DISPOSING)
+	{
+		startOperation();
+		_client->Finish(&status, &_finishProcessor);
+	}
 
 	awaitFinished();
 	_executor.stop();

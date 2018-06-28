@@ -13,6 +13,7 @@ namespace ghost
 		public:
 			enum State
 			{
+				CREATED,
 				INIT,
 				EXECUTING, INACTIVE,
 				DISPOSING,
