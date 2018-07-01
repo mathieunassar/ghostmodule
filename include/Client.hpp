@@ -5,6 +5,7 @@
 
 #include "Connection.hpp"
 #include "Message.hpp"
+#include "MessageHandler.hpp"
 
 namespace ghost
 {
@@ -37,6 +38,8 @@ namespace ghost
 		* @return	A long.
 		*/
 		virtual bool send(const ghost::Message& message) = 0;
+
+		virtual std::shared_ptr<ghost::MessageHandler> addMessageHandler() = 0;
 	};
 }
 

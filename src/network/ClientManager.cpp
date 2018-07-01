@@ -27,6 +27,7 @@ void ClientManager::stop()
 	{
 		(*it)->stop();
 	}
+
 	_clientManagerThreadEnable = false;
 	if (_clientManagerThread.joinable())
 		_clientManagerThread.join();

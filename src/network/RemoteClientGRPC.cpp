@@ -29,7 +29,6 @@ RemoteClientGRPC::~RemoteClientGRPC()
 {
 	if (_executionThread.joinable())
 		_executionThread.join();
-	std::cout << "remote client destructor called" << std::endl;
 }
 
 bool RemoteClientGRPC::start()
@@ -112,7 +111,7 @@ void RemoteClientGRPC::execute()
 		if (!keepClientAlive)
 			stop();
 
-		// todo if continueExecution is false, stop the server
+		// if continueExecution is false, stop the server
 		if (!continueExecution)
 			_server->stop();
 	}

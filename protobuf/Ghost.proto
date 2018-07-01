@@ -22,6 +22,9 @@ message GenericMessage
 	
 	// format name of the message
 	string format = 3;
+	
+	// type name of the message
+	string name = 4;
 }
 
 // header of a GenericMessage

@@ -29,6 +29,7 @@ bool GenericMessageConverter::create(google::protobuf::Any& message, const ghost
 
 		auto defaultPayload = std::make_shared<protobuf::GenericMessage>();
 		defaultPayload->set_format(formatName);
+		defaultPayload->set_name(from.getMessageTypeName());
 		defaultPayload->set_serial(fromSerialized);
 		payload = defaultPayload;
 	}
@@ -42,6 +43,7 @@ bool GenericMessageConverter::create(google::protobuf::Any& message, const ghost
 bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost::Message& to)
 {
 	std::string targetFormatName = to.getMessageFormatName();
+	std::string targetTypeName = to.getMessageTypeName();
 
 	if (getTrueTypeName(message) == protobuf::GenericMessage().GetTypeName()) // payload is of a user defined format
 	{
@@ -55,6 +57,11 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 		if (defaultPayload.format() != targetFormatName)
 		{
 			return false; // source format is different than the format expected by the user, return false as documented
+		}
+
+		if (defaultPayload.name() != targetTypeName)
+		{
+			return false;
 		}
 
 		// deserialize
@@ -94,6 +101,35 @@ std::string GenericMessageConverter::getFormatName(const google::protobuf::Any& 
 	}
 
 	return defaultPayload.format(); // return the format stored in the default payload message
+}
+
+std::pair<std::string, std::string> GenericMessageConverter::getFormatAndName(const google::protobuf::Any& message)
+{
+	std::string format, name;
+
+	// if the any message is not a default payload, then it's already a protobuf message
+	if (message.GetTypeName() != protobuf::GenericMessage().GetTypeName())
+	{
+		format = internal::GHOSTMESSAGE_FORMAT_NAME;
+		name = getTrueTypeName(message);
+	}
+	else
+	{
+		protobuf::GenericMessage defaultPayload;
+		bool unpackSuccess = message.UnpackTo(&defaultPayload);
+		if (!unpackSuccess)
+		{
+			format = "UNKNOWN"; // cannot convert it back to a default payload although it is not a native protobuf message... who sent the message!?
+			name = "UNKNOWN";
+		}
+		else
+		{
+			format = defaultPayload.format();
+			name = defaultPayload.name();
+		}
+	}
+
+	return std::make_pair(format, name);
 }
 
 std::string GenericMessageConverter::getTrueTypeName(const google::protobuf::Any& message)

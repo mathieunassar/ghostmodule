@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "internal/Publisher.hpp"
 #include "Connection.hpp"
 
 namespace ghost
@@ -18,10 +17,7 @@ namespace ghost
 		 * @date	21.05.2018
 		 * @param	message	The message.
 		 */
-		void publish(const MessageType& message);
-
-	private:
-		std::shared_ptr<internal::Publisher<MessageType>> _internal;
+		virtual void publish(const MessageType& message) = 0;
 	};
 }
 

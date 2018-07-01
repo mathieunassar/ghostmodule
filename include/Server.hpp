@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "internal/Server.hpp"
 #include "Connection.hpp"
 #include "ClientHandler.hpp"
 

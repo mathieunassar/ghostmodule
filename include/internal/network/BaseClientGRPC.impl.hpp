@@ -36,9 +36,15 @@ void BaseClientGRPC<ReaderWriter, ContextType>::onReadFinished(bool ok)
 
 	if (ok)
 	{
-		std::lock_guard<std::mutex> lock(_readQueueMutex);
-		_readQueue.push_back(_incomingMessage); // TODO maybe, client callback instead of queue?
-
+		if (_messageHandler) // if there is a message handler, don't use the read queue
+		{
+			_messageHandler->handle(_incomingMessage);
+		}
+		else
+		{
+			std::lock_guard<std::mutex> lock(_readQueueMutex);
+			_readQueue.push_back(_incomingMessage);
+		}
 		startOperation();
 		_client->Read(&_incomingMessage, &_readProcessor);
 	}
@@ -191,6 +197,13 @@ bool BaseClientGRPC<ReaderWriter, ContextType>::send(const ghost::Message& messa
 	}
 
 	return true;
+}
+
+template<typename ReaderWriter, typename ContextType>
+std::shared_ptr<ghost::MessageHandler> BaseClientGRPC<ReaderWriter, ContextType>::addMessageHandler()
+{
+	_messageHandler = std::make_shared<MessageHandler>();
+	return _messageHandler;
 }
 
 template<typename ReaderWriter, typename ContextType>

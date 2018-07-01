@@ -9,6 +9,7 @@
 #include <mutex>
 
 #include "../GenericMessageConverter.hpp"
+#include "../MessageHandler.hpp"
 #include "../../NetworkConnectionConfiguration.hpp"
 #include "../../ClientHandler.hpp"
 #include "RPCStateMachine.hpp"
@@ -32,6 +33,8 @@ namespace ghost
 			bool lastReceived(ghost::Message& message) override;
 			bool send(const ghost::Message& message) override;
 
+			std::shared_ptr<ghost::MessageHandler> addMessageHandler() override;
+
 		protected:
 			void startReader();
 
@@ -52,6 +55,7 @@ namespace ghost
 			/* Read operations */
 			std::deque<google::protobuf::Any> _readQueue;
 			std::mutex _readQueueMutex;
+			std::shared_ptr<MessageHandler> _messageHandler;
 			google::protobuf::Any _incomingMessage;
 			google::protobuf::Any _nextMessage;
 			std::function<void(bool)> _readProcessor;

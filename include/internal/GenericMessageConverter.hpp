@@ -37,7 +37,6 @@ namespace ghost
 			 */
 			static bool create(google::protobuf::Any& message, const ghost::Message& from);
 
-
 			/**
 			 * Parses the GenericMessage into the provided Message instance. If the conversion goes wrong,
 			 * this method returns false.
@@ -48,7 +47,6 @@ namespace ghost
 			 * @return	True if it succeeds, false if it fails.
 			 */
 			static bool parse(const google::protobuf::Any& message, ghost::Message& to);
-
 
 			/**
 			 * Gets the format name of the encapsulated message. If the message sent was originally a
@@ -64,6 +62,8 @@ namespace ghost
 			 * @return	The format name.
 			 */
 			static std::string getFormatName(const google::protobuf::Any& message);
+
+			static std::pair<std::string, std::string> getFormatAndName(const google::protobuf::Any& message);
 
 			/**
 			 * Gets the name of the contained message without the host part of the Any URL.

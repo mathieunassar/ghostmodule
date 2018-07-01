@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include <internal/network/ServerGRPC.hpp>
+#include <internal/network/PublisherGRPC.hpp>
 #include <ProtobufMessage.hpp>
 
 using namespace ghost;
@@ -19,12 +20,12 @@ public:
 		long sentResult = client.send(ProtobufMessage(msg));
 		std::cout << "sent a message to the lcient!! " << sentResult << std::endl;
 
-		//keepClientAlive = true;
+		keepClientAlive = true;
 
 		static int john = 0;
 		john++;
 
-		return john < 2;
+		return john < 20;
 	}
 };
 
@@ -35,18 +36,35 @@ int main()
 	NetworkConnectionConfiguration config;
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(50001);
-	config.setThreadPoolSize(1);
+	config.setThreadPoolSize(8);
 
-	internal::ServerGRPC server(config);
-	server.setClientHandler(std::make_shared<TestClientHandler>());
+	internal::PublisherGRPC<internal::protobuf::GenericMessageHeader> server(config);
 	server.start();
+
+	size_t count = 0;
+	while (count < 50)
+	{
+		internal::protobuf::GenericMessageHeader msg;
+		msg.set_timestamp(count);
+
+		server.publish(msg);
+
+		std::cout << "published message #" << count << ", server ok? " << server.isRunning() << std::endl;
+		count++;
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+
+	/*internal::ServerGRPC server(config);
+	server.setClientHandler(std::make_shared<TestClientHandler>());
+	
 	std::cout << "server started" << std::endl;
 	while (server.isRunning())
 	{
 		Sleep(100);
-	}
+	}*/
 
-	server.stop();
 	std::cout << "exiting" << std::endl;
+	server.stop();
+	std::cout << "finished" << std::endl;
 	return 0;
 }

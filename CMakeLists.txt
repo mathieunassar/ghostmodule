@@ -23,6 +23,7 @@ file(GLOB header_connection2_lib
 ./include/Connection.hpp
 ./include/Server.hpp
 ./include/ClientHandler.hpp
+./include/MessageHandler.hpp
 ./include/Client.hpp
 ./include/Publisher.hpp
 ./include/Subscriber.hpp
@@ -34,10 +35,10 @@ file(GLOB header_connection2_lib
 )
 
 file(GLOB header_connection2_lib_internal
-./include/internal/Publisher.hpp
-./include/internal/Subscriber.hpp
 ./include/internal/GenericMessageConverter.hpp
 ./include/internal/ProtobufConfiguration.hpp
+./include/internal/MessageHandler.hpp
+./include/internal/MessageHandlerCallback.hpp
 )
 
 file(GLOB header_connection2_lib_internal_network
@@ -46,8 +47,11 @@ file(GLOB header_connection2_lib_internal_network
 ./include/internal/network/BaseClientGRPC.impl.hpp
 ./include/internal/network/ClientGRPC.hpp
 ./include/internal/network/RemoteClientGRPC.hpp
-./include/internal/network/PublisherCoreGRPC.hpp
-./include/internal/network/SubscriberCoreGRPC.hpp
+./include/internal/network/PublisherGRPC.hpp
+./include/internal/network/PublisherGRPC.impl.hpp
+./include/internal/network/PublisherClientHandler.hpp
+./include/internal/network/SubscriberGRPC.hpp
+./include/internal/network/SubscriberGRPC.impl.hpp
 ./include/internal/network/CompletionQueueExecutor.hpp
 ./include/internal/network/RPCStateMachine.hpp
 ./include/internal/network/ClientManager.hpp
@@ -57,8 +61,9 @@ file(GLOB source_connection2_lib_network
 ./src/network/ServerGRPC.cpp
 ./src/network/ClientGRPC.cpp
 ./src/network/RemoteClientGRPC.cpp
-./src/network/PublisherCoreGRPC.cpp
-./src/network/SubscriberCoreGRPC.cpp
+./src/network/PublisherGRPC.cpp
+./src/network/PublisherClientHandler.cpp
+./src/network/SubscriberGRPC.cpp
 ./src/network/CompletionQueueExecutor.cpp
 ./src/network/RPCStateMachine.cpp
 ./src/network/ClientManager.cpp
@@ -73,6 +78,7 @@ file(GLOB protobuf_connection2_lib
 
 file(GLOB source_connection2_lib
 ./src/ProtobufMessage.cpp
+./src/MessageHandler.cpp
 ./src/GenericMessageConverter.cpp
 ./src/Configuration.cpp
 ./src/ConnectionConfiguration.cpp

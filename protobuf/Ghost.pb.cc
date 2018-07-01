@@ -143,6 +143,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, header_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, serial_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, format_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessage, name_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ghost::internal::protobuf::GenericMessageHeader, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -167,9 +168,9 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::ghost::internal::protobuf::GenericMessage)},
-  { 8, -1, sizeof(::ghost::internal::protobuf::GenericMessageHeader)},
-  { 15, -1, sizeof(::ghost::internal::protobuf::ConnectionConfiguration)},
-  { 22, -1, sizeof(::ghost::internal::protobuf::ConnectionConfigurationField)},
+  { 9, -1, sizeof(::ghost::internal::protobuf::GenericMessageHeader)},
+  { 16, -1, sizeof(::ghost::internal::protobuf::ConnectionConfiguration)},
+  { 23, -1, sizeof(::ghost::internal::protobuf::ConnectionConfigurationField)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -202,21 +203,22 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\013Ghost.proto\022\027ghost.internal.protobuf\032\031"
-      "google/protobuf/any.proto\"o\n\016GenericMess"
+      "google/protobuf/any.proto\"}\n\016GenericMess"
       "age\022=\n\006header\030\001 \001(\0132-.ghost.internal.pro"
       "tobuf.GenericMessageHeader\022\016\n\006serial\030\002 \001"
-      "(\t\022\016\n\006format\030\003 \001(\t\";\n\024GenericMessageHead"
-      "er\022\021\n\ttimestamp\030\001 \001(\003\022\020\n\010hostname\030\002 \001(\t\""
-      "n\n\027ConnectionConfiguration\022\014\n\004name\030\001 \001(\t"
-      "\022E\n\006fields\030\002 \003(\01325.ghost.internal.protob"
-      "uf.ConnectionConfigurationField\";\n\034Conne"
-      "ctionConfigurationField\022\014\n\004name\030\001 \001(\t\022\r\n"
-      "\005value\030\002 \001(\t2R\n\023ServerClientService\022;\n\007c"
-      "onnect\022\024.google.protobuf.Any\032\024.google.pr"
-      "otobuf.Any\"\000(\0010\001B\002P\001b\006proto3"
+      "(\t\022\016\n\006format\030\003 \001(\t\022\014\n\004name\030\004 \001(\t\";\n\024Gene"
+      "ricMessageHeader\022\021\n\ttimestamp\030\001 \001(\003\022\020\n\010h"
+      "ostname\030\002 \001(\t\"n\n\027ConnectionConfiguration"
+      "\022\014\n\004name\030\001 \001(\t\022E\n\006fields\030\002 \003(\01325.ghost.i"
+      "nternal.protobuf.ConnectionConfiguration"
+      "Field\";\n\034ConnectionConfigurationField\022\014\n"
+      "\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t2R\n\023ServerClie"
+      "ntService\022;\n\007connect\022\024.google.protobuf.A"
+      "ny\032\024.google.protobuf.Any\"\000(\0010\001B\002P\001b\006prot"
+      "o3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 508);
+      descriptor, 522);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Ghost.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fany_2eproto::AddDescriptors();
@@ -247,6 +249,7 @@ void GenericMessage::InitAsDefaultInstance() {
 const int GenericMessage::kHeaderFieldNumber;
 const int GenericMessage::kSerialFieldNumber;
 const int GenericMessage::kFormatFieldNumber;
+const int GenericMessage::kNameFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 GenericMessage::GenericMessage()
@@ -270,6 +273,10 @@ GenericMessage::GenericMessage(const GenericMessage& from)
   if (from.format().size() > 0) {
     format_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.format_);
   }
+  name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.name().size() > 0) {
+    name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
+  }
   if (from.has_header()) {
     header_ = new ::ghost::internal::protobuf::GenericMessageHeader(*from.header_);
   } else {
@@ -281,6 +288,7 @@ GenericMessage::GenericMessage(const GenericMessage& from)
 void GenericMessage::SharedCtor() {
   serial_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   format_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   header_ = NULL;
   _cached_size_ = 0;
 }
@@ -293,6 +301,7 @@ GenericMessage::~GenericMessage() {
 void GenericMessage::SharedDtor() {
   serial_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   format_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete header_;
 }
 
@@ -327,6 +336,7 @@ void GenericMessage::Clear() {
 
   serial_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   format_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (GetArenaNoVirtual() == NULL && header_ != NULL) {
     delete header_;
   }
@@ -388,6 +398,22 @@ bool GenericMessage::MergePartialFromCodedStream(
         break;
       }
 
+      // string name = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->name().data(), static_cast<int>(this->name().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "ghost.internal.protobuf.GenericMessage.name"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -440,6 +466,16 @@ void GenericMessage::SerializeWithCachedSizes(
       3, this->format(), output);
   }
 
+  // string name = 4;
+  if (this->name().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->name().data(), static_cast<int>(this->name().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "ghost.internal.protobuf.GenericMessage.name");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      4, this->name(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -483,6 +519,17 @@ void GenericMessage::SerializeWithCachedSizes(
         3, this->format(), target);
   }
 
+  // string name = 4;
+  if (this->name().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->name().data(), static_cast<int>(this->name().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "ghost.internal.protobuf.GenericMessage.name");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->name(), target);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
@@ -512,6 +559,13 @@ size_t GenericMessage::ByteSizeLong() const {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->format());
+  }
+
+  // string name = 4;
+  if (this->name().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->name());
   }
 
   // .ghost.internal.protobuf.GenericMessageHeader header = 1;
@@ -558,6 +612,10 @@ void GenericMessage::MergeFrom(const GenericMessage& from) {
 
     format_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.format_);
   }
+  if (from.name().size() > 0) {
+
+    name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
+  }
   if (from.has_header()) {
     mutable_header()->::ghost::internal::protobuf::GenericMessageHeader::MergeFrom(from.header());
   }
@@ -589,6 +647,7 @@ void GenericMessage::InternalSwap(GenericMessage* other) {
   using std::swap;
   serial_.Swap(&other->serial_);
   format_.Swap(&other->format_);
+  name_.Swap(&other->name_);
   swap(header_, other->header_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
