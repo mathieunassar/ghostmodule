@@ -47,32 +47,25 @@ void ClientManager::deleteReleasedClients()
 				break;
 			}
 		}
-		// 2. destroy the client
-		delete *it;
 	}
 	_releasedClientsList.clear();
 }
 
 void ClientManager::deleteAllClients()
 {
-	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
-	{
-		delete *it;
-	}
-	
 	_releasedClientsList.clear();
 	_activeClientsList.clear();
 	_allClients.clear();
 }
 
-void ClientManager::addClient(ghost::Client* client)
+void ClientManager::addClient(std::shared_ptr<ghost::Client> client)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 	_activeClientsList.push_back(client);
 	_allClients.push_back(client);
 }
 
-void ClientManager::releaseClient(ghost::Client* client)
+void ClientManager::releaseClient(std::shared_ptr<ghost::Client> client)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 	for (auto it = _activeClientsList.begin(); it != _activeClientsList.end(); ++it)

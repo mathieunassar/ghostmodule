@@ -12,6 +12,8 @@ namespace ghost
 	class Subscriber : public Connection
 	{			
 	public:
+		virtual ~Subscriber() = 0 {}
+
 		virtual void setMessageHandler(std::function<void(const MessageType& message)> handler) = 0;
 	};
 }

@@ -24,6 +24,7 @@ namespace ghost
 		{
 		public:
 			MessageHandler();
+
 			void handle(const google::protobuf::Any& message);
 
 			/// Implementation for protobuf messages

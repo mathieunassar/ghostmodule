@@ -16,6 +16,7 @@ namespace ghost
 	{
 	public:
 		ProtobufMessage(std::shared_ptr<google::protobuf::Message> message);
+		virtual ~ProtobufMessage() {}
 
 		// convenience method to default initialize with protobuf message
 		template<typename MessageType>

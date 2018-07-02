@@ -11,7 +11,7 @@ namespace ghost
 	class Connection
 	{
 	public:
-		virtual ~Connection() {}
+		virtual ~Connection() = 0 {}
 
 		/**
 		* If the start sequence is successful, then the connection is running.

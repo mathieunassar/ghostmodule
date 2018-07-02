@@ -50,13 +50,14 @@ void RemoteClientGRPC::onStarted(bool ok)
 	{
 		// restart the process of creating the request for the next client
 		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueue);
-		_clientManager->addClient(new RemoteClientGRPC(_configuration, _service, cq, _clientHandler, _clientManager, _server));
+		auto client = std::make_shared<RemoteClientGRPC>(_configuration, _service, cq, _clientHandler, _clientManager, _server);
+		_clientManager->addClient(client);
 	}
 
 	if (!finishOperation())
 	{
 		disposeGRPC();
-		_clientManager->releaseClient(this);
+		_clientManager->releaseClient(shared_from_this());
 	}
 
 	if (ok)
@@ -105,7 +106,7 @@ void RemoteClientGRPC::execute()
 		bool keepClientAlive = false;
 		
 		if (_clientHandler)
-			continueExecution = _clientHandler->handle(*this, keepClientAlive);
+			continueExecution = _clientHandler->handle(shared_from_this(), keepClientAlive);
 
 		// only stop the client if the user left "keepClientAlive" to false
 		if (!keepClientAlive)
@@ -121,5 +122,5 @@ void RemoteClientGRPC::execute()
 	awaitFinished();
 
 	disposeGRPC(); // this method exists because it seems that gRPC needs a specific destruction order that the default destructor does not guarantee.
-	_clientManager->releaseClient(this);
+	_clientManager->releaseClient(shared_from_this());
 }

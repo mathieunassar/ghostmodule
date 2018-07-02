@@ -5,6 +5,7 @@
 #include <mutex>
 #include <thread>
 #include <atomic>
+#include <memory>
 
 #include "../../Client.hpp"
 
@@ -24,9 +25,9 @@ namespace ghost
 			void stop();
 
 			/// Adds a client to the manager
-			void addClient(ghost::Client* client);
+			void addClient(std::shared_ptr<ghost::Client> client);
 			/// Releases a client, it will be deleted by the processing thread or by "deleteAllClients"
-			void releaseClient(ghost::Client* client);
+			void releaseClient(std::shared_ptr<ghost::Client> client);
 			/// Deletes the clients that were released
 			void deleteReleasedClients();
 			
@@ -38,9 +39,9 @@ namespace ghost
 			std::thread _clientManagerThread;
 			std::atomic<bool> _clientManagerThreadEnable;
 			std::mutex _mutex;
-			std::deque<ghost::Client*> _allClients;
-			std::deque<ghost::Client*> _activeClientsList;
-			std::deque<ghost::Client*> _releasedClientsList;
+			std::deque<std::shared_ptr<ghost::Client>> _allClients;
+			std::deque<std::shared_ptr<ghost::Client>> _activeClientsList;
+			std::deque<std::shared_ptr<ghost::Client>> _releasedClientsList;
 		};
 	}
 }

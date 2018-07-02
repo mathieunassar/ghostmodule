@@ -9,6 +9,7 @@ namespace ghost
 	{
 	public:
 		NetworkConnectionConfiguration(const std::string& name = "");
+		virtual ~NetworkConnectionConfiguration() {}
 		 
 		// getters of connection configuration parameters
 		std::string getServerIpAddress() const;

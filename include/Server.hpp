@@ -11,6 +11,8 @@ namespace ghost
 	class Server : public Connection
 	{
 	public:
+		virtual ~Server() = 0 {}
+
 		/**
 		 * Sets the handler which will process the clients of this server.
 		 * @author	Mathieu Nassar

@@ -12,6 +12,7 @@ namespace ghost
 	class Client : public Connection
 	{
 	public:
+		virtual ~Client() = 0 {}
 		/**
 		* Receives from the connection and decodes the message.
 		* @author	Mathieu Nassar

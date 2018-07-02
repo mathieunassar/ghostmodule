@@ -52,8 +52,9 @@ bool ServerGRPC::start()
 	auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
 	for (size_t i = 0; i < _configuration.getThreadPoolSize(); i++) // start as many calls as there can be concurrent rpcs
 	{
-		// Spawn a new CallData instance to serve new clients.
-		_clientManager.addClient(new RemoteClientGRPC(_configuration, &_service, cq, _clientHandler, &_clientManager, this));
+		// Spawn a new CallData instance to serve new clients
+		auto client = std::make_shared<RemoteClientGRPC>(_configuration, &_service, cq, _clientHandler, &_clientManager, this);
+		_clientManager.addClient(client);
 	}
 	_clientManager.start();
 

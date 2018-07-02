@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <deque>
+#include <iostream>
 
 #include "../../ClientHandler.hpp"
 
@@ -16,13 +17,16 @@ namespace ghost
 		class PublisherClientHandler : public ghost::ClientHandler
 		{
 		public:
-			bool handle(ghost::Client& client, bool& keepClientAlive) override;
+			~PublisherClientHandler();
+
+			bool handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive) override;
 			
 			bool send(const ghost::Message& message);
+			void releaseClients();
 
 		private:
 			std::mutex _subscribersMutex;
-			std::deque<ghost::Client*> _subscribers;
+			std::deque<std::shared_ptr<ghost::Client>> _subscribers;
 		};
 	}
 }

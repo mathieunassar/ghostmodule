@@ -15,6 +15,7 @@ bool PublisherGRPC<MessageType>::start()
 template<typename MessageType>
 bool PublisherGRPC<MessageType>::stop()
 {
+	_handler->releaseClients();
 	return _server.stop();
 }
 

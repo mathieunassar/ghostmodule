@@ -9,6 +9,7 @@ namespace ghost
 	{
 	public:
 		ConnectionConfiguration(const std::string& name = "");
+		virtual ~ConnectionConfiguration() {}
 		 
 		// getters of connection configuration parameters
 		int getConnectionId() const;

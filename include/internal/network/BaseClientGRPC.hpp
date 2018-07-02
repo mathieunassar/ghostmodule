@@ -6,6 +6,7 @@
 #include <string>
 #include <deque>
 #include <atomic>
+#include <memory>
 #include <mutex>
 
 #include "../GenericMessageConverter.hpp"
@@ -19,7 +20,7 @@ namespace ghost
 	namespace internal
 	{
 		template<typename ReaderWriter, typename ContextType>
-		class BaseClientGRPC : public ghost::Client
+		class BaseClientGRPC : public ghost::Client, public std::enable_shared_from_this<BaseClientGRPC<ReaderWriter, ContextType>>
 		{
 		public:
 			BaseClientGRPC(const ghost::NetworkConnectionConfiguration& config, grpc::CompletionQueue* completionQueue);

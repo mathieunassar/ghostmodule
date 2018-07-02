@@ -3,12 +3,17 @@
 
 using namespace ghost::internal;
 
-bool PublisherClientHandler::handle(ghost::Client& client, bool& keepClientAlive)
+PublisherClientHandler::~PublisherClientHandler()
+{
+	releaseClients();
+}
+
+bool PublisherClientHandler::handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive)
 {
 	keepClientAlive = true;
 
 	std::lock_guard<std::mutex> lock(_subscribersMutex);
-	_subscribers.push_back(&client);
+	_subscribers.push_back(client);
 
 	return true;
 }
@@ -16,13 +21,27 @@ bool PublisherClientHandler::handle(ghost::Client& client, bool& keepClientAlive
 bool PublisherClientHandler::send(const ghost::Message& message)
 {
 	std::lock_guard<std::mutex> lock(_subscribersMutex);
-	std::cout << _subscribers.size() << " subscribers" << std::endl;
-	for (auto it = _subscribers.begin(); it != _subscribers.end(); ++it)
+
+	auto it = _subscribers.begin();
+	while (it != _subscribers.end())
 	{
 		if (!(*it)->send(message))
 		{
-			std::cout << "a client disconnected" << std::endl;
+			it = _subscribers.erase(it);
 		}
+		else
+			++it;
 	}
+	
 	return true;
+}
+
+void PublisherClientHandler::releaseClients()
+{
+	std::lock_guard<std::mutex> lock(_subscribersMutex);
+	for (auto it = _subscribers.begin(); it != _subscribers.end(); ++it)
+	{
+		(*it)->stop();
+	}
+	_subscribers.clear();
 }

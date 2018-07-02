@@ -13,9 +13,9 @@ namespace ghost
 	class ClientHandler
 	{
 	public:
-		virtual ~ClientHandler() {}
+		virtual ~ClientHandler() = 0 {}
 
-		virtual bool handle(Client& client, bool& keepClientAlive) = 0;
+		virtual bool handle(std::shared_ptr<Client> client, bool& keepClientAlive) = 0;
 	};
 }
 

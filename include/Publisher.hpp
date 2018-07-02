@@ -11,6 +11,8 @@ namespace ghost
 	class Publisher : public Connection
 	{
 	public:
+		virtual ~Publisher() = 0 {}
+
 		/**
 		 * Publishes the given message.
 		 * @author	Mathieu Nassar
