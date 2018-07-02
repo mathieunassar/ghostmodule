@@ -72,6 +72,7 @@ bool ClientGRPC::stop()
 	grpc::Status status = grpc::Status::CANCELLED;
 	if (_statemachine.getState() == RPCStateMachine::DISPOSING)
 	{
+		_context->TryCancel();
 		startOperation();
 		_client->Finish(&status, &_finishProcessor);
 	}

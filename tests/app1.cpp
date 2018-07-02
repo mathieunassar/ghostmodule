@@ -56,6 +56,7 @@ int main()
 
 	/*internal::ServerGRPC server(config);
 	server.setClientHandler(std::make_shared<TestClientHandler>());
+	server.start();
 	
 	std::cout << "server started" << std::endl;
 	while (server.isRunning())

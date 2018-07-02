@@ -18,7 +18,7 @@ std::atomic_bool msgReceived;
 void func(const internal::protobuf::GenericMessageHeader& msg)
 {
 	std::cout << "message received " << msg.timestamp() << std::endl;
-	msgReceived = true;
+	//msgReceived = true;
 }
 
 class MyMessage : public Message
@@ -57,14 +57,18 @@ int main()
 	handler->addHandler<internal::protobuf::GenericMessageHeader>(&func);
 	handler->addHandler<MyMessage>(&func2);
 
-	client.start();*/
+	client.start();
 
-	/*ProtobufMessage message = ProtobufMessage::create<internal::protobuf::GenericMessageHeader>();
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+	ProtobufMessage message = ProtobufMessage::create<internal::protobuf::GenericMessageHeader>();
 	bool rec = client.receive(message);
 	std::cout << "rec ?=" << rec << std::endl;
 
 	auto msg = message.getProtobufMessage();
 	auto casted = std::static_pointer_cast<internal::protobuf::GenericMessageHeader>(msg);
+
+	client.send(ProtobufMessage(msg));
 
 	std::cout << "server sent a message, happiness!!! : " << casted->timestamp() << std::endl;*/
 	
