@@ -14,6 +14,7 @@ namespace ghost
 	{
 	public:
 		static std::shared_ptr<UserManager> create();
+		virtual ~UserManager() = 0 {}
 
 		virtual bool createUser(const std::string& name, const std::string& password) = 0;
 		virtual bool createUserGroup(const std::string& name) = 0;

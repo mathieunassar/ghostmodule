@@ -28,6 +28,7 @@ namespace ghost
 	{
 	public:
 		static std::shared_ptr<CommandLineInterpreter> create(std::shared_ptr<UserManager> userManager);
+		virtual ~CommandLineInterpreter() = 0 {}
 
 		/// searches for the corresponding command and executes it with the given parameters
 		virtual bool execute(const std::string& commandLine) = 0;

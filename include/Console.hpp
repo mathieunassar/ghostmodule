@@ -28,6 +28,7 @@ namespace ghost
 	{
 	public:
 		static std::shared_ptr<Console> create();
+		virtual ~Console() = 0 {}
 
 		/// starts the console. Depending on the implementation, this operation can be unnecessary.
 		virtual void start() = 0;

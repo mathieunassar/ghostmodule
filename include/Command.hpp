@@ -8,6 +8,8 @@ namespace ghost
 	class Command
 	{
 	public:
+		virtual ~Command() = 0 {}
+
 		/// received a command line matching its name containing paramters
 		virtual bool execute(const CommandLine& commandLine) = 0;
 		/// @return the name of this command
