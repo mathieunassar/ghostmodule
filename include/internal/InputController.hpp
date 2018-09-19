@@ -66,7 +66,7 @@ namespace ghost
 			std::atomic<bool> _threadEnable;
 
 			/* Runtime variables */
-			BlockingQueue<std::shared_ptr<InputEvent>> _eventQueue;
+			BlockingQueue<QueueElement<std::shared_ptr<InputEvent>>> _eventQueue;
 			std::shared_ptr<std::string> _explicitInput;
 
 			/* configuration */

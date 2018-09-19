@@ -24,7 +24,6 @@ file(GLOB header_module_lib_internal
 ./include/internal/ConsoleDevice.hpp
 ./include/internal/ConsoleDeviceWindows.hpp
 ./include/internal/ConsoleStream.hpp
-./include/internal/BlockingQueue.hpp
 ./include/internal/InputEvent.hpp
 ./include/internal/EnterPressedInputEvent.hpp
 ./include/internal/InputModeInputEvent.hpp
@@ -81,5 +80,7 @@ add_executable(GhostConsole ${header_module_lib}
 	${header_module_lib_internal}
 	${header_module_lib_internal_commands}
 	${source_module_lib_commands})
+
+target_link_libraries(GhostConsole Commons)
 
 set_property(TARGET GhostConsole PROPERTY FOLDER "Libraries")

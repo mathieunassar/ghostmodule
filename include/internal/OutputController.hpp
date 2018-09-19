@@ -36,11 +36,11 @@ namespace ghost
 			std::unique_ptr<ConsoleStream<>> _redirecter;
 
 			/* Write queue - double buffered for efficient flushing */
-			void swapQueues(BlockingQueue<std::string>* queue);
-			BlockingQueue<std::string> _writeQueue1;
-			BlockingQueue<std::string> _writeQueue2;
-			BlockingQueue<std::string> *_activeInputQueue; // write method fills this queue
-			BlockingQueue<std::string> *_activeOutputQueue; // writer writes from this queue
+			void swapQueues(BlockingQueue<QueueElement<std::string>>* queue);
+			BlockingQueue<QueueElement<std::string>> _writeQueue1;
+			BlockingQueue<QueueElement<std::string>> _writeQueue2;
+			BlockingQueue<QueueElement<std::string>> *_activeInputQueue; // write method fills this queue
+			BlockingQueue<QueueElement<std::string>> *_activeOutputQueue; // writer writes from this queue
 			std::mutex _writeQueueSwitchLock;
 			std::mutex _flushLock;
 

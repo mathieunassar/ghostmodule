@@ -104,11 +104,12 @@ void InputController::inputListenerThread()
 	while (_threadEnable)
 	{
 		QueueElement<std::shared_ptr<InputEvent>> event;
-		if (!_eventQueue.tryPop(std::chrono::milliseconds(1000), event)) // trypop only blocks for a second
+		if (!_eventQueue.tryGet(std::chrono::milliseconds(1000), event)) // tryget only blocks for a second
 		{
 			continue;
 		}
 		
+		_eventQueue.pop();
 		auto& handler = _eventHandlers.at(event.element->getEventName());
 		bool success = handler->handle(*event.element);
 		event.result->set_value(success);

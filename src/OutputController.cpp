@@ -77,7 +77,7 @@ void OutputController::stdcoutCallback(const char *ptr, std::streamsize count)
 	write(str);
 }
 
-void OutputController::swapQueues(BlockingQueue<std::string>* queue)
+void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>* queue)
 {
 	std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
 	if (queue == &_writeQueue1)
@@ -94,16 +94,17 @@ void OutputController::writerThread()
 			return;
 
 		std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
-		BlockingQueue<std::string>* queue = _activeOutputQueue; // choose the queue with the lock in case of flush
+		BlockingQueue<QueueElement<std::string>>* queue = _activeOutputQueue; // choose the queue with the lock in case of flush
 		lock.unlock();
 		QueueElement<std::string> entry;
 
-		if (!queue->tryPop(std::chrono::milliseconds(1000), entry))
+		if (!queue->tryGet(std::chrono::milliseconds(1000), entry))
 			continue;
 		
 		if (!awaitOutput()) // wait again since pop() is blocking and could take a while
 			return;
 		
+		queue->pop();
 		printf(entry.element.c_str()); // print
 		entry.result->set_value(true); // (idea) the promise could be used to know when the entry is effectively executed...
 	}
