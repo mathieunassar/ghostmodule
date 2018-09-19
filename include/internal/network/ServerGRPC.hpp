@@ -26,6 +26,7 @@ namespace ghost
 		class ServerGRPC : public ghost::Server
 		{
 		public:
+			ServerGRPC(const ghost::ConnectionConfiguration& config);
 			ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
 			~ServerGRPC();
 

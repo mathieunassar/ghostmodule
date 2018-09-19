@@ -64,6 +64,8 @@ void RemoteClientGRPC::onStarted(bool ok)
 	{
 		_statemachine.setState(RPCStateMachine::EXECUTING);
 		startReader();
+		if (isWriterConfigured())
+			startWriter();
 	}
 	else
 		_statemachine.setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!

@@ -24,6 +24,17 @@ bool ProtobufConfiguration::hasAttribute(const std::string& name) const
 	return false;
 }
 
+std::map<std::string, std::string> ProtobufConfiguration::getAttributes() const
+{
+	std::map<std::string, std::string> res;
+	auto iterator(_configuration.fields());
+	for (auto it = iterator.begin(); it < iterator.end(); ++it)
+	{
+		res[it->name()] = it->value();
+	}
+	return res;
+}
+
 bool ProtobufConfiguration::removeAttribute(const std::string& name)
 {
 	auto iterator(_configuration.mutable_fields());

@@ -4,22 +4,22 @@
 #include <memory>
 
 #include "Connection.hpp"
+#include "Writer.hpp"
 
 namespace ghost
 {
-	template<typename MessageType>
 	class Publisher : public Connection
 	{
 	public:
-		virtual ~Publisher() = 0 {}
+		Publisher(const ConnectionConfiguration& configuration);
 
-		/**
-		 * Publishes the given message.
-		 * @author	Mathieu Nassar
-		 * @date	21.05.2018
-		 * @param	message	The message.
-		 */
-		virtual void publish(const MessageType& message) = 0;
+		virtual ~Publisher() = 0 {}
+		
+		template<typename MessageType>
+		std::shared_ptr<Writer<MessageType>> getWriter() // same as: using internal::Connection::getWriter;
+		{
+			return internal::Connection::getWriter<MessageType>();
+		}
 	};
 }
 

@@ -9,6 +9,9 @@
 #include <memory>
 #include <mutex>
 
+#include "../ReaderSink.hpp"
+#include "../WriterSink.hpp"
+
 #include "../GenericMessageConverter.hpp"
 #include "../MessageHandler.hpp"
 #include "../../NetworkConnectionConfiguration.hpp"
@@ -19,25 +22,23 @@ namespace ghost
 {
 	namespace internal
 	{
+		static const std::string BASE_CLIENT_GRPC_CONFIG_NOWRITER = "BASE_CLIENT_GRPC_CONFIG_NOWRITER";
+
 		template<typename ReaderWriter, typename ContextType>
 		class BaseClientGRPC : public ghost::Client, public std::enable_shared_from_this<BaseClientGRPC<ReaderWriter, ContextType>>
 		{
 		public:
 			BaseClientGRPC(const ghost::NetworkConnectionConfiguration& config, grpc::CompletionQueue* completionQueue);
-			virtual ~BaseClientGRPC() = 0 {}
+			virtual ~BaseClientGRPC() = 0;
 
 			bool start() override;
 			bool stop() override;
 			bool isRunning() const override;
 
-			bool receive(ghost::Message& message) override;
-			bool lastReceived(ghost::Message& message) override;
-			bool send(const ghost::Message& message) override;
-
-			std::shared_ptr<ghost::MessageHandler> addMessageHandler() override;
-
 		protected:
+			bool isWriterConfigured() const;
 			void startReader();
+			void startWriter();
 
 			/* async operations management */
 			std::atomic<int> _operationsRunning;
@@ -46,19 +47,15 @@ namespace ghost
 			void awaitFinished();
 
 			/* Write operations */
-			std::deque<google::protobuf::Any> _writeQueue;
-			std::mutex _writeQueueMutex;
-			std::atomic<bool> _writeOperationInProgress;
+			std::thread _writerThread;
+			std::mutex _writerMutex;
+			std::condition_variable _writerConditionVariable;
+			bool _writeInProgress;
 			std::function<void(bool)> _writtenProcessor;
-			void processWriteQueue();
 			void onWriteFinished(bool ok);
 
 			/* Read operations */
-			std::deque<google::protobuf::Any> _readQueue;
-			std::mutex _readQueueMutex;
-			std::shared_ptr<MessageHandler> _messageHandler;
 			google::protobuf::Any _incomingMessage;
-			google::protobuf::Any _nextMessage;
 			std::function<void(bool)> _readProcessor;
 			void onReadFinished(bool ok);
 

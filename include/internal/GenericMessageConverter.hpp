@@ -26,7 +26,7 @@ namespace ghost
 		{
 		public:
 			/**
-			 * Converts the Message object into a GenericMessage protobug message. If the conversion goes
+			 * Converts the Message object into a GenericMessage protobuf message. If the conversion goes
 			 * wrong, this method returns false.
 			 * @author	Mathieu Nassar
 			 * @date	12.06.2018

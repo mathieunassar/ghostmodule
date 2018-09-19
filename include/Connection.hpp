@@ -1,6 +1,8 @@
 #ifndef GHOST_CONNECTION_HPP
 #define GHOST_CONNECTION_HPP
 
+#include "internal/Connection.hpp"
+
 namespace ghost
 {
 	/**
@@ -8,9 +10,11 @@ namespace ghost
 	 * @author	Mathieu Nassar
 	 * @date	21.05.2018
 	 */
-	class Connection
+	class Connection : protected internal::Connection
 	{
 	public:
+		Connection(const ConnectionConfiguration& configuration);
+
 		virtual ~Connection() = 0 {}
 
 		/**

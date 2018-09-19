@@ -40,3 +40,10 @@ void NetworkConnectionConfiguration::setServerPortNumber(int port)
 {
 	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, port, true); // checks if the attribute is there as well
 }
+
+NetworkConnectionConfiguration NetworkConnectionConfiguration::initializeFrom(const ConnectionConfiguration& from)
+{
+	NetworkConnectionConfiguration newconfig(from.getConfigurationName());
+	from.copy(newconfig);
+	return newconfig;
+}

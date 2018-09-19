@@ -4,17 +4,22 @@
 #include <memory>
 
 #include "Connection.hpp"
-#include "MessageHandler.hpp"
+#include "Reader.hpp"
 
 namespace ghost
 {
-	template<typename MessageType>
 	class Subscriber : public Connection
 	{			
 	public:
+		Subscriber(const ConnectionConfiguration& configuration);
+
 		virtual ~Subscriber() = 0 {}
 
-		virtual void setMessageHandler(std::function<void(const MessageType& message)> handler) = 0;
+		template<typename MessageType>
+		std::shared_ptr<Reader<MessageType>> getReader() // same as: using internal::Connection::getReader; 
+		{
+			return internal::Connection::getReader<MessageType>();
+		}
 	};
 }
 

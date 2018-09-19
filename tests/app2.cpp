@@ -3,6 +3,7 @@
 
 #include <internal/network/ClientGRPC.hpp>
 #include <internal/network/SubscriberGRPC.hpp>
+#include <ConnectionManager.hpp>
 #include <ProtobufMessage.hpp>
 
 using namespace ghost;
@@ -42,14 +43,26 @@ void func2(const MyMessage& msg)
 
 int main()
 {
-	msgReceived = false;
 	NetworkConnectionConfiguration config;
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(50001);
+	config.setThreadPoolSize(8);
 
-	internal::SubscriberGRPC<internal::protobuf::GenericMessageHeader> subscriber(config);
-	subscriber.setMessageHandler(&func);
-	subscriber.start();
+	auto connectionManager = ghost::ConnectionManager::create();
+	auto factory = connectionManager->getConnectionFactory();
+	factory->addSubscriberRule<internal::SubscriberGRPC>(config);
+
+	auto subscriber = connectionManager->createSubscriber(config);
+	auto reader = subscriber->getReader<internal::protobuf::GenericMessageHeader>();
+	auto messageHandler = reader->addMessageHandler();
+	messageHandler->addHandler<internal::protobuf::GenericMessageHeader>(&func);
+
+	// inaccessible
+	//auto writer = subscriber->getWriter<internal::protobuf::GenericMessageHeader>();
+
+	subscriber->start();
+
+	msgReceived = false;
 
 	/*internal::ClientGRPC client(config);
 
@@ -77,7 +90,7 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	}
 
-	subscriber.stop();
+	subscriber->stop();
 	//client.stop();
 	return 0;
 }

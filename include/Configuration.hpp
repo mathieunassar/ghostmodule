@@ -1,6 +1,7 @@
 #ifndef GHOST_CONFIGURATION_HPP
 #define GHOST_CONFIGURATION_HPP
 
+#include <map>
 #include "internal/ProtobufConfiguration.hpp"
 
 namespace ghost
@@ -14,6 +15,7 @@ namespace ghost
 		virtual ~Configuration() {}
 
 		Configuration(const std::string& name = "");
+		void copy(Configuration& to) const;
 
 		const std::string& getConfigurationName() const;
 
@@ -23,6 +25,7 @@ namespace ghost
 		bool getAttribute(const std::string& name, T& value) const;
 		template<typename T>
 		bool getAttribute(const std::string& name, T& value, const T& defaultValue) const;
+		std::map<std::string, std::string> getAttributes() const;
 
 		bool removeAttribute(const std::string& name);
 

@@ -11,6 +11,8 @@ namespace ghost
 	class Server : public Connection
 	{
 	public:
+		Server(const ConnectionConfiguration& configuration);
+
 		virtual ~Server() = 0 {}
 
 		/**

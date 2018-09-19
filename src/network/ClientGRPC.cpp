@@ -10,10 +10,16 @@
 
 using namespace ghost::internal;
 
+ClientGRPC::ClientGRPC(const ghost::ConnectionConfiguration& config)
+	: ClientGRPC(NetworkConnectionConfiguration::initializeFrom(config))
+{
+
+}
+
 ClientGRPC::ClientGRPC(const ghost::NetworkConnectionConfiguration& config)
 	: BaseClientGRPC(config, new grpc::CompletionQueue()) // Will be owned by the executor
 	, _initialized(false)
-	, _executor(_completionQueue) // now owny the completion queue
+	, _executor(_completionQueue) // now owns the completion queue
 {
 	_startedProcessor = std::bind(&ClientGRPC::onStarted, this, std::placeholders::_1);
 	_finishProcessor = std::bind(&ClientGRPC::onFinished, this, std::placeholders::_1);
@@ -54,6 +60,8 @@ void ClientGRPC::onStarted(bool ok)
 	{
 		_statemachine.setState(RPCStateMachine::EXECUTING);
 		startReader();
+		if (isWriterConfigured())
+			startWriter();
 	}
 	else
 		_statemachine.setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
@@ -89,5 +97,4 @@ void ClientGRPC::onFinished(bool ok) // OK ignored, the RPC is going to be delet
 	finishOperation(); // don't care about the result, this method does not start more RPC operation
 
 	_statemachine.setState(RPCStateMachine::FINISHED);
-
 }

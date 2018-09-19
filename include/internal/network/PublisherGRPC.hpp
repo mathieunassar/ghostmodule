@@ -11,30 +11,24 @@ namespace ghost
 {
 	namespace internal
 	{
-
-		template<typename MessageType>
-		class PublisherGRPC : public ghost::Publisher<MessageType>
+		class PublisherGRPC : public ghost::Publisher
 		{
 		public:
+			PublisherGRPC(const ghost::ConnectionConfiguration& config);
 			PublisherGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;
 			bool stop() override;
 			bool isRunning() const override;
 
-			void publish(const MessageType& message) override;
-
 		private:
+			void writerThread(); // waits for the writer to be fed and sends the data to the handler
+
 			ServerGRPC _server;
 			std::shared_ptr<PublisherClientHandler> _handler;
+			std::thread _writerThread;
+			std::atomic_bool _writerThreadEnable;
 		};
-
-		// specialization for ghost::Message to serialize it first into protobuf
-		template<>
-		void PublisherGRPC<ghost::Message>::publish(const ghost::Message& message);
-
-		// template definition
-		#include "PublisherGRPC.impl.hpp"
 	}
 }
 

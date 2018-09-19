@@ -13,6 +13,7 @@ namespace ghost
 		class ClientGRPC : public BaseClientGRPC<grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ClientContext>
 		{
 		public:
+			ClientGRPC(const ghost::ConnectionConfiguration& config);
 			ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;

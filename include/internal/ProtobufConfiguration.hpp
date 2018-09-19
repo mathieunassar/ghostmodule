@@ -24,6 +24,7 @@ namespace ghost
 			bool getAttribute(const std::string& name, T& value) const;
 			template<typename T>
 			bool getAttribute(const std::string& name, T& value, const T& defaultValue) const;
+			std::map<std::string, std::string> getAttributes() const;
 
 			bool removeAttribute(const std::string& name);
 

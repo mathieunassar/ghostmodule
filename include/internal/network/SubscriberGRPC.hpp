@@ -8,24 +8,23 @@ namespace ghost
 {
 	namespace internal
 	{
-		template<typename MessageType>
-		class SubscriberGRPC : public ghost::Subscriber<MessageType>
+		class SubscriberGRPC : public ghost::Subscriber
 		{
 		public:
+			SubscriberGRPC(const ghost::ConnectionConfiguration& config);
 			SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;
 			bool stop() override;
 			bool isRunning() const override;
 
-			void setMessageHandler(std::function<void(const MessageType& message)> handler) override;
-
 		private:
+			/// From internal::Connection - forwards the sink to the client
+			virtual void setReaderSink(std::shared_ptr<ReaderSink> sink);
+			ghost::NetworkConnectionConfiguration makeNoWriterConfig(const ghost::NetworkConnectionConfiguration& config);
+
 			ClientGRPC _client;
 		};
-
-		// template definition
-		#include "SubscriberGRPC.impl.hpp"
 	}
 }
 

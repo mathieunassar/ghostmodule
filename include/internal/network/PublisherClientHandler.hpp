@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "../../ClientHandler.hpp"
+#include "../../Writer.hpp"
 
 namespace ghost
 {
@@ -21,12 +22,13 @@ namespace ghost
 
 			bool handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive) override;
 			
-			bool send(const ghost::Message& message);
+			bool send(const google::protobuf::Any& message);
 			void releaseClients();
 
 		private:
 			std::mutex _subscribersMutex;
-			std::deque<std::shared_ptr<ghost::Client>> _subscribers;
+			std::deque<	std::pair<	std::shared_ptr<ghost::Client>,
+									std::shared_ptr<Writer<google::protobuf::Any>>>> _subscribers;
 		};
 	}
 }

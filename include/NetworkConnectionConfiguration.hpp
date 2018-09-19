@@ -18,6 +18,8 @@ namespace ghost
 		// setters of connection configuration parameters
 		void setServerIpAddress(const std::string& ip);
 		void setServerPortNumber(int port);
+
+		static NetworkConnectionConfiguration initializeFrom(const ConnectionConfiguration& from);
 	};
 }
 

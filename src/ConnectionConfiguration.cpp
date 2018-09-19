@@ -24,10 +24,10 @@ int ConnectionConfiguration::getConnectionId() const
 	return res;
 }
 
-int ConnectionConfiguration::getThreadPoolSize() const
+size_t ConnectionConfiguration::getThreadPoolSize() const
 {
-	int res;
-	getAttribute<int>(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, res, 2); // if the field was removed, returns -1
+	size_t res;
+	getAttribute<size_t>(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, res, 2); // if the field was removed, returns -1
 	return res;
 }
 
@@ -44,7 +44,7 @@ void ConnectionConfiguration::setConnectionId(int id)
 	addAttribute(internal::CONNECTIONCONFIGURATION_ID, id, true); // checks if the attribute is there as well
 }
 
-void ConnectionConfiguration::setThreadPoolSize(int size)
+void ConnectionConfiguration::setThreadPoolSize(size_t size)
 {
 	addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, size, true); // checks if the attribute is there as well
 }

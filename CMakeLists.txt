@@ -32,13 +32,32 @@ file(GLOB header_connection2_lib
 ./include/Configuration.hpp
 ./include/ConnectionConfiguration.hpp
 ./include/NetworkConnectionConfiguration.hpp
+./include/ConnectionManager.hpp
+./include/ConnectionFactory.hpp
+./include/ConnectionFactory.impl.hpp
+./include/Writer.hpp
+./include/Reader.hpp
 )
 
 file(GLOB header_connection2_lib_internal
+./include/internal/Connection.hpp
+./include/internal/Connection.impl.hpp
 ./include/internal/GenericMessageConverter.hpp
 ./include/internal/ProtobufConfiguration.hpp
 ./include/internal/MessageHandler.hpp
 ./include/internal/MessageHandlerCallback.hpp
+./include/internal/ConnectionManager.hpp
+./include/internal/ConnectionFactory.hpp
+./include/internal/ConnectionFactory.impl.hpp
+./include/internal/ConnectionFactoryRule.hpp
+./include/internal/ConnectionFactoryRule.impl.hpp
+./include/internal/WriterSink.hpp
+./include/internal/ReaderSink.hpp
+./include/internal/QueuedSink.hpp
+./include/internal/GenericWriter.hpp
+./include/internal/GenericWriter.impl.hpp
+./include/internal/GenericReader.hpp
+./include/internal/GenericReader.impl.hpp
 )
 
 file(GLOB header_connection2_lib_internal_network
@@ -77,6 +96,11 @@ file(GLOB protobuf_connection2_lib
 )
 
 file(GLOB source_connection2_lib
+./src/Connection.cpp
+./src/Server.cpp
+./src/Client.cpp
+./src/Publisher.cpp
+./src/Subscriber.cpp
 ./src/ProtobufMessage.cpp
 ./src/MessageHandler.cpp
 ./src/GenericMessageConverter.cpp
@@ -84,6 +108,9 @@ file(GLOB source_connection2_lib
 ./src/ConnectionConfiguration.cpp
 ./src/NetworkConnectionConfiguration.cpp
 ./src/ProtobufConfiguration.cpp
+./src/ConnectionManager.cpp
+./src/ConnectionFactory.cpp
+./src/ConnectionFactoryRule.cpp
 )
 
 source_group("Header Files\\internal" FILES ${header_connection2_lib_internal})
@@ -101,7 +128,7 @@ add_library(GhostConnection2 ${header_connection2_lib}
 	${protobuf_connection2_lib}
 	)
 
-target_link_libraries(GhostConnection2 ws2_32 libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
+target_link_libraries(GhostConnection2 Commons ws2_32 libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
 
 set_property(TARGET GhostConnection2 PROPERTY FOLDER "Libraries")
 
@@ -110,7 +137,8 @@ set_property(TARGET GhostConnection2 PROPERTY FOLDER "Libraries")
 # Unit tests: Primitive Serialization
 file(GLOB source_connection2_tests
 ./tests/MessageTests.cpp
-./tests/ConfigurationTests.cpp)
+./tests/ConfigurationTests.cpp
+./tests/ReaderWriterTests.cpp)
 
 set(libraries_connection2_tests
 GhostConnection2)

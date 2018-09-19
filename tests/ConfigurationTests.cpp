@@ -64,7 +64,7 @@ TEST_CASE("test_configuration")
 	int intValue = 42;
 	bool getSuccess3 = config.getAttribute("strAttribute", intValue);
 	REQUIRE(!getSuccess3);
-	REQUIRE(intValue == 42);
+	//REQUIRE(intValue == 42); // if the conversion fails, there is no guarantee on the result
 }
 
 TEST_CASE("test_connectionConfiguration")
@@ -84,4 +84,10 @@ TEST_CASE("test_connectionConfiguration")
 
 	config.setOperationBlocking(true);
 	REQUIRE(config.isOperationBlocking());
+
+	ConnectionConfiguration copied;
+	config.copy(copied);
+
+	REQUIRE(config.isOperationBlocking());
+	REQUIRE(config.getConnectionId() == 45);
 }
