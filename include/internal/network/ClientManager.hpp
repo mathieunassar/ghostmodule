@@ -7,12 +7,12 @@
 #include <atomic>
 #include <memory>
 
-#include "../../Client.hpp"
-
 namespace ghost
 {
 	namespace internal
 	{
+		class RemoteClientGRPC;
+
 		class ClientManager
 		{
 		public:
@@ -21,27 +21,25 @@ namespace ghost
 
 			/// Starts a thread periodically deleting old clients
 			void start();
-			/// stops the thread periodically deleting old clients
+			/// stops the thread periodically deleting old clients, and deltes all the clients after disposing them
+			/// this call might be blocking while the clients are disposing
 			void stop();
 
 			/// Adds a client to the manager
-			void addClient(std::shared_ptr<ghost::Client> client);
-			/// Releases a client, it will be deleted by the processing thread or by "deleteAllClients"
-			void releaseClient(std::shared_ptr<ghost::Client> client);
-			/// Deletes the clients that were released
-			void deleteReleasedClients();
+			void addClient(std::shared_ptr<RemoteClientGRPC> client);
+			/// dispose and delete clients that are in finished state and owned solely by this manager
+			void deleteDisposableClients();
 			
 		private:
 			/// Deletes all managed clients. Should not be called concurrently with "add"
 			void deleteAllClients();
+			/// loops over the managed clients and tries to delte unused clients with "deleteDisposableClients"
 			void manageClients();
 
 			std::thread _clientManagerThread;
 			std::atomic<bool> _clientManagerThreadEnable;
 			std::mutex _mutex;
-			std::deque<std::shared_ptr<ghost::Client>> _allClients;
-			std::deque<std::shared_ptr<ghost::Client>> _activeClientsList;
-			std::deque<std::shared_ptr<ghost::Client>> _releasedClientsList;
+			std::deque<std::shared_ptr<RemoteClientGRPC>> _allClients;
 		};
 	}
 }

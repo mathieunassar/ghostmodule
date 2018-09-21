@@ -34,6 +34,7 @@ namespace ghost
 			bool start() override;
 			bool stop() override;
 			bool isRunning() const override;
+			bool isFinished() const;
 
 		protected:
 			bool isWriterConfigured() const;

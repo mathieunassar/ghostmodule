@@ -28,6 +28,8 @@ namespace ghost
 			bool start() override;
 			bool stop() override;
 
+			void dispose();
+
 		protected:
 			void onStarted(bool ok);
 			void onFinished(bool ok);

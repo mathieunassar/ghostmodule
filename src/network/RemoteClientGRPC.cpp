@@ -55,10 +55,7 @@ void RemoteClientGRPC::onStarted(bool ok)
 	}
 
 	if (!finishOperation())
-	{
 		disposeGRPC();
-		_clientManager->releaseClient(shared_from_this());
-	}
 
 	if (ok)
 	{
@@ -118,11 +115,13 @@ void RemoteClientGRPC::execute()
 		if (!continueExecution)
 			_server->stop();
 	}
+}
 
+void RemoteClientGRPC::dispose()
+{
 	// only delete this object when the state is finished and no other operations are running
 	// if operations were running after this gets deleted, function pointers to callbacks would be lead to segmentation faults.
 	awaitFinished();
 
 	disposeGRPC(); // this method exists because it seems that gRPC needs a specific destruction order that the default destructor does not guarantee.
-	_clientManager->releaseClient(shared_from_this());
 }

@@ -39,6 +39,7 @@ int main()
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(50001);
 	config.setThreadPoolSize(8);
+	config.setOperationBlocking(false);
 
 	auto connectionManager = ghost::ConnectionManager::create();
 	auto factory = connectionManager->getConnectionFactory();

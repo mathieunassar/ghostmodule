@@ -1,5 +1,7 @@
 #include "../../include/internal/network/ClientManager.hpp"
 
+#include "../../include/internal/network/RemoteClientGRPC.hpp"
+
 using namespace ghost::internal;
 
 ClientManager::ClientManager()
@@ -23,7 +25,7 @@ void ClientManager::start()
 void ClientManager::stop()
 {
 	std::lock_guard<std::mutex> lock(_mutex);
-	for (auto it = _activeClientsList.begin(); it != _activeClientsList.end(); ++it)
+	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
 	{
 		(*it)->stop();
 	}
@@ -31,59 +33,47 @@ void ClientManager::stop()
 	_clientManagerThreadEnable = false;
 	if (_clientManagerThread.joinable())
 		_clientManagerThread.join();
+
+	deleteAllClients();
 }
 
-void ClientManager::deleteReleasedClients()
+void ClientManager::addClient(std::shared_ptr<RemoteClientGRPC> client)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
-	for (auto it = _releasedClientsList.begin(); it != _releasedClientsList.end(); ++it)
+	_allClients.push_back(client);
+}
+
+void ClientManager::deleteDisposableClients()
+{
+	std::lock_guard<std::mutex> lock(_mutex);
+	auto it = _allClients.begin();
+	while (it != _allClients.end())
 	{
-		// 1. search and remove the client from the total list
-		for (auto it2 = _allClients.begin(); it2 != _allClients.end(); ++it2)
+		// dispose and delete the client if it is finished and only owned by this
+		if ((*it)->isFinished() && it->use_count() == 1)
 		{
-			if ((*it2) == (*it))
-			{
-				_allClients.erase(it2);
-				break;
-			}
+			(*it)->dispose();
+			it = _allClients.erase(it);
 		}
+		else
+			++it;
 	}
-	_releasedClientsList.clear();
 }
 
 void ClientManager::deleteAllClients()
 {
-	_releasedClientsList.clear();
-	_activeClientsList.clear();
-	_allClients.clear();
-}
-
-void ClientManager::addClient(std::shared_ptr<ghost::Client> client)
-{
-	std::lock_guard<std::mutex> lock(_mutex);
-	_activeClientsList.push_back(client);
-	_allClients.push_back(client);
-}
-
-void ClientManager::releaseClient(std::shared_ptr<ghost::Client> client)
-{
-	std::lock_guard<std::mutex> lock(_mutex);
-	for (auto it = _activeClientsList.begin(); it != _activeClientsList.end(); ++it)
+	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
 	{
-		if (*it == client)
-		{
-			_releasedClientsList.push_back(client);
-			_activeClientsList.erase(it);
-			return;
-		}
+		(*it)->dispose();
 	}
+	_allClients.clear();
 }
 
 void ClientManager::manageClients()
 {
 	while (_clientManagerThreadEnable)
 	{
-		deleteReleasedClients();
+		deleteDisposableClients(); // stop, dispose grpc and delete all clients whose shared_ptr has a counter of 1
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }

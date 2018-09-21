@@ -68,6 +68,12 @@ bool BaseClientGRPC<ReaderWriter, ContextType>::finishOperation()
 }
 
 template<typename ReaderWriter, typename ContextType>
+bool BaseClientGRPC<ReaderWriter, ContextType>::isFinished() const
+{
+	return _statemachine.getState() == RPCStateMachine::FINISHED && _operationsRunning == 0;
+}
+
+template<typename ReaderWriter, typename ContextType>
 void BaseClientGRPC<ReaderWriter, ContextType>::awaitFinished()
 {
 	while (_statemachine.getState() != RPCStateMachine::FINISHED || _operationsRunning > 0)
