@@ -1,11 +1,11 @@
-#include "../../include/internal/network/ServerGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/ServerGRPC.hpp"
 
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include "../../include/internal/network/RemoteClientGRPC.hpp"
-#include "../../include/internal/network/ServerGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/RemoteClientGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/ServerGRPC.hpp"
 
 using namespace ghost::internal;
 

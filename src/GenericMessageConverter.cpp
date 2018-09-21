@@ -1,5 +1,5 @@
-#include "../include/internal/GenericMessageConverter.hpp"
-#include "../include/ProtobufMessage.hpp"
+#include "../include/ghost/connection/internal/GenericMessageConverter.hpp"
+#include "../include/ghost/connection/ProtobufMessage.hpp"
 
 using namespace ghost::internal;
 

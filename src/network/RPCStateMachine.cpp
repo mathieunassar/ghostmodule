@@ -1,4 +1,4 @@
-#include "../../include/internal/network/RPCStateMachine.hpp"
+#include "../../include/ghost/connection/internal/network/RPCStateMachine.hpp"
 
 using namespace ghost::internal;
 

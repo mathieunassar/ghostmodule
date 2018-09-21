@@ -1,4 +1,4 @@
-#include "../include/internal/ConnectionFactory.hpp"
+#include "../include/ghost/connection/internal/ConnectionFactory.hpp"
 
 using namespace ghost::internal;
 

@@ -1,6 +1,6 @@
-#include "../../include/internal/network/ClientManager.hpp"
+#include "../../include/ghost/connection/internal/network/ClientManager.hpp"
 
-#include "../../include/internal/network/RemoteClientGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 

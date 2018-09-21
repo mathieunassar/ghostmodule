@@ -1,4 +1,4 @@
-#include "../include/NetworkConnectionConfiguration.hpp"
+#include "../include/ghost/connection/NetworkConnectionConfiguration.hpp"
 
 using namespace ghost;
 

@@ -1,4 +1,4 @@
-#include "../include/Configuration.hpp"
+#include "../include/ghost/connection/Configuration.hpp"
 
 using namespace ghost;
 

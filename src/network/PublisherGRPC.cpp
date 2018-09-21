@@ -1,5 +1,5 @@
-#include "../../include/internal/network/PublisherGRPC.hpp"
-#include "../../include/internal/network/PublisherClientHandler.hpp"
+#include "../../include/ghost/connection/internal/network/PublisherGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/PublisherClientHandler.hpp"
 
 using namespace ghost::internal;
 

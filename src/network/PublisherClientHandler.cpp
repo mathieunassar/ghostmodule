@@ -1,4 +1,4 @@
-#include "../../include/internal/network/PublisherClientHandler.hpp"
+#include "../../include/ghost/connection/internal/network/PublisherClientHandler.hpp"
 #include <iostream>
 
 using namespace ghost::internal;

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <sstream>
 
-#include <internal/network/ClientGRPC.hpp>
-#include <internal/network/SubscriberGRPC.hpp>
-#include <ConnectionManager.hpp>
-#include <ProtobufMessage.hpp>
+#include <ghost/connection/internal/network/ClientGRPC.hpp>
+#include <ghost/connection/internal/network/SubscriberGRPC.hpp>
+#include <ghost/connection/ConnectionManager.hpp>
+#include <ghost/connection/ProtobufMessage.hpp>
 
 using namespace ghost;
 

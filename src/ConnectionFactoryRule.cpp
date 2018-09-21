@@ -1,4 +1,4 @@
-#include "../include/internal/ConnectionFactoryRule.hpp"
+#include "../include/ghost/connection/internal/ConnectionFactoryRule.hpp"
 
 using namespace ghost::internal;
 

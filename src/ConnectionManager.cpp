@@ -1,4 +1,4 @@
-#include "../include/internal/ConnectionManager.hpp"
+#include "../include/ghost/connection/internal/ConnectionManager.hpp"
 
 using namespace ghost::internal;
 

@@ -1,4 +1,4 @@
-#include "../include/internal/ProtobufConfiguration.hpp"
+#include "../include/ghost/connection/internal/ProtobufConfiguration.hpp"
 
 #include <google/protobuf/repeated_field.h>
 
@@ -59,4 +59,5 @@ std::string ProtobufConfiguration::getAttribute(const std::string& name) const
 			return it->value();
 		}
 	}
+	return "";
 }

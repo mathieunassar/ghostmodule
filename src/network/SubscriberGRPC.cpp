@@ -1,4 +1,4 @@
-#include "../../include/internal/network/SubscriberGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/SubscriberGRPC.hpp"
 
 using namespace ghost::internal;
 

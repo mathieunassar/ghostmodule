@@ -1,5 +1,5 @@
-#include "../include/internal/Connection.hpp"
-#include "../include/Connection.hpp"
+#include "../include/ghost/connection/internal/Connection.hpp"
+#include "../include/ghost/connection/Connection.hpp"
 
 ghost::Connection::Connection(const ConnectionConfiguration& configuration)
 	: internal::Connection(configuration)

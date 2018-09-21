@@ -1,5 +1,5 @@
-#include "../include/internal/MessageHandler.hpp"
-#include "../include/internal/GenericMessageConverter.hpp"
+#include "../include/ghost/connection/internal/MessageHandler.hpp"
+#include "../include/ghost/connection/internal/GenericMessageConverter.hpp"
 
 using namespace ghost::internal;
 

@@ -1,4 +1,4 @@
-#include "../../include/internal/network/ClientGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/ClientGRPC.hpp"
 
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
@@ -6,7 +6,7 @@
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
 
-#include "../../include/internal/GenericMessageConverter.hpp"
+#include "../../include/ghost/connection/internal/GenericMessageConverter.hpp"
 
 using namespace ghost::internal;
 

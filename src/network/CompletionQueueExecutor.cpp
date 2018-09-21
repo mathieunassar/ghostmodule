@@ -1,4 +1,4 @@
-#include "../../include/internal/network/CompletionQueueExecutor.hpp"
+#include "../../include/ghost/connection/internal/network/CompletionQueueExecutor.hpp"
 #include <iostream>
 
 using namespace ghost::internal;

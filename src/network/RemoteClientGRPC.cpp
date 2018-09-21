@@ -1,4 +1,4 @@
-#include "../../include/internal/network/RemoteClientGRPC.hpp"
+#include "../../include/ghost/connection/internal/network/RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 

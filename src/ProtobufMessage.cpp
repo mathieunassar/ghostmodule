@@ -1,4 +1,4 @@
-#include "../include/ProtobufMessage.hpp"
+#include "../include/ghost/connection/ProtobufMessage.hpp"
 
 using namespace ghost;
 
