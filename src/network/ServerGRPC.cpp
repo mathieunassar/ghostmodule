@@ -75,9 +75,10 @@ bool ServerGRPC::stop()
 
 	_running = false;
 
-	_clientManager.stop();
 	_grpcServer->Shutdown();
 	_completionQueueExecutor.stop(); // shutdowns the completion queue
+
+	_clientManager.stop();
 
 	return true;
 }

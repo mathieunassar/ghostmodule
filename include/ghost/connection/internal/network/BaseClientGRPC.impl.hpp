@@ -21,7 +21,6 @@ BaseClientGRPC<ReaderWriter, ContextType>::~BaseClientGRPC()
 template<typename ReaderWriter, typename ContextType>
 void BaseClientGRPC<ReaderWriter, ContextType>::onWriteFinished(bool ok)
 {
-	std::cout << "call" << std::endl;
 	if (!finishOperation())
 		return;
 
@@ -29,7 +28,6 @@ void BaseClientGRPC<ReaderWriter, ContextType>::onWriteFinished(bool ok)
 
 	if (!ok)
 	{
-		std::cout << "not ok" << std::endl;
 		_statemachine.setState(RPCStateMachine::INACTIVE);
 	}
 

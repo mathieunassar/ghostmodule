@@ -139,7 +139,8 @@ file(GLOB source_connection2_tests
 ./tests/MessageTests.cpp
 ./tests/ConfigurationTests.cpp
 ./tests/ReaderWriterTests.cpp
-./tests/ConnectionTests.cpp)
+./tests/ConnectionTests.cpp
+./tests/NetworkConnectionTests.cpp)
 
 set(libraries_connection2_tests
 GhostConnection2)
