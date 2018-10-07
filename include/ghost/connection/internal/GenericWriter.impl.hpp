@@ -16,6 +16,12 @@ GenericWriter<MessageType>::GenericWriter(const WriterSink& other, bool blocking
 template<typename MessageType>
 bool GenericWriter<MessageType>::get(google::protobuf::Any& message, std::chrono::milliseconds timeout)
 {
+	if (timeout == std::chrono::milliseconds(0))
+	{
+		message = getMessageQueue()->get();
+		return true;
+	}
+
 	return getMessageQueue()->tryGet(timeout, message);
 }
 

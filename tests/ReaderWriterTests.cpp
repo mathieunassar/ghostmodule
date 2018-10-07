@@ -1,8 +1,8 @@
 #include <catch.hpp>
 #include <iostream>
 
-#include <internal/GenericReader.hpp>
-#include <internal/GenericWriter.hpp>
+#include <ghost/connection/internal/GenericReader.hpp>
+#include <ghost/connection/internal/GenericWriter.hpp>
 
 #include "../protobuf/Ghost.pb.h"
 

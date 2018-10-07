@@ -20,6 +20,8 @@ namespace ghost
 
 			bool hasAttribute(const std::string& name) const;
 
+			bool isAttributeEmpty(const std::string& name) const;
+
 			template<typename T>
 			bool getAttribute(const std::string& name, T& value) const;
 			template<typename T>

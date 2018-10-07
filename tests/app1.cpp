@@ -31,6 +31,22 @@ public:
 	}
 };
 
+/*
+TODO:
+- unit test as possible
+  - ok: configurations
+  - ok: messages: conversion, transport (check quantity of copies), message handler
+  - ok: connection manager: test template buildability, memory management, function (incl. factory)
+  - ok: connections: publisher subscriber server client with dummy internal implementations (thread counts?)
+  - ok: internals: generic writer reader
+  - network: grpc unit tests? completionqueue executor, client handler, client manager
+- add documentation
+- client dying - RPC not finshing!!
+- check for memory leaks
+- code review - virtual destructors - exception throwing - method visbility + const correctness
+- error handling - handle reconnection?! getError?!
+*/
+
 int main()
 {
 	std::cout << "server starting" << std::endl;

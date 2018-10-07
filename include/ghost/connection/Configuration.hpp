@@ -20,6 +20,7 @@ namespace ghost
 		const std::string& getConfigurationName() const;
 
 		bool hasAttribute(const std::string& name) const;
+		bool isAttributeEmpty(const std::string& name) const;
 
 		template<typename T>
 		bool getAttribute(const std::string& name, T& value) const;

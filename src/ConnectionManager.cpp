@@ -26,22 +26,34 @@ ConnectionManager::~ConnectionManager()
 
 std::shared_ptr<ghost::Server> ConnectionManager::createServer(const ghost::ConnectionConfiguration& config)
 {
-	return _connectionFactory->createServer(config);
+	auto conn = _connectionFactory->createServer(config);
+	if (conn)
+		_connections.push_back(conn);
+	return conn;
 }
 
 std::shared_ptr<ghost::Client> ConnectionManager::createClient(const ghost::ConnectionConfiguration& config)
 {
-	return _connectionFactory->createClient(config);
+	auto conn = _connectionFactory->createClient(config);
+	if (conn)
+		_connections.push_back(conn);
+	return conn;
 }
 
 std::shared_ptr<ghost::Publisher> ConnectionManager::createPublisher(const ghost::ConnectionConfiguration& config)
 {
-	return _connectionFactory->createPublisher(config);
+	auto conn = _connectionFactory->createPublisher(config);
+	if (conn)
+		_connections.push_back(conn);
+	return conn;
 }
 
 std::shared_ptr<ghost::Subscriber> ConnectionManager::createSubscriber(const ghost::ConnectionConfiguration& config)
 {
-	return _connectionFactory->createSubscriber(config);
+	auto conn = _connectionFactory->createSubscriber(config);
+	if (conn)
+		_connections.push_back(conn);
+	return conn;
 }
 
 std::shared_ptr<ghost::ConnectionFactory> ConnectionManager::getConnectionFactory()

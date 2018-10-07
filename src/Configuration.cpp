@@ -18,6 +18,11 @@ bool Configuration::hasAttribute(const std::string& name) const
 	return _configuration.hasAttribute(name);
 }
 
+bool Configuration::isAttributeEmpty(const std::string& name) const
+{
+	return _configuration.isAttributeEmpty(name);
+}
+
 std::map<std::string, std::string> Configuration::getAttributes() const
 {
 	return _configuration.getAttributes();

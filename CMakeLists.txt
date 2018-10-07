@@ -134,9 +134,12 @@ set_property(TARGET GhostConnection2 PROPERTY FOLDER "Libraries")
 
 # Unit tests: Primitive Serialization
 file(GLOB source_connection2_tests
+./tests/ConnectionMocks.hpp
+./tests/ConnectionMocks.cpp
 ./tests/MessageTests.cpp
 ./tests/ConfigurationTests.cpp
-./tests/ReaderWriterTests.cpp)
+./tests/ReaderWriterTests.cpp
+./tests/ConnectionTests.cpp)
 
 set(libraries_connection2_tests
 GhostConnection2)

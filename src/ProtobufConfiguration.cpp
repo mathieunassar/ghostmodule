@@ -24,6 +24,16 @@ bool ProtobufConfiguration::hasAttribute(const std::string& name) const
 	return false;
 }
 
+bool ProtobufConfiguration::isAttributeEmpty(const std::string& name) const
+{
+	for (int i = 0; i < _configuration.fields_size(); i++)
+	{
+		if (_configuration.fields(i).name() == name)
+			return _configuration.fields(i).value().empty();
+	}
+	return true;
+}
+
 std::map<std::string, std::string> ProtobufConfiguration::getAttributes() const
 {
 	std::map<std::string, std::string> res;

@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include <iostream>
 
-#include <ConnectionConfiguration.hpp>
+#include <ghost/connection/ConnectionConfiguration.hpp>
 
 using namespace ghost;
 
@@ -65,6 +65,13 @@ TEST_CASE("test_configuration")
 	bool getSuccess3 = config.getAttribute("strAttribute", intValue);
 	REQUIRE(!getSuccess3);
 	//REQUIRE(intValue == 42); // if the conversion fails, there is no guarantee on the result
+
+	// Test: empty configuration field
+	config.addAttribute("empty", "");
+	bool hasSuccess = config.hasAttribute("empty");
+	bool emptySuccess = config.isAttributeEmpty("empty");
+	REQUIRE(hasSuccess);
+	REQUIRE(emptySuccess);
 }
 
 TEST_CASE("test_connectionConfiguration")

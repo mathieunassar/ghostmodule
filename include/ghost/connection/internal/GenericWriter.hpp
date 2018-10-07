@@ -29,7 +29,7 @@ namespace ghost
 			GenericWriter(const WriterSink& other, bool blocking);
 			
 			/// From WriterSink: gets the messages to write from the writer
-			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) override;
+			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(0)) override;
 
 			void pop() override;
 

@@ -2,8 +2,10 @@
 #include <catch.hpp>
 #include <iostream>
 
-#include <ProtobufMessage.hpp>
-#include <internal/GenericMessageConverter.hpp>
+#include <ghost/connection/ProtobufMessage.hpp>
+#include <ghost/connection/internal/GenericMessageConverter.hpp>
+#include <ghost/connection/MessageHandler.hpp>
+#include <ghost/connection/internal/MessageHandler.hpp>
 #include "../protobuf/Ghost.pb.h"
 
 using namespace ghost;
@@ -25,6 +27,15 @@ public:
 
 	bool _willfail;
 	std::string _string;
+};
+
+class MessageHandlerMock : public internal::MessageHandler
+{
+public:
+	internal::MessageHandler* getInternal()
+	{
+		return _internal;
+	}
 };
 
 TEST_CASE("test_conversion")
@@ -121,4 +132,31 @@ TEST_CASE("test_conversion")
 	// Test any to failing mymessage
 	bool success14 = internal::GenericMessageConverter::parse(customAny, message4);
 	REQUIRE(!success14);
+}
+
+TEST_CASE("test_messagehandler")
+{
+	int counter = 0;
+	MessageHandlerMock mock;
+	mock.addHandler<ghost::internal::protobuf::GenericMessageHeader>
+		([&counter](const ghost::internal::protobuf::GenericMessageHeader& message)
+	{
+		counter++;
+	});
+
+	ghost::internal::protobuf::GenericMessageHeader message;
+	message.set_timestamp(12);
+
+	google::protobuf::Any any;
+	any.PackFrom(message);
+
+	ghost::internal::protobuf::GenericMessage gen;
+	google::protobuf::Any any2;
+	any2.PackFrom(gen);
+
+	mock.getInternal()->handle(any);
+
+	REQUIRE(counter == 1); // first message was sent to the message handler
+	mock.getInternal()->handle(any2);
+	REQUIRE(counter == 1); // second message didnt find a handler.
 }
