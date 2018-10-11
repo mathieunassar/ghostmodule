@@ -15,7 +15,7 @@ CompletionQueueExecutor::CompletionQueueExecutor(grpc::CompletionQueue* completi
 
 CompletionQueueExecutor::~CompletionQueueExecutor()
 {
-	//stop();
+	stop();
 }
 
 void CompletionQueueExecutor::setCompletionQueue(std::unique_ptr<grpc::CompletionQueue> completion)

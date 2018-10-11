@@ -39,9 +39,9 @@ TODO:
   - ok: connection manager: test template buildability, memory management, function (incl. factory)
   - ok: connections: publisher subscriber server client with dummy internal implementations (thread counts?)
   - ok: internals: generic writer reader
-  - network: grpc unit tests? completionqueue executor, client handler, client manager
+  - ok: network: grpc unit tests? completionqueue executor, client handler, client manager
 - add documentation
-- client dying - RPC not finshing!!
+- client dying - RPC not finshing!! - make the unit test work
 - check for memory leaks
 - code review - virtual destructors - exception throwing - method visbility + const correctness
 - error handling - handle reconnection?! getError?!

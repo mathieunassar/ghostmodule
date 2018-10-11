@@ -21,17 +21,21 @@ BaseClientGRPC<ReaderWriter, ContextType>::~BaseClientGRPC()
 template<typename ReaderWriter, typename ContextType>
 void BaseClientGRPC<ReaderWriter, ContextType>::onWriteFinished(bool ok)
 {
-	if (!finishOperation())
-		return;
-
-	getWriterSink()->pop();
-
-	if (!ok)
 	{
-		_statemachine.setState(RPCStateMachine::INACTIVE);
-	}
+		std::unique_lock<std::mutex> lk(_writerMutex);
 
-	_writeInProgress = false;
+		if (!finishOperation())
+			return;
+
+		getWriterSink()->pop();
+
+		if (!ok)
+		{
+			_statemachine.setState(RPCStateMachine::INACTIVE);
+		}
+
+		_writeInProgress = false;
+	}
 	_writerConditionVariable.notify_one();
 }
 
@@ -111,10 +115,12 @@ void BaseClientGRPC<ReaderWriter, ContextType>::startWriter()
 			if (success)
 			{
 				startOperation();
+
+				std::unique_lock<std::mutex> lk(_writerMutex);
+				
 				_writeInProgress = true;
 				_client->Write(message, &_writtenProcessor);
 
-				std::unique_lock<std::mutex> lk(_writerMutex);
 				_writerConditionVariable.wait(lk, [this] {return !_writeInProgress; });
 			}
 		}
