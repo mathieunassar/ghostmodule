@@ -1,11 +1,6 @@
 #include <catch.hpp>
 #include <iostream>
 
-#include <ghost/connection/internal/network/ServerGRPC.hpp>
-#include <ghost/connection/internal/network/PublisherGRPC.hpp>
-#include <ghost/connection/internal/network/SubscriberGRPC.hpp>
-#include <ghost/connection/internal/network/ClientGRPC.hpp>
-
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection/ProtobufMessage.hpp>
@@ -14,29 +9,22 @@ using namespace ghost;
 
 TEST_CASE("test_network_connections")
 {
-	NetworkConnectionConfiguration config;
-	config.addAttribute("TEST", Configuration::EMPTY);
-
 	NetworkConnectionConfiguration publisherConfig;
 	publisherConfig.setServerIpAddress("127.0.0.1");
 	publisherConfig.setServerPortNumber(50001);
 	publisherConfig.setThreadPoolSize(8);
 	publisherConfig.setOperationBlocking(false);
+	publisherConfig.removeAttribute("CONNECTIONCONFIGURATION_BLOCKING");
 
 	auto connectionManager = ghost::ConnectionManager::create();
-	auto factory = connectionManager->getConnectionFactory();
-	factory->addPublisherRule<internal::PublisherGRPC>(config);
-	factory->addSubscriberRule<internal::SubscriberGRPC>(config);
-	factory->addServerRule<internal::ServerGRPC>(config);
-	factory->addClientRule<internal::ClientGRPC>(config);
 
 	auto badpublisher = connectionManager->createPublisher(publisherConfig);
-	REQUIRE(!badpublisher);
+	REQUIRE(!badpublisher); // fails because the blocking attribute was removed from the configuration
 
-	publisherConfig.addAttribute("TEST", Configuration::EMPTY);
+	publisherConfig.addAttribute("CONNECTIONCONFIGURATION_BLOCKING", false);
 
 	auto publisher = connectionManager->createPublisher(publisherConfig);
-	REQUIRE(publisher);
+	REQUIRE(publisher); // succeeds because the blocking attribute was added again
 
 	auto subscriber = connectionManager->createSubscriber(publisherConfig);
 	REQUIRE(subscriber);
