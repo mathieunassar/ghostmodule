@@ -78,6 +78,8 @@ TEST_CASE("test_connectionConfiguration")
 {
 	ConnectionConfiguration config;
 
+	REQUIRE(config.getThreadPoolSize() == 2);
+
 	config.removeAttribute("CONNECTIONCONFIGURATION_ID");
 
 	REQUIRE(config.getConnectionId() == -1);

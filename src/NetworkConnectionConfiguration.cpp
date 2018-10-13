@@ -12,7 +12,7 @@ NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string
 	: ConnectionConfiguration(name)
 {
 	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, "");
-	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, (int)-1);
+	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, "");
 }
 
 // getters of connection configuration parameters

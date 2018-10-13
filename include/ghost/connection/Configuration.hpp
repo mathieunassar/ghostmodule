@@ -12,6 +12,8 @@ namespace ghost
 	class Configuration
 	{
 	public:
+		static const std::string EMPTY;
+
 		virtual ~Configuration() {}
 
 		Configuration(const std::string& name = "");

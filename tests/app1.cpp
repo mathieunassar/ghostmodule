@@ -33,15 +33,7 @@ public:
 
 /*
 TODO:
-- unit test as possible
-  - ok: configurations
-  - ok: messages: conversion, transport (check quantity of copies), message handler
-  - ok: connection manager: test template buildability, memory management, function (incl. factory)
-  - ok: connections: publisher subscriber server client with dummy internal implementations (thread counts?)
-  - ok: internals: generic writer reader
-  - ok: network: grpc unit tests? completionqueue executor, client handler, client manager
 - add documentation
-- client dying - RPC not finshing!! - make the unit test work
 - check for memory leaks
 - code review - virtual destructors - exception throwing - method visbility + const correctness
 - error handling - handle reconnection?! getError?!
@@ -55,7 +47,7 @@ int main()
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(50001);
 	config.setThreadPoolSize(8);
-	config.setOperationBlocking(false);
+	config.setOperationBlocking(true);
 
 	auto connectionManager = ghost::ConnectionManager::create();
 	auto factory = connectionManager->getConnectionFactory();
@@ -81,16 +73,6 @@ int main()
 		count++;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-
-	/*internal::ServerGRPC server(config);
-	server.setClientHandler(std::make_shared<TestClientHandler>());
-	server.start();
-	
-	std::cout << "server started" << std::endl;
-	while (server.isRunning())
-	{
-		Sleep(100);
-	}*/
 
 	std::cout << "exiting" << std::endl;
 	publisher->stop();

@@ -12,9 +12,9 @@ namespace ghost::internal
 ConnectionConfiguration::ConnectionConfiguration(const std::string& name)
 	: Configuration(name)
 {
-	addAttribute(internal::CONNECTIONCONFIGURATION_ID, (int)-1);
-	addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, (int)2);
-	addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, true);
+	addAttribute(internal::CONNECTIONCONFIGURATION_ID, "");
+	addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, "");
+	addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, "");
 }
 
 int ConnectionConfiguration::getConnectionId() const

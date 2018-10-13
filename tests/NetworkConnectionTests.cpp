@@ -12,11 +12,10 @@
 
 using namespace ghost;
 
-// problems: config not recognized if default constructor used to setup the factory
-// problem: dying / closing client blocks the publisher if call is blocking
 TEST_CASE("test_network_connections")
 {
 	NetworkConnectionConfiguration config;
+	config.addAttribute("TEST", Configuration::EMPTY);
 
 	NetworkConnectionConfiguration publisherConfig;
 	publisherConfig.setServerIpAddress("127.0.0.1");
@@ -26,10 +25,15 @@ TEST_CASE("test_network_connections")
 
 	auto connectionManager = ghost::ConnectionManager::create();
 	auto factory = connectionManager->getConnectionFactory();
-	factory->addPublisherRule<internal::PublisherGRPC>(publisherConfig);
-	factory->addSubscriberRule<internal::SubscriberGRPC>(publisherConfig);
+	factory->addPublisherRule<internal::PublisherGRPC>(config);
+	factory->addSubscriberRule<internal::SubscriberGRPC>(config);
 	factory->addServerRule<internal::ServerGRPC>(config);
 	factory->addClientRule<internal::ClientGRPC>(config);
+
+	auto badpublisher = connectionManager->createPublisher(publisherConfig);
+	REQUIRE(!badpublisher);
+
+	publisherConfig.addAttribute("TEST", Configuration::EMPTY);
 
 	auto publisher = connectionManager->createPublisher(publisherConfig);
 	REQUIRE(publisher);
@@ -51,7 +55,7 @@ TEST_CASE("test_network_connections")
 	auto messageHandler = reader->addMessageHandler();
 	messageHandler->addHandler<internal::protobuf::GenericMessageHeader>([&](const internal::protobuf::GenericMessageHeader& msg) {
 		int val = msg.timestamp();
-		std::cout << "received#: " << val << std::endl;
+		//std::cout << "received#: " << val << std::endl;
 		if (val < counterReceived)
 			wrongOrderCount++;
 		counterReceived++;
@@ -60,7 +64,7 @@ TEST_CASE("test_network_connections")
 	auto messageHandler2 = reader2->addMessageHandler();
 	messageHandler2->addHandler<internal::protobuf::GenericMessageHeader>([&](const internal::protobuf::GenericMessageHeader& msg) {
 		int val = msg.timestamp();
-		std::cout << "received2#: " << val << std::endl;
+		//std::cout << "received2#: " << val << std::endl;
 		if (val < counterReceived2)
 			wrongOrderCount++;
 		counterReceived2++;

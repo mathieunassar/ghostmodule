@@ -2,6 +2,8 @@
 
 using namespace ghost;
 
+const std::string Configuration::EMPTY = "";
+
 Configuration::Configuration(const std::string& name)
 	: _configuration(name)
 {
