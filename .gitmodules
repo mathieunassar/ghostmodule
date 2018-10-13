@@ -1,0 +1,3 @@
+[submodule "third-party/ghost_support"]
+	path = third-party/ghost_support
+	url = ssh://MathieuNassar@192.168.178.201:10070/volume1/git/ghost_support

@@ -1,13 +1,71 @@
-# CONNECTION LIBRARY
+cmake_minimum_required(VERSION 3.8)
 
-#####################################################################
+set(projectName ghost_connection)
+set(CMAKE_DEBUG_POSTFIX "d")
+set(CMAKE_BUILD_TYPE RELEASE)
+set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
+set(GHOST_BUILD_NAME "buildVS2017_x86")
+set(CMAKE_CXX_FLAGS "-std=c++14")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
+
+# define the project
+project(${projectName} CXX)
+
+
+if (MSVC)
+	message(STATUS "MSVC compiler detected - version: " ${MSVC_VERSION})
+	
+	if (MSVC_VERSION GREATER_EQUAL "1900")
+		include(CheckCXXCompilerFlag)
+		CHECK_CXX_COMPILER_FLAG("/std:c++latest" _cpp_latest_flag_supported)
+		if (_cpp_latest_flag_supported)
+			add_compile_options("/std:c++latest")
+		endif()
+	endif()
+	
+	message(STATUS "Setting D_WIN32_WINNT to 0x600")
+	add_compile_options("-D_WIN32_WINNT=0x600")
+	
+	message(STATUS "Setting /EHsc flag")
+	add_compile_options("/EHsc")
+endif (MSVC)
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+##########################################################################################################################################
+######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
+##########################################################################################################################################
+
+# provide path to include directories
+include_directories(
+	include
+	third-party/ghost_support/include
+	third-party/protobuf/include
+	third-party/grpc/include
+	third-party/Catch/
+)
+
+# provide path to libraries
+link_directories(
+	third-party/protobuf/bin/buildVS2017_x86/
+	third-party/grpc/bin/buildVS2017_x86/
+)
+
+# set up tests
+enable_testing()
+  
+##########################################################################################################################################
+############################################################ CONNECTION LIBRARY ##########################################################
+##########################################################################################################################################
 
 set(PROTOC_SOURCE_CUSTOM ./protobuf/)
-set(PROTOC_SOURCE_LIB ${PROJECT_SOURCE_DIR}/ExternalLibs/protobuf/include)
+set(PROTOC_SOURCE_LIB ${PROJECT_SOURCE_DIR}/third-party/protobuf/include)
 set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
 set(PROTOC_OUTPUT ./protobuf/)
-set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/ExternalLibs/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
-set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/ExternalLibs/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
+set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
+set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
 
 message(STATUS "Generating grpc and protobuf files...")
 
@@ -17,7 +75,7 @@ execute_process(
 	COMMAND ${PROTOC_PATH} -I ${PROTOC_SOURCE_LIB} -I ${PROTOC_SOURCE_CUSTOM} --cpp_out=${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE}
 )
 
-#####################################################################
+##########################################################################################################################################
 
 file(GLOB header_connection2_lib
 ./include/ghost/connection/Connection.hpp
@@ -116,9 +174,9 @@ source_group("Header Files\\internal\\network" FILES ${header_connection2_lib_in
 source_group("Source Files\\network" FILES ${source_connection2_lib_network})
 source_group("Protobuf" FILES ${protobuf_connection2_lib})
 
-#####################################################################
+##########################################################################################################################################
 
-add_library(GhostConnection2 ${header_connection2_lib}
+add_library(ghost_connection ${header_connection2_lib}
 	${header_connection2_lib_internal}
 	${header_connection2_lib_internal_network}
 	${source_connection2_lib_network}
@@ -126,11 +184,9 @@ add_library(GhostConnection2 ${header_connection2_lib}
 	${protobuf_connection2_lib}
 	)
 
-target_link_libraries(GhostConnection2 Commons ws2_32 libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
+target_link_libraries(ghost_connection ws2_32 libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
 
-set_property(TARGET GhostConnection2 PROPERTY FOLDER "Libraries")
-
-#####################################################################
+##########################################################################################################################################
 
 # Unit tests: Primitive Serialization
 file(GLOB source_connection2_tests
@@ -143,15 +199,9 @@ file(GLOB source_connection2_tests
 ./tests/NetworkConnectionTests.cpp)
 
 set(libraries_connection2_tests
-GhostConnection2)
+ghost_connection)
 
-add_executable(Connection_Tests ${source_connection2_tests})
-target_link_libraries(Connection_Tests ${libraries_connection2_tests})
-set_property(TARGET Connection_Tests PROPERTY FOLDER "Tests/UnitTests")
-add_test(UnitTests_Connection_Tests Connection_Tests)
-
-add_executable(Test1 ./tests/app1.cpp)
-target_link_libraries(Test1 GhostConnection2 zlib)
-
-add_executable(Test2 ./tests/app2.cpp)
-target_link_libraries(Test2 GhostConnection2 zlib)
+add_executable(connection_tests ${source_connection2_tests})
+target_link_libraries(connection_tests ${libraries_connection2_tests})
+set_property(TARGET connection_tests PROPERTY FOLDER "tests")
+add_test(connection_tests connection_tests)
