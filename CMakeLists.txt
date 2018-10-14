@@ -71,8 +71,16 @@ set(PROTOC_SOURCE_CUSTOM ./protobuf/)
 set(PROTOC_SOURCE_LIB ${PROJECT_SOURCE_DIR}/third-party/protobuf/include)
 set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
 set(PROTOC_OUTPUT ./protobuf/)
-set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
-set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
+
+if (WIN32)
+	set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
+	set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
+endif (WIN32)
+
+if (UNIX)
+	set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc)
+	set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin)
+endif (UNIX)
 
 message(STATUS "Generating grpc and protobuf files...")
 
