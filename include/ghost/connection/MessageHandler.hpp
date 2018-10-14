@@ -22,10 +22,7 @@ namespace ghost
 		virtual ~MessageHandler() = 0;
 
 		template<typename MessageType>
-		void addHandler(std::function<void(const MessageType& message)> handler)
-		{
-			_internal->registerHandler(handler);
-		}
+		void addHandler(std::function<void(const MessageType& message)> handler);
 
 	protected:
 		internal::MessageHandler* _internal;
