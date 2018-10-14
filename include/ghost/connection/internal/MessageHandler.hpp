@@ -50,6 +50,12 @@ namespace ghost
 			std::map<std::pair<std::string, std::string>, std::unique_ptr<BaseMessageHandlerCallback>> _handlers;
 		};
 	}
+
+	template<typename MessageType>
+	void MessageHandler::addHandler(std::function<void(const MessageType& message)> handler)
+	{
+		_internal->registerHandler(handler);
+	}
 }
 
 #endif //GHOST_INTERNAL_MESSAGEHANDLER_HPP
