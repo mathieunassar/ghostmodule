@@ -8,6 +8,8 @@
 #include <ghost/connection/Message.hpp>
 
 #include <BlockingQueue.hpp>
+#include "GenericMessageConverter.hpp"
+#include "../ProtobufMessage.hpp"
 
 namespace ghost
 {
@@ -27,7 +29,7 @@ namespace ghost
 			GenericWriter(bool blocking);
 
 			GenericWriter(const WriterSink& other, bool blocking);
-			
+
 			/// From WriterSink: gets the messages to write from the writer
 			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(0)) override;
 

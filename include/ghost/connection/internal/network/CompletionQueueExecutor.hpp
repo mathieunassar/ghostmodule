@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <thread>
+#include <list>
 
 #include <grpcpp/completion_queue.h>
 
@@ -27,11 +28,11 @@ namespace ghost
 			void handleRpcs();
 
 			std::unique_ptr<grpc::CompletionQueue> _completionQueue;
-			
+
 			std::list<std::thread> _threadPool;
 		};
 
-		
+
 		/**
 		 * Tag information for the gRPC completion queue.
 		 * @author	Mathieu Nassar

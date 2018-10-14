@@ -44,7 +44,7 @@ include_directories(
 	third-party/ghost_support/include
 	third-party/protobuf/include
 	third-party/grpc/include
-	third-party/Catch/
+	third-party/catch/
 )
 
 # provide path to libraries

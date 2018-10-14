@@ -15,7 +15,7 @@ namespace ghost
 		{
 		public:
 			ConnectionFactoryRule(const ghost::ConnectionConfiguration& minimumConfiguration);
-			virtual ~ConnectionFactoryRule() = 0 {}
+			virtual ~ConnectionFactoryRule() = 0;
 
 			/// returns true if the candidate configuration fulfills the minimum configuration requirements
 			/// Note: empty values in the minimum configuration mean that any value is allowed for this parameter
@@ -36,6 +36,8 @@ namespace ghost
 
 			std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const override;
 		};
+
+		inline ConnectionFactoryRule::~ConnectionFactoryRule() {}
 
 		#include "ConnectionFactoryRule.impl.hpp"
 	}

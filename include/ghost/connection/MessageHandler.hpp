@@ -19,7 +19,7 @@ namespace ghost
 	class MessageHandler
 	{
 	public:
-		virtual ~MessageHandler() = 0 {}
+		virtual ~MessageHandler() = 0;
 
 		template<typename MessageType>
 		void addHandler(std::function<void(const MessageType& message)> handler)
@@ -30,6 +30,8 @@ namespace ghost
 	protected:
 		internal::MessageHandler* _internal;
 	};
+
+	inline MessageHandler::~MessageHandler() {}
 }
 
 #endif //GHOST_MESSAGEHANDLER_HPP

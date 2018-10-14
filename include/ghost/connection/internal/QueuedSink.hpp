@@ -13,7 +13,7 @@ namespace ghost
 		public:
 			QueuedSink()
 				: _messageQueue(new BlockingQueue<google::protobuf::Any>()) {}
-			virtual ~QueuedSink() = 0 {}
+			virtual ~QueuedSink() = 0;
 
 		protected:
 			std::shared_ptr<BlockingQueue<google::protobuf::Any>> getMessageQueue()
@@ -24,6 +24,8 @@ namespace ghost
 		private:
 			std::shared_ptr<BlockingQueue<google::protobuf::Any>> _messageQueue;
 		};
+
+		inline QueuedSink::~QueuedSink() {}
 	}
 }
 

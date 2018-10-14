@@ -15,7 +15,7 @@ namespace ghost
 	public:
 		Connection(const ConnectionConfiguration& configuration);
 
-		virtual ~Connection() = 0 {}
+		virtual ~Connection() = 0;
 
 		/**
 		* If the start sequence is successful, then the connection is running.
@@ -41,6 +41,8 @@ namespace ghost
 		*/
 		virtual bool isRunning() const = 0;
 	};
+
+	inline Connection::~Connection() {}
 }
 
 #endif //GHOST_CONNECTION_HPP

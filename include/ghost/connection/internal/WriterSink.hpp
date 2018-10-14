@@ -14,7 +14,7 @@ namespace ghost
 		class WriterSink : public QueuedSink
 		{
 		public:
-			virtual ~WriterSink() = 0 {}
+			virtual ~WriterSink() = 0;
 
 			/**
 			* Gets a message from the writer.
@@ -31,6 +31,8 @@ namespace ghost
 			 */
 			virtual void pop() = 0;
 		};
+
+		inline WriterSink::~WriterSink() {}
 	}
 }
 

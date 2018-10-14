@@ -21,7 +21,7 @@ namespace ghost
 		{
 		public:
 			Connection(const ConnectionConfiguration& configuration);
-			virtual ~Connection() = 0 {}
+			virtual ~Connection() = 0;
 
 			template<typename MessageType>
 			std::shared_ptr<Writer<MessageType>> getWriter();
@@ -49,6 +49,8 @@ namespace ghost
 			std::shared_ptr<WriterSink> _writer;
 			std::shared_ptr<ReaderSink> _reader;
 		};
+
+		inline Connection::~Connection() {}
 
 		#include "Connection.impl.hpp"
 	}

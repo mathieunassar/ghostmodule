@@ -33,7 +33,7 @@ namespace ghost
 
 			template<typename Connection>
 			void addPublisherRule(const ghost::ConnectionConfiguration& config);
-			
+
 			template<typename Connection>
 			void addSubscriberRule(const ghost::ConnectionConfiguration& config);
 
@@ -45,14 +45,16 @@ namespace ghost
 			std::shared_ptr<ghost::Subscriber> createSubscriber(const ghost::ConnectionConfiguration& config);
 
 		private:
-			std::list<std::unique_ptr<ConnectionFactoryRule>> _serverRules;
-			std::list<std::unique_ptr<ConnectionFactoryRule>> _clientRules;
-			std::list<std::unique_ptr<ConnectionFactoryRule>> _publisherRules;
-			std::list<std::unique_ptr<ConnectionFactoryRule>> _subscriberRules;
+			std::list<std::shared_ptr<ConnectionFactoryRule>> _serverRules;
+			std::list<std::shared_ptr<ConnectionFactoryRule>> _clientRules;
+			std::list<std::shared_ptr<ConnectionFactoryRule>> _publisherRules;
+			std::list<std::shared_ptr<ConnectionFactoryRule>> _subscriberRules;
 		};
 
 		#include "ConnectionFactory.impl.hpp"
 	}
+
+	#include "../ConnectionFactory.impl.hpp"
 }
 
 #endif //GHOST_INTERNAL_CONNECTION_FACTORY_HPP

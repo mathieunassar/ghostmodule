@@ -28,8 +28,6 @@ namespace ghost
 	protected:
 		internal::ConnectionFactory* _internal;
 	};
-
-	#include "ConnectionFactory.impl.hpp"
 }
 
 #endif //GHOST_CONNECTIONFACTORY_HPP

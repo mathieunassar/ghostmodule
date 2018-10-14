@@ -13,14 +13,16 @@ namespace ghost
 	public:
 		Publisher(const ConnectionConfiguration& configuration);
 
-		virtual ~Publisher() = 0 {}
-		
+		virtual ~Publisher() = 0;
+
 		template<typename MessageType>
 		std::shared_ptr<Writer<MessageType>> getWriter() // same as: using internal::Connection::getWriter;
 		{
 			return internal::Connection::getWriter<MessageType>();
 		}
 	};
+
+	inline Publisher::~Publisher() {}
 }
 
 #endif //GHOST_PUBLISHER_HPP

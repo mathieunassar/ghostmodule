@@ -25,7 +25,7 @@ namespace ghost
 	{
 	public:
 		static std::shared_ptr<ConnectionManager> create();
-		virtual ~ConnectionManager() = 0 {}
+		virtual ~ConnectionManager() = 0;
 
 		/// Creates a server with the provided configuration. If this is impossible, returns nullptr.
 		virtual std::shared_ptr<Server> createServer(const ConnectionConfiguration& config) = 0;
@@ -41,6 +41,8 @@ namespace ghost
 	protected:
 		internal::ConnectionManager* _internal;
 	};
+
+	inline ConnectionManager::~ConnectionManager() {}
 }
 
 #include "internal/ConnectionManager.hpp"

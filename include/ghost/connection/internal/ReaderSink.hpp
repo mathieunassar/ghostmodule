@@ -9,7 +9,7 @@ namespace ghost
 {
 	namespace internal
 	{
-		/* 
+		/*
 		This will contain the read queue, will be initialized at the beginning of a connection
 		constructor can take another sink to transfer the queue from one to another
 		Create MessageQueue class to handle the queue with its mutex
@@ -17,7 +17,7 @@ namespace ghost
 		class ReaderSink : public QueuedSink
 		{
 		public:
-			virtual ~ReaderSink() = 0 {}
+			virtual ~ReaderSink() = 0;
 
 			/**
 			* Puts a message in the reader.
@@ -28,6 +28,8 @@ namespace ghost
 			*/
 			virtual bool put(const google::protobuf::Any& message) = 0;
 		};
+
+		inline ReaderSink::~ReaderSink() {}
 	}
 }
 

@@ -8,7 +8,7 @@ namespace ghost
 	class Message
 	{
 	public:
-		virtual ~Message() = 0 {}
+		virtual ~Message() = 0;
 
 		virtual std::string getMessageFormatName() const = 0;
 
@@ -18,6 +18,8 @@ namespace ghost
 
 		virtual bool deserialize(const std::string& payload) = 0;
 	};
+
+	inline Message::~Message() {}
 }
 
 #endif //GHOST_MESSAGE_HPP

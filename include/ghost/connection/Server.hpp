@@ -13,7 +13,7 @@ namespace ghost
 	public:
 		Server(const ConnectionConfiguration& configuration);
 
-		virtual ~Server() = 0 {}
+		virtual ~Server() = 0;
 
 		/**
 		 * Sets the handler which will process the clients of this server.
@@ -23,6 +23,8 @@ namespace ghost
 		 */
 		virtual void setClientHandler(std::shared_ptr<ClientHandler> handler) = 0;
 	};
+
+	inline Server::~Server() {}
 }
 
 #endif //GHOST_SERVER_HPP
