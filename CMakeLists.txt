@@ -4,7 +4,6 @@ set(projectName ghost_connection)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
-set(GHOST_BUILD_NAME "buildVS2017_x86")
 set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
@@ -13,8 +12,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 # define the project
 project(${projectName} CXX)
 
-
+# Windows specific stuff
 if (MSVC)
+	set(GHOST_BUILD_NAME "buildVS2017_x86")
 	message(STATUS "MSVC compiler detected - version: " ${MSVC_VERSION})
 	
 	if (MSVC_VERSION GREATER_EQUAL "1900")
@@ -31,6 +31,11 @@ if (MSVC)
 	message(STATUS "Setting /EHsc flag")
 	add_compile_options("/EHsc")
 endif (MSVC)
+
+# unix specific stuff
+if (UNIX)
+    set(GHOST_BUILD_NAME "buildUnix_x86")
+endif (UNIX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -49,8 +54,8 @@ include_directories(
 
 # provide path to libraries
 link_directories(
-	third-party/protobuf/bin/buildVS2017_x86/
-	third-party/grpc/bin/buildVS2017_x86/
+	third-party/protobuf/bin/${GHOST_BUILD_NAME}/
+	third-party/grpc/bin/${GHOST_BUILD_NAME}/
 )
 
 # set up tests
@@ -186,7 +191,11 @@ add_library(ghost_connection ${header_connection2_lib}
 	${protobuf_connection2_lib}
 	)
 
-target_link_libraries(ghost_connection ws2_32 libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
+if (WIN32)
+	target_link_libraries(ghost_connection ws2_32)
+endif (WIN32)
+	
+target_link_libraries(ghost_connection libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
 
 ##########################################################################################################################################
 
