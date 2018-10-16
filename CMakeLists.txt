@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # define the project
 project(${projectName} CXX)
@@ -37,6 +38,9 @@ if (UNIX)
     set(GHOST_BUILD_NAME "buildUnix_x86")
 endif (UNIX)
 
+find_package(Protobuf REQUIRED)
+find_package(GRPC REQUIRED)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ##########################################################################################################################################
@@ -47,15 +51,15 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 include_directories(
 	include
 	third-party/ghost_support/include
-	third-party/protobuf/include
-	third-party/grpc/include
+	${Protobuf_INCLUDE_DIRS}
+	${GRPC_INCLUDE_DIRS}
 	third-party/catch/
 )
 
 # provide path to libraries
 link_directories(
-	third-party/protobuf/bin/${GHOST_BUILD_NAME}/
-	third-party/grpc/bin/${GHOST_BUILD_NAME}/
+	${Protobuf_LIBS_RELEASE} ${Protobuf_LIBS_RELEASE}
+	${GRPC_LIBRARIES_RELEASE} ${GRPC_LIBRARIES_DEBUG}
 )
 
 # set up tests
@@ -201,9 +205,17 @@ add_library(ghost_connection ${header_connection2_lib}
 
 if (WIN32)
 	target_link_libraries(ghost_connection ws2_32)
-endif (WIN32)
-	
-target_link_libraries(ghost_connection libprotobuf gpr grpc grpc++ zlib grpc_unsecure grpc++_unsecure)
+else ()
+	target_link_libraries(ghost_connection pthread)
+endif()
+
+target_link_libraries(ghost_connection
+	optimized ${Protobuf_LIBRARIES_RELEASE}) 
+	#debug ${Protobuf_LIBRARIES_DEBUG})
+
+target_link_libraries(ghost_connection
+	optimized ${GRPC_LIBRARIES_RELEASE}) 
+	#debug ${GRPC_LIBRARIES_DEBUG})
 
 ##########################################################################################################################################
 

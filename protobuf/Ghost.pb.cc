@@ -7,7 +7,6 @@
 
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/port.h>
-#include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
 #include <google/protobuf/descriptor.h>
@@ -19,6 +18,11 @@
 #include "third_party/protobuf/version.h"
 #endif
 // @@protoc_insertion_point(includes)
+
+namespace protobuf_Ghost_2eproto {
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_Ghost_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_ConnectionConfigurationField;
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_Ghost_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_GenericMessageHeader;
+}  // namespace protobuf_Ghost_2eproto
 namespace ghost {
 namespace internal {
 namespace protobuf {
@@ -46,15 +50,9 @@ class ConnectionConfigurationFieldDefaultTypeInternal {
 }  // namespace internal
 }  // namespace ghost
 namespace protobuf_Ghost_2eproto {
-void InitDefaultsGenericMessageImpl() {
+static void InitDefaultsGenericMessage() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  ::google::protobuf::internal::InitProtobufDefaultsForceUnique();
-#else
-  ::google::protobuf::internal::InitProtobufDefaults();
-#endif  // GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeader();
   {
     void* ptr = &::ghost::internal::protobuf::_GenericMessage_default_instance_;
     new (ptr) ::ghost::internal::protobuf::GenericMessage();
@@ -63,19 +61,13 @@ void InitDefaultsGenericMessageImpl() {
   ::ghost::internal::protobuf::GenericMessage::InitAsDefaultInstance();
 }
 
-void InitDefaultsGenericMessage() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsGenericMessageImpl);
-}
+::google::protobuf::internal::SCCInfo<1> scc_info_GenericMessage =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsGenericMessage}, {
+      &protobuf_Ghost_2eproto::scc_info_GenericMessageHeader.base,}};
 
-void InitDefaultsGenericMessageHeaderImpl() {
+static void InitDefaultsGenericMessageHeader() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  ::google::protobuf::internal::InitProtobufDefaultsForceUnique();
-#else
-  ::google::protobuf::internal::InitProtobufDefaults();
-#endif  // GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
   {
     void* ptr = &::ghost::internal::protobuf::_GenericMessageHeader_default_instance_;
     new (ptr) ::ghost::internal::protobuf::GenericMessageHeader();
@@ -84,20 +76,12 @@ void InitDefaultsGenericMessageHeaderImpl() {
   ::ghost::internal::protobuf::GenericMessageHeader::InitAsDefaultInstance();
 }
 
-void InitDefaultsGenericMessageHeader() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsGenericMessageHeaderImpl);
-}
+::google::protobuf::internal::SCCInfo<0> scc_info_GenericMessageHeader =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsGenericMessageHeader}, {}};
 
-void InitDefaultsConnectionConfigurationImpl() {
+static void InitDefaultsConnectionConfiguration() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  ::google::protobuf::internal::InitProtobufDefaultsForceUnique();
-#else
-  ::google::protobuf::internal::InitProtobufDefaults();
-#endif  // GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  protobuf_Ghost_2eproto::InitDefaultsConnectionConfigurationField();
   {
     void* ptr = &::ghost::internal::protobuf::_ConnectionConfiguration_default_instance_;
     new (ptr) ::ghost::internal::protobuf::ConnectionConfiguration();
@@ -106,19 +90,13 @@ void InitDefaultsConnectionConfigurationImpl() {
   ::ghost::internal::protobuf::ConnectionConfiguration::InitAsDefaultInstance();
 }
 
-void InitDefaultsConnectionConfiguration() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsConnectionConfigurationImpl);
-}
+::google::protobuf::internal::SCCInfo<1> scc_info_ConnectionConfiguration =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsConnectionConfiguration}, {
+      &protobuf_Ghost_2eproto::scc_info_ConnectionConfigurationField.base,}};
 
-void InitDefaultsConnectionConfigurationFieldImpl() {
+static void InitDefaultsConnectionConfigurationField() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-  ::google::protobuf::internal::InitProtobufDefaultsForceUnique();
-#else
-  ::google::protobuf::internal::InitProtobufDefaults();
-#endif  // GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
   {
     void* ptr = &::ghost::internal::protobuf::_ConnectionConfigurationField_default_instance_;
     new (ptr) ::ghost::internal::protobuf::ConnectionConfigurationField();
@@ -127,9 +105,14 @@ void InitDefaultsConnectionConfigurationFieldImpl() {
   ::ghost::internal::protobuf::ConnectionConfigurationField::InitAsDefaultInstance();
 }
 
-void InitDefaultsConnectionConfigurationField() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &InitDefaultsConnectionConfigurationFieldImpl);
+::google::protobuf::internal::SCCInfo<0> scc_info_ConnectionConfigurationField =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsConnectionConfigurationField}, {}};
+
+void InitDefaults() {
+  ::google::protobuf::internal::InitSCC(&scc_info_GenericMessage.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_GenericMessageHeader.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_ConnectionConfiguration.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_ConnectionConfigurationField.base);
 }
 
 ::google::protobuf::Metadata file_level_metadata[4];
@@ -182,15 +165,14 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
 
 void protobuf_AssignDescriptors() {
   AddDescriptors();
-  ::google::protobuf::MessageFactory* factory = NULL;
   AssignDescriptors(
-      "Ghost.proto", schemas, file_default_instances, TableStruct::offsets, factory,
+      "Ghost.proto", schemas, file_default_instances, TableStruct::offsets,
       file_level_metadata, NULL, NULL);
 }
 
 void protobuf_AssignDescriptorsOnce() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &protobuf_AssignDescriptors);
+  static ::google::protobuf::internal::once_flag once;
+  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
@@ -225,8 +207,8 @@ void AddDescriptorsImpl() {
 }
 
 void AddDescriptors() {
-  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
-  ::google::protobuf::GoogleOnceInit(&once, &AddDescriptorsImpl);
+  static ::google::protobuf::internal::once_flag once;
+  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
 }
 // Force AddDescriptors() to be called at dynamic initialization time.
 struct StaticDescriptorInitializer {
@@ -254,16 +236,14 @@ const int GenericMessage::kNameFieldNumber;
 
 GenericMessage::GenericMessage()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    ::protobuf_Ghost_2eproto::InitDefaultsGenericMessage();
-  }
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_Ghost_2eproto::scc_info_GenericMessage.base);
   SharedCtor();
   // @@protoc_insertion_point(constructor:ghost.internal.protobuf.GenericMessage)
 }
 GenericMessage::GenericMessage(const GenericMessage& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _cached_size_(0) {
+      _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   serial_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.serial().size() > 0) {
@@ -290,7 +270,6 @@ void GenericMessage::SharedCtor() {
   format_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   header_ = NULL;
-  _cached_size_ = 0;
 }
 
 GenericMessage::~GenericMessage() {
@@ -306,9 +285,7 @@ void GenericMessage::SharedDtor() {
 }
 
 void GenericMessage::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  _cached_size_.Set(size);
 }
 const ::google::protobuf::Descriptor* GenericMessage::descriptor() {
   ::protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
@@ -316,17 +293,10 @@ const ::google::protobuf::Descriptor* GenericMessage::descriptor() {
 }
 
 const GenericMessage& GenericMessage::default_instance() {
-  ::protobuf_Ghost_2eproto::InitDefaultsGenericMessage();
+  ::google::protobuf::internal::InitSCC(&protobuf_Ghost_2eproto::scc_info_GenericMessage.base);
   return *internal_default_instance();
 }
 
-GenericMessage* GenericMessage::New(::google::protobuf::Arena* arena) const {
-  GenericMessage* n = new GenericMessage;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
-}
 
 void GenericMessage::Clear() {
 // @@protoc_insertion_point(message_clear_start:ghost.internal.protobuf.GenericMessage)
@@ -350,7 +320,7 @@ bool GenericMessage::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ghost.internal.protobuf.GenericMessage)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
@@ -443,7 +413,7 @@ void GenericMessage::SerializeWithCachedSizes(
   // .ghost.internal.protobuf.GenericMessageHeader header = 1;
   if (this->has_header()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, *this->header_, output);
+      1, this->_internal_header(), output);
   }
 
   // string serial = 2;
@@ -494,7 +464,7 @@ void GenericMessage::SerializeWithCachedSizes(
   if (this->has_header()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        1, *this->header_, deterministic, target);
+        1, this->_internal_header(), deterministic, target);
   }
 
   // string serial = 2;
@@ -572,13 +542,11 @@ size_t GenericMessage::ByteSizeLong() const {
   if (this->has_header()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSize(
-        *this->header_);
+        *header_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = cached_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  SetCachedSize(cached_size);
   return total_size;
 }
 
@@ -645,12 +613,14 @@ void GenericMessage::Swap(GenericMessage* other) {
 }
 void GenericMessage::InternalSwap(GenericMessage* other) {
   using std::swap;
-  serial_.Swap(&other->serial_);
-  format_.Swap(&other->format_);
-  name_.Swap(&other->name_);
+  serial_.Swap(&other->serial_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  format_.Swap(&other->format_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  name_.Swap(&other->name_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
   swap(header_, other->header_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata GenericMessage::GetMetadata() const {
@@ -670,16 +640,14 @@ const int GenericMessageHeader::kHostnameFieldNumber;
 
 GenericMessageHeader::GenericMessageHeader()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeader();
-  }
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_Ghost_2eproto::scc_info_GenericMessageHeader.base);
   SharedCtor();
   // @@protoc_insertion_point(constructor:ghost.internal.protobuf.GenericMessageHeader)
 }
 GenericMessageHeader::GenericMessageHeader(const GenericMessageHeader& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _cached_size_(0) {
+      _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   hostname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.hostname().size() > 0) {
@@ -692,7 +660,6 @@ GenericMessageHeader::GenericMessageHeader(const GenericMessageHeader& from)
 void GenericMessageHeader::SharedCtor() {
   hostname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   timestamp_ = GOOGLE_LONGLONG(0);
-  _cached_size_ = 0;
 }
 
 GenericMessageHeader::~GenericMessageHeader() {
@@ -705,9 +672,7 @@ void GenericMessageHeader::SharedDtor() {
 }
 
 void GenericMessageHeader::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  _cached_size_.Set(size);
 }
 const ::google::protobuf::Descriptor* GenericMessageHeader::descriptor() {
   ::protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
@@ -715,17 +680,10 @@ const ::google::protobuf::Descriptor* GenericMessageHeader::descriptor() {
 }
 
 const GenericMessageHeader& GenericMessageHeader::default_instance() {
-  ::protobuf_Ghost_2eproto::InitDefaultsGenericMessageHeader();
+  ::google::protobuf::internal::InitSCC(&protobuf_Ghost_2eproto::scc_info_GenericMessageHeader.base);
   return *internal_default_instance();
 }
 
-GenericMessageHeader* GenericMessageHeader::New(::google::protobuf::Arena* arena) const {
-  GenericMessageHeader* n = new GenericMessageHeader;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
-}
 
 void GenericMessageHeader::Clear() {
 // @@protoc_insertion_point(message_clear_start:ghost.internal.protobuf.GenericMessageHeader)
@@ -744,7 +702,7 @@ bool GenericMessageHeader::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ghost.internal.protobuf.GenericMessageHeader)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
@@ -881,9 +839,7 @@ size_t GenericMessageHeader::ByteSizeLong() const {
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = cached_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  SetCachedSize(cached_size);
   return total_size;
 }
 
@@ -942,10 +898,10 @@ void GenericMessageHeader::Swap(GenericMessageHeader* other) {
 }
 void GenericMessageHeader::InternalSwap(GenericMessageHeader* other) {
   using std::swap;
-  hostname_.Swap(&other->hostname_);
+  hostname_.Swap(&other->hostname_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
   swap(timestamp_, other->timestamp_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata GenericMessageHeader::GetMetadata() const {
@@ -965,17 +921,15 @@ const int ConnectionConfiguration::kFieldsFieldNumber;
 
 ConnectionConfiguration::ConnectionConfiguration()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    ::protobuf_Ghost_2eproto::InitDefaultsConnectionConfiguration();
-  }
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_Ghost_2eproto::scc_info_ConnectionConfiguration.base);
   SharedCtor();
   // @@protoc_insertion_point(constructor:ghost.internal.protobuf.ConnectionConfiguration)
 }
 ConnectionConfiguration::ConnectionConfiguration(const ConnectionConfiguration& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL),
-      fields_(from.fields_),
-      _cached_size_(0) {
+      fields_(from.fields_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.name().size() > 0) {
@@ -986,7 +940,6 @@ ConnectionConfiguration::ConnectionConfiguration(const ConnectionConfiguration& 
 
 void ConnectionConfiguration::SharedCtor() {
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _cached_size_ = 0;
 }
 
 ConnectionConfiguration::~ConnectionConfiguration() {
@@ -999,9 +952,7 @@ void ConnectionConfiguration::SharedDtor() {
 }
 
 void ConnectionConfiguration::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  _cached_size_.Set(size);
 }
 const ::google::protobuf::Descriptor* ConnectionConfiguration::descriptor() {
   ::protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
@@ -1009,17 +960,10 @@ const ::google::protobuf::Descriptor* ConnectionConfiguration::descriptor() {
 }
 
 const ConnectionConfiguration& ConnectionConfiguration::default_instance() {
-  ::protobuf_Ghost_2eproto::InitDefaultsConnectionConfiguration();
+  ::google::protobuf::internal::InitSCC(&protobuf_Ghost_2eproto::scc_info_ConnectionConfiguration.base);
   return *internal_default_instance();
 }
 
-ConnectionConfiguration* ConnectionConfiguration::New(::google::protobuf::Arena* arena) const {
-  ConnectionConfiguration* n = new ConnectionConfiguration;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
-}
 
 void ConnectionConfiguration::Clear() {
 // @@protoc_insertion_point(message_clear_start:ghost.internal.protobuf.ConnectionConfiguration)
@@ -1038,7 +982,7 @@ bool ConnectionConfiguration::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ghost.internal.protobuf.ConnectionConfiguration)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
@@ -1062,7 +1006,8 @@ bool ConnectionConfiguration::MergePartialFromCodedStream(
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(input, add_fields()));
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+                input, add_fields()));
         } else {
           goto handle_unusual;
         }
@@ -1109,7 +1054,9 @@ void ConnectionConfiguration::SerializeWithCachedSizes(
   for (unsigned int i = 0,
       n = static_cast<unsigned int>(this->fields_size()); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->fields(static_cast<int>(i)), output);
+      2,
+      this->fields(static_cast<int>(i)),
+      output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1181,9 +1128,7 @@ size_t ConnectionConfiguration::ByteSizeLong() const {
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = cached_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  SetCachedSize(cached_size);
   return total_size;
 }
 
@@ -1240,10 +1185,10 @@ void ConnectionConfiguration::Swap(ConnectionConfiguration* other) {
 }
 void ConnectionConfiguration::InternalSwap(ConnectionConfiguration* other) {
   using std::swap;
-  fields_.InternalSwap(&other->fields_);
-  name_.Swap(&other->name_);
+  CastToBase(&fields_)->InternalSwap(CastToBase(&other->fields_));
+  name_.Swap(&other->name_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata ConnectionConfiguration::GetMetadata() const {
@@ -1263,16 +1208,14 @@ const int ConnectionConfigurationField::kValueFieldNumber;
 
 ConnectionConfigurationField::ConnectionConfigurationField()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    ::protobuf_Ghost_2eproto::InitDefaultsConnectionConfigurationField();
-  }
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_Ghost_2eproto::scc_info_ConnectionConfigurationField.base);
   SharedCtor();
   // @@protoc_insertion_point(constructor:ghost.internal.protobuf.ConnectionConfigurationField)
 }
 ConnectionConfigurationField::ConnectionConfigurationField(const ConnectionConfigurationField& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _cached_size_(0) {
+      _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.name().size() > 0) {
@@ -1288,7 +1231,6 @@ ConnectionConfigurationField::ConnectionConfigurationField(const ConnectionConfi
 void ConnectionConfigurationField::SharedCtor() {
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   value_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _cached_size_ = 0;
 }
 
 ConnectionConfigurationField::~ConnectionConfigurationField() {
@@ -1302,9 +1244,7 @@ void ConnectionConfigurationField::SharedDtor() {
 }
 
 void ConnectionConfigurationField::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  _cached_size_.Set(size);
 }
 const ::google::protobuf::Descriptor* ConnectionConfigurationField::descriptor() {
   ::protobuf_Ghost_2eproto::protobuf_AssignDescriptorsOnce();
@@ -1312,17 +1252,10 @@ const ::google::protobuf::Descriptor* ConnectionConfigurationField::descriptor()
 }
 
 const ConnectionConfigurationField& ConnectionConfigurationField::default_instance() {
-  ::protobuf_Ghost_2eproto::InitDefaultsConnectionConfigurationField();
+  ::google::protobuf::internal::InitSCC(&protobuf_Ghost_2eproto::scc_info_ConnectionConfigurationField.base);
   return *internal_default_instance();
 }
 
-ConnectionConfigurationField* ConnectionConfigurationField::New(::google::protobuf::Arena* arena) const {
-  ConnectionConfigurationField* n = new ConnectionConfigurationField;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
-}
 
 void ConnectionConfigurationField::Clear() {
 // @@protoc_insertion_point(message_clear_start:ghost.internal.protobuf.ConnectionConfigurationField)
@@ -1341,7 +1274,7 @@ bool ConnectionConfigurationField::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ghost.internal.protobuf.ConnectionConfigurationField)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
@@ -1491,9 +1424,7 @@ size_t ConnectionConfigurationField::ByteSizeLong() const {
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = cached_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  SetCachedSize(cached_size);
   return total_size;
 }
 
@@ -1553,10 +1484,11 @@ void ConnectionConfigurationField::Swap(ConnectionConfigurationField* other) {
 }
 void ConnectionConfigurationField::InternalSwap(ConnectionConfigurationField* other) {
   using std::swap;
-  name_.Swap(&other->name_);
-  value_.Swap(&other->value_);
+  name_.Swap(&other->name_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  value_.Swap(&other->value_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata ConnectionConfigurationField::GetMetadata() const {
@@ -1569,5 +1501,21 @@ void ConnectionConfigurationField::InternalSwap(ConnectionConfigurationField* ot
 }  // namespace protobuf
 }  // namespace internal
 }  // namespace ghost
+namespace google {
+namespace protobuf {
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ghost::internal::protobuf::GenericMessage* Arena::CreateMaybeMessage< ::ghost::internal::protobuf::GenericMessage >(Arena* arena) {
+  return Arena::CreateInternal< ::ghost::internal::protobuf::GenericMessage >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ghost::internal::protobuf::GenericMessageHeader* Arena::CreateMaybeMessage< ::ghost::internal::protobuf::GenericMessageHeader >(Arena* arena) {
+  return Arena::CreateInternal< ::ghost::internal::protobuf::GenericMessageHeader >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ghost::internal::protobuf::ConnectionConfiguration* Arena::CreateMaybeMessage< ::ghost::internal::protobuf::ConnectionConfiguration >(Arena* arena) {
+  return Arena::CreateInternal< ::ghost::internal::protobuf::ConnectionConfiguration >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ghost::internal::protobuf::ConnectionConfigurationField* Arena::CreateMaybeMessage< ::ghost::internal::protobuf::ConnectionConfigurationField >(Arena* arena) {
+  return Arena::CreateInternal< ::ghost::internal::protobuf::ConnectionConfigurationField >(arena);
+}
+}  // namespace protobuf
+}  // namespace google
 
 // @@protoc_insertion_point(global_scope)
