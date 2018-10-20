@@ -1,5 +1,5 @@
 #include "../include/internal/Console.hpp"
-#ifdef WIN32
+#ifdef _WIN32
 	#include "../include/internal/ConsoleDeviceWindows.hpp"
 #else
 	#include "../include/internal/ConsoleDeviceUnix.hpp"
@@ -20,7 +20,7 @@ std::shared_ptr<ghost::Console> ghost::Console::create()
 
 Console::Console()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	_device = std::shared_ptr<internal::ConsoleDevice>(new internal::ConsoleDeviceWindows());
 #else
 	_device = std::shared_ptr<internal::ConsoleDevice>(new internal::ConsoleDeviceUnix());
@@ -30,7 +30,7 @@ Console::Console()
 	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
 	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
 
-	_outputController = std::make_shared<internal::OutputController>(false);
+	_outputController = std::make_shared<internal::OutputController>();
 }
 
 void Console::start()

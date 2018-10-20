@@ -9,7 +9,6 @@ OutputController::OutputController(bool redirectStdCout)
 	, _threadEnable(false)
 	, _consoleMode(ConsoleDevice::OUTPUT)
 {
-	std::cout << "r_: " << redirectStdCout << std::endl;
 	if (redirectStdCout)
 	{
 		_redirecter = std::unique_ptr<ConsoleStream<>>(new ConsoleStream<>(
@@ -106,7 +105,7 @@ void OutputController::writerThread()
 			return;
 		
 		queue->pop();
-		printf("&s", entry.element.c_str()); // print
+		printf("%s", entry.element.c_str()); // print
 		entry.result->set_value(true); // (idea) the promise could be used to know when the entry is effectively executed...
 	}
 }
