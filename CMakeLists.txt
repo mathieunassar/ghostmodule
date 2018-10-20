@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 set(projectName ghost_connection)
+set(GHOST_CONNECTION_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE FILEPATH "Root directory of ghost_connection")
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
@@ -8,7 +9,7 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_CONNECTION_ROOT_DIR}/cmake/")
 
 # define the project
 project(${projectName} CXX)
@@ -72,7 +73,7 @@ ADD_SUBDIRECTORY(third-party/ghost_support)
 ##########################################################################################################################################
 
 set(PROTOC_SOURCE_CUSTOM ./protobuf/)
-set(PROTOC_SOURCE_LIB ${PROJECT_SOURCE_DIR}/third-party/protobuf/include)
+set(PROTOC_SOURCE_LIB ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/include)
 set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
 set(PROTOC_OUTPUT ./protobuf/)
 
@@ -87,13 +88,13 @@ function(generate_protoc source_dir output_dir protobuf_dir source_file)
 endfunction(generate_protoc)
 
 if (WIN32)
-	set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
-	set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
+	set(PROTOC_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
+	set(GRPC_CPP_PLUGIN_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
 endif (WIN32)
 
 if (UNIX)
-	set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc)
-	set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin)
+	set(PROTOC_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc)
+	set(GRPC_CPP_PLUGIN_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin)
 endif (UNIX)
 
 generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_LIB} ${PROTOC_SOURCE_FILE})

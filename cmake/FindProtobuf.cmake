@@ -1,15 +1,15 @@
-SET(Protobuf_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/protobuf/include" CACHE STRING "Protobuf include directory")
+SET(Protobuf_INCLUDE_DIRS "${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/include" CACHE STRING "Protobuf include directory")
 
 find_library(
 	Protobuf_LIBRARIES_RELEASE
 	NAMES protobuf libprotobuf
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	Protobuf_LIBRARIES_DEBUG
 	NAMES protobuf libprotobufd protobufd libprotobufd
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 if (${Protobuf_LIBRARIES_RELEASE} MATCHES "Protobuf_LIBS_RELEASE-NOTFOUND")

@@ -1,99 +1,99 @@
-SET(GRPC_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/grpc/include" CACHE STRING "gRPC include directory")
+SET(GRPC_INCLUDE_DIRS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/include" CACHE STRING "gRPC include directory")
 
 find_library(
 	GRPC_GPR_RELEASE
 	NAMES libgpr.a gpr
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC_RELEASE
 	NAMES libgrpc.a grpc
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC++_RELEASE
 	NAMES libgrpc++.a grpc++
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC_UNSECURE_RELEASE
 	NAMES libgrpc_unsecure.a grpc_unsecure
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC++_UNSECURE_RELEASE
 	NAMES libgrpc++_unsecure.a grpc++_unsecure
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_Z_RELEASE
 	NAMES libz.a zlib
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_ADDRESS_SORTING_RELEASE
 	NAMES address_sorting
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_CARES_RELEASE
 	NAMES cares ares
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GPR_DEBUG
 	NAMES libgpr.a gpr
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC_DEBUG
 	NAMES libgrpc.a grpc
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC++_DEBUG
 	NAMES libgrpc++.a grpc++ 
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC_UNSECURE_DEBUG
 	NAMES libgrpc_unsecure.a grpc_unsecure
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC++_UNSECURE_DEBUG
 	NAMES libgrpc++_unsecure.a grpc++_unsecure
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_Z_DEBUG
 	NAMES libz.a zlib zlibd
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_ADDRESS_SORTING_DEBUG
 	NAMES address_sorting
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_CARES_DEBUG
 	NAMES cares ares
-	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 if (${GRPC_GPR_RELEASE} MATCHES "GRPC_GPR_RELEASE-NOTFOUND")
