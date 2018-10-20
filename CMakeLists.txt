@@ -4,7 +4,6 @@ set(projectName ghost_module)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
-set(GHOST_BUILD_NAME "buildVS2017_x86")
 set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
@@ -14,7 +13,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 project(${projectName} CXX)
 
 
+# Windows specific stuff
 if (MSVC)
+	set(GHOST_BUILD_NAME "buildVS2017_x86")
 	message(STATUS "MSVC compiler detected - version: " ${MSVC_VERSION})
 	
 	if (MSVC_VERSION GREATER_EQUAL "1900")
@@ -32,9 +33,12 @@ if (MSVC)
 	add_compile_options("/EHsc")
 endif (MSVC)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+# unix specific stuff
+if (UNIX)
+    set(GHOST_BUILD_NAME "buildUnix_x86_64")
+endif (UNIX)
 
-ADD_SUBDIRECTORY(third-party/ghost_support)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
@@ -73,13 +77,20 @@ file(GLOB header_module_lib
 ./include/Module.hpp
 )
 
+file(GLOB header_module_lib_internal_windows
+./include/internal/ConsoleDeviceWindows.hpp
+)
+
+file(GLOB header_module_lib_internal_unix
+./include/internal/ConsoleDeviceUnix.hpp
+)
+
 file(GLOB header_module_lib_internal
 ./include/internal/Console.hpp
 ./include/internal/Prompt.hpp
 ./include/internal/InputController.hpp
 ./include/internal/InputControllerAccess.hpp
 ./include/internal/ConsoleDevice.hpp
-./include/internal/ConsoleDeviceWindows.hpp
 ./include/internal/ConsoleStream.hpp
 ./include/internal/InputEvent.hpp
 ./include/internal/EnterPressedInputEvent.hpp
@@ -94,16 +105,29 @@ file(GLOB header_module_lib_internal
 ./include/internal/Module.hpp
 )
 
+if (WIN32)
+	set(header_module_lib_internal ${header_module_lib_internal} ${header_module_lib_internal_windows})
+else()
+	set(header_module_lib_internal ${header_module_lib_internal} ${header_module_lib_internal_unix})
+endif()
+
 file(GLOB header_module_lib_internal_commands
 ./include/internal/commands/LoginCommand.hpp
 ./include/internal/commands/HelpCommand.hpp
 ./include/internal/commands/ExitCommand.hpp
 )
 
+file(GLOB source_module_lib_internal_windows
+./src/ConsoleDeviceWindows.cpp
+)
+
+file(GLOB source_module_lib_internal_unix
+./src/ConsoleDeviceUnix.cpp
+)
+
 file(GLOB source_module_lib
 ./src/Console.cpp
 ./src/Prompt.cpp
-./src/ConsoleDeviceWindows.cpp
 ./src/InputController.cpp
 ./src/OutputController.cpp
 ./src/EnterPressedInputEvent.cpp
@@ -118,12 +142,17 @@ file(GLOB source_module_lib
 ./src/Module.cpp
 ./src/main.cpp)
 
+if (WIN32)
+	set(source_module_lib ${source_module_lib} ${source_module_lib_internal_windows})
+else()
+	set(source_module_lib ${source_module_lib} ${source_module_lib_internal_unix})
+endif()
+
 file(GLOB source_module_lib_commands
 ./src/commands/LoginCommand.cpp
 ./src/commands/HelpCommand.cpp
 ./src/commands/ExitCommand.cpp
 )
-
 
 
 source_group("Header Files\\internal" FILES ${header_module_lib_internal})
