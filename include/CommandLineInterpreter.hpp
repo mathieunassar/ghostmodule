@@ -28,7 +28,7 @@ namespace ghost
 	{
 	public:
 		static std::shared_ptr<CommandLineInterpreter> create(std::shared_ptr<UserManager> userManager);
-		virtual ~CommandLineInterpreter() = 0 {}
+		virtual ~CommandLineInterpreter() = 0;
 
 		/// searches for the corresponding command and executes it with the given parameters
 		virtual bool execute(const std::string& commandLine) = 0;
@@ -37,6 +37,8 @@ namespace ghost
 		/// prints the information about all the commands
 		virtual void printHelp(std::ostream& stream) const = 0;
 	};
+
+	inline CommandLineInterpreter::~CommandLineInterpreter() {}
 }
 
 #endif // GHOST_COMMANDLINEINTERPRETER_HPP

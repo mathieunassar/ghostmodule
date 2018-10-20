@@ -8,7 +8,7 @@ namespace ghost
 	class Command
 	{
 	public:
-		virtual ~Command() = 0 {}
+		virtual ~Command() = 0;
 
 		/// received a command line matching its name containing paramters
 		virtual bool execute(const CommandLine& commandLine) = 0;
@@ -19,6 +19,8 @@ namespace ghost
 		/// @return a description of the command
 		virtual std::string getDescription() const = 0;
 	};
+
+	inline Command::~Command() {}
 }
 
 #endif // GHOST_COMMAND_HPP

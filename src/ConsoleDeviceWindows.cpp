@@ -75,7 +75,7 @@ bool ConsoleDeviceWindows::awaitInputMode()
 		}
 	}
 
-	return false; // dead code...
+	return false;
 }
 
 void ConsoleDeviceWindows::stop()

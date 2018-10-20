@@ -28,7 +28,7 @@ namespace ghost
 	{
 	public:
 		static std::shared_ptr<Console> create();
-		virtual ~Console() = 0 {}
+		virtual ~Console() = 0;
 
 		/// starts the console. Depending on the implementation, this operation can be unnecessary.
 		virtual void start() = 0;
@@ -55,6 +55,8 @@ namespace ghost
 		/// getting a command removes it from the command queue.
 		virtual std::string getCommand() = 0;
 	};
+
+	inline Console::~Console() {}
 }
 
 #endif // GHOST_CONSOLE_HPP

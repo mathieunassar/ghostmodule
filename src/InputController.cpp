@@ -14,7 +14,8 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	ConsoleDevice::ConsoleMode initialMode,
 	std::function<void(const std::string&)> cmdCallback,
 	std::function<void(ConsoleDevice::ConsoleMode)> modeCallback)
-	: _threadEnable(false)
+	: _inputThreadEnable(false)
+	, _enterPressedThreadEnable(false)
 	, _device(device)
 	, _prompt(new Prompt(">"))
 	, _consoleMode(initialMode)
@@ -44,11 +45,12 @@ void InputController::setCommandCallback(std::function<void(const std::string&)>
 
 void InputController::start()
 {
-	if (!_threadEnable)
+	if (!_enterPressedThreadEnable)
 	{
 		_device->start();
 
-		_threadEnable = true;
+		_enterPressedThreadEnable = true;
+		_inputThreadEnable = true;
 		_inputThread = std::thread(&InputController::inputListenerThread, this);
 		_enterPressedThread = std::thread(&InputController::enterPressedThread, this);
 	}
@@ -58,20 +60,22 @@ void InputController::stop()
 {
 	_device->stop();
 
-	_threadEnable = false;
-	if (_inputThread.joinable())
-		_inputThread.join();
-
+	// join this thread first to avoid that it waits for input thread which would be already finished
+	_enterPressedThreadEnable = false;
 	if (_enterPressedThread.joinable())
 		_enterPressedThread.join();
+
+	_inputThreadEnable = false;
+	if (_inputThread.joinable())
+		_inputThread.join();
 }
 
 std::string InputController::getLine()
 {
 	_explicitInput = nullptr;
 
-	auto& promise = onNewEvent(std::make_shared<LineRequestInputEvent>()); // here wait that the event is completed
-	promise.get_future().wait();
+	auto promise = onNewEvent(std::make_shared<LineRequestInputEvent>()); // here wait that the event is completed
+	promise->get_future().wait();
 
 	if (_explicitInput)
 	{
@@ -82,7 +86,7 @@ std::string InputController::getLine()
 
 void InputController::printPrompt() const
 {
-	printf(_prompt->str().c_str());
+	printf("%s", _prompt->str().c_str());
 }
 
 void InputController::switchConsoleMode(ConsoleDevice::ConsoleMode newMode)
@@ -101,7 +105,7 @@ void InputController::registerEventHandlers()
 
 void InputController::inputListenerThread()
 {
-	while (_threadEnable)
+	while (_inputThreadEnable)
 	{
 		QueueElement<std::shared_ptr<InputEvent>> event;
 		if (!_eventQueue.tryGet(std::chrono::milliseconds(1000), event)) // tryget only blocks for a second
@@ -123,7 +127,7 @@ void InputController::inputListenerThread()
 
 void InputController::enterPressedThread()
 {
-	while (_threadEnable)
+	while (_enterPressedThreadEnable)
 	{
 		if (_consoleMode == ConsoleDevice::INPUT)
 		{
@@ -132,8 +136,8 @@ void InputController::enterPressedThread()
 		}
 		if (_device->awaitInputMode() && _consoleMode == ConsoleDevice::OUTPUT)
 		{
-			auto& promise = onNewEvent(std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
-			promise.get_future().wait();
+			auto promise = onNewEvent(std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
+			promise->get_future().wait();
 		}
 	}
 }
@@ -146,11 +150,11 @@ std::string InputController::readLine()
 	std::thread t([&p] {
 		std::string str;
 		std::getline(std::cin, str);
-		p.set_value(str);
+		p.set_value(str); // makes a segmentation fault if the user enters something after the thread was detached...
 	});
 	
 	auto status = future.wait_for(std::chrono::seconds(0));
-	while (status != std::future_status::ready && _threadEnable)
+	while (status != std::future_status::ready && _enterPressedThreadEnable)
 	{
 		status = future.wait_for(std::chrono::seconds(1));
 	}
@@ -178,13 +182,13 @@ void InputController::onNewInput(const std::string& input)
 	_commandCallback(input);
 }
 
-std::promise<bool>& InputController::onNewEvent(std::shared_ptr<InputEvent> event)
+std::shared_ptr<std::promise<bool>> InputController::onNewEvent(std::shared_ptr<InputEvent> event)
 {
 	QueueElement<std::shared_ptr<InputEvent>> element;
 	element.element = event;
 	element.result = std::make_shared<std::promise<bool>>();
 	_eventQueue.push(element);
-	return *element.result;
+	return std::move(element.result);
 }
 
 void InputController::setLineRequestResult(const std::string& line)

@@ -14,7 +14,7 @@ namespace ghost
 	namespace internal
 	{
 		/**
-		*	Implementation of a {@ref LocalConsole} for Windows.
+		*	Implementation of a {@ref ConsoleDevice} for Windows.
 		*/
 		class ConsoleDeviceWindows : public ConsoleDevice
 		{

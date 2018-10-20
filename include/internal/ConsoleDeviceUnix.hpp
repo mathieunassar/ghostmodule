@@ -1,18 +1,37 @@
-#ifndef GHOST_LOCALCONSOLE_UNIX_HPP
-#define GHOST_LOCALCONSOLE_UNIX_HPP
+#ifndef GHOST_INTERNAL_CONSOLEDEVICE_UNIX_HPP
+#define GHOST_INTERNAL_CONSOLEDEVICE_UNIX_HPP
 
-#include "LocalConsole.hpp"
+#include <termios.h>
+#include <unistd.h>
+#include <atomic>
 
-namespace Ghost
+#include "ConsoleDevice.hpp"
+
+namespace ghost
 {
-	/**
-	*	Implementation of a {@ref LocalConsole} for Windows.
-	*/
-	class LocalConsoleUnix : public LocalConsole
+	namespace internal
 	{
-	public:
-		bool setConsoleMode(ConsoleMode mode) override;
-	};
+		/**
+		*	Implementation of a {@ref ConsoleDevice} for Windows.
+		*/
+		class ConsoleDeviceUnix : public ConsoleDevice
+		{
+		public:
+			ConsoleDeviceUnix();
+
+			bool start() override;
+
+			bool setConsoleMode(ConsoleMode mode) override;
+
+			bool awaitInputMode() override;
+
+			void stop() override;
+
+		private:
+			termios _referenceState;
+			std::atomic<bool> _enable;
+		};
+	}
 }
 
-#endif // GHOST_LOCALCONSOLE_UNIX_HPP
+#endif // GHOST_INTERNAL_CONSOLEDEVICE_UNIX_HPP

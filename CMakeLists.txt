@@ -161,10 +161,14 @@ source_group("Source Files\\commands" FILES ${source_module_lib_commands})
 
 ##########################################################################################################################################
 
-add_library(ghost_module ${header_module_lib}
+add_executable(ghost_module ${header_module_lib}
 	${source_module_lib}
 	${header_module_lib_internal}
 	${header_module_lib_internal_commands}
 	${source_module_lib_commands})
 
 target_link_libraries(ghost_module)
+
+if (UNIX)
+	target_link_libraries(ghost_module pthread)
+endif()

@@ -31,7 +31,7 @@ namespace ghost
 			/// Notifies the input controller that the user entered a new command line
 			virtual void onNewInput(const std::string& input) = 0;
 			/// Notifies the input controller that a new input event occurred, for example pressed entered while in output mode
-			virtual std::promise<bool>& onNewEvent(std::shared_ptr<InputEvent> event) = 0;
+			virtual std::shared_ptr<std::promise<bool>> onNewEvent(std::shared_ptr<InputEvent> event) = 0;
 			/// For direct line requests (application requires direct user input); sets the result
 			virtual void setLineRequestResult(const std::string& line) = 0;
 		};

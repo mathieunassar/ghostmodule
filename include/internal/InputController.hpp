@@ -8,12 +8,13 @@
 #include <mutex>
 #include <memory>
 #include <map>
+#include <functional>
 
 #include "../InputController.hpp"
 #include "InputControllerAccess.hpp"
 
 #include "ConsoleDevice.hpp"
-#include "BlockingQueue.hpp"
+#include <BlockingQueue.hpp>
 #include "InputEvent.hpp"
 #include "Prompt.hpp"
 
@@ -51,7 +52,7 @@ namespace ghost
 			InputMode getInputMode() const override;
 			ConsoleDevice::ConsoleMode getConsoleMode() const override;
 			void onNewInput(const std::string& input) override;
-			std::promise<bool>& onNewEvent(std::shared_ptr<InputEvent> event) override;
+			std::shared_ptr<std::promise<bool>> onNewEvent(std::shared_ptr<InputEvent> event) override;
 			void setLineRequestResult(const std::string& line) override;
 
 		private:
@@ -62,8 +63,9 @@ namespace ghost
 
 			/* thread stuff */
 			std::thread _inputThread;
+			std::atomic<bool> _inputThreadEnable;
 			std::thread _enterPressedThread;
-			std::atomic<bool> _threadEnable;
+			std::atomic<bool> _enterPressedThreadEnable;
 
 			/* Runtime variables */
 			BlockingQueue<QueueElement<std::shared_ptr<InputEvent>>> _eventQueue;
