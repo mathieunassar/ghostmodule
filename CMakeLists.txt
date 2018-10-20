@@ -76,6 +76,16 @@ set(PROTOC_SOURCE_LIB ${PROJECT_SOURCE_DIR}/third-party/protobuf/include)
 set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
 set(PROTOC_OUTPUT ./protobuf/)
 
+function(generate_protoc source_dir output_dir protobuf_dir source_file)
+	message(STATUS "Generating grpc and protobuf: " ${source_file})
+
+	execute_process(
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND ${PROTOC_PATH} -I ${protobuf_dir} -I ${source_dir} --grpc_out=${output_dir} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} ${source_file}
+		COMMAND ${PROTOC_PATH} -I ${protobuf_dir} -I ${source_dir} --cpp_out=${output_dir} ${source_file}
+	)
+endfunction(generate_protoc)
+
 if (WIN32)
 	set(PROTOC_PATH ${PROJECT_SOURCE_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
 	set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
@@ -86,13 +96,8 @@ if (UNIX)
 	set(GRPC_CPP_PLUGIN_PATH ${PROJECT_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin)
 endif (UNIX)
 
-message(STATUS "Generating grpc and protobuf files...")
+generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_LIB} ${PROTOC_SOURCE_FILE})
 
-execute_process(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMAND ${PROTOC_PATH} -I ${PROTOC_SOURCE_LIB} -I ${PROTOC_SOURCE_CUSTOM} --grpc_out=${PROTOC_OUTPUT} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} ${PROTOC_SOURCE_FILE}
-	COMMAND ${PROTOC_PATH} -I ${PROTOC_SOURCE_LIB} -I ${PROTOC_SOURCE_CUSTOM} --cpp_out=${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE}
-)
 
 ##########################################################################################################################################
 
