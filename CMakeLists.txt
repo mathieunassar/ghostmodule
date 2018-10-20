@@ -11,8 +11,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_CONNECTION_ROOT_DIR}/cmake/")
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+message(STATUS "build ${projectName} as root project")
+	unset(GHOST_SUPPORT_ROOT_DIR CACHE)
+endif()
+
 # define the project
 project(${projectName} CXX)
+
+include(cmake/ProtobufGeneration.cmake)
 
 # Windows specific stuff
 if (MSVC)
@@ -66,39 +73,19 @@ link_directories(
 # set up tests
 enable_testing()
 
-ADD_SUBDIRECTORY(third-party/ghost_support)
+if (NOT GHOST_SUPPORT_ROOT_DIR)
+	ADD_SUBDIRECTORY(third-party/ghost_support)
+endif()
 
 ##########################################################################################################################################
 ############################################################ CONNECTION LIBRARY ##########################################################
 ##########################################################################################################################################
 
 set(PROTOC_SOURCE_CUSTOM ./protobuf/)
-set(PROTOC_SOURCE_LIB ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/include)
 set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
 set(PROTOC_OUTPUT ./protobuf/)
 
-function(generate_protoc source_dir output_dir protobuf_dir source_file)
-	message(STATUS "Generating grpc and protobuf: " ${source_file})
-
-	execute_process(
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND ${PROTOC_PATH} -I ${protobuf_dir} -I ${source_dir} --grpc_out=${output_dir} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} ${source_file}
-		COMMAND ${PROTOC_PATH} -I ${protobuf_dir} -I ${source_dir} --cpp_out=${output_dir} ${source_file}
-	)
-endfunction(generate_protoc)
-
-if (WIN32)
-	set(PROTOC_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc.exe)
-	set(GRPC_CPP_PLUGIN_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe)
-endif (WIN32)
-
-if (UNIX)
-	set(PROTOC_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release/protoc)
-	set(GRPC_CPP_PLUGIN_PATH ${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin)
-endif (UNIX)
-
-generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_LIB} ${PROTOC_SOURCE_FILE})
-
+generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 ##########################################################################################################################################
 
