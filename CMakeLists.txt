@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 set(projectName ghost_module)
+set(GHOST_MODULE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE FILEPATH "Root directory of ghost_module")
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
