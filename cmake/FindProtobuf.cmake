@@ -20,4 +20,9 @@ else ()
 	message(STATUS "- include: " ${Protobuf_INCLUDE_DIRS})
 	message(STATUS "- lib (release): " ${Protobuf_LIBRARIES_RELEASE})
 	message(STATUS "- lib (debug): " ${Protobuf_LIBRARIES_DEBUG})
+	
+	set(Protobuf_LIBRARIES
+		optimized ${Protobuf_LIBRARIES_RELEASE}
+		debug ${Protobuf_LIBRARIES_DEBUG}
+	)
 endif ()

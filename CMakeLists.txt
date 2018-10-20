@@ -209,13 +209,7 @@ else ()
 	target_link_libraries(ghost_connection pthread)
 endif()
 
-target_link_libraries(ghost_connection
-	optimized ${Protobuf_LIBRARIES_RELEASE}) 
-	#debug ${Protobuf_LIBRARIES_DEBUG})
-
-target_link_libraries(ghost_connection
-	optimized ${GRPC_LIBRARIES_RELEASE}) 
-	#debug ${GRPC_LIBRARIES_DEBUG})
+target_link_libraries(ghost_connection ${Protobuf_LIBRARIES} ${GRPC_LIBRARIES})
 
 ##########################################################################################################################################
 
