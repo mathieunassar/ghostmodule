@@ -58,7 +58,7 @@ bool ConsoleDeviceUnix::awaitInputMode()
 		{
 			std::string str;
 			std::getline(std::cin, str);
-			return true; // user pressed enter, hence the string is empty but there was something to read in the select
+			return _enable; // user pressed enter, hence the string is empty but there was something to read in the select
 		}
 	}
 
@@ -69,6 +69,5 @@ void ConsoleDeviceUnix::stop()
 {
 	_enable = false;
 
-	// restore the reference state
-	tcsetattr(STDIN_FILENO+1, TCSANOW, &_referenceState);
+	setConsoleMode(ConsoleDevice::INPUT);
 }
