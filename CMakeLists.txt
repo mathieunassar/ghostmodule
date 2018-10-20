@@ -10,9 +10,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+message(STATUS "build ${projectName} as root project")
+	unset(GHOST_SUPPORT_ROOT_DIR CACHE)
+endif()
+
 # define the project
 project(${projectName} CXX)
-
 
 # Windows specific stuff
 if (MSVC)
@@ -58,7 +62,9 @@ link_directories(
 # set up tests
 enable_testing()
 
-ADD_SUBDIRECTORY(third-party/ghost_support)
+if (NOT GHOST_SUPPORT_ROOT_DIR)
+	ADD_SUBDIRECTORY(third-party/ghost_support)
+endif()
 
 ##########################################################################################################################################
 ################################################################ MODULE LIBRARY ##########################################################
@@ -162,7 +168,7 @@ source_group("Source Files\\commands" FILES ${source_module_lib_commands})
 
 ##########################################################################################################################################
 
-add_executable(ghost_module ${header_module_lib}
+add_library(ghost_module ${header_module_lib}
 	${source_module_lib}
 	${header_module_lib_internal}
 	${header_module_lib_internal_commands}
