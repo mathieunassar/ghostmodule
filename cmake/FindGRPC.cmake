@@ -44,7 +44,7 @@ find_library(
 
 find_library(
 	GRPC_CARES_RELEASE
-	NAMES cares
+	NAMES cares ares
 	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
 )
 
@@ -92,7 +92,7 @@ find_library(
 
 find_library(
 	GRPC_CARES_DEBUG
-	NAMES cares
+	NAMES cares ares
 	PATHS "${CMAKE_SOURCE_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
@@ -136,7 +136,6 @@ else ()
 		optimized ${GRPC_ADDRESS_SORTING_RELEASE}
 		optimized ${GRPC_GRPC_UNSECURE_RELEASE}
 		optimized ${GRPC_GRPC++_UNSECURE_RELEASE}
-		
 		debug ${GRPC_GPR_DEBUG}
 		debug ${GRPC_GRPC_DEBUG}
 		debug ${GRPC_GRPC++_DEBUG}

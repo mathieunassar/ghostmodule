@@ -35,7 +35,7 @@ endif (MSVC)
 
 # unix specific stuff
 if (UNIX)
-    set(GHOST_BUILD_NAME "buildUnix_x86")
+    set(GHOST_BUILD_NAME "buildUnix_x86_64")
 endif (UNIX)
 
 find_package(Protobuf REQUIRED)
