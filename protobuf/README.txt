@@ -27,10 +27,3 @@
 assar\Documents\GIT\ghostRepository\ExternalLibs\grpc\bin\VS2017_win32\grpc_cpp_plugin.exe .\Ghost.proto
 
 	protoc -I . -I C:\Users\MathieuNassar\Documents\GIT\ghostRepository\ExternalLibs\protobuf\include --cpp_out=. .\Ghost.proto
-
-///////////////////////////////////////////
-////// TODO TODO TODO TODO TODO TODO //////
-///////////////////////////////////////////
-
-- create a CMake file to build it
-- create a script to copy the necessary files from the grpc repository after building the solution

@@ -2,7 +2,7 @@
 #include <catch.hpp>
 #include <iostream>
 
-#include <ghost/connection/ProtobufMessage.hpp>
+#include <ghost/connection/internal/ProtobufMessage.hpp>
 #include <ghost/connection/internal/GenericMessageConverter.hpp>
 #include <ghost/connection/MessageHandler.hpp>
 #include <ghost/connection/internal/MessageHandler.hpp>
