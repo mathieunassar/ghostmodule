@@ -9,7 +9,7 @@
 
 #include <BlockingQueue.hpp>
 #include "GenericMessageConverter.hpp"
-#include "../ProtobufMessage.hpp"
+#include "ProtobufMessage.hpp"
 
 namespace ghost
 {

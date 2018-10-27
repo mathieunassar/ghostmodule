@@ -6,7 +6,7 @@
 
 #include <ghost/connection/internal/MessageHandler.hpp>
 #include <ghost/connection/internal/GenericMessageConverter.hpp>
-#include <ghost/connection/ProtobufMessage.hpp>
+#include <ghost/connection/internal/ProtobufMessage.hpp>
 
 namespace ghost
 {

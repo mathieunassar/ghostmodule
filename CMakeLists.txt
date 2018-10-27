@@ -98,7 +98,6 @@ file(GLOB header_connection2_lib
 ./include/ghost/connection/Publisher.hpp
 ./include/ghost/connection/Subscriber.hpp
 ./include/ghost/connection/Message.hpp
-./include/ghost/connection/ProtobufMessage.hpp
 ./include/ghost/connection/Configuration.hpp
 ./include/ghost/connection/ConnectionConfiguration.hpp
 ./include/ghost/connection/NetworkConnectionConfiguration.hpp
@@ -113,6 +112,7 @@ file(GLOB header_connection2_lib_internal
 ./include/ghost/connection/internal/Connection.hpp
 ./include/ghost/connection/internal/Connection.impl.hpp
 ./include/ghost/connection/internal/GenericMessageConverter.hpp
+./include/ghost/connection/internal/ProtobufMessage.hpp
 ./include/ghost/connection/internal/ProtobufConfiguration.hpp
 ./include/ghost/connection/internal/MessageHandler.hpp
 ./include/ghost/connection/internal/MessageHandlerCallback.hpp

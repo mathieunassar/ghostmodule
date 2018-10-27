@@ -3,7 +3,7 @@
 
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
-#include <ghost/connection/ProtobufMessage.hpp>
+#include <ghost/connection/internal/ProtobufMessage.hpp>
 
 using namespace ghost;
 
