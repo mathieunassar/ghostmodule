@@ -18,8 +18,11 @@ namespace ghost
 		class BaseMessageHandlerCallback
 		{
 		public:
+			virtual ~BaseMessageHandlerCallback() = 0;
 			virtual void handle(const google::protobuf::Any& message) = 0;
 		};
+		
+		inline BaseMessageHandlerCallback::~BaseMessageHandlerCallback() = default;
 
 		template<typename MessageType, bool = std::is_base_of<ghost::Message, MessageType>::value>
 		class MessageHandlerCallback;
