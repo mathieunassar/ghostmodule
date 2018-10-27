@@ -18,8 +18,15 @@ namespace ghost
 	}
 
 	/**
-	 *	The connection manager is responsible for the creation of connections and manages their lifetime.
-	 *	Running connections will be terminated during the destruction of the connection manager.
+	 * @brief Manager for Connection objects.
+	 * 
+	 * The connection manager is responsible for the creation of connections and manages their lifetime.
+	 * Running connections will be terminated during the destruction of the connection manager.
+	 * 
+	 * The connection manager includes a connection factory which creates the connections. It is possible
+	 * to add factory rules to create user-defined connections. See ConnectionFactory for more information.
+	 * 
+	 * The default implementation contains factory rules to create network connections based on gRPC.
 	 */
 	class ConnectionManager
 	{
@@ -36,6 +43,11 @@ namespace ghost
 		/// Creates a subscriber with the provided configuration. If this is impossible, returns nullptr.
 		virtual std::shared_ptr<Subscriber> createSubscriber(const ConnectionConfiguration& config) = 0;
 
+		/**
+		 * @brief Accesses the connection factory.
+		 * 
+		 * @return the connection factory of this connection manager.
+		 */
 		virtual std::shared_ptr<ghost::ConnectionFactory> getConnectionFactory() = 0;
 
 	protected:

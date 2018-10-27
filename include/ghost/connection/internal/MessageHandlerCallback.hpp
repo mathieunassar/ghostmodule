@@ -5,7 +5,7 @@
 #include <google/protobuf/any.pb.h>
 
 #include <ghost/connection/Message.hpp>
-#include <ghost/connection/ProtobufMessage.hpp>
+#include <ghost/connection/internal/ProtobufMessage.hpp>
 #include <ghost/connection/internal/GenericMessageConverter.hpp>
 
 namespace ghost
