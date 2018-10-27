@@ -20,7 +20,7 @@ namespace ghost
 
 		private:
 			/// From internal::Connection - forwards the sink to the client
-			virtual void setReaderSink(std::shared_ptr<ReaderSink> sink);
+			virtual void setReaderSink(std::shared_ptr<ReaderSink> sink) override;
 			ghost::NetworkConnectionConfiguration makeNoWriterConfig(const ghost::NetworkConnectionConfiguration& config);
 
 			ClientGRPC _client;

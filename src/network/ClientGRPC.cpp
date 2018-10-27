@@ -18,8 +18,8 @@ ClientGRPC::ClientGRPC(const ghost::ConnectionConfiguration& config)
 
 ClientGRPC::ClientGRPC(const ghost::NetworkConnectionConfiguration& config)
 	: BaseClientGRPC(config, new grpc::CompletionQueue()) // Will be owned by the executor
-	, _initialized(false)
 	, _executor(_completionQueue) // now owns the completion queue
+	, _initialized(false)
 {
 	_startedProcessor = std::bind(&ClientGRPC::onStarted, this, std::placeholders::_1);
 	_finishProcessor = std::bind(&ClientGRPC::onFinished, this, std::placeholders::_1);
