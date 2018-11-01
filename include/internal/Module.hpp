@@ -37,6 +37,8 @@ namespace ghost
 			/* User manager access */
 			std::shared_ptr<ghost::UserManager> getUserManager();
 
+			void printGhostASCII();
+
 		private:
 			std::string _name;
 			State _state;

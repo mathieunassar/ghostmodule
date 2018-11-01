@@ -9,7 +9,6 @@
 
 namespace ghost
 {
-	/// separate between normal interface and superuser interface
 	class UserManager
 	{
 	public:

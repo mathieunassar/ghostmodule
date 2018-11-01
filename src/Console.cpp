@@ -109,7 +109,6 @@ void Console::onNewInput(const std::string& str)
 
 void Console::onNewMode(ConsoleDevice::ConsoleMode mode)
 {
-	
 	if (mode == internal::ConsoleDevice::OUTPUT)
 	{
 		_outputController->enable();

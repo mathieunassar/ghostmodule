@@ -89,6 +89,16 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager()
 	return _userManager;
 }
 
+void Module::printGhostASCII()
+{
+	std::cout << " _______ _      _  ______  ________ _________" << std::endl;
+	std::cout << "|  _____ |______| |      | |_______     |" << std::endl;
+	std::cout << "|______| |      | |______| _______|     |" << std::endl;
+
+	if (hasConsole())
+		getConsole()->flush();
+}
+
 /////////////////////////////////////////////////////////////////
 //////////// DEFINITION OF PUBLIC CLASS MODULE //////////////////
 
@@ -167,4 +177,9 @@ std::shared_ptr<ghost::CommandLineInterpreter> ghost::Module::getInterpreter()
 std::shared_ptr<ghost::UserManager> ghost::Module::getUserManager()
 {
 	return _internal->getUserManager();
+}
+
+void ghost::Module::printGhostASCII()
+{
+	return _internal->printGhostASCII();
 }
