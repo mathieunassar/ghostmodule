@@ -1,100 +1,111 @@
-SET(GRPC_INCLUDE_DIRS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/include" CACHE STRING "gRPC include directory")
+file(READ ${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc_version.txt REQUIRED_VERSION_GRPC)
+set(GRPC_VERSION_FOLDER "grpc_${REQUIRED_VERSION_GRPC}")
+
+SET(GRPC_INCLUDE_DIRS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/include" CACHE STRING "gRPC include directory")
 
 find_library(
 	GRPC_GPR_RELEASE
 	NAMES libgpr.a gpr
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC_RELEASE
 	NAMES libgrpc.a grpc
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC++_RELEASE
 	NAMES libgrpc++.a grpc++
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC_UNSECURE_RELEASE
 	NAMES libgrpc_unsecure.a grpc_unsecure
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GRPC++_UNSECURE_RELEASE
 	NAMES libgrpc++_unsecure.a grpc++_unsecure
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_Z_RELEASE
 	NAMES libz.a zlib
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_ADDRESS_SORTING_RELEASE
 	NAMES address_sorting
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_CARES_RELEASE
 	NAMES cares ares
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	GRPC_GPR_DEBUG
 	NAMES libgpr.a gpr
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC_DEBUG
 	NAMES libgrpc.a grpc
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC++_DEBUG
 	NAMES libgrpc++.a grpc++ 
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC_UNSECURE_DEBUG
 	NAMES libgrpc_unsecure.a grpc_unsecure
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_GRPC++_UNSECURE_DEBUG
 	NAMES libgrpc++_unsecure.a grpc++_unsecure
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_Z_DEBUG
 	NAMES libz.a zlib zlibd
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_ADDRESS_SORTING_DEBUG
 	NAMES address_sorting
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
 
 find_library(
 	GRPC_CARES_DEBUG
 	NAMES cares ares
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/grpc/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
+
+if (WIN32)
+	set(GRPC_CPP_PLUGIN_PATH ${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin.exe CACHE FILEPATH "Path to the gRPC plugin for protoc")
+endif (WIN32)
+
+if (UNIX)
+	set(GRPC_CPP_PLUGIN_PATH ${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release/grpc_cpp_plugin CACHE FILEPATH "Path to the gRPC plugin for protoc")
+endif (UNIX)
 
 if (${GRPC_GPR_RELEASE} MATCHES "GRPC_GPR_RELEASE-NOTFOUND")
 	#OR ${GRPC_GRPC_RELEASE} MATCHES "GRPC_GRPC_RELEASE-NOTFOUND"

@@ -1,16 +1,28 @@
-SET(Protobuf_INCLUDE_DIRS "${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/include" CACHE STRING "Protobuf include directory")
+file(READ ${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf_version.txt REQUIRED_VERSION_PROTOBUF)
+set(PROTOBUF_VERSION_FOLDER "protobuf_${REQUIRED_VERSION_PROTOBUF}")
+
+SET(Protobuf_INCLUDE_DIRS "${GHOST_THIRD_PARTIES_ROOT_DIR}/protobuf/${PROTOBUF_VERSION_FOLDER}/include" CACHE STRING "Protobuf include directory")
 
 find_library(
 	Protobuf_LIBRARIES_RELEASE
 	NAMES protobuf libprotobuf
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Release"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/protobuf/${PROTOBUF_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
 find_library(
 	Protobuf_LIBRARIES_DEBUG
 	NAMES protobuf libprotobufd protobufd libprotobufd
-	PATHS "${GHOST_CONNECTION_ROOT_DIR}/third-party/protobuf/bin/${GHOST_BUILD_NAME}/Debug"
+	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/protobuf/${PROTOBUF_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Debug"
 )
+
+if (WIN32)
+	set(PROTOC_PATH ${GHOST_THIRD_PARTIES_ROOT_DIR}/protobuf/${PROTOBUF_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release/protoc.exe CACHE FILEPATH "Path to the Protoc compiler")
+endif (WIN32)
+
+if (UNIX)
+	set(PROTOC_PATH ${GHOST_THIRD_PARTIES_ROOT_DIR}/protobuf/${PROTOBUF_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release/protoc CACHE FILEPATH "Path to the Protoc compiler")
+endif (UNIX)
+
 
 if (${Protobuf_LIBRARIES_RELEASE} MATCHES "Protobuf_LIBS_RELEASE-NOTFOUND")
 	message(SEND_ERROR "Protobuf not found!")

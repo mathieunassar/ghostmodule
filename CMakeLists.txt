@@ -19,8 +19,6 @@ endif()
 # define the project
 project(${projectName} CXX)
 
-include(cmake/ProtobufGeneration.cmake)
-
 # Windows specific stuff
 if (MSVC)
 	set(GHOST_BUILD_NAME "buildVS2017_x86")
@@ -46,8 +44,13 @@ if (UNIX)
     set(GHOST_BUILD_NAME "buildUnix_x86_64")
 endif (UNIX)
 
+SET(GHOST_THIRD_PARTIES_ROOT_DIR ${GHOST_CONNECTION_ROOT_DIR}/../ghost_third_parties CACHE STRING "Ghost Third Parties location")
+
 find_package(Protobuf REQUIRED)
 find_package(GRPC REQUIRED)
+find_package(Catch REQUIRED)
+
+include(cmake/ProtobufGeneration.cmake)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -61,13 +64,15 @@ include_directories(
 	third-party/ghost_support/include
 	${Protobuf_INCLUDE_DIRS}
 	${GRPC_INCLUDE_DIRS}
-	third-party/catch/
+	${CATCH_INCLUDE_DIRS}
 )
 
 # provide path to libraries
 link_directories(
-	${Protobuf_LIBS_RELEASE} ${Protobuf_LIBS_RELEASE}
-	${GRPC_LIBRARIES_RELEASE} ${GRPC_LIBRARIES_DEBUG}
+	${Protobuf_LIBS_RELEASE}
+	${Protobuf_LIBS_RELEASE}
+	${GRPC_LIBRARIES_RELEASE}
+	${GRPC_LIBRARIES_DEBUG}
 )
 
 # set up tests
