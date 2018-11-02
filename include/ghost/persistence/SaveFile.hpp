@@ -1,57 +1,114 @@
-#ifndef GHOST_MESSAGE_HPP
-#define GHOST_MESSAGE_HPP
+#ifndef GHOST_SAVE_FILE_HPP
+#define GHOST_SAVE_FILE_HPP
 
 #include <string>
+#include <list>
+#include <vector>
+#include <map>
+#include <memory>
+
+#include <fcntl.h>  
+#include <io.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+#include <google/protobuf/any.pb.h>
 
 namespace ghost
 {
-	/**
-	 * @brief Base class for messages that can be sent through a connection.
-	 * 
-	 * Connection objects expect either a message deriving this base type or
-	 * a Google protobuf message.
-	 */
-	class Message
+	class SaveData
 	{
 	public:
-		virtual ~Message() = 0;
+		SaveData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data);
 
-		/**
-		 * @brief accesses the format name.
-		 * 
-		 * The format name is used during the message serialization process.
-		 * 
-		 * @return the format name
-		 */
-		virtual std::string getMessageFormatName() const = 0;
+		// reads data at a specific index, or returns false if there is no such index or if the conversion fails
+		template<typename DataType>
+		bool get(DataType& type, size_t index) const;
 
-		/**
-		 * @brief accesses the message type name
-		 * 
-		 * @return the type name of the message
-		 */
-		virtual std::string getMessageTypeName() const = 0;
+		// adds data to the data set
+		template<typename DataType>
+		void put(const DataType& type);
 
-		/**
-		 * @brief Serializes the message into a string.
-		 * 
-		 * @param result the serialized string
-		 * @return true if the serialization succeeded.
-		 * @return false otherwise
-		 */
-		virtual bool serialize(std::string& result) const = 0;
+		// gets the name of this data set
+		const std::string& getName() const;
 
-		/**
-		 * @brief Deserializes the string into the message.
-		 * 
-		 * @param payload the string to deserialize.
-		 * @return true if the message was successfully decoded into this object instance
-		 * @return false if the deserialization failed.
-		 */
-		virtual bool deserialize(const std::string& payload) = 0;
+		// returns the size of this data set
+		size_t size() const;
+
+		const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const;
+
+	private:
+		std::vector<std::shared_ptr<google::protobuf::Any>> _data;
+		std::string _name;
 	};
 
-	inline Message::~Message() {}
+	// feature: while saving, backup the previous data and delete backup only on success
+	// feature: writes every x seconds, keep a rotating backup of the saves
+	class SaveManager
+	{
+	public:
+		// constructor, root is the path where the save manager will read/write the saves
+		SaveManager(const std::string& root);
+
+		// adds data to the map under the key with title "file", creates the entry if it does not exist
+		void addData(std::shared_ptr<SaveData> data, const std::string& file);
+		// searches the map for data sets of the given name and removes them, returns true if at least one was removed
+		bool removeData(const std::string& dataName);
+		// searches the map for all the data sets of the given name and returns them as a list
+		std::list<std::shared_ptr<SaveData>> getData(const std::string& dataName) const;
+
+		// looks for all the save files in the root and reads them
+		bool load();
+		// writes the saved data on the disk. If overwrite is true, replaces all the current data
+		bool save(bool overwrite);
+		
+	private:
+		std::map<std::string, std::list<std::shared_ptr<SaveData>>> _saveData;
+	};
+
+	namespace internal
+	{
+		/*
+		// TODO: encode save data name and read it back
+		how this will work:
+		- gets the list of the any messages in the data set;
+		- write them
+		- reading read the message as any messages
+		- user gets the messages with templated calls that convert the messages
+		- possibility to use ghost::Message - specialize put and get of SaveData to convert ghost::Message to and from Any.
+		- could even be split into ReadSaveFile and WriteSaveFile but mäh
+		*/
+		class SaveFile
+		{
+		public:
+			enum Mode
+			{
+				READ,
+				WRITE
+			};
+
+			SaveFile(const std::string& filename);
+			~SaveFile();
+
+			bool open(Mode mode);
+			bool close();
+
+			// writes the list of data in a row in the file
+			bool write(const std::list<std::shared_ptr<ghost::SaveData>>& data);
+			// parses the file and returns the list of data
+			bool read(std::list<std::shared_ptr<ghost::SaveData>>& data);
+
+		private:
+			std::string _filename;
+
+			// for input
+			std::shared_ptr<google::protobuf::io::FileInputStream> _fileInputStream;
+			std::shared_ptr<google::protobuf::io::CodedInputStream> _codedInputStream;
+
+			// for output
+			std::shared_ptr<google::protobuf::io::FileOutputStream> _fileOutputStream;
+			std::shared_ptr<google::protobuf::io::CodedOutputStream> _codedOutputStream;
+		};
+	}
 }
 
-#endif //GHOST_MESSAGE_HPP
+#endif // GHOST_SAVE_FILE_HPP
