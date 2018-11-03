@@ -77,17 +77,23 @@ enable_testing()
 
 ##########################################################################################################################################
 
-file(GLOB header_persistence_lib
-./include/ghost/persistence/SaveFile.hpp
+file(GLOB header_persistence_internal_lib
+./include/ghost/persistence/internal/SaveFile.hpp
+./include/ghost/persistence/internal/SaveData.hpp
+./include/ghost/persistence/internal/SaveManager.hpp
 )
 
 file(GLOB source_persistence_lib
 ./src/SaveFile.cpp
+./src/SaveData.cpp
+./src/SaveManager.cpp
 )
+
+source_group("Header Files\\internal" FILES ${header_persistence_internal_lib})
 
 ##########################################################################################################################################
 
-add_library(ghost_persistence ${header_persistence_lib}
+add_library(ghost_persistence ${header_persistence_internal_lib}
 	${source_persistence_lib}
 )
 
@@ -95,14 +101,25 @@ target_link_libraries(ghost_persistence ${Protobuf_LIBRARIES})
 
 ##########################################################################################################################################
 
-# Unit tests: Primitive Serialization
+set(PROTOC_SOURCE_CUSTOM ./tests/protobuf/)
+set(PROTOC_SOURCE_FILE ./tests/protobuf/tests.proto)
+set(PROTOC_OUTPUT ./tests/protobuf/)
+
+generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
+
+# Unit tests
 file(GLOB source_persistence_tests
 ./tests/SaveFileTests.cpp)
+
+file(GLOB protobuf_persistence_tests
+./tests/protobuf/tests.pb.h
+./tests/protobuf/tests.pb.cc
+)
 
 set(libraries_persistence_tests
 ghost_persistence)
 
-add_executable(persistence_tests ${source_persistence_tests})
+add_executable(persistence_tests ${source_persistence_tests} ${protobuf_persistence_tests})
 target_link_libraries(persistence_tests ${libraries_persistence_tests})
 set_property(TARGET persistence_tests PROPERTY FOLDER "tests")
 add_test(persistence_tests persistence_tests)

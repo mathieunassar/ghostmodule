@@ -1,96 +1,93 @@
+#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include <iostream>
 
-#include <ghost/connection/ConnectionManager.hpp>
-#include "ConnectionMocks.hpp"
+#include <ghost/persistence/internal/SaveFile.hpp>
+#include "protobuf/tests.pb.h"
 
-using namespace ghost;
+using namespace ghost::internal;
 
-TEST_CASE("test_connection_manager")
+std::list<std::shared_ptr<SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet)
 {
-	ghost::ConnectionConfiguration config;
-	config.addAttribute("param", "");
+	std::list<std::shared_ptr<SaveData>> testData;
+	for (int j = 0; j < saveDataSize; j++)
+	{
+		std::vector<std::shared_ptr<google::protobuf::Any>> data;
+		for (int i = 0; i < dataPerSet; i++)
+		{
+			std::string field1Value = "field1" + std::to_string(i) + std::to_string(j);
+			auto msg = ghost::internal::protobuf::TestMessage1::default_instance();
+			msg.set_field1(field1Value);
+			auto any = std::make_shared<google::protobuf::Any>();
+			any->PackFrom(msg);
+			data.push_back(any);
+		}
+		std::string saveDataName = "super" + std::to_string(j);
+		auto savedata = std::make_shared<SaveData>(saveDataName, data);
+		
+		testData.push_back(savedata);
+	}
+	return testData;
+}
 
-	auto connectionManager = ghost::ConnectionManager::create();
-	auto factory = connectionManager->getConnectionFactory();
+void compareTestData(const std::list<std::shared_ptr<SaveData>>& data1,
+	const std::list<std::shared_ptr<SaveData>>& data2)
+{
+	auto it = data1.begin();
+	auto it2 = data2.begin();
+	while (it != data1.end())
+	{
+		REQUIRE(it2 != data2.end());
+		REQUIRE((*it)->getName() == (*it2)->getName());
+		auto d1 = (*it)->getData();
+		auto d2 = (*it2)->getData();
 
-	auto client = connectionManager->createClient(config);
-	auto server = connectionManager->createServer(config);
-	auto publisher = connectionManager->createPublisher(config);
-	auto subscriber = connectionManager->createSubscriber(config);
-	REQUIRE(!client); // no rules -> no response
-	REQUIRE(!server); // no rules -> no response
-	REQUIRE(!publisher); // no rules -> no response
-	REQUIRE(!subscriber); // no rules -> no response
+		REQUIRE(d1.size() == d2.size());
+		for (size_t i = 0; i < d1.size(); i++)
+		{
+			const auto& elem = d1[i];
+			const auto& elem2 = d2[i];
+
+			auto msg1 = ghost::internal::protobuf::TestMessage1::default_instance();
+			auto msg2 = ghost::internal::protobuf::TestMessage1::default_instance();
+			bool unpack1 = elem->UnpackTo(&msg1);
+			bool unpack2 = elem2->UnpackTo(&msg2);
+			REQUIRE(unpack1);
+			REQUIRE(unpack2);
+			REQUIRE(msg1.field1() == msg2.field1());
+		}
+
+		it++;
+		it2++;
+	}
 	
-	factory->addPublisherRule<PublisherMock>(config); // empty
-	auto client2 = connectionManager->createClient(config);
-	auto server2 = connectionManager->createServer(config);
-	auto publisher2 = connectionManager->createPublisher(config);
-	auto subscriber2 = connectionManager->createSubscriber(config);
-	REQUIRE(!client2); // no rules -> no response
-	REQUIRE(!server2); // no rules -> no response
-	REQUIRE(publisher2); // open rule -> will return something
-	REQUIRE(!subscriber2); // no rules -> no response
-	
-	publisher2->start();
-	REQUIRE(publisher2->isRunning());
+	REQUIRE(it2 == data2.end());
+}
 
-	factory->addServerRule<ServerMock>(config); // empty
-	auto client3 = connectionManager->createClient(config);
-	auto server3 = connectionManager->createServer(config);
-	auto publisher3 = connectionManager->createPublisher(config);
-	auto subscriber3 = connectionManager->createSubscriber(config);
-	REQUIRE(!client3); // no rules -> no response
-	REQUIRE(server3); // open rule -> will return something
-	REQUIRE(publisher3); // open rule -> will return something
-	REQUIRE(!subscriber3); // no rules -> no response
+TEST_CASE("test_save_file")
+{
+	SaveFile file("test.dat");
 
-	server3->start();
-	REQUIRE(server3->isRunning());
-	publisher3->start();
-	REQUIRE(publisher3->isRunning());
+	bool resultOpen = file.open(SaveFile::WRITE);
+	REQUIRE(resultOpen);
 
-	config.updateAttribute("param", "john");
+	std::list<std::shared_ptr<SaveData>> testData = generateTestdata(50,50);
 
-	factory->addClientRule<ClientMock>(config); // empty
-	factory->addSubscriberRule<SubscriberMock>(config); // empty
-	auto client4 = connectionManager->createClient(config);
-	auto server4 = connectionManager->createServer(config);
-	auto publisher4 = connectionManager->createPublisher(config);
-	auto subscriber4 = connectionManager->createSubscriber(config);
-	REQUIRE(client4); // open rule -> will return something
-	REQUIRE(server4); // open rule -> will return something
-	REQUIRE(publisher4); // open rule -> will return something
-	REQUIRE(subscriber4); // open rule -> will return something
+	bool writeSuccess = file.write(testData);
+	REQUIRE(writeSuccess);
 
-	client4->start();
-	REQUIRE(client4->isRunning());
-	server4->start();
-	REQUIRE(server4->isRunning());
-	publisher4->start();
-	REQUIRE(publisher4->isRunning());
-	subscriber4->start();
-	REQUIRE(subscriber4->isRunning());
+	bool closeSuccess = file.close();
+	//REQUIRE(closeSuccess);
 
-	ghost::ConnectionConfiguration config2; // empty configuration
+	SaveFile file2("test.dat");
 
-	auto client5 = connectionManager->createClient(config2);
-	auto server5 = connectionManager->createServer(config2);
-	auto publisher5 = connectionManager->createPublisher(config2);
-	auto subscriber5 = connectionManager->createSubscriber(config2);
-	REQUIRE(!client5); // different rule -> no response
-	REQUIRE(!server5); // different rule -> no response
-	REQUIRE(!publisher5); // different rule -> no response
-	REQUIRE(!subscriber5); // different rule -> no respons
-	
-	connectionManager.reset();
+	bool resultOpen2 = file2.open(SaveFile::READ);
+	REQUIRE(resultOpen2);
 
-	REQUIRE(!publisher2->isRunning());
-	REQUIRE(!server3->isRunning());
-	REQUIRE(!publisher3->isRunning());
-	REQUIRE(!client4->isRunning());
-	REQUIRE(!server4->isRunning());
-	REQUIRE(!publisher4->isRunning());
-	REQUIRE(!subscriber4->isRunning());
+	std::list<std::shared_ptr<SaveData>> testData2;
+	bool readResult = file2.read(testData2);
+	REQUIRE(readResult);
+
+	compareTestData(testData, testData2);
 }
