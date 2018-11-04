@@ -84,6 +84,7 @@ file(GLOB header_persistence_lib
 
 file(GLOB header_persistence_internal_lib
 ./include/ghost/persistence/internal/SaveFile.hpp
+./include/ghost/persistence/internal/SaveData.impl.hpp
 ./include/ghost/persistence/internal/SaveData.hpp
 ./include/ghost/persistence/internal/SaveManager.hpp
 )
