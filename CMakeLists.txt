@@ -56,9 +56,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
 ##########################################################################################################################################
 
+SET(GHOST_PERSISTENCE_INCLUDE_DIRECTORIES
+	${GHOST_PERSISTENCE_ROOT_DIR}/include
+	CACHE FILEPATH "Include directories of ghost_persistence"
+)
+
 # provide path to include directories
 include_directories(
-	include
+	${GHOST_PERSISTENCE_INCLUDE_DIRECTORIES}
 	${Protobuf_INCLUDE_DIRS}
 	${CATCH_INCLUDE_DIRS}
 )
