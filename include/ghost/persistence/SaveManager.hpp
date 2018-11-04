@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <map>
 #include <memory>
 
 #include "SaveData.hpp"
@@ -22,10 +23,10 @@ namespace ghost
 		virtual void addData(std::shared_ptr<SaveData> data, const std::string& file) = 0;
 		
 		// searches the map for data sets of the given name and removes them, returns true if at least one was removed
-		virtual bool removeData(const std::string& dataName) = 0;
+		virtual bool removeData(const std::string& dataName, const std::string& filename = "") = 0;
 		
 		// searches the map for all the data sets of the given name and returns them as a list
-		virtual std::list<std::shared_ptr<SaveData>> getData(const std::string& dataName) const = 0;
+		virtual std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> getData(const std::string& dataName) const = 0;
 
 		// looks for all the save files in the root and reads them
 		virtual bool load() = 0;

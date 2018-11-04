@@ -24,10 +24,10 @@ namespace ghost
 			void addData(std::shared_ptr<ghost::SaveData> data, const std::string& file) override;
 			
 			// searches the map for data sets of the given name and removes them, returns true if at least one was removed
-			bool removeData(const std::string& dataName) override;
+			bool removeData(const std::string& dataName, const std::string& filename = "") override;
 			
 			// searches the map for all the data sets of the given name and returns them as a list
-			std::list<std::shared_ptr<ghost::SaveData>> getData(const std::string& dataName) const override;
+			std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> getData(const std::string& dataName) const override;
 
 			// looks for all the save files in the root and reads them
 			bool load() override;
@@ -36,7 +36,15 @@ namespace ghost
 			bool save(bool overwrite) override;
 
 		private:
+			/**
+				This map contains the save data as follows:
+				KEY = name of the file in which the data will be stored
+				VALUE = data, also containing its name
+
+				_Note_: it is possible to have multiple data with the same name
+			*/
 			std::map<std::string, std::list<std::shared_ptr<SaveData>>> _saveData;
+			std::string _saveRoot;
 		};
 	}
 }
