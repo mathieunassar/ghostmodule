@@ -16,6 +16,8 @@ namespace ghost
 	public:
 		static std::shared_ptr<SaveManager> create(const std::string& root);
 
+		virtual ~SaveManager() = 0;
+
 		// adds data to the map under the key with title "file", creates the entry if it does not exist
 		virtual void addData(std::shared_ptr<SaveData> data, const std::string& file) = 0;
 		
@@ -31,6 +33,8 @@ namespace ghost
 		// writes the saved data on the disk. If overwrite is true, replaces all the current data
 		virtual bool save(bool overwrite) = 0;
 	};
+
+	inline SaveManager::~SaveManager() {}
 }
 
 #endif // GHOST_SAVE_MANAGER_HPP
