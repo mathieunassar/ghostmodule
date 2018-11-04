@@ -58,10 +58,19 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
 ##########################################################################################################################################
 
+if (NOT GHOST_SUPPORT_ROOT_DIR)
+	ADD_SUBDIRECTORY(third-party/ghost_support)
+endif()
+
+SET(GHOST_CONNECTION_INCLUDE_DIRECTORIES
+	${GHOST_CONNECTION_ROOT_DIR}/include
+	${GHOST_SUPPORT_INCLUDE_DIRECTORIES}
+	CACHE FILEPATH "Include directories of ghost_connection"
+)
+
 # provide path to include directories
 include_directories(
-	include
-	third-party/ghost_support/include
+	${GHOST_CONNECTION_INCLUDE_DIRECTORIES}
 	${Protobuf_INCLUDE_DIRS}
 	${GRPC_INCLUDE_DIRS}
 	${CATCH_INCLUDE_DIRS}
@@ -78,9 +87,6 @@ link_directories(
 # set up tests
 enable_testing()
 
-if (NOT GHOST_SUPPORT_ROOT_DIR)
-	ADD_SUBDIRECTORY(third-party/ghost_support)
-endif()
 
 ##########################################################################################################################################
 ############################################################ CONNECTION LIBRARY ##########################################################
