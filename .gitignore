@@ -4,3 +4,5 @@ build/
 bin/*
 *.o
 *.lo
+*.pb.cc
+*.pb.h
