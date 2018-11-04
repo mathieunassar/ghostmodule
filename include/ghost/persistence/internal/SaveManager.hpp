@@ -30,7 +30,7 @@ namespace ghost
 			std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> getData(const std::string& dataName) const override;
 
 			// looks for all the save files in the root and reads them
-			bool load() override;
+			bool load(const std::list<std::string>& files) override;
 
 			// writes the saved data on the disk. If overwrite is true, replaces all the current data
 			bool save(bool overwrite) override;

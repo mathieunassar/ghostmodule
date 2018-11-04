@@ -79,9 +79,35 @@ std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> SaveManager::
 }
 
 // looks for all the save files in the root and reads them
-bool SaveManager::load()
+bool SaveManager::load(const std::list<std::string>& files)
 {
-	return false;
+	_saveData.clear();
+
+	for (const auto& filename : files)
+	{
+		SaveFile file(filename);
+
+		bool openSuccess = file.open(SaveFile::READ);
+		if (!openSuccess)
+		{
+			_saveData.clear();
+			return false;
+		}
+
+		std::list<std::shared_ptr<ghost::SaveData>> data;
+		bool readSuccess = file.read(data);
+		if (!readSuccess)
+		{
+			_saveData.clear();
+			return false;
+		}
+
+		file.close();
+
+		_saveData[filename] = data;
+	}
+
+	return true;
 }
 
 // writes the saved data on the disk. If overwrite is true, replaces all the current data
@@ -92,7 +118,7 @@ bool SaveManager::save(bool overwrite)
 	for (const auto& dataset : _saveData)
 	{
 		SaveFile file(dataset.first);
-		bool openSuccess = file.open(SaveFile::WRITE);
+		bool openSuccess = file.open(SaveFile::WRITE, overwrite);
 		if (!openSuccess)
 		{
 			// TODO restore backup

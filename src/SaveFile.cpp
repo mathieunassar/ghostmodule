@@ -14,7 +14,7 @@ SaveFile::~SaveFile()
 	close();
 }
 
-bool SaveFile::open(Mode mode)
+bool SaveFile::open(Mode mode, bool overwrite)
 {
 	close(); // close anything if it was open
 
@@ -30,8 +30,18 @@ bool SaveFile::open(Mode mode)
 	}
 	else
 	{
-		int handle = _open(_filename.c_str(), _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE);
-		if (handle == -1)
+		int fileExists = _open(_filename.c_str(), _O_WRONLY); // try to open it to know if the file exists
+		int handle = -1;
+		
+		if (fileExists != -1)
+			_close(fileExists); // close the test handle
+
+		if (fileExists == -1 || overwrite) // if the file does not exist or the user wants to override it, reopen it with the truncate flags
+		{
+			handle = _open(_filename.c_str(), _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE);
+		}
+
+		if (handle == -1) // if the file could not be created or if the file exists but overwrite is false
 		{
 			return false;
 		}

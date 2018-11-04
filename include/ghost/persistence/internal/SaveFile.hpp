@@ -36,7 +36,7 @@ namespace ghost
 			SaveFile(const std::string& filename);
 			~SaveFile();
 
-			bool open(Mode mode);
+			bool open(Mode mode, bool overwrite = true);
 			bool close();
 
 			// writes the list of data in a row in the file

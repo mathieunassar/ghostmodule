@@ -35,4 +35,8 @@ TEST_CASE("test_save_file")
 	REQUIRE(readResult);
 
 	compareTestData(testData, testData2);
+
+	SaveFile fileAlreadyExisting("test.dat");
+	bool resultOpen3 = fileAlreadyExisting.open(SaveFile::WRITE, false); // do not overwrite it, hence fails
+	REQUIRE(!resultOpen3);
 }
