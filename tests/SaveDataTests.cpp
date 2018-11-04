@@ -84,3 +84,28 @@ TEST_CASE("test_saveData_replace_with_different_type")
 	REQUIRE(getSuccess2);
 	REQUIRE(msg2.field1() == msg3.field1());
 }
+
+TEST_CASE("test_saveData_erase")
+{
+	auto testData = generateTestdata(1, 2);
+	auto data1 = testData.front();
+
+	bool removeSuccess0 = data1->remove(2);
+	REQUIRE(!removeSuccess0);
+
+	bool removeSuccess = data1->remove(0);
+	REQUIRE(removeSuccess);
+	REQUIRE(data1->size() == 1);
+
+	ghost::internal::protobuf::TestMessage1 msg;
+	bool getSuccess = data1->get(msg, 0);
+	REQUIRE(getSuccess);
+	REQUIRE(msg.field1() == "field110");
+
+	bool removeSuccess2 = data1->remove(0);
+	REQUIRE(removeSuccess2);
+	REQUIRE(data1->size() == 0);
+
+	bool removeSuccess3 = data1->remove(0);
+	REQUIRE(!removeSuccess3);
+}

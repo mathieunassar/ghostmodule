@@ -14,6 +14,15 @@ internal::SaveData::SaveData(const std::string& name, const std::vector<std::sha
 	_data = data;
 }
 
+bool SaveData::remove(size_t index)
+{
+	if (index >= _data.size())
+		return false;
+
+	_data.erase(_data.begin() + index);
+	return true;
+}
+
 // gets the name of this data set
 const std::string& SaveData::getName() const
 {

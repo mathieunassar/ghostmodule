@@ -27,6 +27,8 @@ namespace ghost
 		template<typename DataType>
 		bool replace(const DataType& type, size_t index);
 
+		bool remove(size_t index);
+
 		// gets the name of this data set
 		const std::string& getName() const;
 
