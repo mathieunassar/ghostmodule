@@ -12,8 +12,9 @@ namespace ghost
 {
 	namespace internal
 	{
-		// feature: while saving, backup the previous data and delete backup only on success
-		// feature: writes every x seconds, keep a rotating backup of the saves
+		// possible feature: while saving, backup the previous data and delete backup only on success
+		// possible feature: writes every x seconds, keep a rotating backup of the saves
+		// possible feature: possibility to encrypt the files.
 		class SaveManager : public ghost::SaveManager
 		{
 		public:

@@ -15,15 +15,6 @@ namespace ghost
 {
 	namespace internal
 	{
-		/*
-		how this will work:
-		- gets the list of the any messages in the data set;
-		- write them
-		- reading read the message as any messages
-		- user gets the messages with templated calls that convert the messages
-		- possibility to use ghost::Message - specialize put and get of SaveData to convert ghost::Message to and from Any.
-		- could even be split into ReadSaveFile and WriteSaveFile but mäh
-		*/
 		class SaveFile
 		{
 		public:
