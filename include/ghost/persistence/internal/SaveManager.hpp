@@ -24,7 +24,7 @@ namespace ghost
 			void addData(std::shared_ptr<ghost::SaveData> data, const std::string& file) override;
 			
 			// searches the map for data sets of the given name and removes them, returns true if at least one was removed
-			bool removeData(const std::string& dataName, const std::string& filename = "") override;
+			bool removeData(const std::string& dataName, const std::string& filename = "", bool pruneEmptyFiles = false) override;
 			
 			// searches the map for all the data sets of the given name and returns them as a list
 			std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> getData(const std::string& dataName) const override;
@@ -34,6 +34,8 @@ namespace ghost
 
 			// writes the saved data on the disk. If overwrite is true, replaces all the current data
 			bool save(bool overwrite) override;
+
+			std::list<std::string> getFileNames() const override;
 
 		private:
 			/**

@@ -25,7 +25,7 @@ void SaveManager::addData(std::shared_ptr<ghost::SaveData> data, const std::stri
 }
 
 // searches the map for data sets of the given name and removes them, returns true if at least one was removed
-bool SaveManager::removeData(const std::string& dataName, const std::string& filename)
+bool SaveManager::removeData(const std::string& dataName, const std::string& filename, bool pruneEmptyFiles)
 {
 	bool removedSome = false;
 
@@ -51,7 +51,7 @@ bool SaveManager::removeData(const std::string& dataName, const std::string& fil
 				++it2;
 		}
 
-		if (it->second.empty())
+		if (it->second.empty() && pruneEmptyFiles)
 			it = _saveData.erase(it);
 		else
 			++it;
@@ -138,4 +138,14 @@ bool SaveManager::save(bool overwrite)
 	// TODO delete backup
 
 	return true;
+}
+
+std::list<std::string> SaveManager::getFileNames() const
+{
+	std::list<std::string> names;
+	for (const auto& elem : _saveData)
+	{
+		names.push_back(elem.first);
+	}
+	return names;
 }

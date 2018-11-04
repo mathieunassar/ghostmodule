@@ -23,7 +23,7 @@ namespace ghost
 		virtual void addData(std::shared_ptr<ghost::SaveData> data, const std::string& file) = 0;
 		
 		// searches the map for data sets of the given name and removes them, returns true if at least one was removed
-		virtual bool removeData(const std::string& dataName, const std::string& filename = "") = 0;
+		virtual bool removeData(const std::string& dataName, const std::string& filename = "", bool pruneEmptyFiles = false) = 0;
 		
 		// searches the map for all the data sets of the given name and returns them as a list
 		virtual std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> getData(const std::string& dataName) const = 0;
@@ -33,6 +33,8 @@ namespace ghost
 
 		// writes the saved data on the disk. If overwrite is true, replaces all the current data
 		virtual bool save(bool overwrite) = 0;
+
+		virtual std::list<std::string> getFileNames() const = 0;
 	};
 
 	inline SaveManager::~SaveManager() {}
