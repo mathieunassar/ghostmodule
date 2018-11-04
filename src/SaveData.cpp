@@ -1,12 +1,17 @@
 #include "../include/ghost/persistence/internal/SaveData.hpp"
 
-using namespace ghost::internal;
+using namespace ghost;
 
-SaveData::SaveData(const std::string& name, const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
+SaveData::SaveData(const std::string& name)
 	: _name(name)
-	, _data(data)
 {
 
+}
+
+internal::SaveData::SaveData(const std::string& name, const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
+	: ghost::SaveData(name)
+{
+	_data = data;
 }
 
 // gets the name of this data set
@@ -21,7 +26,7 @@ size_t SaveData::size() const
 	return _data.size();
 }
 
-const std::vector<std::shared_ptr<google::protobuf::Any>>& SaveData::getData() const
+const std::vector<std::shared_ptr<google::protobuf::Any>>& internal::SaveData::getData() const
 {
 	return _data;
 }

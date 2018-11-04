@@ -16,7 +16,6 @@ namespace ghost
 	namespace internal
 	{
 		/*
-		// TODO: encode save data name and read it back
 		how this will work:
 		- gets the list of the any messages in the data set;
 		- write them
