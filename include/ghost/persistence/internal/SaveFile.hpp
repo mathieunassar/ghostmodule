@@ -9,7 +9,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/any.pb.h>
 
-#include "SaveData.hpp"
+#include "../SaveData.hpp"
 
 namespace ghost
 {
@@ -40,9 +40,9 @@ namespace ghost
 			bool close();
 
 			// writes the list of data in a row in the file
-			bool write(const std::list<std::shared_ptr<SaveData>>& data);
+			bool write(const std::list<std::shared_ptr<ghost::SaveData>>& data);
 			// parses the file and returns the list of data
-			bool read(std::list<std::shared_ptr<SaveData>>& data);
+			bool read(std::list<std::shared_ptr<ghost::SaveData>>& data);
 
 		private:
 			std::string _filename;

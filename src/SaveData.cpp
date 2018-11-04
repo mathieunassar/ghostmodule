@@ -1,17 +1,11 @@
-#include "../include/ghost/persistence/internal/SaveData.hpp"
+#include "../include/ghost/persistence/SaveData.hpp"
 
 using namespace ghost;
 
 SaveData::SaveData(const std::string& name)
-	: _name(name)
+	: internal::SaveData(name)
 {
 
-}
-
-internal::SaveData::SaveData(const std::string& name, const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
-	: ghost::SaveData(name)
-{
-	_data = data;
 }
 
 bool SaveData::remove(size_t index)
@@ -33,6 +27,17 @@ const std::string& SaveData::getName() const
 size_t SaveData::size() const
 {
 	return _data.size();
+}
+
+internal::SaveData::SaveData(const std::string& name)
+	: _name(name)
+{
+
+}
+
+void internal::SaveData::setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
+{
+	_data = data;
 }
 
 const std::vector<std::shared_ptr<google::protobuf::Any>>& internal::SaveData::getData() const

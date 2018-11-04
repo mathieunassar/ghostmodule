@@ -1,4 +1,5 @@
 #include "../include/ghost/persistence/internal/SaveManager.hpp"
+#include "../include/ghost/persistence/internal/SaveFile.hpp"
 
 using namespace ghost::internal;
 
@@ -18,7 +19,7 @@ SaveManager::SaveManager(const std::string& root)
 void SaveManager::addData(std::shared_ptr<ghost::SaveData> data, const std::string& file)
 {
 	if (_saveData.count(file) == 0)
-		_saveData[file] = std::list<std::shared_ptr<SaveData>>();
+		_saveData[file] = std::list<std::shared_ptr<ghost::SaveData>>();
 
 	_saveData[file].push_back(data);
 }
@@ -86,5 +87,29 @@ bool SaveManager::load()
 // writes the saved data on the disk. If overwrite is true, replaces all the current data
 bool SaveManager::save(bool overwrite)
 {
-	return false;
+	// TODO backup the already existing data (move to backup folder)
+
+	for (const auto& dataset : _saveData)
+	{
+		SaveFile file(dataset.first);
+		bool openSuccess = file.open(SaveFile::WRITE);
+		if (!openSuccess)
+		{
+			// TODO restore backup
+			return false;
+		}
+
+		bool writeSuccess = file.write(dataset.second);
+		if (!writeSuccess)
+		{
+			// TODO restore backup
+			return false;
+		}
+
+		file.close();
+	}
+
+	// TODO delete backup
+
+	return true;
 }

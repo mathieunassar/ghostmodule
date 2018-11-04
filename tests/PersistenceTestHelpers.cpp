@@ -1,10 +1,12 @@
 #include "PersistenceTestHelpers.hpp"
 
+#include <ghost/persistence/internal/SaveData.hpp>
+
 using namespace ghost::internal;
 
-std::list<std::shared_ptr<SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet)
+std::list<std::shared_ptr<ghost::SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet)
 {
-	std::list<std::shared_ptr<SaveData>> testData;
+	std::list<std::shared_ptr<ghost::SaveData>> testData;
 	for (int j = 0; j < saveDataSize; j++)
 	{
 		std::vector<std::shared_ptr<google::protobuf::Any>> data;
@@ -18,15 +20,16 @@ std::list<std::shared_ptr<SaveData>> generateTestdata(size_t saveDataSize, size_
 			data.push_back(any);
 		}
 		std::string saveDataName = "super" + std::to_string(j);
-		auto savedata = std::make_shared<SaveData>(saveDataName, data);
+		auto savedata = std::make_shared<ghost::SaveData>(saveDataName);
+		((ghost::internal::SaveData*)savedata.get())->setData(data);
 		
 		testData.push_back(savedata);
 	}
 	return testData;
 }
 
-void compareTestData(const std::list<std::shared_ptr<SaveData>>& data1,
-	const std::list<std::shared_ptr<SaveData>>& data2)
+void compareTestData(const std::list<std::shared_ptr<ghost::SaveData>>& data1,
+	const std::list<std::shared_ptr<ghost::SaveData>>& data2)
 {
 	auto it = data1.begin();
 	auto it2 = data2.begin();
@@ -34,8 +37,8 @@ void compareTestData(const std::list<std::shared_ptr<SaveData>>& data1,
 	{
 		REQUIRE(it2 != data2.end());
 		REQUIRE((*it)->getName() == (*it2)->getName());
-		auto d1 = (*it)->getData();
-		auto d2 = (*it2)->getData();
+		auto d1 = ((ghost::internal::SaveData*)it->get())->getData();
+		auto d2 = ((ghost::internal::SaveData*)it2->get())->getData();
 
 		REQUIRE(d1.size() == d2.size());
 		for (size_t i = 0; i < d1.size(); i++)

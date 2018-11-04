@@ -1,15 +1,11 @@
 #ifndef GHOST_SAVE_DATA_HPP
 #define GHOST_SAVE_DATA_HPP
 
-#include <string>
-#include <vector>
-#include <memory>
-
-#include <google/protobuf/any.pb.h>
+#include "internal/SaveData.hpp"
 
 namespace ghost
 {
-	class SaveData
+	class SaveData : private internal::SaveData
 	{
 	public:
 		SaveData(const std::string& name);
@@ -34,10 +30,6 @@ namespace ghost
 
 		// returns the size of this data set
 		size_t size() const;
-
-	protected:
-		std::vector<std::shared_ptr<google::protobuf::Any>> _data;
-		std::string _name;
 	};
 
 	#include "internal/SaveData.impl.hpp"

@@ -20,7 +20,7 @@ namespace ghost
 		virtual ~SaveManager() = 0;
 
 		// adds data to the map under the key with title "file", creates the entry if it does not exist
-		virtual void addData(std::shared_ptr<SaveData> data, const std::string& file) = 0;
+		virtual void addData(std::shared_ptr<ghost::SaveData> data, const std::string& file) = 0;
 		
 		// searches the map for data sets of the given name and removes them, returns true if at least one was removed
 		virtual bool removeData(const std::string& dataName, const std::string& filename = "") = 0;
