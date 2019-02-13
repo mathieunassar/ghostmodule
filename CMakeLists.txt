@@ -50,7 +50,7 @@ include(cmake/FetchGhost.cmake)
 
 # import Ghost Support
 SET(GHOST_SUPPORT_URL ${GHOST_CONNECTION_ROOT_DIR}/../ghost_support CACHE STRING "Ghost Support location")
-SET(GHOST_SUPPORT_BRANCH master)
+file(READ ${GHOST_CONNECTION_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_SUPPORT_BRANCH)
 fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
