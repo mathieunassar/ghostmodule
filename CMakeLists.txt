@@ -9,11 +9,7 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
-
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-message(STATUS "build ${projectName} as root project")
-	unset(GHOST_SUPPORT_ROOT_DIR CACHE)
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_CONNECTION_ROOT_DIR}/cmake/")
 
 # define the project
 project(${projectName} CXX)
@@ -45,13 +41,16 @@ endif (UNIX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+include(cmake/FetchGhost.cmake)
+
+# import Ghost Support
+SET(GHOST_SUPPORT_URL ${GHOST_MODULE_ROOT_DIR}/../ghost_support CACHE STRING "Ghost Support location")
+file(READ ${GHOST_MODULE_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_SUPPORT_BRANCH)
+fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
+
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
 ##########################################################################################################################################
-
-if (NOT GHOST_SUPPORT_ROOT_DIR)
-	ADD_SUBDIRECTORY(third-party/ghost_support)
-endif()
 
 SET(GHOST_MODULE_INCLUDE_DIRECTORIES
 	${GHOST_MODULE_ROOT_DIR}/include
@@ -67,9 +66,6 @@ include_directories(
 # provide path to libraries
 link_directories(
 )
-
-# set up tests
-enable_testing()
 
 ##########################################################################################################################################
 ################################################################ MODULE LIBRARY ##########################################################
