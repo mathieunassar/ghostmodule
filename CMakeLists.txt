@@ -11,11 +11,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_CONNECTION_ROOT_DIR}/cmake/")
 
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-message(STATUS "build ${projectName} as root project")
-	unset(GHOST_SUPPORT_ROOT_DIR CACHE)
-endif()
-
 # define the project
 project(${projectName} CXX)
 
@@ -51,16 +46,18 @@ find_package(GRPC REQUIRED)
 find_package(Catch REQUIRED)
 
 include(cmake/ProtobufGeneration.cmake)
+include(cmake/FetchGhost.cmake)
+
+# import Ghost Support
+SET(GHOST_SUPPORT_URL ${GHOST_CONNECTION_ROOT_DIR}/../ghost_support CACHE STRING "Ghost Support location")
+SET(GHOST_SUPPORT_BRANCH master)
+fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
 ##########################################################################################################################################
-
-if (NOT GHOST_SUPPORT_ROOT_DIR)
-	ADD_SUBDIRECTORY(third-party/ghost_support)
-endif()
 
 SET(GHOST_CONNECTION_INCLUDE_DIRECTORIES
 	${GHOST_CONNECTION_ROOT_DIR}/include
