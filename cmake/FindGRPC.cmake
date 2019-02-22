@@ -41,7 +41,7 @@ find_library(
 
 find_library(
 	GRPC_ADDRESS_SORTING_RELEASE
-	NAMES address_sorting
+	NAMES libaddress_sorting.a address_sorting
 	PATHS "${GHOST_THIRD_PARTIES_ROOT_DIR}/grpc/${GRPC_VERSION_FOLDER}/bin/${GHOST_BUILD_NAME}/Release"
 )
 
