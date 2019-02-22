@@ -70,11 +70,8 @@ include_directories(
 
 # provide path to libraries
 link_directories(
-	${Protobuf_LIBS_RELEASE}
+	${Protobuf_LIBRARIES}
 )
-
-# set up tests
-enable_testing()
 
 ##########################################################################################################################################
 ############################################################ CONNECTION LIBRARY ##########################################################
@@ -109,7 +106,11 @@ add_library(ghost_persistence ${header_persistence_internal_lib}
 	${source_persistence_lib}
 )
 
-target_link_libraries(ghost_persistence ${Protobuf_LIBRARIES})
+if (WIN32)
+	target_link_libraries(ghost_persistence ${Protobuf_LIBRARIES})
+else ()
+	target_link_libraries(ghost_persistence ${Protobuf_LIBRARIES} pthread)
+endif()
 
 ##########################################################################################################################################
 
@@ -139,4 +140,3 @@ ghost_persistence)
 add_executable(persistence_tests ${source_persistence_tests} ${protobuf_persistence_tests})
 target_link_libraries(persistence_tests ${libraries_persistence_tests})
 set_property(TARGET persistence_tests PROPERTY FOLDER "tests")
-add_test(persistence_tests persistence_tests)

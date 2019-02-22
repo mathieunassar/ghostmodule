@@ -1,11 +1,13 @@
 #include "../include/ghost/persistence/internal/SaveFile.hpp"
+#include <iostream>
+#include <fcntl.h>
 #ifdef _WIN32
-	#include <iostream>
-	#include <fcntl.h>
+	#include <io.h>
 #else
-
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <unistd.h>
 #endif
-#include <io.h>
 
 using namespace ghost::internal;
 
@@ -26,7 +28,11 @@ bool SaveFile::open(Mode mode, bool overwrite)
 
 	if (mode == SaveFile::READ)
 	{
+#ifdef _WIN32
 		int handle = _open(_filename.c_str(), _O_RDONLY | _O_BINARY);
+#else
+		int handle = ::open(_filename.c_str(), O_RDONLY);
+#endif
 		if (handle == -1)
 		{
 			return false;
@@ -36,15 +42,30 @@ bool SaveFile::open(Mode mode, bool overwrite)
 	}
 	else
 	{
+#ifdef _WIN32
 		int fileExists = _open(_filename.c_str(), _O_WRONLY); // try to open it to know if the file exists
+#else
+		int fileExists = ::open(_filename.c_str(), O_WRONLY); // try to open it to know if the file exists
+#endif
 		int handle = -1;
 		
 		if (fileExists != -1)
+		{
+#if _WIN32
 			_close(fileExists); // close the test handle
+#else
+			::close(fileExists); // close the test handle
+#endif
+		}
+
 
 		if (fileExists == -1 || overwrite) // if the file does not exist or the user wants to override it, reopen it with the truncate flags
 		{
+#ifdef _WIN32
 			handle = _open(_filename.c_str(), _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE);
+#else
+			handle = ::open(_filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE);
+#endif
 		}
 
 		if (handle == -1) // if the file could not be created or if the file exists but overwrite is false
