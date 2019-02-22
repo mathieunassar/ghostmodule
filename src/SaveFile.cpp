@@ -1,5 +1,11 @@
 #include "../include/ghost/persistence/internal/SaveFile.hpp"
-#include <iostream>
+#ifdef _WIN32
+	#include <iostream>
+	#include <fcntl.h>
+#else
+
+#endif
+#include <io.h>
 
 using namespace ghost::internal;
 

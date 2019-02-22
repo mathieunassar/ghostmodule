@@ -4,8 +4,6 @@
 #include <string>
 #include <list>
 #include <memory>
-#include <fcntl.h>  
-#include <io.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/any.pb.h>
 
