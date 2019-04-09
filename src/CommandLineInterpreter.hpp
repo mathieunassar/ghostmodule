@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 
-#include "../CommandLineInterpreter.hpp"
+#include <ghost/module/CommandLineInterpreter.hpp>
 #include "UserManager.hpp"
 
 namespace ghost

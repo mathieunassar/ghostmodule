@@ -1,9 +1,9 @@
-#include "../include/internal/CommandLineInterpreter.hpp"
-#include "../include/Command.hpp"
-#include "../include/internal/CommandLineParser.hpp"
+#include "CommandLineInterpreter.hpp"
+#include <ghost/module/Command.hpp>
+#include "CommandLineParser.hpp"
 
-#include "../include/internal/commands/HelpCommand.hpp"
-#include "../include/internal/commands/LoginCommand.hpp"
+#include "commands/HelpCommand.hpp"
+#include "commands/LoginCommand.hpp"
 
 using namespace ghost::internal;
 

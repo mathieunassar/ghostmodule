@@ -4,10 +4,15 @@
 #include <string>
 #include <functional>
 
-#include "internal/ConsoleDevice.hpp"
-#include "InputController.hpp"
 namespace ghost
 {
+	enum class InputMode
+	{
+		SEQUENTIAL, // prompt comes back directly after input
+		DISCRETE, // prompt only comes back if requested
+		NEVER // never prompts except on read
+	};
+
 	/**
 	 *	Makes abstraction of the program console and allows user i/o with ease.
 	 *	Provides methods to write on the console and to read lines from it.
@@ -38,7 +43,7 @@ namespace ghost
 		/// Sets the text that will be displayed as a prompt in the input mode
 		virtual void setPromptFormat(const std::string& prompt) = 0;
 		/// sets the input mode, see {@ref InputController::InputMode} for a description of the modes
-		virtual void setInputMode(InputController::InputMode mode) = 0;
+		virtual void setInputMode(ghost::InputMode mode) = 0;
 		/// sets the callback that will be called when the user enters a new command
 		virtual void setCommandCallback(std::function<void(const std::string&)> cmdCallback) = 0;
 

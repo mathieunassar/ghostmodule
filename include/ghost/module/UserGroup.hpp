@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "User.hpp"
-#include "PermissionEntity.hpp"
+#include <ghost/module/User.hpp>
+#include <ghost/module/PermissionEntity.hpp>
 
 namespace ghost
 {

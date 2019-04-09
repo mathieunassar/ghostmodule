@@ -1,11 +1,11 @@
-#include "../include/internal/Console.hpp"
+#include "Console.hpp"
 #ifdef _WIN32
-	#include "../include/internal/ConsoleDeviceWindows.hpp"
+	#include "ConsoleDeviceWindows.hpp"
 #else
-	#include "../include/internal/ConsoleDeviceUnix.hpp"
+	#include "ConsoleDeviceUnix.hpp"
 #endif
-#include "../include/internal/InputController.hpp"
-#include "../include/internal/OutputController.hpp"
+#include "InputController.hpp"
+#include "OutputController.hpp"
 
 #include <iostream>
 #include <functional>
@@ -51,7 +51,7 @@ void Console::setPromptFormat(const std::string& prompt)
 	_inputController->getPrompt().setFormat(prompt);
 }
 
-void Console::setInputMode(InputController::InputMode mode)
+void Console::setInputMode(ghost::InputMode mode)
 {
 	_inputController->setInputMode(mode);
 }

@@ -3,14 +3,17 @@
 
 #include <memory>
 
-#include "internal/Module.hpp"
-
-#include "Console.hpp"
-#include "UserManager.hpp"
-#include "CommandLineInterpreter.hpp"
+#include <ghost/module/Console.hpp>
+#include <ghost/module/UserManager.hpp>
+#include <ghost/module/CommandLineInterpreter.hpp>
 
 namespace ghost
 {
+	namespace internal
+	{
+		class Module;
+	}
+
 	/**
 	 * @brief Base class for the Module functionality.
 	 * 

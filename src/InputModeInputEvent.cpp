@@ -1,5 +1,5 @@
-#include "../include/internal/InputModeInputEvent.hpp"
-#include "../include/internal/InputController.hpp"
+#include "InputModeInputEvent.hpp"
+#include "InputController.hpp"
 
 using namespace ghost::internal;
 
@@ -32,7 +32,7 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 			controller.onNewInput(line);
 
 			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to output
-			if (controller.getInputMode() == InputController::SEQUENTIAL)
+			if (controller.getInputMode() == ghost::InputMode::SEQUENTIAL)
 			{
 				controller.switchConsoleMode(ConsoleDevice::INPUT);
 				controller.printPrompt();

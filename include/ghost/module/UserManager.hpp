@@ -4,8 +4,9 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include "User.hpp"
-#include "UserGroup.hpp"
+
+#include <ghost/module/User.hpp>
+#include <ghost/module/UserGroup.hpp>
 
 namespace ghost
 {

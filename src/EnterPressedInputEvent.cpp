@@ -1,6 +1,6 @@
-#include "../include/internal/EnterPressedInputEvent.hpp"
-#include "../include/internal/InputController.hpp"
-#include "../include/internal/InputModeInputEvent.hpp"
+#include "EnterPressedInputEvent.hpp"
+#include "InputController.hpp"
+#include "InputModeInputEvent.hpp"
 
 using namespace ghost::internal;
 

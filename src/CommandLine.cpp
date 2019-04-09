@@ -1,4 +1,4 @@
-#include "../include/CommandLine.hpp"
+#include <ghost/module/CommandLine.hpp>
 
 using namespace ghost;
 

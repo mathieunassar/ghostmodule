@@ -1,7 +1,7 @@
 #ifndef GHOST_COMMAND_HPP
 #define GHOST_COMMAND_HPP
 
-#include "CommandLine.hpp"
+#include <ghost/module/CommandLine.hpp>
 
 namespace ghost
 {

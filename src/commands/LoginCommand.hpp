@@ -1,8 +1,8 @@
 #ifndef GHOST_INTERNAL_COMMANDS_LOGINCOMMAND_HPP
 #define GHOST_INTERNAL_COMMANDS_LOGINCOMMAND_HPP
 
-#include "../../Command.hpp"
-#include "../../UserManager.hpp"
+#include <ghost/module/Command.hpp>
+#include <ghost/module/UserManager.hpp>
 
 namespace ghost
 {

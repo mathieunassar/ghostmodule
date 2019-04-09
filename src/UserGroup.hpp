@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include "../UserGroup.hpp"
+#include <ghost/module/UserGroup.hpp>
 #include "User.hpp"
 
 namespace ghost

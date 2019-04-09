@@ -1,6 +1,6 @@
-#include "../../include/internal/commands/ExitCommand.hpp"
+#include "ExitCommand.hpp"
 #include <iostream>
-#include "../../include/internal/Module.hpp"
+#include "../Module.hpp"
 
 using namespace ghost::internal;
 
@@ -17,7 +17,7 @@ ExitCommand::ExitCommand(ghost::internal::Module* module)
 bool ExitCommand::execute(const ghost::CommandLine& commandLine)
 {
 	_module->setState(ghost::internal::Module::DISPOSING);
-	_module->getConsole()->setInputMode(ghost::InputController::DISCRETE); // do that to stop expecting user input
+	_module->getConsole()->setInputMode(InputMode::DISCRETE); // do that to stop expecting user input
 	return true;
 }
 

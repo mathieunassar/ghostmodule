@@ -1,12 +1,12 @@
-#include "../include/internal/InputController.hpp"
+#include "InputController.hpp"
 
 #include <iostream>
 #include <future>
 #include <chrono>
 
-#include "../include/internal/EnterPressedInputEvent.hpp"
-#include "../include/internal/LineRequestInputEvent.hpp"
-#include "../include/internal/InputModeInputEvent.hpp"
+#include "EnterPressedInputEvent.hpp"
+#include "LineRequestInputEvent.hpp"
+#include "InputModeInputEvent.hpp"
 
 using namespace ghost::internal;
 
@@ -19,7 +19,7 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	, _device(device)
 	, _prompt(new Prompt(">"))
 	, _consoleMode(initialMode)
-	, _inputMode(DISCRETE)
+	, _inputMode(ghost::InputMode::DISCRETE)
 	, _commandCallback(cmdCallback)
 	, _modeCallback(modeCallback)
 {
@@ -33,7 +33,7 @@ Prompt& InputController::getPrompt()
 	return *_prompt;
 }
 
-void InputController::setInputMode(InputMode mode)
+void InputController::setInputMode(ghost::InputMode mode)
 {
 	_inputMode = mode;
 }
@@ -172,7 +172,7 @@ std::string InputController::readLine()
 	}
 }
 
-InputController::InputMode InputController::getInputMode() const
+ghost::InputMode InputController::getInputMode() const
 {
 	return _inputMode;
 }

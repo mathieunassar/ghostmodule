@@ -1,6 +1,6 @@
-#include "../../include/internal/commands/HelpCommand.hpp"
+#include "HelpCommand.hpp"
 #include <iostream>
-#include "../../include/internal/CommandLineInterpreter.hpp"
+#include "../CommandLineInterpreter.hpp"
 
 using namespace ghost::internal;
 

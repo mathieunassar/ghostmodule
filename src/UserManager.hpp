@@ -5,7 +5,7 @@
 
 #include "User.hpp"
 #include "UserGroup.hpp"
-#include "../UserManager.hpp"
+#include <ghost/module/UserManager.hpp>
 
 namespace ghost
 {

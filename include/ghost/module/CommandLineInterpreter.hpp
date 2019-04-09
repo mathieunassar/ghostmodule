@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-#include "PermissionEntity.hpp"
+#include <ghost/module/PermissionEntity.hpp>
 
 namespace ghost
 {

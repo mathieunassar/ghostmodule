@@ -1,4 +1,4 @@
-#include "../include/internal/UserManager.hpp"
+#include "UserManager.hpp"
 #include <exception>
 
 using namespace ghost::internal;

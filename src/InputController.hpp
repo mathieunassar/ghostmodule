@@ -10,7 +10,6 @@
 #include <map>
 #include <functional>
 
-#include "../InputController.hpp"
 #include "InputControllerAccess.hpp"
 
 #include "ConsoleDevice.hpp"
@@ -26,7 +25,7 @@ namespace ghost
 		 *	Implementation of the InputController.
 		 *	Realizes the interface InputControllerAccess which is used by InputEvent objects to access the controller's functionality.
 		 */
-		class InputController : public ghost::InputController, public InputControllerAccess
+		class InputController : public InputControllerAccess
 		{
 		public:
 			InputController(std::shared_ptr<ConsoleDevice> device,
@@ -34,17 +33,17 @@ namespace ghost
 				std::function<void(const std::string&)> cmdCallback,
 				std::function<void(ConsoleDevice::ConsoleMode)> modeCallback);
 
-			void start() override;
-			void stop() override;
+			void start();
+			void stop();
 
 			/// changes the text displayed by the prompt
 			Prompt& getPrompt();
 			/// selects the behavior of the console among the possible modes
-			void setInputMode(InputMode mode) override;
+			void setInputMode(InputMode mode);
 			/// sets the callback that will be called when the user enters a new command
-			void setCommandCallback(std::function<void(const std::string&)> cmdCallback) override;
+			void setCommandCallback(std::function<void(const std::string&)> cmdCallback);
 
-			std::string getLine() override;
+			std::string getLine();
 
 			void printPrompt() const override;
 			void switchConsoleMode(ConsoleDevice::ConsoleMode newMode) override;

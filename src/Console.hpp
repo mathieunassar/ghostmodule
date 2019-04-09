@@ -6,7 +6,7 @@
 #include <queue>
 #include <mutex>
 
-#include "../Console.hpp"
+#include <ghost/module/Console.hpp>
 #include "ConsoleDevice.hpp"
 #include "InputController.hpp"
 #include "OutputController.hpp"
@@ -24,7 +24,7 @@ namespace ghost
 			void stop() override;
 
 			void setPromptFormat(const std::string& prompt) override;
-			void setInputMode(InputController::InputMode mode) override;
+			void setInputMode(InputMode mode) override;
 			void setCommandCallback(std::function<void(const std::string&)> cmdCallback) override;
 
 			void write(const std::string& line) override;

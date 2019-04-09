@@ -1,7 +1,7 @@
-#include "../include/internal/Module.hpp"
-#include "../include/Module.hpp"
+#include "Module.hpp"
+#include <ghost/module/Module.hpp>
 
-#include "../include/internal/commands/ExitCommand.hpp"
+#include "commands/ExitCommand.hpp"
 
 using namespace ghost::internal;
 

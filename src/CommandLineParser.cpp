@@ -1,4 +1,4 @@
-#include "../include/internal/CommandLineParser.hpp"
+#include "CommandLineParser.hpp"
 
 #include <exception>
 

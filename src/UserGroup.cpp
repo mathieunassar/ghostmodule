@@ -1,4 +1,4 @@
-#include "../include/internal/UserGroup.hpp"
+#include "UserGroup.hpp"
 
 using namespace ghost::internal;
 

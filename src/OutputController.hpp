@@ -7,7 +7,6 @@
 #include <mutex>
 
 #include "ConsoleStream.hpp"
-#include "../OutputController.hpp"
 #include "BlockingQueue.hpp"
 #include "ConsoleDevice.hpp"
 
@@ -18,17 +17,17 @@ namespace ghost
 		/**
 		 *	Implementation of the OutputController.
 		 */
-		class OutputController : public ghost::OutputController
+		class OutputController
 		{
 		public:
 			OutputController(bool redirectStdCout = true);
 
-			void start() override;
-			void stop() override;
-			void enable() override;
-			void disable() override;
-			void write(const std::string& line) override;
-			void flush() override;
+			void start();
+			void stop();
+			void enable();
+			void disable();
+			void write(const std::string& line);
+			void flush();
 
 		private:
 			/* redirect std::cout stuff */

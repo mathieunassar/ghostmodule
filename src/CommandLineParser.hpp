@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../CommandLine.hpp"
+#include <ghost/module/CommandLine.hpp>
 
 namespace ghost
 {

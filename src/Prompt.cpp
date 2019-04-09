@@ -1,4 +1,4 @@
-#include "../include/internal/Prompt.hpp"
+#include "Prompt.hpp"
 #include <regex>
 
 using namespace ghost::internal;

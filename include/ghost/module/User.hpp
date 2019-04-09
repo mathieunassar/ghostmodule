@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "PermissionEntity.hpp"
+#include <ghost/module/PermissionEntity.hpp>
 
 namespace ghost
 {

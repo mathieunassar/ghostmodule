@@ -1,4 +1,4 @@
-#include "../include/internal/ConsoleDeviceUnix.hpp"
+#include "ConsoleDeviceUnix.hpp"
 #include <thread>
 #include <iostream>
 #include <sys/select.h>

@@ -1,4 +1,4 @@
-#include "../include/internal/OutputController.hpp"
+#include "OutputController.hpp"
 
 using namespace ghost::internal;
 

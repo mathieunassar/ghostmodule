@@ -72,45 +72,43 @@ link_directories(
 ##########################################################################################################################################
 
 file(GLOB header_module_lib
-./include/Console.hpp
-./include/InputController.hpp
-./include/OutputController.hpp
-./include/CommandLineInterpreter.hpp
-./include/Command.hpp
-./include/CommandLine.hpp
-./include/PermissionEntity.hpp
-./include/User.hpp
-./include/UserGroup.hpp
-./include/UserManager.hpp
-./include/Module.hpp
+./include/ghost/module/Console.hpp
+./include/ghost/module/CommandLineInterpreter.hpp
+./include/ghost/module/Command.hpp
+./include/ghost/module/CommandLine.hpp
+./include/ghost/module/PermissionEntity.hpp
+./include/ghost/module/User.hpp
+./include/ghost/module/UserGroup.hpp
+./include/ghost/module/UserManager.hpp
+./include/ghost/module/Module.hpp
 )
 
 file(GLOB header_module_lib_internal_windows
-./include/internal/ConsoleDeviceWindows.hpp
+./src/ConsoleDeviceWindows.hpp
 )
 
 file(GLOB header_module_lib_internal_unix
-./include/internal/ConsoleDeviceUnix.hpp
+./src/ConsoleDeviceUnix.hpp
 )
 
 file(GLOB header_module_lib_internal
-./include/internal/Console.hpp
-./include/internal/Prompt.hpp
-./include/internal/InputController.hpp
-./include/internal/InputControllerAccess.hpp
-./include/internal/ConsoleDevice.hpp
-./include/internal/ConsoleStream.hpp
-./include/internal/InputEvent.hpp
-./include/internal/EnterPressedInputEvent.hpp
-./include/internal/InputModeInputEvent.hpp
-./include/internal/LineRequestInputEvent.hpp
-./include/internal/OutputController.hpp
-./include/internal/CommandLineInterpreter.hpp
-./include/internal/CommandLineParser.hpp
-./include/internal/User.hpp
-./include/internal/UserGroup.hpp
-./include/internal/UserManager.hpp
-./include/internal/Module.hpp
+./src/Console.hpp
+./src/Prompt.hpp
+./src/InputController.hpp
+./src/InputControllerAccess.hpp
+./src/ConsoleDevice.hpp
+./src/ConsoleStream.hpp
+./src/InputEvent.hpp
+./src/EnterPressedInputEvent.hpp
+./src/InputModeInputEvent.hpp
+./src/LineRequestInputEvent.hpp
+./src/OutputController.hpp
+./src/CommandLineInterpreter.hpp
+./src/CommandLineParser.hpp
+./src/User.hpp
+./src/UserGroup.hpp
+./src/UserManager.hpp
+./src/Module.hpp
 )
 
 if (WIN32)
@@ -120,9 +118,9 @@ else()
 endif()
 
 file(GLOB header_module_lib_internal_commands
-./include/internal/commands/LoginCommand.hpp
-./include/internal/commands/HelpCommand.hpp
-./include/internal/commands/ExitCommand.hpp
+./src/commands/LoginCommand.hpp
+./src/commands/HelpCommand.hpp
+./src/commands/ExitCommand.hpp
 )
 
 file(GLOB source_module_lib_internal_windows
@@ -163,8 +161,8 @@ file(GLOB source_module_lib_commands
 )
 
 
-source_group("Header Files\\internal" FILES ${header_module_lib_internal})
-source_group("Header Files\\internal\\commands" FILES ${header_module_lib_internal_commands})
+source_group("API" FILES ${header_module_lib})
+source_group("Header Files\\commands" FILES ${header_module_lib_internal_commands})
 source_group("Source Files\\commands" FILES ${source_module_lib_commands})
 
 ##########################################################################################################################################

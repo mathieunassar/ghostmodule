@@ -1,4 +1,4 @@
-#include "../include/internal/ConsoleDeviceWindows.hpp"
+#include "ConsoleDeviceWindows.hpp"
 #include <thread>
 
 using namespace ghost::internal;

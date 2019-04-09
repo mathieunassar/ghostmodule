@@ -1,5 +1,5 @@
-#include "../include/internal/LineRequestInputEvent.hpp"
-#include "../include/internal/InputController.hpp"
+#include "LineRequestInputEvent.hpp"
+#include "InputController.hpp"
 
 using namespace ghost::internal;
 

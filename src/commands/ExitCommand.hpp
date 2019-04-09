@@ -1,20 +1,20 @@
-#ifndef GHOST_INTERNAL_COMMANDS_HELPCOMMAND_HPP
-#define GHOST_INTERNAL_COMMANDS_HELPCOMMAND_HPP
+#ifndef GHOST_INTERNAL_COMMANDS_EXITCOMMAND_HPP
+#define GHOST_INTERNAL_COMMANDS_EXITCOMMAND_HPP
 
-#include "../../Command.hpp"
+#include <ghost/module/Command.hpp>
 
 namespace ghost
 {
 	namespace internal
 	{
-		class CommandLineInterpreter;
+		class Module;
 
-		class HelpCommand : public ghost::Command
+		class ExitCommand : public ghost::Command
 		{
 		public:
 			static const std::string NAME;
 
-			HelpCommand(CommandLineInterpreter* interpreter);
+			ExitCommand(Module* interpreter);
 
 			bool execute(const CommandLine& commandLine) override;
 			
@@ -26,10 +26,10 @@ namespace ghost
 			static const std::string _SHORTCUT;
 			static const std::string _DESCRIPTION;
 
-			CommandLineInterpreter* _interpreter;
+			Module* _module;
 		};
 	}
 	
 }
 
-#endif // GHOST_INTERNAL_COMMANDS_HELPCOMMAND_HPP
+#endif // GHOST_INTERNAL_COMMANDS_EXITCOMMAND_HPP

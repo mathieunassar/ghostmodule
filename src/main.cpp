@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "../include/Module.hpp"
+#include <ghost/module/Module.hpp>
 
 class TestModule : public ghost::Module
 {
@@ -9,7 +9,7 @@ class TestModule : public ghost::Module
 	{
 		initializeConsole();
 		getConsole()->setPromptFormat("$u>");
-		getConsole()->setInputMode(ghost::InputController::SEQUENTIAL);
+		getConsole()->setInputMode(ghost::InputMode::SEQUENTIAL);
 
 		std::cout << " _______ _      _  ______  ________ _________" << std::endl;
 		std::cout << "|  _____ |______| |      | |_______     |" << std::endl;

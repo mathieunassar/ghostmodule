@@ -2,7 +2,7 @@
 #define GHOST_INTERNAL_USER_HPP
 
 #include <string>
-#include "../User.hpp"
+#include <ghost/module/User.hpp>
 
 namespace ghost
 {

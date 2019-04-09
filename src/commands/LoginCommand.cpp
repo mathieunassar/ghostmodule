@@ -1,4 +1,4 @@
-#include "../../include/internal/commands/LoginCommand.hpp"
+#include "LoginCommand.hpp"
 #include <iostream>
 
 using namespace ghost::internal;
