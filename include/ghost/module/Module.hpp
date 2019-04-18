@@ -96,7 +96,7 @@ namespace ghost
 		 * @return true if run should be called again
 		 * @return false if the module finished and dispose can be called
 		 */
-		virtual bool run() = 0;
+		virtual bool run();
 
 		/**
 		 * @brief Cleans the state of the module before it terminates.

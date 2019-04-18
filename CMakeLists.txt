@@ -14,6 +14,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_MODULE_ROOT_DIR}/cmake/")
 # define the project
 project(${projectName} CXX)
 
+# setup ghost variables
+include(cmake/Ghost.cmake)
+setup_ghost_repository()
+
 # Windows specific stuff
 if (MSVC)
 	set(GHOST_BUILD_NAME "buildVS2017_x86")
@@ -40,8 +44,6 @@ if (UNIX)
 endif (UNIX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-include(cmake/FetchGhost.cmake)
 
 # import Ghost Support
 SET(GHOST_SUPPORT_URL ${GHOST_MODULE_ROOT_DIR}/../ghost_support CACHE STRING "Ghost Support location")

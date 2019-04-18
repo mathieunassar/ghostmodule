@@ -165,6 +165,13 @@ bool ghost::Module::init()
 	return true;
 }
 
+bool ghost::Module::run()
+{
+	// per default cycle with a ~1000Hz frequency
+	sleepMillisecond(1);
+	return true;
+}
+
 void ghost::Module::dispose()
 {
 	// per default do nothing
