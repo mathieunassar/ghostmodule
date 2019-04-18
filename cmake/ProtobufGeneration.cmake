@@ -38,6 +38,6 @@ function(generate_protoc source_dir output_dir source_file)
 endfunction(generate_protoc)
 
 function(find_proto_files directory)
-	file(GLOB_RECURSE find_proto_files_result "${directory}*.proto")
-	set(find_proto_files_result ${find_proto_files_result} PARENT_SCOPE)
+	file(GLOB_RECURSE find_result "${directory}*.proto")
+	set(find_proto_files_result ${find_proto_files_result} ${find_result} PARENT_SCOPE)
 endfunction(find_proto_files)
