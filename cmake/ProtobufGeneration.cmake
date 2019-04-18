@@ -22,7 +22,7 @@ function(generate_protoc source_dir output_dir source_file)
 		
 		execute_process(
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${PROTOC_PATH} -I ${Protobuf_INCLUDE_DIRS} -I ${source_dir} --cpp_out=${output_dir} ${file}
+			COMMAND ${PROTOC_PATH} -I ${Protobuf_INCLUDE_DIRS} ${proto_include_dirs} --cpp_out=${output_dir} ${file}
 			RESULT_VARIABLE protoc_result
 			ERROR_VARIABLE protoc_error_variable
 		)
