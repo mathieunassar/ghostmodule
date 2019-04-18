@@ -2,6 +2,7 @@ function(generate_protoc source_dir output_dir source_file)
 	# generate the list of include folders
 	foreach(dir ${source_dir})
 		set(proto_include_dirs ${proto_include_dirs} -I ${dir})
+		message("Added ${dir} to proto include dirs")
 	endforeach()
 
 	foreach(file ${source_file})
