@@ -25,5 +25,10 @@ function(setup_ghost_repository)
 	endif()
 	
 	set(GHOST_THIRD_PARTIES_ROOT_DIR $ENV{GHOST_THIRD_PARTIES_URL} CACHE STRING "Ghost Third Parties location" FORCE)
-	message(STATUS "Set the URL of ghost third parties to ${GHOST_THIRD_PARTIES_ROOT_DIR}")
+
+	if (EXISTS ${GHOST_THIRD_PARTIES_ROOT_DIR})
+		message(STATUS "Set the URL of ghost third parties to ${GHOST_THIRD_PARTIES_ROOT_DIR}")
+	else()
+		message(FATAL_ERROR "The provided URL for ghost third parties does not exist, aborting.")
+	endif()
 endfunction(setup_ghost_repository)
