@@ -118,7 +118,7 @@ set(PROTOC_SOURCE_CUSTOM ./tests/protobuf/)
 set(PROTOC_SOURCE_FILE ./tests/protobuf/tests.proto)
 set(PROTOC_OUTPUT ./tests/protobuf/)
 
-generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
+generate_protoc2(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 # Unit tests
 file(GLOB source_persistence_tests

@@ -1,4 +1,4 @@
-function(generate_protoc source_dir output_dir source_file)
+function(generate_protoc2 source_dir output_dir source_file)
 	message(STATUS "Generating grpc and protobuf: " ${source_file})
 
 	if (GRPC_CPP_PLUGIN_PATH)
@@ -12,4 +12,4 @@ function(generate_protoc source_dir output_dir source_file)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMAND ${PROTOC_PATH} -I ${Protobuf_INCLUDE_DIRS} -I ${source_dir} --cpp_out=${output_dir} ${source_file}
 	)
-endfunction(generate_protoc)
+endfunction(generate_protoc2)
