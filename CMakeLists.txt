@@ -85,9 +85,10 @@ link_directories(
 ############################################################ CONNECTION LIBRARY ##########################################################
 ##########################################################################################################################################
 
-set(PROTOC_SOURCE_CUSTOM ./protobuf/)
-set(PROTOC_SOURCE_FILE ./protobuf/Ghost.proto)
-set(PROTOC_OUTPUT ./protobuf/)
+set(PROTOC_SOURCE_CUSTOM ${GHOST_CONNECTION_ROOT_DIR}/protobuf/)
+find_proto_files(${GHOST_CONNECTION_ROOT_DIR}/protobuf/)
+set(PROTOC_SOURCE_FILE ${find_proto_files_result})
+set(PROTOC_OUTPUT ${GHOST_CONNECTION_ROOT_DIR}/protobuf/)
 
 generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
