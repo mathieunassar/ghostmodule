@@ -1,4 +1,7 @@
 function(generate_protoc source_dir output_dir source_file)
+
+	message("errrrr ${source_dir}")
+
 	# generate the list of include folders
 	foreach(dir ${source_dir})
 		set(proto_include_dirs ${proto_include_dirs} -I ${dir})
