@@ -3,6 +3,7 @@ function(generate_protoc source_dir output_dir source_file)
 
 	if (GRPC_CPP_PLUGIN_PATH)
 		execute_process(
+			message("current dir: ${CMAKE_CURRENT_SOURCE_DIR} and protoc path: ${PROTOC_PATH}")
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			COMMAND ${PROTOC_PATH} -I ${Protobuf_INCLUDE_DIRS} -I ${source_dir} --grpc_out=${output_dir} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} ${source_file}
 			RESULT_VARIABLE protoc_grpc_result
