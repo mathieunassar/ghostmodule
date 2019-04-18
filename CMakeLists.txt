@@ -43,8 +43,6 @@ if (UNIX)
     set(GHOST_BUILD_NAME "buildUnix_x86_64")
 endif (UNIX)
 
-SET(GHOST_THIRD_PARTIES_ROOT_DIR ${GHOST_PERSISTENCE_ROOT_DIR}/../ghost_third_parties CACHE STRING "Ghost Third Parties location")
-
 find_package(Protobuf REQUIRED)
 find_package(Catch REQUIRED)
 
