@@ -1,11 +1,11 @@
 function(generate_protoc source_dir output_dir source_file)
-
-	message("errrrr ${source_dir}")
+	if (NOT EXISTS ${output_dir})
+		file(MAKE_DIRECTORY ${output_dir})
+	endif()
 
 	# generate the list of include folders
 	foreach(dir ${source_dir})
 		set(proto_include_dirs ${proto_include_dirs} -I ${dir})
-		message("Added ${dir} to proto include dirs")
 	endforeach()
 
 	foreach(file ${source_file})
