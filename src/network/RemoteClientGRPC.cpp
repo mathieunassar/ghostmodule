@@ -59,7 +59,11 @@ void RemoteClientGRPC::onStarted(bool ok)
 
 	if (ok)
 	{
+		if (_clientHandler)
+			_clientHandler->configureClient(shared_from_this());
+
 		_statemachine.setState(RPCStateMachine::EXECUTING);
+
 		startReader();
 		if (isWriterConfigured())
 			startWriter();

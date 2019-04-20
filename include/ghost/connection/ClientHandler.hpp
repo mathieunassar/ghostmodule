@@ -2,6 +2,7 @@
 #define GHOST_CLIENTHANDLER_HPP
 
 #include <ghost/connection/Client.hpp>
+#include <ghost/connection/MessageHandler.hpp>
 
 namespace ghost
 {
@@ -23,6 +24,14 @@ namespace ghost
 	{
 	public:
 		virtual ~ClientHandler() = 0;
+
+		/**
+		 * @brief Provides the possibility to configure the message handler of the client
+		 * before it is started.
+		 * @param client represents the client connection. At that point, the connection is
+		 * established but the readers and writers are not started yet.
+		 */
+		virtual void configureClient(const std::shared_ptr<Client>& client) {}
 
 		/**
 		 * @brief Handles a client connection.
