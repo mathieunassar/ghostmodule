@@ -105,11 +105,11 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager()
 	return _userManager;
 }
 
-void Module::printGhostASCII()
+void Module::printGhostASCII(const std::string& suffix)
 {
 	std::cout << " _______ _      _  ______  ________ _________" << std::endl;
 	std::cout << "|  _____ |______| |      | |_______     |" << std::endl;
-	std::cout << "|______| |      | |______| _______|     |" << std::endl;
+	std::cout << "|______| |      | |______| _______|     |" << suffix << std::endl;
 
 	if (hasConsole())
 		getConsole()->flush();
@@ -202,7 +202,7 @@ std::shared_ptr<ghost::UserManager> ghost::Module::getUserManager()
 	return _internal->getUserManager();
 }
 
-void ghost::Module::printGhostASCII()
+void ghost::Module::printGhostASCII(const std::string& suffix)
 {
-	return _internal->printGhostASCII();
+	return _internal->printGhostASCII(suffix);
 }

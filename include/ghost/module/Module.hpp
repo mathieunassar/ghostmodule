@@ -152,7 +152,7 @@ namespace ghost
 		/**
 		 * @brief Prints "GHOST" in ASCII characters.
 		 */
-		void printGhostASCII();
+		void printGhostASCII(const std::string& suffix = "");
 
 	private:
 		std::shared_ptr<ghost::internal::Module> _internal;
