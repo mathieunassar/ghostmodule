@@ -23,13 +23,13 @@ namespace ghost
 {
 	class Logger;
 
+	enum class LogLevel { LEVEL_TRACE, LEVEL_DEBUG, LEVEL_INFO, LEVEL_WARN, LEVEL_ERROR };
+
 	class LoggerLine
 	{
 	public:
-		enum class Level { TRACE, DEBUG, INFO, WARN, ERROR };
-
 		// Constructors
-		LoggerLine(Logger* logger, Level level);
+		LoggerLine(Logger* logger, LogLevel level);
 		~LoggerLine();
 
 		// Methods
@@ -43,7 +43,7 @@ namespace ghost
 		// Attributes
 		Logger* _logger;
 		std::ostringstream _entry;
-		Level _level;
+		LogLevel _level;
 	};
 }
 

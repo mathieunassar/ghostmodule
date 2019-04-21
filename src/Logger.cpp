@@ -16,7 +16,7 @@
 
 #include <ghost/module/Logger.hpp>
 
-ghost::LoggerLine ghost::Logger::operator()(const ghost::LoggerLine::Level& level)
+ghost::LoggerLine ghost::Logger::operator()(const ghost::LogLevel& level)
 {
 	return ghost::LoggerLine(this, level);
 }

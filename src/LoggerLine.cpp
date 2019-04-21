@@ -17,7 +17,7 @@
 #include <ghost/module/LoggerLine.hpp>
 #include <ghost/module/Logger.hpp>
 
-ghost::LoggerLine::LoggerLine(ghost::Logger* logger, ghost::LoggerLine::Level level)
+ghost::LoggerLine::LoggerLine(ghost::Logger* logger, ghost::LogLevel level)
 	: _logger(logger)
 	, _level(level)
 {
@@ -28,19 +28,19 @@ ghost::LoggerLine::~LoggerLine()
 {
 	switch (_level)
 	{
-	case ghost::LoggerLine::Level::TRACE:
+	case ghost::LogLevel::LEVEL_TRACE:
 		_logger->trace(_entry.str());
 		break;
-	case ghost::LoggerLine::Level::DEBUG:
+	case ghost::LogLevel::LEVEL_DEBUG:
 		_logger->debug(_entry.str());
 		break;
-	case ghost::LoggerLine::Level::INFO:
+	case ghost::LogLevel::LEVEL_INFO:
 		_logger->info(_entry.str());
 		break;
-	case ghost::LoggerLine::Level::WARN:
+	case ghost::LogLevel::LEVEL_WARN:
 		_logger->warn(_entry.str());
 		break;
-	case ghost::LoggerLine::Level::ERROR:
+	case ghost::LogLevel::LEVEL_ERROR:
 		_logger->error(_entry.str());
 		break;
 	default: break;

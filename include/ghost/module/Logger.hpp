@@ -21,11 +21,11 @@
  *	Helper macros, that take a pointer to a logger as a parameter and simplifies
  *	a log call.
  */
-#define GHOST_TRACE(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::TRACE)
-#define GHOST_DEBUG(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::DEBUG)
-#define GHOST_INFO(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::INFO)
-#define GHOST_WARN(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::WARN)
-#define GHOST_ERROR(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::ERROR)
+#define GHOST_TRACE(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_TRACE)
+#define GHOST_DEBUG(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_DEBUG)
+#define GHOST_INFO(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_INFO)
+#define GHOST_WARN(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_WARN)
+#define GHOST_ERROR(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_ERROR)
 
 #include <string>
 #include <ghost/module/LoggerLine.hpp>
@@ -42,7 +42,7 @@ namespace ghost
 	public:
 		virtual ~Logger() = default;
 
-		LoggerLine operator()(const LoggerLine::Level& level);
+		LoggerLine operator()(const LogLevel& level);
 		
 		/**
 		 * @brief Writes a trace log line to the underlying support.
