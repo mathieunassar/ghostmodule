@@ -118,10 +118,10 @@ void Module::printGhostASCII(const std::string& suffix)
 
 	if (_logger)
 	{
-		_logger->operator()(ghost::LoggerLine::Level::INFO) << " _______ _      _  ______  ________ _________";
-		_logger->operator()(ghost::LoggerLine::Level::INFO) << "|  _____ |______| |      | |_______     |";
-		_logger->operator()(ghost::LoggerLine::Level::INFO) << "|______| |      | |______| _______|     |";
-		_logger->operator()(ghost::LoggerLine::Level::INFO) << "";
+		GHOST_INFO(getLogger()) << " _______ _      _  ______  ________ _________";
+		GHOST_INFO(getLogger()) << "|  _____ |______| |      | |_______     |";
+		GHOST_INFO(getLogger()) << "|______| |      | |______| _______|     |";
+		GHOST_INFO(getLogger()) << "";
 	}
 	else
 	{

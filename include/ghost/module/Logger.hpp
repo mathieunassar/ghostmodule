@@ -17,6 +17,16 @@
 #ifndef GHOST_MODULE_LOGGER_HPP
 #define GHOST_MODULE_LOGGER_HPP
 
+/**
+ *	Helper macros, that take a pointer to a logger as a parameter and simplifies
+ *	a log call.
+ */
+#define GHOST_TRACE(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::TRACE)
+#define GHOST_DEBUG(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::DEBUG)
+#define GHOST_INFO(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::INFO)
+#define GHOST_WARN(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::WARN)
+#define GHOST_ERROR(LOGGER) LOGGER->operator()(ghost::LoggerLine::Level::ERROR)
+
 #include <string>
 #include <ghost/module/LoggerLine.hpp>
 
