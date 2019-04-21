@@ -120,7 +120,7 @@ void Module::printGhostASCII(const std::string& suffix)
 	{
 		GHOST_INFO(getLogger()) << " _______ _      _  ______  ________ _________";
 		GHOST_INFO(getLogger()) << "|  _____ |______| |      | |_______     |";
-		GHOST_INFO(getLogger()) << "|______| |      | |______| _______|     |";
+		GHOST_INFO(getLogger()) << "|______| |      | |______| _______|     |" << s;
 		GHOST_INFO(getLogger()) << "";
 	}
 	else
