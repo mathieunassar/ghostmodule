@@ -44,7 +44,7 @@ void GhostLogger::debug(const std::string& line)
 
 void GhostLogger::info(const std::string& line)
 {
-	std::string toWrite = "[INGO ] " + line + "\n";
+	std::string toWrite = "[INFO ] " + line + "\n";
 	_console->write(toWrite);
 }
 
