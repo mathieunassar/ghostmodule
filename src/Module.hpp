@@ -20,6 +20,7 @@
 #include "Console.hpp"
 #include "UserManager.hpp"
 #include "CommandLineInterpreter.hpp"
+#include <ghost/module/Logger.hpp>
 
 namespace ghost
 {
@@ -44,8 +45,11 @@ namespace ghost
 
 			/* Console access */
 			void initializeConsole();
-			bool hasConsole() const;
 			std::shared_ptr<ghost::Console> getConsole();
+
+			/* Logger access */
+			void setLogger(const std::shared_ptr<ghost::Logger>& logger);
+			std::shared_ptr<ghost::Logger> getLogger() const;
 
 			/* Command line interpretor access */
 			std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter();
@@ -59,6 +63,7 @@ namespace ghost
 			std::string _name;
 			State _state;
 			std::shared_ptr<Console> _console;
+			std::shared_ptr<ghost::Logger> _logger;
 			std::shared_ptr<UserManager> _userManager;
 			std::shared_ptr<CommandLineInterpreter> _interpreter;
 		};

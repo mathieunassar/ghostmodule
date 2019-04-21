@@ -22,6 +22,7 @@
 #include <ghost/module/Console.hpp>
 #include <ghost/module/UserManager.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
+#include <ghost/module/Logger.hpp>
 
 namespace ghost
 {
@@ -112,12 +113,6 @@ namespace ghost
 		 * by getConsole.
 		 */
 		void initializeConsole();
-		
-		/**
-		 * @return true if a console was initialized
-		 * @return false if the process window is not monitored by the Console interface
-		 */
-		bool hasConsole() const;
 
 		/**
 		 * @brief Get the Console interface if it was initialized with "initializeConsole".
@@ -125,6 +120,17 @@ namespace ghost
 		 * @return the console or nullptr if it was not initalized
 		 */
 		std::shared_ptr<Console> getConsole();
+
+		/** 
+		 *	Sets the logger of this module.
+		 *	@param logger	logger to set.
+		 */
+		void setLogger(const std::shared_ptr<Logger>& logger);
+
+		/**
+		 *	@return the logger previously set, or nullptr.
+		 */
+		std::shared_ptr<Logger> getLogger() const;
 
 		/**
 		 * @brief gets the command line executor.

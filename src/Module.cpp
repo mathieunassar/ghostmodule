@@ -35,7 +35,7 @@ Module::Module(const std::string& name)
 
 Module::~Module()
 {
-	if (hasConsole())
+	if (_console)
 		_console->stop();
 }
 
@@ -85,14 +85,19 @@ void Module::initializeConsole()
 	_console->start();
 }
 
-bool Module::hasConsole() const
-{
-	return _console.operator bool();
-}
-
 std::shared_ptr<ghost::Console> Module::getConsole()
 {
 	return _console;
+}
+
+void Module::setLogger(const std::shared_ptr<ghost::Logger>& logger)
+{
+	_logger = logger;
+}
+
+std::shared_ptr<ghost::Logger> Module::getLogger() const
+{
+	return _logger;
 }
 
 std::shared_ptr<ghost::CommandLineInterpreter> Module::getInterpreter()
@@ -107,12 +112,28 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager()
 
 void Module::printGhostASCII(const std::string& suffix)
 {
-	std::cout << " _______ _      _  ______  ________ _________" << std::endl;
-	std::cout << "|  _____ |______| |      | |_______     |" << std::endl;
-	std::cout << "|______| |      | |______| _______|     |" << suffix << std::endl;
+	std::string s = "";
+	if (!suffix.empty())
+		s = "/" + suffix;
 
-	if (hasConsole())
-		getConsole()->flush();
+	if (_logger)
+	{
+		_logger->operator()(ghost::LoggerLine::Level::INFO) << " _______ _      _  ______  ________ _________";
+		_logger->operator()(ghost::LoggerLine::Level::INFO) << "|  _____ |______| |      | |_______     |";
+		_logger->operator()(ghost::LoggerLine::Level::INFO) << "|______| |      | |______| _______|     |";
+		_logger->operator()(ghost::LoggerLine::Level::INFO) << "";
+	}
+	else
+	{
+		std::cout << " _______ _      _  ______  ________ _________" << std::endl;
+		std::cout << "|  _____ |______| |      | |_______     |" << std::endl;
+		std::cout << "|______| |      | |______| _______|     |" << s << std::endl;
+		std::cout << std::endl;
+	}
+
+	auto console = getConsole();
+	if (console)
+		console->flush();
 }
 
 /////////////////////////////////////////////////////////////////
@@ -182,14 +203,19 @@ void ghost::Module::initializeConsole()
 	return _internal->initializeConsole();
 }
 
-bool ghost::Module::hasConsole() const
-{
-	return _internal->hasConsole();
-}
-
 std::shared_ptr<ghost::Console> ghost::Module::getConsole()
 {
 	return _internal->getConsole();
+}
+
+void ghost::Module::setLogger(const std::shared_ptr<ghost::Logger>& logger)
+{
+	return _internal->setLogger(logger);
+}
+
+std::shared_ptr<ghost::Logger> ghost::Module::getLogger() const
+{
+	return _internal->getLogger();
 }
 
 std::shared_ptr<ghost::CommandLineInterpreter> ghost::Module::getInterpreter()

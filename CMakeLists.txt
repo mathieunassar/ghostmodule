@@ -83,6 +83,9 @@ file(GLOB header_module_lib
 ./include/ghost/module/UserGroup.hpp
 ./include/ghost/module/UserManager.hpp
 ./include/ghost/module/Module.hpp
+./include/ghost/module/Logger.hpp
+./include/ghost/module/LoggerLine.hpp
+./include/ghost/module/GhostLogger.hpp
 )
 
 file(GLOB header_module_lib_internal_windows
@@ -111,6 +114,7 @@ file(GLOB header_module_lib_internal
 ./src/UserGroup.hpp
 ./src/UserManager.hpp
 ./src/Module.hpp
+./src/GhostLogger.hpp
 )
 
 if (WIN32)
@@ -148,6 +152,9 @@ file(GLOB source_module_lib
 ./src/UserGroup.cpp
 ./src/UserManager.cpp
 ./src/Module.cpp
+./src/GhostLogger.cpp
+./src/LoggerLine.cpp
+./src/Logger.cpp
 ./src/main.cpp)
 
 if (WIN32)
