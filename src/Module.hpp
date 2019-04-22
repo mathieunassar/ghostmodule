@@ -57,6 +57,8 @@ namespace ghost
 			/* User manager access */
 			std::shared_ptr<ghost::UserManager> getUserManager();
 
+			const std::string& getModuleName() const;
+
 			void printGhostASCII(const std::string& suffix = "");
 
 		private:

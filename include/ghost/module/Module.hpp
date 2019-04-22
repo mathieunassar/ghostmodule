@@ -156,6 +156,11 @@ namespace ghost
 		std::shared_ptr<UserManager> getUserManager();
 
 		/**
+		 * @returns the name of the module.
+		 */
+		const std::string& getModuleName() const;
+
+		/**
 		 * @brief Prints "GHOST" in ASCII characters.
 		 */
 		void printGhostASCII(const std::string& suffix = "");

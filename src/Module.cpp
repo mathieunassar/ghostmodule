@@ -110,6 +110,11 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager()
 	return _userManager;
 }
 
+const std::string& Module::getModuleName() const
+{
+	return _name;
+}
+
 void Module::printGhostASCII(const std::string& suffix)
 {
 	std::string s = "";
@@ -226,6 +231,11 @@ std::shared_ptr<ghost::CommandLineInterpreter> ghost::Module::getInterpreter()
 std::shared_ptr<ghost::UserManager> ghost::Module::getUserManager()
 {
 	return _internal->getUserManager();
+}
+
+const std::string& ghost::Module::getModuleName() const
+{
+	return _internal->getModuleName();
 }
 
 void ghost::Module::printGhostASCII(const std::string& suffix)
