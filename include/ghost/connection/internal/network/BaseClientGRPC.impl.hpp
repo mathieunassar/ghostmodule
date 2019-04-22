@@ -16,6 +16,8 @@ BaseClientGRPC<ReaderWriter, ContextType>::~BaseClientGRPC()
 {
 	if (_writerThread.joinable())
 		_writerThread.join();
+
+	disposeGRPC();
 }
 
 template<typename ReaderWriter, typename ContextType>
