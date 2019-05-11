@@ -24,7 +24,7 @@ namespace ghost
 	class StdoutLogger : public Logger
 	{
 	public:
-		static std::shared_ptr<StdoutLogger> create());
+		static std::shared_ptr<StdoutLogger> create();
 	};
 }
 

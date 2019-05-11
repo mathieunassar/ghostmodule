@@ -15,6 +15,7 @@
  */
 
 #include "StdoutLogger.hpp"
+#include <iostream>
 
 using namespace ghost::internal;
 
