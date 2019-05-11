@@ -34,3 +34,8 @@ bool CommandLine::hasParameter(const std::string& parameterName) const
 {
 	return _parameters.count(parameterName) != 0;
 }
+
+const std::map<std::string, std::string>& CommandLine::getParametersMap() const
+{
+	return _parameters;
+}

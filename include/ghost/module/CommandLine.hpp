@@ -50,6 +50,8 @@ namespace ghost
 			return val;
 		}
 
+		const std::map<std::string, std::string>& getParametersMap() const;
+
 	private:
 		std::string _commandName;
 		std::map<std::string, std::string> _parameters;

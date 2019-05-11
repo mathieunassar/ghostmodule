@@ -113,7 +113,8 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager()
 
 void Module::setProgramOptions(int argc, char* argv[])
 {
-	CommandLineParser::parseCommandLine(argc, argv);
+	auto commandLine = CommandLineParser::parseCommandLine(argc, argv);
+	_options = commandLine.getParametersMap();
 }
 
 const std::map<std::string, std::string>& Module::getProgramOptions() const
