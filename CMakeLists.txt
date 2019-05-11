@@ -155,7 +155,8 @@ file(GLOB source_module_lib
 ./src/GhostLogger.cpp
 ./src/LoggerLine.cpp
 ./src/Logger.cpp
-./src/main.cpp)
+#./src/main.cpp
+)
 
 if (WIN32)
 	set(source_module_lib ${source_module_lib} ${source_module_lib_internal_windows})
