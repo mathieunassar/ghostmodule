@@ -34,13 +34,57 @@ namespace ghost
 		{
 		public:
 			static CommandLine parseCommandLine(const std::string& commandLine);
+			static CommandLine parseCommandLine(int argc, char* argv[]);
 
 		private:
 			static void split(std::vector<std::string>& tokens, const std::string& str, const std::string& del);
 			static std::string createParameterName(const std::string prefix, int id);
 			static std::string isParameterName(const std::string& str);
 			static void addParameter(std::map<std::string, std::string>& params, const std::string& name, const std::string& value);
+
+			template<typename ContainerType>
+			static CommandLine parseFromContainer(int size, ContainerType container);
 		};
+
+		// template definition //
+
+		template<typename ContainerType>
+		CommandLine CommandLineParser::parseFromContainer(int size, ContainerType container)
+		{
+			std::map<std::string, std::string> params;
+			std::string commandName = container[0]; // since commandLine is not empty, this is guaranteed to exist
+
+			std::string tmpParameterName;
+			for (size_t i = 1; i < size; ++i)
+			{
+				std::string isParameterNameRes = isParameterName(container[i]);
+				if (!isParameterNameRes.empty()) // we are dealing with a new parameter
+				{
+					if (!tmpParameterName.empty()) // save the previous if there is one, this can only occur if previous had no value
+					{
+						addParameter(params, tmpParameterName, "");
+					}
+
+					// reset values
+					tmpParameterName = isParameterNameRes;
+				}
+				else // we are dealing with a value, enter it and reset the values
+				{
+					if (tmpParameterName.empty()) // value has no parameter name
+						tmpParameterName = "undefined";
+
+					addParameter(params, tmpParameterName, container[i]);
+
+					// reset the values
+					tmpParameterName = "";
+				}
+			}
+
+			if (!tmpParameterName.empty()) // the last split element was a parameter
+				addParameter(params, tmpParameterName, "");
+
+			return ghost::CommandLine(commandName, params);
+		}
 	}
 }
 

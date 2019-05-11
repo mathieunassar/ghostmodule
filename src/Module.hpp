@@ -57,12 +57,15 @@ namespace ghost
 			/* User manager access */
 			std::shared_ptr<ghost::UserManager> getUserManager();
 
+			void setProgramOptions(int argc, char* argv[]);
+			const std::map<std::string, std::string>& getProgramOptions() const;
 			const std::string& getModuleName() const;
 
 			void printGhostASCII(const std::string& suffix = "");
 
 		private:
 			std::string _name;
+			std::map<std::string, std::string> _options;
 			State _state;
 			std::shared_ptr<Console> _console;
 			std::shared_ptr<ghost::Logger> _logger;

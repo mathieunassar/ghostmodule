@@ -28,39 +28,12 @@ ghost::CommandLine CommandLineParser::parseCommandLine(const std::string& comman
 	std::vector<std::string> nameAndParams;
 	CommandLineParser::split(nameAndParams, commandLine, " ");
 	
-	std::map<std::string, std::string> params;
-	std::string commandName = nameAndParams[0]; // since commandLine is not empty, this is guaranteed to exist
+	return parseFromContainer(nameAndParams.size(), nameAndParams);
+}
 
-	std::string tmpParameterName;
-	for (size_t i = 1; i < nameAndParams.size(); ++i)
-	{
-		std::string isParameterNameRes = isParameterName(nameAndParams[i]);
-		if (!isParameterNameRes.empty()) // we are dealing with a new parameter
-		{
-			if (!tmpParameterName.empty()) // save the previous if there is one, this can only occur if previous had no value
-			{
-				addParameter(params, tmpParameterName, "");
-			}
-
-			// reset values
-			tmpParameterName = isParameterNameRes;
-		}
-		else // we are dealing with a value, enter it and reset the values
-		{
-			if (tmpParameterName.empty()) // value has no parameter name
-				tmpParameterName = "undefined";
-
-			addParameter(params, tmpParameterName, nameAndParams[i]);
-
-			// reset the values
-			tmpParameterName = "";
-		}
-	}
-
-	if (!tmpParameterName.empty()) // the last split element was a parameter
-		addParameter(params, tmpParameterName, "");
-
-	return ghost::CommandLine(commandName, params);
+ghost::CommandLine CommandLineParser::parseCommandLine(int argc, char* argv[])
+{
+	return parseFromContainer(argc, argv);
 }
 
 void CommandLineParser::split(std::vector<std::string>& tokens, const std::string& str, const std::string& del)

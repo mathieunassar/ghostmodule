@@ -17,6 +17,8 @@
 #ifndef GHOST_MODULE_HPP
 #define GHOST_MODULE_HPP
 
+#include <map>
+#include <string>
 #include <memory>
 
 #include <ghost/module/Console.hpp>
@@ -59,6 +61,8 @@ namespace ghost
 		 * @param name name of the module
 		 */
 		Module(const std::string& name = "");
+
+		void setProgramOptions(int argc, char* argv[]);
 
 		/**
 		 * @brief Starts the execution of the module.
@@ -154,6 +158,14 @@ namespace ghost
 		 * @return the instance of the UserManager.
 		 */
 		std::shared_ptr<UserManager> getUserManager();
+
+		/**
+		 * @brief gets a map containing the parameters given to the program when starting it.
+		 *
+		 * @return a key-value map containing the parameters given to the program when
+		 *  starting it.
+		 */
+		const std::map<std::string, std::string>& getProgramOptions() const;
 
 		/**
 		 * @returns the name of the module.
