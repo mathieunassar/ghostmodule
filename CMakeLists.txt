@@ -86,6 +86,7 @@ file(GLOB header_module_lib
 ./include/ghost/module/Logger.hpp
 ./include/ghost/module/LoggerLine.hpp
 ./include/ghost/module/GhostLogger.hpp
+./include/ghost/module/StdoutLogger.hpp
 )
 
 file(GLOB header_module_lib_internal_windows
@@ -115,6 +116,7 @@ file(GLOB header_module_lib_internal
 ./src/UserManager.hpp
 ./src/Module.hpp
 ./src/GhostLogger.hpp
+./src/StdoutLogger.hpp
 )
 
 if (WIN32)
@@ -153,6 +155,7 @@ file(GLOB source_module_lib
 ./src/UserManager.cpp
 ./src/Module.cpp
 ./src/GhostLogger.cpp
+./src/StdoutLogger.cpp
 ./src/LoggerLine.cpp
 ./src/Logger.cpp
 #./src/main.cpp
