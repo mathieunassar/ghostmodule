@@ -40,11 +40,16 @@ bool CommandLineInterpreter::execute(const std::string& commandLine)
 	CommandLineParser parser;
 	CommandLine cmd = parser.parseCommandLine(commandLine);
 
-	if (_commands.count(cmd.getCommandName()) > 0)
+	return execute(cmd);
+}
+
+bool CommandLineInterpreter::execute(const ghost::CommandLine& commandLine)
+{
+	if (_commands.count(commandLine.getCommandName()) > 0)
 	{
-		if (executionPermitted(_commands[cmd.getCommandName()]))
+		if (executionPermitted(_commands[commandLine.getCommandName()]))
 		{
-			return _commands[cmd.getCommandName()].command->execute(cmd);
+			return _commands[commandLine.getCommandName()].command->execute(commandLine);
 		}
 		else
 			throw std::logic_error("The user is not allowed to perform this operation");

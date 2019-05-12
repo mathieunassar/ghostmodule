@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <ghost/module/PermissionEntity.hpp>
+#include <ghost/module/CommandLine.hpp>
 
 namespace ghost
 {
@@ -48,6 +49,7 @@ namespace ghost
 
 		/// searches for the corresponding command and executes it with the given parameters
 		virtual bool execute(const std::string& commandLine) = 0;
+		virtual bool execute(const ghost::CommandLine& commandLine) = 0;
 		/// adds a command to the interpreter's registry
 		virtual void registerCommand(std::shared_ptr<Command> command, const std::list<std::shared_ptr<PermissionEntity>>& permissions = {}) = 0;
 		/// prints the information about all the commands

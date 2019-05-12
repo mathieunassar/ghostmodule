@@ -37,6 +37,7 @@ namespace ghost
 			CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager);
 
 			bool execute(const std::string& commandLine) override;
+			bool execute(const ghost::CommandLine& commandLine) override;
 
 			void registerCommand(std::shared_ptr<Command> command, const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) override;
 
