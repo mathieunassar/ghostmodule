@@ -21,6 +21,7 @@
 #include "UserManager.hpp"
 #include "CommandLineInterpreter.hpp"
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/CommandLine.hpp>
 
 namespace ghost
 {
@@ -58,14 +59,14 @@ namespace ghost
 			std::shared_ptr<ghost::UserManager> getUserManager();
 
 			void setProgramOptions(int argc, char* argv[]);
-			const std::map<std::string, std::string>& getProgramOptions() const;
+			const ghost::CommandLine& getProgramOptions() const;
 			const std::string& getModuleName() const;
 
 			void printGhostASCII(const std::string& suffix = "");
 
 		private:
 			std::string _name;
-			std::map<std::string, std::string> _options;
+			ghost::CommandLine _options;
 			State _state;
 			std::shared_ptr<Console> _console;
 			std::shared_ptr<ghost::Logger> _logger;

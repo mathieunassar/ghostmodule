@@ -50,6 +50,9 @@ SET(GHOST_SUPPORT_URL ${GHOST_MODULE_ROOT_DIR}/../ghost_support CACHE STRING "Gh
 file(READ ${GHOST_MODULE_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_SUPPORT_BRANCH)
 fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 
+#find google test
+find_package(googletest)
+
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
 ##########################################################################################################################################
@@ -63,10 +66,7 @@ SET(GHOST_MODULE_INCLUDE_DIRECTORIES
 # provide path to include directories
 include_directories(
 	${GHOST_MODULE_INCLUDE_DIRECTORIES}
-)
-
-# provide path to libraries
-link_directories(
+	${Googletest_INCLUDE_DIRS}
 )
 
 ##########################################################################################################################################
@@ -191,3 +191,14 @@ target_link_libraries(ghost_module)
 if (UNIX)
 	target_link_libraries(ghost_module pthread)
 endif()
+
+##### Unit tests #####
+
+file(GLOB module_tests_src
+	tests/CommandLineInterpreterTests.cpp
+)
+
+add_executable(module_tests ${module_tests_src})
+target_link_libraries(module_tests ghost_module ${Googletest_main_LIBRARIES})
+
+set_property(TARGET module_tests PROPERTY FOLDER "tests")

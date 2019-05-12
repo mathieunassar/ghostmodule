@@ -18,7 +18,7 @@
 
 using namespace ghost;
 
-CommandLine::CommandLine(const std::string& commandName, std::map<std::string, std::string>& parameters)
+CommandLine::CommandLine(const std::string& commandName, const std::map<std::string, std::string>& parameters)
 	: _commandName(commandName)
 	, _parameters(parameters)
 {

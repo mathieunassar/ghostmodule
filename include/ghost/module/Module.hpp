@@ -23,6 +23,7 @@
 
 #include <ghost/module/Console.hpp>
 #include <ghost/module/UserManager.hpp>
+#include <ghost/module/CommandLine.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Logger.hpp>
 
@@ -165,7 +166,7 @@ namespace ghost
 		 * @return a key-value map containing the parameters given to the program when
 		 *  starting it.
 		 */
-		const std::map<std::string, std::string>& getProgramOptions() const;
+		const ghost::CommandLine& getProgramOptions() const;
 
 		/**
 		 * @returns the name of the module.

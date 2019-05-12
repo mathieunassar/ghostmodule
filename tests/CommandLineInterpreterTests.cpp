@@ -1,0 +1,146 @@
+/*
+ * Copyright 2019 Mathieu Nassar
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "../src/CommandLineParser.hpp"
+
+#include <gtest/gtest.h>
+#include <ghost/module/StdoutLogger.hpp>
+
+class CommandLineInterpreterTest : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+		
+	}
+
+	void TearDown() override
+	{
+
+	}
+
+	static const std::string TEST_COMMAND_LINE_CMDNAME;
+
+	static const std::string TEST_COMMAND_LINE_PARAMA;
+	static const std::string TEST_COMMAND_LINE_PARAMB;
+	static const std::string TEST_COMMAND_LINE_PARAMC;
+	static const std::string TEST_COMMAND_LINE_STRING;
+
+	static const std::string TEST_COMMAND_LINE_NAMEA;
+	static const std::string TEST_COMMAND_LINE_NAMEB;
+	static const std::string TEST_COMMAND_LINE_STRING_WITH_PARAMNAME;
+
+	static const std::string TEST_COMMAND_LINE_NAMEILLEGAL;
+	static const std::string TEST_COMMAND_LINE_STRING_WITH_ILLEGAL;
+
+	static const std::string TEST_COMMAND_LINE_STRING_WITH_MIXED;
+};
+
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_CMDNAME = "testCommand";
+
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMA = "paramA";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMB = "paramB";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMC = "paramC";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING = TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMA + " " + TEST_COMMAND_LINE_PARAMB + " " + TEST_COMMAND_LINE_PARAMC;
+
+
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEA = "nameA";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEB = "nameB";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_PARAMNAME = TEST_COMMAND_LINE_CMDNAME + " --" + TEST_COMMAND_LINE_NAMEA + " " + TEST_COMMAND_LINE_PARAMA + " --" + TEST_COMMAND_LINE_NAMEB + " " + TEST_COMMAND_LINE_PARAMB;
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_MIXED = TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEA + " " + TEST_COMMAND_LINE_PARAMA + " " + TEST_COMMAND_LINE_PARAMB;
+
+
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEILLEGAL = "__0";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_ILLEGAL = TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEILLEGAL + " " + TEST_COMMAND_LINE_PARAMA;
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_emptyLine)
+{
+	ghost::internal::CommandLineParser parser;
+	
+	bool exceptionCaught = false;
+	try
+	{
+		parser.parseCommandLine("");
+	}
+	catch (std::exception e)
+	{
+		exceptionCaught = true;
+	}
+	ASSERT_TRUE(exceptionCaught);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_unknownParameters)
+{
+	ghost::internal::CommandLineParser parser;
+	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING);
+	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
+	ASSERT_TRUE(line.getParametersMap().size() == 3);
+	ASSERT_TRUE(line.hasParameter("__0"));
+	ASSERT_TRUE(line.hasParameter("__1"));
+	ASSERT_TRUE(line.hasParameter("__2"));
+	ASSERT_TRUE(line.getParameter<std::string>("__0") == TEST_COMMAND_LINE_PARAMA);
+	ASSERT_TRUE(line.getParameter<std::string>("__1") == TEST_COMMAND_LINE_PARAMB);
+	ASSERT_TRUE(line.getParameter<std::string>("__2") == TEST_COMMAND_LINE_PARAMC);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_noParameters)
+{
+	ghost::internal::CommandLineParser parser;
+	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_CMDNAME);
+	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
+	ASSERT_TRUE(line.getParametersMap().size() == 0);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_namedParameters)
+{
+	ghost::internal::CommandLineParser parser;
+	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_PARAMNAME);
+	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
+	ASSERT_TRUE(line.getParametersMap().size() == 2);
+	ASSERT_TRUE(line.hasParameter(TEST_COMMAND_LINE_NAMEA));
+	ASSERT_TRUE(line.hasParameter(TEST_COMMAND_LINE_NAMEB));
+	ASSERT_TRUE(line.getParameter<std::string>(TEST_COMMAND_LINE_NAMEA) == TEST_COMMAND_LINE_PARAMA);
+	ASSERT_TRUE(line.getParameter<std::string>(TEST_COMMAND_LINE_NAMEB) == TEST_COMMAND_LINE_PARAMB);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_mixedParameters)
+{
+	ghost::internal::CommandLineParser parser;
+	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_MIXED);
+	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
+	ASSERT_TRUE(line.getParametersMap().size() == 3);
+	ASSERT_TRUE(line.hasParameter(TEST_COMMAND_LINE_NAMEA));
+	ASSERT_TRUE(line.hasParameter("__0"));
+	ASSERT_TRUE(line.hasParameter("__1"));
+	ASSERT_TRUE(line.getParameter<std::string>(TEST_COMMAND_LINE_NAMEA) == TEST_COMMAND_LINE_PARAMA);
+	ASSERT_TRUE(line.getParameter<std::string>("__0") == TEST_COMMAND_LINE_PARAMC);
+	ASSERT_TRUE(line.getParameter<std::string>("__1") == TEST_COMMAND_LINE_PARAMB);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_illegalParameters)
+{
+	ghost::internal::CommandLineParser parser;
+	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_ILLEGAL);
+	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
+	ASSERT_TRUE(line.getParametersMap().size() == 2);
+
+	std::string expectedNameCorrection = TEST_COMMAND_LINE_NAMEILLEGAL + "_1";
+
+	ASSERT_TRUE(line.hasParameter("__0"));
+	ASSERT_TRUE(line.hasParameter(expectedNameCorrection));
+	ASSERT_TRUE(line.getParameter<std::string>("__0") == TEST_COMMAND_LINE_PARAMC);
+	ASSERT_TRUE(line.getParameter<std::string>(expectedNameCorrection) == TEST_COMMAND_LINE_PARAMA);
+}

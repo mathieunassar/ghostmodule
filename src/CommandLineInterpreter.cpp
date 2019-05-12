@@ -37,7 +37,8 @@ CommandLineInterpreter::CommandLineInterpreter(std::shared_ptr<ghost::UserManage
 
 bool CommandLineInterpreter::execute(const std::string& commandLine)
 {
-	CommandLine cmd = CommandLineParser::parseCommandLine(commandLine);
+	CommandLineParser parser;
+	CommandLine cmd = parser.parseCommandLine(commandLine);
 
 	if (_commands.count(cmd.getCommandName()) > 0)
 	{

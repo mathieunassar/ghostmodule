@@ -49,14 +49,7 @@ void CommandLineParser::split(std::vector<std::string>& tokens, const std::strin
 	}
 }
 
-std::string CommandLineParser::createParameterName(const std::string prefix, int id)
-{
-	std::ostringstream oss;
-	oss << prefix << id;
-	return oss.str();
-}
-
-std::string CommandLineParser::isParameterName(const std::string& str)
+bool CommandLineParser::isParameterName(const std::string& str, std::string& name)
 {
 	int startDashCount = 0;
 	if (str.length() > 1 && str[0] == '-')
@@ -67,19 +60,29 @@ std::string CommandLineParser::isParameterName(const std::string& str)
 	}
 
 	if (startDashCount > 0)
-		return str.substr(startDashCount);
-	return "";
+	{
+		name = str.substr(startDashCount);
+		return true;
+	}
+
+	return false;
 }
 
 void CommandLineParser::addParameter(std::map<std::string, std::string>& params, const std::string& name, const std::string& value)
 {
 	std::string finalName = name;
+
+	if (finalName.empty())
+	{
+		finalName = "__" + std::to_string(_unknownParametersCount);
+		_unknownParametersCount++;
+	}
 	
 	size_t count = params.count(finalName);
 	size_t newcount = count;
 	while (newcount != 0)
 	{
-		finalName = createParameterName(name, count + 1);
+		finalName = name + "_" + std::to_string(count);
 		newcount = params.count(finalName);
 		if (newcount > 0)
 			count++;

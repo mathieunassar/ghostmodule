@@ -24,6 +24,7 @@ using namespace ghost::internal;
 
 Module::Module(const std::string& name)
 	: _name(name)
+	, _options(name)
 	, _state(Module::STOPPED)
 {
 	_userManager = std::shared_ptr<UserManager>(new UserManager());
@@ -113,11 +114,11 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager()
 
 void Module::setProgramOptions(int argc, char* argv[])
 {
-	auto commandLine = CommandLineParser::parseCommandLine(argc, argv);
-	_options = commandLine.getParametersMap();
+	CommandLineParser parser;
+	_options = parser.parseCommandLine(argc, argv);
 }
 
-const std::map<std::string, std::string>& Module::getProgramOptions() const
+const ghost::CommandLine& Module::getProgramOptions() const
 {
 	return _options;
 }
@@ -250,7 +251,7 @@ std::shared_ptr<ghost::UserManager> ghost::Module::getUserManager()
 	return _internal->getUserManager();
 }
 
-const std::map<std::string, std::string>& ghost::Module::getProgramOptions() const
+const ghost::CommandLine& ghost::Module::getProgramOptions() const
 {
 	return _internal->getProgramOptions();
 }
