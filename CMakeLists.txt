@@ -46,7 +46,7 @@ endif (UNIX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # import Ghost Support
-SET(GHOST_SUPPORT_URL ${GHOST_MODULE_ROOT_DIR}/../ghost_support CACHE STRING "Ghost Support location")
+SET(GHOST_SUPPORT_URL "https://github.com/mathieunassar/ghostsupport" CACHE STRING "Ghost Support location")
 file(READ ${GHOST_MODULE_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_SUPPORT_BRANCH)
 fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 
