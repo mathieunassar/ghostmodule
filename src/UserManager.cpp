@@ -15,7 +15,7 @@
  */
 
 #include "UserManager.hpp"
-#include <exception>
+#include <stdexcept>
 
 using namespace ghost::internal;
 

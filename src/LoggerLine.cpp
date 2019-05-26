@@ -24,6 +24,14 @@ ghost::LoggerLine::LoggerLine(ghost::Logger* logger, ghost::LogLevel level)
 
 }
 
+ghost::LoggerLine::LoggerLine(const ghost::LoggerLine&& other)
+	: _logger(std::move(other._logger))
+	, _level(std::move(other._level))
+{
+	// entry is left uninitialized
+}
+
+
 ghost::LoggerLine::~LoggerLine()
 {
 	switch (_level)

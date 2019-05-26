@@ -30,6 +30,7 @@ namespace ghost
 	public:
 		// Constructors
 		LoggerLine(Logger* logger, LogLevel level);
+		LoggerLine(const ghost::LoggerLine&& other);
 		~LoggerLine();
 
 		// Methods
