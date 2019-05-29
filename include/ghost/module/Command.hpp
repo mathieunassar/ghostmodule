@@ -21,18 +21,38 @@
 
 namespace ghost
 {
+	/**
+	 *	Base class for commands executable by the interpreter.
+	 *	A command has a shortcut, which is used to invoke it, and an execute method which
+	 *	will be called by the interpreter when a corresponding command line is submitted.
+	 */
 	class Command
 	{
 	public:
 		virtual ~Command() = 0;
 
-		/// received a command line matching its name containing paramters
+		/**
+		 *	Execution of this command with the provided command line as parameters.
+		 *	The method should return true on success, and false otherwise.
+		 *	@param commandLine	the parameters for the execution of this command.
+		 *	@return true on a successful execution, false otherwise.
+		 */
 		virtual bool execute(const CommandLine& commandLine) = 0;
-		/// @return the name of this command
+		/**
+		 *	@return the name of this command.
+		 */
 		virtual std::string getName() const = 0;
-		/// @return the shortcut of the command used to invoke it
+		/**
+		 *	The shortcut is the actual string that the user must input in order to invoke
+		 *	this command.
+		 *	@return the shortcut string of this command.
+		 */
 		virtual std::string getShortcut() const = 0;
-		/// @return a description of the command
+		/**
+		 *	Provides a description for this command, which will be displayed to the user if
+		 *	the help command is invoked.
+		 *	@return the description string of this command.
+		 */
 		virtual std::string getDescription() const = 0;
 	};
 

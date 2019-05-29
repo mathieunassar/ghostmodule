@@ -15,7 +15,6 @@
  */
 
 #include "UserManager.hpp"
-#include <stdexcept>
 
 using namespace ghost::internal;
 
@@ -26,36 +25,48 @@ std::shared_ptr<ghost::UserManager> ghost::UserManager::create()
 
 UserManager::UserManager()
 {
-	createUser("superuser", "superuser");
+	(void)createUser("superuser", "superuser");
 }
 
 void UserManager::addUserToGroup(const ghost::User& user, ghost::UserGroup& group)
 {
-
+	for (auto u : _users)
+	{
+		if (u.get() == &user)
+		{
+			for (auto g : _groups)
+			{
+				if (g.get() == &group)
+					g->addUser(u);
+			}
+		}
+	}
 }
 
-bool UserManager::createUser(const std::string& name, const std::string& password)
+std::shared_ptr<ghost::User> UserManager::createUser(const std::string& name, const std::string& password)
 {
 	for (auto& user : _users)
 	{
 		if (user->getName() == name)
-			return false;
+			return nullptr;
 	}
 
-	_users.emplace_back(new User(name, password));
-	return true;
+	auto newUser = std::make_shared<ghost::internal::User>(name, password);
+	_users.emplace_back(newUser);
+	return newUser;
 }
 
-bool UserManager::createUserGroup(const std::string& name)
+std::shared_ptr<ghost::UserGroup> UserManager::createUserGroup(const std::string& name)
 {
 	for (auto& group : _groups)
 	{
 		if (group->getName() == name)
-			return false;
+			return nullptr;
 	}
 
-	_groups.emplace_back(new UserGroup(name));
-	return true;
+	auto newGroup = std::make_shared<ghost::internal::UserGroup>(name);
+	_groups.emplace_back(newGroup);
+	return newGroup;
 }
 
 bool UserManager::connect(const std::string& username, const std::string& password)
@@ -67,7 +78,7 @@ bool UserManager::connect(const std::string& username, const std::string& passwo
 			_connectedUser = user;
 
 			if (_connectedUserCallback)
-				_connectedUserCallback(*user);
+				_connectedUserCallback(user);
 
 			return true;
 		}
@@ -85,15 +96,12 @@ bool UserManager::isUserConnected() const
 	return _connectedUser.operator bool();
 }
 
-User& UserManager::getConnectedUser() const
+std::shared_ptr<ghost::User> UserManager::getConnectedUser() const
 {
-	if (!_connectedUser)
-		throw std::logic_error("No connected user.");
-
-	return *_connectedUser;
+	return _connectedUser;
 }
 
-void UserManager::setConnectedUserCallback(std::function<void(const ghost::User&)> callback)
+void UserManager::setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback)
 {
 	_connectedUserCallback = callback;
 }

@@ -69,8 +69,8 @@ bool LoginCommand::execute(const ghost::CommandLine& commandLine)
 		return false;
 	}
 
-	User& user = _userManager->getConnectedUser();
-	std::cout << "User " << user.getName() << " successfully connected" << std::endl;
+	auto user = _userManager->getConnectedUser();
+	std::cout << "User " << user->getName() << " successfully connected" << std::endl;
 	return true;
 }
 

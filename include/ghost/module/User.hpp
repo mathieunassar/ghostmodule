@@ -24,13 +24,15 @@
 namespace ghost
 {
 	/**
-	 *	Represents a user of the application.
+	 *	Represents a user of the program.
 	 *	Possesses a name and is associated to permissions.
 	 */
 	class User : public PermissionEntity
 	{
 	public:
-		/// @return the name of this user
+		/**
+		 *	@return the name of this user.
+		 */
 		virtual const std::string& getName() const = 0;
 	};
 }

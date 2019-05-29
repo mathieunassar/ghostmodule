@@ -79,9 +79,9 @@ void Module::initializeConsole()
 			_console->flush();
 		});
 	
-	_userManager->setConnectedUserCallback([this](const ghost::User& user)
+	_userManager->setConnectedUserCallback([this](std::shared_ptr<ghost::User> user)
 		{
-			_console->getPrompt().setUser(user.getName());
+			_console->getPrompt().setUser(user->getName());
 		});
 
 	_console->start();

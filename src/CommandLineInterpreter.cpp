@@ -23,6 +23,11 @@
 
 using namespace ghost::internal;
 
+std::shared_ptr<ghost::CommandLineInterpreter> ghost::CommandLineInterpreter::create()
+{
+	return std::shared_ptr<ghost::CommandLineInterpreter>(new ghost::internal::CommandLineInterpreter(nullptr));
+}
+
 std::shared_ptr<ghost::CommandLineInterpreter> ghost::CommandLineInterpreter::create(std::shared_ptr<UserManager> userManager)
 {
 	return std::shared_ptr<ghost::CommandLineInterpreter>(new ghost::internal::CommandLineInterpreter(userManager));
@@ -51,8 +56,6 @@ bool CommandLineInterpreter::execute(const ghost::CommandLine& commandLine)
 		{
 			return _commands[commandLine.getCommandName()].command->execute(commandLine);
 		}
-		else
-			throw std::logic_error("The user is not allowed to perform this operation");
 	}
 
 	return false;
@@ -85,20 +88,23 @@ void CommandLineInterpreter::printHelp(std::ostream& stream) const
 
 bool CommandLineInterpreter::executionPermitted(const CommandEntry& entry) const
 {
+	if (!_userManager)
+		return true;
+
 	if (entry.permissions.empty())
 		return true; // no permissions configured -> yes
 
 	if (!_userManager->isUserConnected())
 		return false; // some permissions were configured, but the user is not connected -> no
 
-	ghost::User& user = _userManager->getConnectedUser();
+	auto user = _userManager->getConnectedUser();
 
-	if (user.getName() == "superuser")
+	if (user->getName() == "superuser")
 		return true; // superuser can do everything
 
 	for (auto& permit : entry.permissions)
 	{
-		if (permit->contains(user))
+		if (permit->contains(*user))
 			return true; // either the user is explicitely allowed or contained by an allowed group -> yes
 	}
 

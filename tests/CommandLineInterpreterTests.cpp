@@ -18,6 +18,10 @@
 
 #include <gtest/gtest.h>
 #include <ghost/module/StdoutLogger.hpp>
+#include <ghost/module/Command.hpp>
+#include <ghost/module/CommandLineInterpreter.hpp>
+#include <ghost/module/UserManager.hpp>
+#include "../src/User.hpp"
 
 class CommandLineInterpreterTest : public testing::Test
 {
@@ -47,6 +51,41 @@ protected:
 	static const std::string TEST_COMMAND_LINE_STRING_WITH_ILLEGAL;
 
 	static const std::string TEST_COMMAND_LINE_STRING_WITH_MIXED;
+};
+
+class CustomCommand : public ghost::Command
+{
+public:
+	CustomCommand(bool returnResult)
+		: _returnResult(returnResult)
+		, _executeWasCalled(false)
+	{
+
+	}
+
+	bool execute(const ghost::CommandLine& commandLine) override
+	{
+		_executeWasCalled = true;
+		return _returnResult;
+	}
+
+	std::string getName() const override
+	{
+		return "name";
+	}
+
+	std::string getShortcut() const override
+	{
+		return "shortcut";
+	}
+
+	std::string getDescription() const override
+	{
+		return "description";
+	}
+
+	bool _returnResult;
+	bool _executeWasCalled;
 };
 
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_CMDNAME = "testCommand";
@@ -143,4 +182,138 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_illegalParameters
 	ASSERT_TRUE(line.hasParameter(expectedNameCorrection));
 	ASSERT_TRUE(line.getParameter<std::string>("__0") == TEST_COMMAND_LINE_PARAMC);
 	ASSERT_TRUE(line.getParameter<std::string>(expectedNameCorrection) == TEST_COMMAND_LINE_PARAMA);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_ok)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	auto command = std::make_shared<CustomCommand>(true);
+	interpreter->registerCommand(command);
+	bool executeSuccess = interpreter->execute(command->getShortcut());
+	ASSERT_TRUE(executeSuccess);
+	ASSERT_TRUE(command->_executeWasCalled);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_CommandLine)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	auto command = std::make_shared<CustomCommand>(true);
+	interpreter->registerCommand(command);
+
+	ghost::internal::CommandLineParser parser;
+	ghost::CommandLine line = parser.parseCommandLine(command->getShortcut() + " -super parameter");
+
+	bool executeSuccess = interpreter->execute(line);
+	ASSERT_TRUE(executeSuccess);
+	ASSERT_TRUE(command->_executeWasCalled);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_commandNotRegistered)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	bool executeSuccess = interpreter->execute(CustomCommand(true).getShortcut());
+	ASSERT_FALSE(executeSuccess);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_commandFails)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	auto command = std::make_shared<CustomCommand>(false);
+	interpreter->registerCommand(command);
+	bool executeSuccess = interpreter->execute(command->getShortcut());
+	ASSERT_FALSE(executeSuccess);
+	ASSERT_TRUE(command->_executeWasCalled);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsInfo)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	auto command = std::make_shared<CustomCommand>(false);
+	interpreter->registerCommand(command);
+
+	std::ostringstream oss;
+	interpreter->printHelp(oss);
+
+	size_t nameFound = oss.str().find(command->getName());
+	ASSERT_TRUE(nameFound != std::string::npos);
+
+	size_t shortcutFound = oss.str().find(command->getShortcut());
+	ASSERT_TRUE(shortcutFound != std::string::npos);
+
+	size_t descriptionFound = oss.str().find(command->getDescription());
+	ASSERT_TRUE(descriptionFound != std::string::npos);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsHelpAndLogin)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	std::ostringstream oss;
+	interpreter->printHelp(oss);
+
+	size_t nameFound = oss.str().find("HelpCommand");
+	ASSERT_TRUE(nameFound != std::string::npos);
+
+	size_t shortcutFound = oss.str().find("LoginCommand");
+	ASSERT_TRUE(shortcutFound != std::string::npos);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_permissionsListIsEmpty)
+{
+	auto userManager = ghost::UserManager::create();
+	auto interpreter = ghost::CommandLineInterpreter::create(userManager);
+	ASSERT_TRUE(interpreter);
+
+	auto command = std::make_shared<CustomCommand>(true);
+	interpreter->registerCommand(command);
+	bool executeSuccess = interpreter->execute(command->getShortcut());
+	ASSERT_TRUE(executeSuccess);
+	ASSERT_TRUE(command->_executeWasCalled);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_noUserManagerPermissionsListNotEmpty)
+{
+	auto interpreter = ghost::CommandLineInterpreter::create();
+	ASSERT_TRUE(interpreter);
+
+	std::list<std::shared_ptr<ghost::PermissionEntity>> permissionsList;
+	auto user = std::make_shared<ghost::internal::User>("mathieu", "super");
+	permissionsList.push_back(user);
+
+	auto command = std::make_shared<CustomCommand>(true);
+	interpreter->registerCommand(command, permissionsList);
+	bool executeSuccess = interpreter->execute(command->getShortcut());
+	ASSERT_TRUE(executeSuccess);
+	ASSERT_TRUE(command->_executeWasCalled);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_userNotPermitted)
+{
+	auto userManager = ghost::UserManager::create();
+	auto interpreter = ghost::CommandLineInterpreter::create(userManager);
+	ASSERT_TRUE(interpreter);
+
+	std::list<std::shared_ptr<ghost::PermissionEntity>> permissionsList;
+	auto user = std::make_shared<ghost::internal::User>("mathieu", "super");
+	permissionsList.push_back(user);
+
+	userManager->createUser("mathieu2", "super2");
+	userManager->connect("mathieu2", "super2");
+
+	auto command = std::make_shared<CustomCommand>(true);
+	interpreter->registerCommand(command, permissionsList);
+	bool executeSuccess = interpreter->execute(command->getShortcut());
+	ASSERT_FALSE(executeSuccess);
+	ASSERT_FALSE(command->_executeWasCalled);
 }

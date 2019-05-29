@@ -31,11 +31,18 @@ namespace ghost
 	class UserGroup : public PermissionEntity
 	{
 	public:
-		/// @return the name of the group
+		/**
+		 *	@return the name of this group.
+		 */
 		virtual const std::string& getName() const = 0;
-		/// @return a vector containing all the users of this group
+		/**
+		 *	@return a list of users in this group.
+		 */
 		virtual std::vector<std::shared_ptr<User>> getUsers() const = 0;
-		/// @return true if the given user belongs to the group, false otherwise
+		/**
+		 *	@param user	user to check if they belong to this group.
+		 *	@return true if the provided user belongs to this group.
+		 */
 		virtual bool containsUser(const User& user) const = 0;
 	};
 }

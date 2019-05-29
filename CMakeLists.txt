@@ -196,6 +196,7 @@ endif()
 
 file(GLOB module_tests_src
 	tests/CommandLineInterpreterTests.cpp
+	tests/UserManagerTests.cpp
 )
 
 add_executable(module_tests ${module_tests_src})
