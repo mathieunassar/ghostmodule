@@ -18,14 +18,24 @@
 #include <ghost/module/Module.hpp>
 
 #include "commands/ExitCommand.hpp"
-#include "CommandLineParser.hpp"
 
 using namespace ghost::internal;
 
-Module::Module(const std::string& name)
+Module::Module(const std::string& name,
+	const std::shared_ptr<Console>& console,
+	const std::shared_ptr<ghost::Logger>& logger,
+	const ghost::CommandLine& options,
+	const std::function<bool(const ghost::Module&)>& initializationBehavior,
+	const std::function<bool(const ghost::Module&)>& runningBehavior,
+	const std::function<void(const ghost::Module&)>& disposeBehavior)
 	: _name(name)
-	, _options(name)
+	, _options(options)
 	, _state(Module::STOPPED)
+	, _console(console)
+	, _logger(logger)
+	, _initializationBehavior(initializationBehavior)
+	, _runningBehavior(runningBehavior)
+	, _disposeBehavior(disposeBehavior)
 {
 	_userManager = std::shared_ptr<UserManager>(new UserManager());
 	_interpreter = std::shared_ptr<CommandLineInterpreter>(new CommandLineInterpreter(_userManager));
@@ -33,6 +43,19 @@ Module::Module(const std::string& name)
 	// add useful commands
 	_interpreter->registerCommand(std::shared_ptr<ghost::Command>(new ExitCommand(this)), {});
 
+	if (_console)
+	{
+		_console->setCommandCallback([this](const std::string& str)
+			{
+				_console->onNewInput(str);
+				_commandExecutorCV.notify_one();
+			});
+
+		_userManager->setConnectedUserCallback([this](std::shared_ptr<ghost::User> user)
+			{
+				_console->getPrompt().setUser(user->getName());
+			});
+	}
 }
 
 Module::~Module()
@@ -69,32 +92,55 @@ Module::State Module::getState() const
 	return _state;
 }
 
-void Module::initializeConsole()
+// From ghost::Module
+void Module::start()
 {
-	_console = std::shared_ptr<Console>(new Console());
+	if (getState() != ghost::internal::Module::STOPPED) // only start if module is stopped
+		return;
 
-	_console->setCommandCallback([this](const std::string& str)
-		{ 
-			_interpreter->execute(str);
-			_console->flush();
-		});
-	
-	_userManager->setConnectedUserCallback([this](std::shared_ptr<ghost::User> user)
+	if (_console)
+		_console->start();
+
+	setState(ghost::internal::Module::INITIALIZING);
+	bool initSuccess = init(); // initialize the module
+	if (!initSuccess)
+	{
+		stop();
+	}
+	else
+	{
+		setState(ghost::internal::Module::RUNNING);
+		_commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
+
+		bool runFinshed = false;
+		ghost::internal::Module::State currentState = getState();
+		while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
 		{
-			_console->getPrompt().setUser(user->getName());
-		});
+			runFinshed = !run(); // run as long as the return value is true and the module state is running
+			currentState = getState();
+		}
 
-	_console->start();
+		if (currentState == ghost::internal::Module::RUNNING)
+			stop();
+
+		_commandExecutorCV.notify_one();
+		_commandExecutor.join();
+	}
 }
 
-std::shared_ptr<ghost::Console> Module::getConsole()
+void Module::stop()
+{
+	setState(ghost::internal::Module::DISPOSING);
+	dispose();
+	setState(ghost::internal::Module::STOPPED);
+
+	if (_console)
+		_console->stop();
+}
+
+std::shared_ptr<ghost::Console> Module::getConsole() const
 {
 	return _console;
-}
-
-void Module::setLogger(const std::shared_ptr<ghost::Logger>& logger)
-{
-	_logger = logger;
 }
 
 std::shared_ptr<ghost::Logger> Module::getLogger() const
@@ -102,20 +148,14 @@ std::shared_ptr<ghost::Logger> Module::getLogger() const
 	return _logger;
 }
 
-std::shared_ptr<ghost::CommandLineInterpreter> Module::getInterpreter()
+std::shared_ptr<ghost::CommandLineInterpreter> Module::getInterpreter() const
 {
 	return _interpreter;
 }
 
-std::shared_ptr<ghost::UserManager> Module::getUserManager()
+std::shared_ptr<ghost::UserManager> Module::getUserManager() const
 {
 	return _userManager;
-}
-
-void Module::setProgramOptions(int argc, char* argv[])
-{
-	CommandLineParser parser;
-	_options = parser.parseCommandLine(argc, argv);
 }
 
 const ghost::CommandLine& Module::getProgramOptions() const
@@ -128,7 +168,7 @@ const std::string& Module::getModuleName() const
 	return _name;
 }
 
-void Module::printGhostASCII(const std::string& suffix)
+void Module::printGhostASCII(const std::string& suffix) const
 {
 	std::string s = "";
 	if (!suffix.empty())
@@ -154,114 +194,44 @@ void Module::printGhostASCII(const std::string& suffix)
 		console->flush();
 }
 
-/////////////////////////////////////////////////////////////////
-//////////// DEFINITION OF PUBLIC CLASS MODULE //////////////////
-
-ghost::Module::Module(const std::string& name)
-	: _internal(std::shared_ptr<ghost::internal::Module>(new ghost::internal::Module(name)))
+bool Module::init()
 {
+	if (_initializationBehavior)
+		return _initializationBehavior(*this);
 
+	// per default do nothing
+	return true;
 }
 
-void ghost::Module::start()
+bool Module::run()
 {
-	if (_internal->getState() != ghost::internal::Module::STOPPED) // only start if module is stopped
-		return;
+	if (_runningBehavior)
+		return _runningBehavior(*this);
 
-	_internal->setState(ghost::internal::Module::INITIALIZING);
-	bool initSuccess = init(); // initialize the module
-	if (!initSuccess)
+	// per default do nothing
+	return false;
+}
+
+void Module::dispose()
+{
+	if (_disposeBehavior)
+		return _disposeBehavior(*this);
+
+	// per default do nothing
+}
+
+void Module::commandExecutor()
+{
+	while (getState() == ghost::internal::Module::RUNNING)
 	{
-		_internal->setState(ghost::internal::Module::DISPOSING);
-		dispose(); // if initialization failed, dispose the module
-		_internal->setState(ghost::internal::Module::STOPPED);
-	}
-	else
-	{
-		_internal->setState(ghost::internal::Module::RUNNING);
-		bool runFinshed = false;
-		ghost::internal::Module::State currentState = _internal->getState();
-		while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
+		std::unique_lock<std::mutex> lock(_commandExecutorMutex);
+		_commandExecutorCV.wait(lock, [&]{ return getState() != ghost::internal::Module::RUNNING || _console->hasCommands(); });
+
+		if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
 		{
-			runFinshed = !run(); // run as long as the return value is true and the module state is running
-			currentState = _internal->getState();
+			auto command = _console->getCommand();
+			_interpreter->execute(command);
+			_console->flush();
 		}
-
-		_internal->setState(ghost::internal::Module::DISPOSING);
-		dispose();
-		_internal->setState(ghost::internal::Module::STOPPED);
 	}
-}
-
-void ghost::Module::setProgramOptions(int argc, char* argv[])
-{
-	return _internal->setProgramOptions(argc, argv);
-}
-
-void ghost::Module::sleepMillisecond(int ms)
-{
-	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
-
-bool ghost::Module::init()
-{
-	// per default do nothing
-	return true;
-}
-
-bool ghost::Module::run()
-{
-	// per default cycle with a ~1000Hz frequency
-	sleepMillisecond(1);
-	return true;
-}
-
-void ghost::Module::dispose()
-{
-	// per default do nothing
-}
-
-void ghost::Module::initializeConsole()
-{
-	return _internal->initializeConsole();
-}
-
-std::shared_ptr<ghost::Console> ghost::Module::getConsole()
-{
-	return _internal->getConsole();
-}
-
-void ghost::Module::setLogger(const std::shared_ptr<ghost::Logger>& logger)
-{
-	return _internal->setLogger(logger);
-}
-
-std::shared_ptr<ghost::Logger> ghost::Module::getLogger() const
-{
-	return _internal->getLogger();
-}
-
-std::shared_ptr<ghost::CommandLineInterpreter> ghost::Module::getInterpreter()
-{
-	return _internal->getInterpreter();
-}
-
-std::shared_ptr<ghost::UserManager> ghost::Module::getUserManager()
-{
-	return _internal->getUserManager();
-}
-
-const ghost::CommandLine& ghost::Module::getProgramOptions() const
-{
-	return _internal->getProgramOptions();
-}
-
-const std::string& ghost::Module::getModuleName() const
-{
-	return _internal->getModuleName();
-}
-
-void ghost::Module::printGhostASCII(const std::string& suffix)
-{
-	return _internal->printGhostASCII(suffix);
 }

@@ -17,17 +17,19 @@
 #ifndef GHOST_INTERNAL_MODULE_HPP
 #define GHOST_INTERNAL_MODULE_HPP
 
-#include "Console.hpp"
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <ghost/module/Module.hpp>
 #include "UserManager.hpp"
 #include "CommandLineInterpreter.hpp"
-#include <ghost/module/Logger.hpp>
-#include <ghost/module/CommandLine.hpp>
+#include "Console.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
-		class Module
+		class Module : public ghost::Module
 		{
 		public:
 			enum State
@@ -38,33 +40,35 @@ namespace ghost
 				DISPOSING		// dispose method is being called
 			};
 
-			Module(const std::string& name = "");
+			Module(const std::string& name,
+				const std::shared_ptr<Console>& console,
+				const std::shared_ptr<ghost::Logger>& logger,
+				const ghost::CommandLine& options,
+				const std::function<bool(const ghost::Module&)>& initializationBehavior,
+				const std::function<bool(const ghost::Module&)>& runningBehavior,
+				const std::function<void(const ghost::Module&)>& disposeBehavior);
 			~Module();
 
 			bool setState(State state);
 			State getState() const;
 
-			/* Console access */
-			void initializeConsole();
-			std::shared_ptr<ghost::Console> getConsole();
+			// From ghost::Module
+			void start() override;
+			void stop() override;
 
-			/* Logger access */
-			void setLogger(const std::shared_ptr<ghost::Logger>& logger);
-			std::shared_ptr<ghost::Logger> getLogger() const;
-
-			/* Command line interpretor access */
-			std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter();
-
-			/* User manager access */
-			std::shared_ptr<ghost::UserManager> getUserManager();
-
-			void setProgramOptions(int argc, char* argv[]);
-			const ghost::CommandLine& getProgramOptions() const;
-			const std::string& getModuleName() const;
-
-			void printGhostASCII(const std::string& suffix = "");
+			std::shared_ptr<ghost::Console> getConsole() const override;
+			std::shared_ptr<ghost::Logger> getLogger() const override;
+			std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter() const override;
+			std::shared_ptr<ghost::UserManager> getUserManager() const override;
+			const ghost::CommandLine& getProgramOptions() const override;
+			const std::string& getModuleName() const override;
+			void printGhostASCII(const std::string& suffix = "") const override;
 
 		private:
+			bool init();
+			bool run();
+			void dispose();
+
 			std::string _name;
 			ghost::CommandLine _options;
 			State _state;
@@ -72,6 +76,15 @@ namespace ghost
 			std::shared_ptr<ghost::Logger> _logger;
 			std::shared_ptr<UserManager> _userManager;
 			std::shared_ptr<CommandLineInterpreter> _interpreter;
+
+			std::function<bool(const ghost::Module&)> _initializationBehavior;
+			std::function<bool(const ghost::Module&)> _runningBehavior;
+			std::function<void(const ghost::Module&)> _disposeBehavior;
+
+			std::thread _commandExecutor;
+			std::mutex _commandExecutorMutex;
+			std::condition_variable _commandExecutorCV;
+			void commandExecutor();
 		};
 	}
 }
