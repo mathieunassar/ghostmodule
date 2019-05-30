@@ -89,6 +89,9 @@ bool UserManager::connect(const std::string& username, const std::string& passwo
 void UserManager::disconnect()
 {
 	_connectedUser = nullptr;
+
+	if (_connectedUserCallback)
+		_connectedUserCallback(_connectedUser);
 }
 
 bool UserManager::isUserConnected() const
