@@ -99,9 +99,6 @@ bool CommandLineInterpreter::executionPermitted(const CommandEntry& entry) const
 
 	auto user = _userManager->getConnectedUser();
 
-	if (user->getName() == "superuser")
-		return true; // superuser can do everything
-
 	for (auto& permit : entry.permissions)
 	{
 		if (permit->contains(*user))

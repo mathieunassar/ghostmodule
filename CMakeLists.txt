@@ -83,6 +83,7 @@ file(GLOB header_module_lib
 ./include/ghost/module/UserGroup.hpp
 ./include/ghost/module/UserManager.hpp
 ./include/ghost/module/Module.hpp
+./include/ghost/module/ModuleBuilder.hpp
 ./include/ghost/module/Logger.hpp
 ./include/ghost/module/LoggerLine.hpp
 ./include/ghost/module/GhostLogger.hpp
@@ -115,6 +116,7 @@ file(GLOB header_module_lib_internal
 ./src/UserGroup.hpp
 ./src/UserManager.hpp
 ./src/Module.hpp
+./src/ModuleBuilder.hpp
 ./src/GhostLogger.hpp
 ./src/StdoutLogger.hpp
 )
@@ -154,6 +156,7 @@ file(GLOB source_module_lib
 ./src/UserGroup.cpp
 ./src/UserManager.cpp
 ./src/Module.cpp
+./src/ModuleBuilder.cpp
 ./src/GhostLogger.cpp
 ./src/StdoutLogger.cpp
 ./src/LoggerLine.cpp
@@ -197,9 +200,24 @@ endif()
 file(GLOB module_tests_src
 	tests/CommandLineInterpreterTests.cpp
 	tests/UserManagerTests.cpp
+	tests/ModuleTests.cpp
 )
 
 add_executable(module_tests ${module_tests_src})
 target_link_libraries(module_tests ghost_module ${Googletest_main_LIBRARIES})
 
 set_property(TARGET module_tests PROPERTY FOLDER "tests")
+
+##### Examples #####
+
+# minimum code to create a module
+add_executable(module_minimum examples/module_minimum.cpp)
+target_link_libraries(module_minimum ghost_module)
+
+set_property(TARGET module_minimum PROPERTY FOLDER "examples")
+
+# module that writes every second where the user can update the written text
+add_executable(module_with_console examples/module_with_console.cpp)
+target_link_libraries(module_with_console ghost_module)
+
+set_property(TARGET module_with_console PROPERTY FOLDER "examples")

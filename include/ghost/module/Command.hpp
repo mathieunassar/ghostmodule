@@ -29,7 +29,7 @@ namespace ghost
 	class Command
 	{
 	public:
-		virtual ~Command() = 0;
+		virtual ~Command() = default;
 
 		/**
 		 *	Execution of this command with the provided command line as parameters.
@@ -55,8 +55,6 @@ namespace ghost
 		 */
 		virtual std::string getDescription() const = 0;
 	};
-
-	inline Command::~Command() {}
 }
 
 #endif // GHOST_COMMAND_HPP

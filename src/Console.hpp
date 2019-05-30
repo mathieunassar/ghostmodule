@@ -51,9 +51,10 @@ namespace ghost
 
 			Prompt& getPrompt();
 
+			void onNewInput(const std::string& str);
+
 		private:
 			/* Callbacks for the input controller */
-			void onNewInput(const std::string& str);
 			void onNewMode(ConsoleDevice::ConsoleMode mode);
 
 			mutable std::mutex _commandQueueLock;
