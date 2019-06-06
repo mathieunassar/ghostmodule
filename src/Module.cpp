@@ -110,7 +110,8 @@ void Module::start()
 	else
 	{
 		setState(ghost::internal::Module::RUNNING);
-		_commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
+		if (_console)
+			_commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
 
 		bool runFinshed = false;
 		ghost::internal::Module::State currentState = getState();
@@ -123,8 +124,11 @@ void Module::start()
 		if (currentState == ghost::internal::Module::RUNNING)
 			stop();
 
-		_commandExecutorCV.notify_one();
-		_commandExecutor.join();
+		if (_console)
+		{
+			_commandExecutorCV.notify_one();
+			_commandExecutor.join();
+		}
 	}
 }
 
