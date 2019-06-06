@@ -9,18 +9,16 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_MODULE_ROOT_DIR}/cmake/")
 
 # define the project
 project(${projectName} CXX)
 
 # setup ghost variables
-include(cmake/Ghost.cmake)
+include(cmake/ghost.cmake)
 setup_ghost_repository()
 
 # Windows specific stuff
 if (MSVC)
-	set(GHOST_BUILD_NAME "buildVS2017_x86")
 	message(STATUS "MSVC compiler detected - version: " ${MSVC_VERSION})
 	
 	if (MSVC_VERSION GREATER_EQUAL "1900")
@@ -38,11 +36,6 @@ if (MSVC)
 	add_compile_options("/EHsc")
 endif (MSVC)
 
-# unix specific stuff
-if (UNIX)
-    set(GHOST_BUILD_NAME "buildUnix_x86_64")
-endif (UNIX)
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # import Ghost Support
@@ -51,7 +44,8 @@ file(READ ${GHOST_MODULE_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_S
 fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 
 #find google test
-find_package(googletest)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
@@ -204,7 +198,7 @@ file(GLOB module_tests_src
 )
 
 add_executable(module_tests ${module_tests_src})
-target_link_libraries(module_tests ghost_module ${Googletest_main_LIBRARIES})
+target_link_libraries(module_tests ghost_module ${CONAN_LIBS})
 
 set_property(TARGET module_tests PROPERTY FOLDER "tests")
 
