@@ -17,6 +17,7 @@
 #ifndef GHOST_MODULE_STDOUT_LOGGER_HPP
 #define GHOST_MODULE_STDOUT_LOGGER_HPP
 
+#include <memory>
 #include <ghost/module/Logger.hpp>
 
 namespace ghost

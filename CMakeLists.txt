@@ -9,6 +9,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 
+if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+endif()
+
 # define the project
 project(${projectName} CXX)
 
@@ -17,9 +21,10 @@ include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
 
 # fetch the dependencies with conan
 include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
-conan_check()
+conan_check(REQUIRED)
 conan_cmake_run(CONANFILE conanfile.txt
-				BASIC_SETUP)
+				BASIC_SETUP
+				BUILD missing)
 
 # Windows specific stuff
 if (MSVC)
@@ -60,7 +65,6 @@ SET(GHOST_MODULE_INCLUDE_DIRECTORIES
 # provide path to include directories
 include_directories(
 	${GHOST_MODULE_INCLUDE_DIRECTORIES}
-	${Googletest_INCLUDE_DIRS}
 )
 
 ##########################################################################################################################################
