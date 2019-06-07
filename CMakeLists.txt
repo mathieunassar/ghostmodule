@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.8)
 set(projectName ghost_module)
 set(GHOST_MODULE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE FILEPATH "Root directory of ghost_module")
 set(CMAKE_DEBUG_POSTFIX "d")
-set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
 set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
@@ -14,8 +13,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 project(${projectName} CXX)
 
 # setup ghost variables
-include(cmake/ghost.cmake)
-setup_ghost_repository()
+include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
+
+# fetch the dependencies with conan
+include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
+conan_check()
+conan_cmake_run(CONANFILE conanfile.txt
+				BASIC_SETUP)
 
 # Windows specific stuff
 if (MSVC)
@@ -42,10 +46,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 SET(GHOST_SUPPORT_URL "https://github.com/mathieunassar/ghostsupport" CACHE STRING "Ghost Support location")
 file(READ ${GHOST_MODULE_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_SUPPORT_BRANCH)
 fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
-
-#find google test
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
 
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
