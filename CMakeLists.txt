@@ -20,11 +20,13 @@ project(${projectName} CXX)
 include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
 
 # fetch the dependencies with conan
-include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
-conan_check(REQUIRED)
-conan_cmake_run(CONANFILE conanfile.txt
-				BASIC_SETUP
-				BUILD missing)
+if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+	include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
+	conan_check(REQUIRED)
+	conan_cmake_run(CONANFILE conanfile.txt
+					BASIC_SETUP
+					BUILD missing)
+endif()
 
 # Windows specific stuff
 if (MSVC)
@@ -195,27 +197,31 @@ endif()
 
 ##### Unit tests #####
 
-file(GLOB module_tests_src
-	tests/CommandLineInterpreterTests.cpp
-	tests/UserManagerTests.cpp
-	tests/ModuleTests.cpp
-)
+if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+	file(GLOB module_tests_src
+		tests/CommandLineInterpreterTests.cpp
+		tests/UserManagerTests.cpp
+		tests/ModuleTests.cpp
+	)
 
-add_executable(module_tests ${module_tests_src})
-target_link_libraries(module_tests ghost_module ${CONAN_LIBS})
+	add_executable(module_tests ${module_tests_src})
+	target_link_libraries(module_tests ghost_module ${CONAN_LIBS})
 
-set_property(TARGET module_tests PROPERTY FOLDER "tests")
+	set_property(TARGET module_tests PROPERTY FOLDER "tests")
+endif()
 
 ##### Examples #####
 
-# minimum code to create a module
-add_executable(module_minimum examples/module_minimum.cpp)
-target_link_libraries(module_minimum ghost_module)
+if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
+	# minimum code to create a module
+	add_executable(module_minimum examples/module_minimum.cpp)
+	target_link_libraries(module_minimum ghost_module)
 
-set_property(TARGET module_minimum PROPERTY FOLDER "examples")
+	set_property(TARGET module_minimum PROPERTY FOLDER "examples")
 
-# module that writes every second where the user can update the written text
-add_executable(module_with_console examples/module_with_console.cpp)
-target_link_libraries(module_with_console ghost_module)
+	# module that writes every second where the user can update the written text
+	add_executable(module_with_console examples/module_with_console.cpp)
+	target_link_libraries(module_with_console ghost_module)
 
-set_property(TARGET module_with_console PROPERTY FOLDER "examples")
+	set_property(TARGET module_with_console PROPERTY FOLDER "examples")
+endif()

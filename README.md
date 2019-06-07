@@ -28,14 +28,14 @@ ghostmodule uses CMake and Conan for the dependency management.
 
 The only external dependency is googletest (<https://github.com/google/googletest>), which is only used for the unit tests.
 
-#### Simple installation (without unit tests)
+#### Simple installation (without unit tests, with examples)
 
 Per default, building the unit tests is disabled. To build the library, simply execute the CMake script, as in the following example for Windows:
 
 ```bash
 mkdir build
 cd build
-cmake .. -G "Visual Studio 15 Win64"
+cmake .. -G "Visual Studio 15 Win64" -DBUILD_EXAMPLES=True
 cmake --build . --config Release
 ```
 
@@ -44,9 +44,11 @@ For debug builds, with the Linux version:
 ```bash
 mkdir build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=True
 cmake --build .
 ```
+
+If "BUILD_EXAMPLES=True" is not specified, the examples will not be built.
 
 *Note: during the configure phase of CMake, a support repository is downloaded from Github, which contains implementation details: ghostsupport.*
 
@@ -57,7 +59,7 @@ The unit tests require googletest, which is brought to the project by Conan. **P
 ```bash
 mkdir build
 cd build
-cmake .. -DBUILD_TESTS=True -G "Visual Studio 15 Win64"
+cmake .. -DBUILD_TESTS=True -DBUILD_EXAMPLES=True -G "Visual Studio 15 Win64"
 cmake --build .
 ```
 
