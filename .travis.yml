@@ -1,6 +1,5 @@
 os:
   - linux
-  - windows
 language: python
 python: "3.7"
 dist: xenial
@@ -18,4 +17,4 @@ script:
   - cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=True -DBUILD_TESTS=True
   - cmake --build .
 # Run the tests
-  - ctest .
+  - ctest . -C Release

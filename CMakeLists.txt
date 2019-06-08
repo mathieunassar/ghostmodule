@@ -15,6 +15,7 @@ endif()
 
 # define the project
 project(${projectName} CXX)
+enable_testing()
 include(GoogleTest)
 
 # setup ghost variables
@@ -208,8 +209,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	add_executable(module_tests ${module_tests_src})
 	target_link_libraries(module_tests ghost_module ${CONAN_LIBS})
 
-	gtest_discover_tests(module_tests
-			COMMAND module_tests)
+	gtest_add_tests(TARGET module_tests)
 
 	set_property(TARGET module_tests PROPERTY FOLDER "tests")
 endif()
