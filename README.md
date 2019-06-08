@@ -61,6 +61,7 @@ mkdir build
 cd build
 cmake .. -DBUILD_TESTS=True -DBUILD_EXAMPLES=True -G "Visual Studio 15 Win64"
 cmake --build .
+ctest .
 ```
 
 *Note: multi-configurations is not supported by this project. In order to switch from a Debug build to a Release build (or the contrary), cmake must be executed again with the corresponding value for the parameter "CMAKE_BUILD_TYPE".*
