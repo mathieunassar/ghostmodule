@@ -98,3 +98,7 @@ Two examples are provided to grasp the basic features provided by ghostmodule:
 In order to build the examples, pass the flag "`-DBUILD_EXAMPLES=True`" to CMake. After quickly inspecting the source code, you can execute the programs and play around with them.
 
 To continue working with this library, please read the documentation contained in the API header files contained in the folder include/ghost/module.
+
+## Feedback
+
+If you are using this library, find a bug or have a recommendation, I would be glad to hear from you!
