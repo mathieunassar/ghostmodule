@@ -8,14 +8,10 @@
 
 Lightweight, multiplatform and accessible framework to create simple command line-based programs.
 
-
-
 |    Build system    |                         Build status                         |
 | :----------------: | :----------------------------------------------------------: |
 |    Windows x64     |                                                              |
 | Linux x64 (xenial) | [![Build Status](https://travis-ci.com/mathieunassar/ghostmodule.svg?branch=master)](https://travis-ci.com/mathieunassar/ghostmodule) |
-
-
 
 ## Overview
 
