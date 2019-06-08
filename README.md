@@ -15,22 +15,22 @@ ghostmodule is a C++ library providing a framework for simple command line appli
 - **Program lifetime management**: separates the different stages of the program's life: its initialization, runtime and finalization;
 - **Console control**: provides a way to input commands, and controls the output flow to pause when the User is typing;
 - **Command interpretation**: optionally processes user input as commands, previously defined by the developer;
-- **User management**: exposes a login system to restrict the access to some commands and program features.
-- **Multiplatform**: Linux (Ubuntu, GCC compilers) and Windows (MSVC compilers) platforms are currently supported.
+- **User management**: exposes a login system to restrict the access to some commands and program features;
+- **Multiplatform**: Linux (Ubuntu Xenial, GCC compilers) and Windows (MSVC compilers) platforms are currently supported.
 
 This README file contains the installation instructions, as well as a brief introduction to the features provided by ghostmodule.
 
 ## Setup
 
-Being lightweight, the installation of ghostmodule is simple.
+Being lightweight, the installation of ghostmodule is simple and straightforward.
 
-ghostmodule uses CMake and Conan for the dependency management.
+ghostmodule uses CMake (<https://cmake.org/>) and Conan (<https://conan.io/>) for the dependency management.
 
-The only external dependency is googletest (<https://github.com/google/googletest>), which is only used for the unit tests.
+The only external dependency is googletest (<https://github.com/google/googletest>), which is used for the unit tests.
 
 #### Simple installation (without unit tests, with examples)
 
-Per default, building the unit tests is disabled. To build the library, simply execute the CMake script, as in the following example for Windows:
+Per default, building the unit tests and the examples is disabled. To build the library, simply execute the CMake script, as in the following example for Windows:
 
 ```bash
 mkdir build
@@ -48,13 +48,13 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=True
 cmake --build .
 ```
 
-If "BUILD_EXAMPLES=True" is not specified, the examples will not be built.
+If "`BUILD_EXAMPLES=True`" is not specified, the examples will not be built.
 
 *Note: during the configure phase of CMake, a support repository is downloaded from Github, which contains implementation details: ghostsupport.*
 
 #### Full installation (with the unit tests)
 
-The unit tests require googletest, which is brought to the project by Conan. **Python3** must first be installed, followed by **Conan**, which can be easily installed with Python's pip install tool. Once "conan" call be called from a bash console, building the project is easy:
+The unit tests require googletest (<https://github.com/google/googletest>), which is brought to the project by Conan. **Conan** must be installed, which can be easily installed with Python3's pip install tool. Once "`conan`" call be called from a bash console, building the project is easy:
 
 ```bash
 mkdir build
@@ -64,7 +64,7 @@ cmake --build .
 ctest .
 ```
 
-*Note: multi-configurations is not supported by this project. In order to switch from a Debug build to a Release build (or the contrary), cmake must be executed again with the corresponding value for the parameter "CMAKE_BUILD_TYPE".*
+*Note: multi-configurations generators is not supported by this project. In order to switch from a Debug build to a Release build (or the contrary), cmake must be executed again with the corresponding value for the parameter "`CMAKE_BUILD_TYPE`".*
 
 #### Use ghostmodule as a submodule
 
@@ -90,8 +90,11 @@ target_link_libraries(yourTarget ghost_module)
 
 ## Getting Started
 
-tutorial 1 &2
+Two examples are provided to grasp the basic features provided by ghostmodule:
 
+- examples/module_minimum.cpp: The program shows how to create a simple module and illustrates the feature "**program lifetime management**".
+- examples/module_with_console.cpp: This example implements a program that cyclically displays a text, and that provides a command to update the text. The program uses the "**console control**" feature to request a user input, and the "**command interpretation**" feature to automatically process the command.
 
+In order to build the examples, pass the flag "`-DBUILD_EXAMPLES=True`" to CMake. After quickly inspecting the source code, you can execute the programs and play around with them.
 
-3 - add some travis build stuff
+To continue working with this library, please read the documentation contained in the API header files contained in the folder include/ghost/module.
