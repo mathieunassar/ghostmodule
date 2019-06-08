@@ -1,7 +1,7 @@
 os:
   - linux
   - windows
-language: python
+language: cpp
 python: "3.7"
 dist: xenial
 compiler:
