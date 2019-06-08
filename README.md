@@ -10,7 +10,7 @@ Lightweight, multiplatform and accessible framework to create simple command lin
 
 |    Build system    |                         Build status                         |
 | :----------------: | :----------------------------------------------------------: |
-|    Windows x64     |                                                              |
+|    Windows x64     | [![Build status](https://ci.appveyor.com/api/projects/status/urayu2uebhqq3m6y?svg=true)](https://ci.appveyor.com/project/mathieunassar/ghostmodule) |
 | Linux x64 (xenial) | [![Build Status](https://travis-ci.com/mathieunassar/ghostmodule.svg?branch=master)](https://travis-ci.com/mathieunassar/ghostmodule) |
 
 ## Overview
