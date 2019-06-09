@@ -192,30 +192,29 @@ add_library(ghost_connection ${header_connection2_lib}
 	${protobuf_connection2_lib}
 	)
 
-if (WIN32)
-	target_link_libraries(ghost_connection ws2_32)
-else ()
+if (NOT WIN32)
 	target_link_libraries(ghost_connection pthread)
 endif()
 
-target_link_libraries(ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF})
+target_link_libraries(ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})
 
 ##########################################################################################################################################
 
-# Unit tests: Primitive Serialization
-#file(GLOB source_connection2_tests
-#./tests/ConnectionMocks.hpp
-#./tests/ConnectionMocks.cpp
-#./tests/MessageTests.cpp
-#./tests/ConfigurationTests.cpp
-#./tests/ReaderWriterTests.cpp
-#./tests/ConnectionTests.cpp
-#./tests/NetworkConnectionTests.cpp)
+if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+	# Unit tests: Primitive Serialization
+	file(GLOB source_connection2_tests
+		./tests/ConnectionMocks.hpp
+		./tests/ConnectionMocks.cpp
+		./tests/MessageTests.cpp
+		./tests/ConfigurationTests.cpp
+		./tests/ReaderWriterTests.cpp
+		./tests/ConnectionTests.cpp
+		./tests/NetworkConnectionTests.cpp)
 
-#set(libraries_connection2_tests
-#ghost_connection)
+	add_executable(connection_tests ${source_connection2_tests})
+	target_link_libraries(connection_tests ghost_connection ${CONAN_LIBS_GTEST})
+	
+	gtest_add_tests(TARGET connection_tests)
 
-#add_executable(connection_tests ${source_connection2_tests})
-#target_link_libraries(connection_tests ${libraries_connection2_tests})
-#set_property(TARGET connection_tests PROPERTY FOLDER "tests")
-#add_test(connection_tests connection_tests)
+	set_property(TARGET connection_tests PROPERTY FOLDER "tests")
+endif()

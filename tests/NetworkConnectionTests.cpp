@@ -1,5 +1,21 @@
-#include <catch.hpp>
+/*
+ * Copyright 2019 Mathieu Nassar
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless ASSERT_TRUEd by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <iostream>
+#include <gtest/gtest.h>
 
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
@@ -7,7 +23,21 @@
 
 using namespace ghost;
 
-TEST_CASE("test_network_connections")
+class NetworkConnectionTests : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+
+	}
+
+	void TearDown() override
+	{
+
+	}
+};
+
+TEST_F(NetworkConnectionTests, test_network_connections)
 {
 	NetworkConnectionConfiguration publisherConfig;
 	publisherConfig.setServerIpAddress("127.0.0.1");
@@ -19,18 +49,18 @@ TEST_CASE("test_network_connections")
 	auto connectionManager = ghost::ConnectionManager::create();
 
 	auto badpublisher = connectionManager->createPublisher(publisherConfig);
-	REQUIRE(!badpublisher); // fails because the blocking attribute was removed from the configuration
+	ASSERT_TRUE(!badpublisher); // fails because the blocking attribute was removed from the configuration
 
 	publisherConfig.addAttribute("CONNECTIONCONFIGURATION_BLOCKING", false);
 
 	auto publisher = connectionManager->createPublisher(publisherConfig);
-	REQUIRE(publisher); // succeeds because the blocking attribute was added again
+	ASSERT_TRUE(publisher); // succeeds because the blocking attribute was added again
 
 	auto subscriber = connectionManager->createSubscriber(publisherConfig);
-	REQUIRE(subscriber);
+	ASSERT_TRUE(subscriber);
 
 	auto subscriber2 = connectionManager->createSubscriber(publisherConfig);
-	REQUIRE(subscriber2);
+	ASSERT_TRUE(subscriber2);
 
 	auto writer = publisher->getWriter<internal::protobuf::GenericMessageHeader>();
 	auto reader = subscriber->getReader<internal::protobuf::GenericMessageHeader>();
@@ -62,20 +92,20 @@ TEST_CASE("test_network_connections")
 	subscriber->start();
 	subscriber2->start();
 
-	REQUIRE(publisher->isRunning());
-	REQUIRE(subscriber->isRunning());
+	ASSERT_TRUE(publisher->isRunning());
+	ASSERT_TRUE(subscriber->isRunning());
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	while (counterSent < 100'000)
 	{
 		internal::protobuf::GenericMessageHeader msg;
 		msg.set_timestamp(counterSent);
 		bool writeSuccess = writer->write(msg);
-		REQUIRE(writeSuccess);
+		ASSERT_TRUE(writeSuccess);
 		counterSent++;
 	}
 
 	std::cout << "finished sending" << std::endl;
-	REQUIRE(counterSent == 100000);
+	ASSERT_TRUE(counterSent == 100000);
 
 	auto end = std::chrono::system_clock::now() + std::chrono::seconds(50);
 	auto now = std::chrono::system_clock::now();
@@ -85,9 +115,9 @@ TEST_CASE("test_network_connections")
 		now = std::chrono::system_clock::now();
 	}
 
-	REQUIRE(counterReceived == 100000);
-	REQUIRE(counterReceived2 == 100000);
-	REQUIRE(wrongOrderCount == 0);
+	ASSERT_TRUE(counterReceived == 100000);
+	ASSERT_TRUE(counterReceived2 == 100000);
+	ASSERT_TRUE(wrongOrderCount == 0);
 
 	std::cout << "stopping second subscriber" << std::endl;
 	subscriber2->stop();
@@ -98,7 +128,7 @@ TEST_CASE("test_network_connections")
 		internal::protobuf::GenericMessageHeader msg;
 		msg.set_timestamp(counterSent);
 		bool writeSuccess = writer->write(msg);
-		REQUIRE(writeSuccess);
+		ASSERT_TRUE(writeSuccess);
 		counterSent++;
 	}
 
@@ -110,13 +140,13 @@ TEST_CASE("test_network_connections")
 		now2 = std::chrono::system_clock::now();
 	}
 
-	REQUIRE(counterSent == 150000);
-	REQUIRE(counterReceived == 150000); // important is that it kept receiving messages
-	REQUIRE(counterReceived2 == 100000);
+	ASSERT_TRUE(counterSent == 150000);
+	ASSERT_TRUE(counterReceived == 150000); // important is that it kept receiving messages
+	ASSERT_TRUE(counterReceived2 == 100000);
 
 	publisher->stop();
 	subscriber->stop();
 
-	REQUIRE(!publisher->isRunning());
-	REQUIRE(!subscriber->isRunning());
+	ASSERT_TRUE(!publisher->isRunning());
+	ASSERT_TRUE(!subscriber->isRunning());
 }

@@ -1,6 +1,21 @@
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+/*
+ * Copyright 2019 Mathieu Nassar
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless ASSERT_TRUEd by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <iostream>
+#include <gtest/gtest.h>
 
 #include <ghost/connection/internal/ProtobufMessage.hpp>
 #include <ghost/connection/internal/GenericMessageConverter.hpp>
@@ -9,6 +24,20 @@
 #include "../protobuf/Ghost.pb.h"
 
 using namespace ghost;
+
+class MessageTests : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+
+	}
+
+	void TearDown() override
+	{
+
+	}
+};
 
 class MyMessage : public Message
 {
@@ -38,7 +67,7 @@ public:
 	}
 };
 
-TEST_CASE("test_conversion")
+TEST_F(MessageTests, test_conversion)
 {
 	auto proto = std::make_shared<ghost::internal::protobuf::GenericMessage>();
 	proto->set_format("bonjour");
@@ -47,23 +76,23 @@ TEST_CASE("test_conversion")
 
 	// Test: ProtobufMessage return values
 	ProtobufMessage message(proto);
-	REQUIRE(message.getMessageTypeName() == proto->GetTypeName());
-	REQUIRE(message.getMessageFormatName() == internal::GHOSTMESSAGE_FORMAT_NAME);
+	ASSERT_TRUE(message.getMessageTypeName() == proto->GetTypeName());
+	ASSERT_TRUE(message.getMessageFormatName() == internal::GHOSTMESSAGE_FORMAT_NAME);
 	
 	// Test: protobuf serialization from message
 	std::string serialized;
 	bool success = message.serialize(serialized);
-	REQUIRE(success);
-	REQUIRE(serialized == message.getProtobufMessage()->SerializeAsString());
+	ASSERT_TRUE(success);
+	ASSERT_TRUE(serialized == message.getProtobufMessage()->SerializeAsString());
 
 	// Test: protobuf deserialization to message
 	ProtobufMessage reformed = ProtobufMessage::create<ghost::internal::protobuf::GenericMessage>();
 	bool success2 = reformed.deserialize(serialized);
-	REQUIRE(success2);
-	REQUIRE(reformed.getMessageTypeName() == proto->GetTypeName());
-	REQUIRE(reformed.getMessageFormatName() == internal::GHOSTMESSAGE_FORMAT_NAME);
+	ASSERT_TRUE(success2);
+	ASSERT_TRUE(reformed.getMessageTypeName() == proto->GetTypeName());
+	ASSERT_TRUE(reformed.getMessageFormatName() == internal::GHOSTMESSAGE_FORMAT_NAME);
 	auto reformedProto = std::static_pointer_cast<ghost::internal::protobuf::GenericMessage>(reformed.getProtobufMessage());
-	REQUIRE(reformedProto->header().timestamp() == 582);
+	ASSERT_TRUE(reformedProto->header().timestamp() == 582);
 
 	// Test: conversion to Any from real protobuf message
 	auto proto2 = std::make_shared<ghost::internal::protobuf::GenericMessageHeader>();
@@ -72,69 +101,69 @@ TEST_CASE("test_conversion")
 
 	google::protobuf::Any any;
 	bool success3 = internal::GenericMessageConverter::create(any, message3);
-	REQUIRE(success3);
-	REQUIRE(internal::GenericMessageConverter::getTrueTypeName(any) == message3.getMessageTypeName());
+	ASSERT_TRUE(success3);
+	ASSERT_TRUE(internal::GenericMessageConverter::getTrueTypeName(any) == message3.getMessageTypeName());
 
 	// Test: conversion from nullptr protobuf message
 	google::protobuf::Any poorAny;
 	ProtobufMessage nullMessage(nullptr);
 	bool success4 = internal::GenericMessageConverter::create(poorAny, nullMessage);
-	REQUIRE(!success4);
+	ASSERT_TRUE(!success4);
 
 	// Test: conversion from any to nullptr ProtobufMessage
 	bool success5 = internal::GenericMessageConverter::parse(any, nullMessage);
-	REQUIRE(!success5);
+	ASSERT_TRUE(!success5);
 
 	// Test: conversion from no any to real message
 	ProtobufMessage message2 = ProtobufMessage::create<ghost::internal::protobuf::GenericMessage>();
 	bool success6 = internal::GenericMessageConverter::parse(poorAny, message2);
 	std::cout << "any type: " << internal::GenericMessageConverter::getTrueTypeName(poorAny) << std::endl;
-	REQUIRE(!success6);
+	ASSERT_TRUE(!success6);
 
 	// Test: conversion from any to different message type
 	bool success7 = internal::GenericMessageConverter::parse(any, message2);
-	REQUIRE(!success7);
+	ASSERT_TRUE(!success7);
 
 	// Test: conversion from good any to good ProtobufMessage
 	bool success8 = internal::GenericMessageConverter::parse(any, message3);
-	REQUIRE(success8);
+	ASSERT_TRUE(success8);
 	auto reformedProto2 = std::static_pointer_cast<ghost::internal::protobuf::GenericMessageHeader>(message3.getProtobufMessage());
-	REQUIRE(reformedProto2->timestamp() == 582);
+	ASSERT_TRUE(reformedProto2->timestamp() == 582);
 
 	// Test: MyMessage to any
 	MyMessage message4("superstring123");
 	google::protobuf::Any customAny;
 	bool success9 = internal::GenericMessageConverter::create(customAny, message4);
-	REQUIRE(success9);
-	REQUIRE(internal::GenericMessageConverter::getTrueTypeName(customAny) == internal::protobuf::GenericMessage().GetTypeName());
+	ASSERT_TRUE(success9);
+	ASSERT_TRUE(internal::GenericMessageConverter::getTrueTypeName(customAny) == internal::protobuf::GenericMessage().GetTypeName());
 
 	// Test: Any to MyMessage
 	MyMessage reformed2("");
 	bool success10 = internal::GenericMessageConverter::parse(customAny, reformed2);
-	REQUIRE(success10);
-	REQUIRE(reformed2._string == "superstring123");
+	ASSERT_TRUE(success10);
+	ASSERT_TRUE(reformed2._string == "superstring123");
 
 	// Test: Any to protobufMessage
 	ProtobufMessage illformed = ProtobufMessage::create<ghost::internal::protobuf::GenericMessage>();
 	bool success11 = internal::GenericMessageConverter::parse(customAny, illformed);
-	REQUIRE(!success11);
+	ASSERT_TRUE(!success11);
 
 	// Test: protobuf any to MyMessage
 	bool success12 = internal::GenericMessageConverter::parse(any, reformed2);
-	REQUIRE(!success12);
+	ASSERT_TRUE(!success12);
 
 	// Test: failing mymessage to any
 	message4.setWillFail(true);
 	google::protobuf::Any customAny2;
 	bool success13 = internal::GenericMessageConverter::create(customAny2, message4);
-	REQUIRE(!success13);
+	ASSERT_TRUE(!success13);
 
 	// Test any to failing mymessage
 	bool success14 = internal::GenericMessageConverter::parse(customAny, message4);
-	REQUIRE(!success14);
+	ASSERT_TRUE(!success14);
 }
 
-TEST_CASE("test_messagehandler")
+TEST_F(MessageTests, test_messagehandler)
 {
 	int counter = 0;
 	MessageHandlerMock mock;
@@ -156,7 +185,7 @@ TEST_CASE("test_messagehandler")
 
 	mock.getInternal()->handle(any);
 
-	REQUIRE(counter == 1); // first message was sent to the message handler
+	ASSERT_TRUE(counter == 1); // first message was sent to the message handler
 	mock.getInternal()->handle(any2);
-	REQUIRE(counter == 1); // second message didnt find a handler.
+	ASSERT_TRUE(counter == 1); // second message didnt find a handler.
 }
