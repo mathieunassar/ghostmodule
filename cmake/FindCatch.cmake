@@ -1,7 +1,0 @@
-file(READ ${GHOST_CONNECTION_ROOT_DIR}/third-party/catch_version.txt REQUIRED_VERSION_CATCH)
-set(CATCH_VERSION_FOLDER "catch_${REQUIRED_VERSION_CATCH}")
-
-SET(CATCH_INCLUDE_DIRS "${GHOST_THIRD_PARTIES_ROOT_DIR}/catch/${CATCH_VERSION_FOLDER}/" CACHE STRING "Catch include directory")
-
-message(STATUS "Found Catch: ")
-message(STATUS "- include: " ${CATCH_INCLUDE_DIRS})

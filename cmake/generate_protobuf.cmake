@@ -8,13 +8,17 @@ function(generate_protoc source_dir output_dir source_file)
 		set(proto_include_dirs ${proto_include_dirs} -I ${dir})
 	endforeach()
 
+	set(PROTOC_PATH "${CONAN_BIN_DIRS_PROTOC_INSTALLER}/protoc.exe")
+	set(PROTOC_INCLUDES ${CONAN_INCLUDE_DIRS_PROTOC_INSTALLER})
+	set(GRPC_PLUGIN "${CONAN_BIN_DIRS_GRPC}/grpc_cpp_plugin.exe")
+
 	foreach(file ${source_file})
 		message(STATUS "Generating grpc and protobuf: ${file}")
 
-		if (GRPC_CPP_PLUGIN_PATH)
+		if (GRPC_PLUGIN)
 			execute_process(
 				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-				COMMAND ${PROTOC_PATH} -I ${Protobuf_INCLUDE_DIRS} ${proto_include_dirs} --grpc_out=${output_dir} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} ${file}
+				COMMAND ${PROTOC_PATH} -I ${PROTOC_INCLUDES} ${proto_include_dirs} --grpc_out=${output_dir} --plugin=protoc-gen-grpc=${GRPC_PLUGIN} ${file}
 				RESULT_VARIABLE protoc_grpc_result
 				ERROR_VARIABLE protoc_grpc_error_variable
 			)
@@ -26,7 +30,7 @@ function(generate_protoc source_dir output_dir source_file)
 		
 		execute_process(
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${PROTOC_PATH} -I ${Protobuf_INCLUDE_DIRS} ${proto_include_dirs} --cpp_out=${output_dir} ${file}
+			COMMAND ${PROTOC_PATH} -I ${PROTOC_INCLUDES} ${proto_include_dirs} --cpp_out=${output_dir} ${file}
 			RESULT_VARIABLE protoc_result
 			ERROR_VARIABLE protoc_error_variable
 		)

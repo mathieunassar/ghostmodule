@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.8)
 set(projectName ghost_connection)
 set(GHOST_CONNECTION_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE FILEPATH "Root directory of ghost_connection")
 set(CMAKE_DEBUG_POSTFIX "d")
-set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
 set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
@@ -11,16 +10,27 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GHOST_CONNECTION_ROOT_DIR}/cmake/")
 
+if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+endif()
+
 # define the project
 project(${projectName} CXX)
+enable_testing()
+include(GoogleTest)
 
 # setup ghost variables
-include(cmake/Ghost.cmake)
-setup_ghost_repository()
+include(${GHOST_CONNECTION_ROOT_DIR}/cmake/ghost.cmake)
+
+# fetch the dependencies with conan
+include(${GHOST_CONNECTION_ROOT_DIR}/cmake/conan.cmake)
+conan_check(REQUIRED)
+conan_cmake_run(CONANFILE conanfile.txt
+				BASIC_SETUP
+				BUILD missing)
 
 # Windows specific stuff
 if (MSVC)
-	set(GHOST_BUILD_NAME "buildVS2017_x86")
 	message(STATUS "MSVC compiler detected - version: " ${MSVC_VERSION})
 	
 	if (MSVC_VERSION GREATER_EQUAL "1900")
@@ -38,23 +48,12 @@ if (MSVC)
 	add_compile_options("/EHsc")
 endif (MSVC)
 
-# unix specific stuff
-if (UNIX)
-    set(GHOST_BUILD_NAME "buildUnix_x86_64")
-endif (UNIX)
-
-find_package(Protobuf REQUIRED)
-find_package(GRPC REQUIRED)
-find_package(Catch REQUIRED)
-
-include(cmake/ProtobufGeneration.cmake)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # import Ghost Support
 SET(GHOST_SUPPORT_URL "https://github.com/mathieunassar/ghostsupport" CACHE STRING "Ghost Support location")
 file(READ ${GHOST_CONNECTION_ROOT_DIR}/third-party/ghost_support_version.txt GHOST_SUPPORT_BRANCH)
 fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ##########################################################################################################################################
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
@@ -69,22 +68,13 @@ SET(GHOST_CONNECTION_INCLUDE_DIRECTORIES
 # provide path to include directories
 include_directories(
 	${GHOST_CONNECTION_INCLUDE_DIRECTORIES}
-	${Protobuf_INCLUDE_DIRS}
-	${GRPC_INCLUDE_DIRS}
-	${CATCH_INCLUDE_DIRS}
-)
-
-# provide path to libraries
-link_directories(
-	${Protobuf_LIBS_RELEASE}
-	${Protobuf_LIBS_RELEASE}
-	${GRPC_LIBRARIES_RELEASE}
-	${GRPC_LIBRARIES_DEBUG}
 )
 
 ##########################################################################################################################################
 ############################################################ CONNECTION LIBRARY ##########################################################
 ##########################################################################################################################################
+
+include(cmake/generate_protobuf.cmake)
 
 set(PROTOC_SOURCE_CUSTOM ${GHOST_CONNECTION_ROOT_DIR}/protobuf/)
 find_proto_files(${GHOST_CONNECTION_ROOT_DIR}/protobuf/)
@@ -208,24 +198,24 @@ else ()
 	target_link_libraries(ghost_connection pthread)
 endif()
 
-target_link_libraries(ghost_connection ${Protobuf_LIBRARIES} ${GRPC_LIBRARIES})
+target_link_libraries(ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF})
 
 ##########################################################################################################################################
 
 # Unit tests: Primitive Serialization
-file(GLOB source_connection2_tests
-./tests/ConnectionMocks.hpp
-./tests/ConnectionMocks.cpp
-./tests/MessageTests.cpp
-./tests/ConfigurationTests.cpp
-./tests/ReaderWriterTests.cpp
-./tests/ConnectionTests.cpp
-./tests/NetworkConnectionTests.cpp)
+#file(GLOB source_connection2_tests
+#./tests/ConnectionMocks.hpp
+#./tests/ConnectionMocks.cpp
+#./tests/MessageTests.cpp
+#./tests/ConfigurationTests.cpp
+#./tests/ReaderWriterTests.cpp
+#./tests/ConnectionTests.cpp
+#./tests/NetworkConnectionTests.cpp)
 
-set(libraries_connection2_tests
-ghost_connection)
+#set(libraries_connection2_tests
+#ghost_connection)
 
-add_executable(connection_tests ${source_connection2_tests})
-target_link_libraries(connection_tests ${libraries_connection2_tests})
-set_property(TARGET connection_tests PROPERTY FOLDER "tests")
-add_test(connection_tests connection_tests)
+#add_executable(connection_tests ${source_connection2_tests})
+#target_link_libraries(connection_tests ${libraries_connection2_tests})
+#set_property(TARGET connection_tests PROPERTY FOLDER "tests")
+#add_test(connection_tests connection_tests)
