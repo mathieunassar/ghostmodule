@@ -2,10 +2,13 @@
 
 using namespace ghost;
 
-namespace ghost::internal
+namespace ghost
 {
-	static std::string NETWORKCONNECTIONCONFIGURATION_SERVERIP = "NETWORKCONNECTIONCONFIGURATION_SERVERIP";
-	static std::string NETWORKCONNECTIONCONFIGURATION_SERVERPORT = "NETWORKCONNECTIONCONFIGURATION_SERVERPORT";
+	namespace internal
+	{
+		static std::string NETWORKCONNECTIONCONFIGURATION_SERVERIP = "NETWORKCONNECTIONCONFIGURATION_SERVERIP";
+		static std::string NETWORKCONNECTIONCONFIGURATION_SERVERPORT = "NETWORKCONNECTIONCONFIGURATION_SERVERPORT";
+	}
 }
 
 NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string& name)
