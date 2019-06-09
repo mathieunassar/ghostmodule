@@ -10,12 +10,14 @@ function(generate_protoc source_dir output_dir source_file)
 
 	set(PROTOC_PATH "${CONAN_BIN_DIRS_PROTOC_INSTALLER}/protoc.exe")
 	set(PROTOC_INCLUDES ${CONAN_INCLUDE_DIRS_PROTOC_INSTALLER})
-	set(GRPC_PLUGIN "${CONAN_BIN_DIRS_GRPC}/grpc_cpp_plugin.exe")
+	if (DEFINED CONAN_BIN_DIRS_GRPC)
+		set(GRPC_PLUGIN "${CONAN_BIN_DIRS_GRPC}/grpc_cpp_plugin.exe")
+	endif()
 
 	foreach(file ${source_file})
 		message(STATUS "Generating grpc and protobuf: ${file}")
 
-		if (GRPC_PLUGIN)
+		if (DEFINED GRPC_PLUGIN)
 			execute_process(
 				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 				COMMAND ${PROTOC_PATH} -I ${PROTOC_INCLUDES} ${proto_include_dirs} --grpc_out=${output_dir} --plugin=protoc-gen-grpc=${GRPC_PLUGIN} ${file}
