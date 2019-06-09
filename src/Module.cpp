@@ -121,7 +121,7 @@ void Module::start()
 			currentState = getState();
 		}
 
-		if (currentState == ghost::internal::Module::RUNNING)
+		if (currentState == ghost::internal::Module::RUNNING || currentState == ghost::internal::Module::DISPOSING)
 			stop();
 
 		if (_console)
