@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../src/UserManager.hpp"
+#include "../src/module/UserManager.hpp"
 
 #include <gtest/gtest.h>
 

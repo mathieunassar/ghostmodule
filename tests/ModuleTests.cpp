@@ -17,7 +17,7 @@
 #include <ghost/module/Module.hpp>
 #include <ghost/module/ModuleBuilder.hpp>
 #include <ghost/module/StdoutLogger.hpp>
-#include "../src/Module.hpp"
+#include "../src/module/Module.hpp"
 
 #include <chrono>
 #include <thread>
