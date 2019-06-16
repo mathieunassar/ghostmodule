@@ -23,7 +23,7 @@ include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
 
 # fetch the dependencies with conan
 if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
-	OR (DEFINED BUILD_PERSISTENCE)
+	OR (NOT DEFINED BUILD_PERSISTENCE)
 	OR (${BUILD_PERSISTENCE}))
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
 	conan_check(REQUIRED)
