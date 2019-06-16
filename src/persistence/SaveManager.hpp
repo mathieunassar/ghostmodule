@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <ghost/persistence/SaveManager.hpp>
+#include "SaveData.hpp"
 
 namespace ghost
 {
@@ -62,7 +63,7 @@ namespace ghost
 
 				_Note_: it is possible to have multiple data with the same name
 			*/
-			std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> _saveData;
+			std::map<std::string, std::list<std::shared_ptr<ghost::internal::SaveData>>> _saveData;
 			std::string _saveRoot;
 		};
 	}

@@ -17,31 +17,9 @@
 #include <ghost/persistence/SaveData.hpp>
 #include "SaveData.hpp"
 
-ghost::SaveData::SaveData(const std::string& name)
-	: _internal(std::make_unique<ghost::internal::SaveData>(name))
+std::shared_ptr<ghost::SaveData> ghost::SaveData::create(const std::string& name)
 {
-
-}
-
-bool ghost::SaveData::remove(size_t index)
-{
-	if (index >= _internal->getData().size())
-		return false;
-
-	_internal->getData().erase(_internal->getData().begin() + index);
-	return true;
-}
-
-// gets the name of this data set
-const std::string& ghost::SaveData::getName() const
-{
-	return _internal->getName();
-}
-
-// returns the size of this data set
-size_t ghost::SaveData::size() const
-{
-	return _internal->getData().size();
+	return std::make_shared<ghost::internal::SaveData>(name);
 }
 
 // Implementation of the internal class
@@ -49,17 +27,25 @@ size_t ghost::SaveData::size() const
 ghost::internal::SaveData::SaveData(const std::string& name)
 	: _name(name)
 {
-
 }
 
-void ghost::internal::SaveData::setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
+bool ghost::internal::SaveData::remove(size_t index)
 {
-	_data = data;
+	if (index >= _data.size())
+		return false;
+
+	_data.erase(_data.begin() + index);
+	return true;
 }
 
-std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::SaveData::getData()
+const std::string& ghost::internal::SaveData::getName() const
 {
-	return _data;
+	return _name;
+}
+
+size_t ghost::internal::SaveData::size() const
+{
+	return _data.size();
 }
 
 const std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::SaveData::getData() const
@@ -67,7 +53,12 @@ const std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::Save
 	return _data;
 }
 
-const std::string& ghost::internal::SaveData::getName() const
+std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::SaveData::getData()
 {
-	return _name;
+	return _data;
+}
+
+void ghost::internal::SaveData::setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
+{
+	_data = data;
 }

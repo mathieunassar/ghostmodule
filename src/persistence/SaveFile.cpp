@@ -117,18 +117,18 @@ bool SaveFile::close()
 }
 
 // writes the list of data in a row in the file
-bool SaveFile::write(const std::list<std::shared_ptr<ghost::SaveData>>& data)
+bool SaveFile::write(const std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 {
 	if (!_codedOutputStream)
 		return false; // the file is not open for writing
 
-	for (const auto& d : data)
+	for (auto& d : data)
 	{
 		// write name
 		_codedOutputStream->WriteLittleEndian32(d->getName().size());
 		_codedOutputStream->WriteString(d->getName());
 
-		auto dataVector = ((internal::SaveData*)d.get())->getData(); // C-style cast can get over the private inheritance used to hide impl detail to the user
+		const auto& dataVector = d->getData();
 		for (const auto& message : dataVector)
 		{
 			_codedOutputStream->WriteLittleEndian32(message->ByteSize());
@@ -146,7 +146,7 @@ bool SaveFile::write(const std::list<std::shared_ptr<ghost::SaveData>>& data)
 }
 
 // parses the file and returns the list of data
-bool SaveFile::read(std::list<std::shared_ptr<ghost::SaveData>>& data)
+bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 {
 	if (!_codedInputStream)
 		return false; // the file was not open for reading
@@ -171,8 +171,8 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::SaveData>>& data)
 
 		if (size == 0) // this is the end of a data set!
 		{
-			auto newData = std::make_shared<ghost::SaveData>(nextDataSetName);
-			((internal::SaveData*)newData.get())->setData(set); // C-style cast can get over the private inheritance used to hide impl detail to the user
+			auto newData = std::make_shared<ghost::internal::SaveData>(nextDataSetName);
+			newData->setData(set);
 			data.push_back(newData);
 			set.clear();
 			nextDataSetName.clear();
@@ -192,8 +192,8 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::SaveData>>& data)
 
 	if (!set.empty() && !nextDataSetName.empty()) // add the last set if it is not empty
 	{
-		auto newData = std::make_shared<ghost::SaveData>(nextDataSetName);
-		((internal::SaveData*)newData.get())->setData(set); // C-style cast can get over the private inheritance used to hide impl detail to the user
+		auto newData = std::make_shared<ghost::internal::SaveData>(nextDataSetName);
+		newData->setData(set);
 		data.push_back(newData);
 	}
 	

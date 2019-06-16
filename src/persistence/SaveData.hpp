@@ -17,27 +17,30 @@
 #ifndef GHOST_INTERNAL_SAVE_DATA_HPP
 #define GHOST_INTERNAL_SAVE_DATA_HPP
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <google/protobuf/any.pb.h>
+#include <ghost/persistence/SaveData.hpp>
 
 namespace ghost
 {
 	namespace internal
 	{
-		class SaveData
+		/**
+		 *	Internal implementation of ghost::SaveData.
+		 */
+		class SaveData : public ghost::SaveData
 		{
 		public:
 			SaveData(const std::string& name);
 			virtual ~SaveData() = default;
 
-			void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data);
-			const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const;
-			std::vector<std::shared_ptr<google::protobuf::Any>>& getData();
-			const std::string& getName() const;
+			bool remove(size_t index) override;
+			const std::string& getName() const override;
+			size_t size() const override;
+			const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const override;
 
-		protected:
+			std::vector<std::shared_ptr<google::protobuf::Any>>& getData() override;
+			void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data) override;
+
+		private:
 			std::vector<std::shared_ptr<google::protobuf::Any>> _data;
 			std::string _name;
 		};

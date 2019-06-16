@@ -45,7 +45,7 @@ TEST_F(SaveFileTest, test_save_file)
 	bool resultOpen = file.open(SaveFile::WRITE);
 	ASSERT_TRUE(resultOpen);
 
-	std::list<std::shared_ptr<ghost::SaveData>> testData = generateTestdata(50,50);
+	std::list<std::shared_ptr<ghost::internal::SaveData>> testData = generateTestdata(50,50);
 
 	bool writeSuccess = file.write(testData);
 	ASSERT_TRUE(writeSuccess);
@@ -58,7 +58,7 @@ TEST_F(SaveFileTest, test_save_file)
 	bool resultOpen2 = file2.open(SaveFile::READ);
 	ASSERT_TRUE(resultOpen2);
 
-	std::list<std::shared_ptr<ghost::SaveData>> testData2;
+	std::list<std::shared_ptr<ghost::internal::SaveData>> testData2;
 	bool readResult = file2.read(testData2);
 	ASSERT_TRUE(readResult);
 

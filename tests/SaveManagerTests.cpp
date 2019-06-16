@@ -42,7 +42,7 @@ TEST_F(SaveManagerTest, test_save_manager_single_data_add_get)
 {
 	auto manager = ghost::SaveManager::create("");
 
-	auto data1 = std::make_shared<ghost::SaveData>("data1");
+	auto data1 = ghost::SaveData::create("data1");
 
 	// single data access
 	manager->addData(data1, "file1");
@@ -60,8 +60,8 @@ TEST_F(SaveManagerTest, test_save_manager_two_same_name)
 {
 	auto manager = ghost::SaveManager::create("");
 
-	auto data1 = std::make_shared<ghost::SaveData>("data1");
-	auto data2 = std::make_shared<ghost::SaveData>("data1");
+	auto data1 = ghost::SaveData::create("data1");
+	auto data2 = ghost::SaveData::create("data1");
 
 	manager->addData(data1, "file1");
 	manager->addData(data2, "file2");
@@ -126,28 +126,34 @@ TEST_F(SaveManagerTest, test_save_manager_save_load)
 	ASSERT_TRUE(loadSuccess);
 
 	// check the data
-	std::list<std::shared_ptr<ghost::SaveData>> resultData;
+	std::list<std::shared_ptr<ghost::internal::SaveData>> resultData;
 
 	it = data.begin();
 	auto result1 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result1.size() == 1);
 	ASSERT_TRUE(result1.count(file1) == 1);
 	std::list<std::shared_ptr<ghost::SaveData>> tmp = result1.at(file1);
-	resultData.insert(resultData.end(), tmp.begin(), tmp.end());
+	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
+	for (auto e : tmp)
+		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
 
 	++it;
 	auto result2 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result2.size() == 1);
 	ASSERT_TRUE(result2.count(file2) == 1);
 	tmp = result2.at(file2);
-	resultData.insert(resultData.end(), tmp.begin(), tmp.end());
+	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
+	for (auto e : tmp)
+		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
 
 	++it;
 	auto result3 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result3.size() == 1);
 	ASSERT_TRUE(result3.count(file3) == 1);
 	tmp = result3.at(file3);
-	resultData.insert(resultData.end(), tmp.begin(), tmp.end());
+	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
+	for (auto e : tmp)
+		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
 
 	compareTestData(data, resultData);
 }

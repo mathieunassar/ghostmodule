@@ -19,15 +19,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <google/protobuf/any.pb.h>
 
 namespace ghost
 {
-	namespace internal
-	{
-		class SaveData;
-	}
-
 	/**
 	 * @brief Contains data to store in a save file.
 	 * 
@@ -51,7 +47,8 @@ namespace ghost
 		 * 
 		 * @param name the name of this data set.
 		 */
-		SaveData(const std::string& name);
+		static std::shared_ptr<ghost::SaveData> create(const std::string& name);
+
 		virtual ~SaveData() = default;
 
 		/**
@@ -94,24 +91,33 @@ namespace ghost
 		 * @return true if data has been removed from the data set
 		 * @return false if no data has been removed from the data set.
 		 */
-		bool remove(size_t index);
+		virtual bool remove(size_t index) = 0;
 
 		/**
 		 * @brief Gets the name of this data set
 		 * 
 		 * @return the name of this data set 
 		 */
-		const std::string& getName() const;
+		virtual const std::string& getName() const = 0;
 
 		/**
 		 * @brief Returns the size of this data set, i.e. the number of data that it contains.
 		 * 
 		 * @return the size of this data set.
 		 */
-		size_t size() const;
+		virtual size_t size() const = 0;
 
-	private:
-		std::unique_ptr<ghost::internal::SaveData> _internal;
+		/**
+		 * @brief Returns the data set as a vector of google.protobuf.Any objects.
+		 *
+		 * @return the data set as a vector of google.protobuf.Any objects.
+		 */
+		virtual const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const = 0;
+
+	protected:
+		virtual std::vector<std::shared_ptr<google::protobuf::Any>>& getData() = 0;
+
+		virtual void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data) = 0;
 	};
 
 	#include "SaveData.impl.hpp"

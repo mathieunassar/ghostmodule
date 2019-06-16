@@ -35,9 +35,13 @@ SaveManager::SaveManager(const std::string& root)
 void SaveManager::addData(std::shared_ptr<ghost::SaveData> data, const std::string& file)
 {
 	if (_saveData.count(file) == 0)
-		_saveData[file] = std::list<std::shared_ptr<ghost::SaveData>>();
+		_saveData[file] = std::list<std::shared_ptr<ghost::internal::SaveData>>();
 
-	_saveData[file].push_back(data);
+	auto cast = std::dynamic_pointer_cast<ghost::internal::SaveData>(data);
+	if (!cast)
+		throw std::logic_error("ghost::SaveManager: the provided data was not properly instantiated.");
+
+	_saveData[file].push_back(cast);
 }
 
 // searches the map for data sets of the given name and removes them, returns true if at least one was removed
@@ -110,7 +114,7 @@ bool SaveManager::load(const std::list<std::string>& files)
 			return false;
 		}
 
-		std::list<std::shared_ptr<ghost::SaveData>> data;
+		std::list<std::shared_ptr<ghost::internal::SaveData>> data;
 		bool readSuccess = file.read(data);
 		if (!readSuccess)
 		{
