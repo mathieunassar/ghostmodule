@@ -132,7 +132,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	)
 
 	add_executable(module_tests ${module_tests_src})
-	target_link_libraries(module_tests ghost_module ${CONAN_LIBS})
+	target_link_libraries(module_tests ghost_module ${CONAN_LIBS_GTEST})
 
 	gtest_add_tests(TARGET module_tests)
 

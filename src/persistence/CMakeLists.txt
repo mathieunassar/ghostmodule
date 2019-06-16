@@ -29,7 +29,7 @@ add_library(ghost_persistence ${header_persistence_internal_lib}
 	${source_persistence_lib}
 )
 
-target_link_libraries(ghost_persistence ${CONAN_LIBS})
+target_link_libraries(ghost_persistence ${CONAN_LIBS_PROTOBUF})
 
 if (UNIX)
 	target_link_libraries(ghost_persistence pthread)
@@ -58,7 +58,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	)
 
 	add_executable(persistence_tests ${source_persistence_tests} ${protobuf_persistence_tests})
-	target_link_libraries(persistence_tests ghost_persistence)
+	target_link_libraries(persistence_tests ghost_persistence ${CONAN_LIBS_GTEST})
 
 	gtest_add_tests(TARGET persistence_tests)
 
