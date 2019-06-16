@@ -22,12 +22,16 @@ include(GoogleTest)
 include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
 
 # fetch the dependencies with conan
-if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+	OR (DEFINED BUILD_PERSISTENCE)
+	OR (${BUILD_PERSISTENCE}))
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
 	conan_check(REQUIRED)
 	conan_cmake_run(CONANFILE conanfile.txt
 					BASIC_SETUP
 					BUILD missing)
+
+	include(${GHOST_MODULE_ROOT_DIR}/cmake/generate_protobuf.cmake)
 endif()
 
 # Windows specific stuff

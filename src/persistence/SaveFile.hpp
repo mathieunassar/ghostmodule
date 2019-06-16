@@ -7,7 +7,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/any.pb.h>
 
-#include "../SaveData.hpp"
+#include <ghost/persistence/SaveData.hpp>
 
 namespace ghost
 {

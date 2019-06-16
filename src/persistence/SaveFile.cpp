@@ -1,4 +1,4 @@
-#include "../include/ghost/persistence/internal/SaveFile.hpp"
+#include "SaveFile.hpp"
 #include <iostream>
 #include <fcntl.h>
 #ifdef _WIN32
@@ -8,6 +8,8 @@
 	#include <sys/stat.h>
 	#include <unistd.h>
 #endif
+
+#include "SaveData.hpp"
 
 using namespace ghost::internal;
 

@@ -6,7 +6,7 @@
 #include <map>
 #include <memory>
 
-#include "../SaveManager.hpp"
+#include <ghost/persistence/SaveManager.hpp>
 
 namespace ghost
 {

@@ -18,6 +18,8 @@ namespace ghost
 
 			void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data);
 			const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const;
+			std::vector<std::shared_ptr<google::protobuf::Any>>& getData();
+			const std::string& getName() const;
 
 		protected:
 			std::vector<std::shared_ptr<google::protobuf::Any>> _data;

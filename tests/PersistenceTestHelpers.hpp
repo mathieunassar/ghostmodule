@@ -1,10 +1,11 @@
 #ifndef GHOST_TESTS_PERSISTENCE_TEST_HELPERS_HPP
 #define GHOST_TESTS_PERSISTENCE_TEST_HELPERS_HPP
 
-#include <catch.hpp>
+#include <gtest/gtest.h>
 #include <iostream>
 
-#include <ghost/persistence/internal/SaveFile.hpp>
+#include <ghost/persistence/SaveData.hpp>
+#include "../src/persistence/SaveData.hpp"
 #include "protobuf/tests.pb.h"
 
 std::list<std::shared_ptr<ghost::SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet);

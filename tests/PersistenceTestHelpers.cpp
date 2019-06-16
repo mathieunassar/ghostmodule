@@ -1,7 +1,5 @@
 #include "PersistenceTestHelpers.hpp"
 
-#include <ghost/persistence/internal/SaveData.hpp>
-
 using namespace ghost::internal;
 
 std::list<std::shared_ptr<ghost::SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet)
@@ -35,12 +33,12 @@ void compareTestData(const std::list<std::shared_ptr<ghost::SaveData>>& data1,
 	auto it2 = data2.begin();
 	while (it != data1.end())
 	{
-		REQUIRE(it2 != data2.end());
-		REQUIRE((*it)->getName() == (*it2)->getName());
+		ASSERT_TRUE(it2 != data2.end());
+		ASSERT_TRUE((*it)->getName() == (*it2)->getName());
 		auto d1 = ((ghost::internal::SaveData*)it->get())->getData();
 		auto d2 = ((ghost::internal::SaveData*)it2->get())->getData();
 
-		REQUIRE(d1.size() == d2.size());
+		ASSERT_TRUE(d1.size() == d2.size());
 		for (size_t i = 0; i < d1.size(); i++)
 		{
 			const auto& elem = d1[i];
@@ -50,14 +48,14 @@ void compareTestData(const std::list<std::shared_ptr<ghost::SaveData>>& data1,
 			auto msg2 = ghost::internal::protobuf::TestMessage1::default_instance();
 			bool unpack1 = elem->UnpackTo(&msg1);
 			bool unpack2 = elem2->UnpackTo(&msg2);
-			REQUIRE(unpack1);
-			REQUIRE(unpack2);
-			REQUIRE(msg1.field1() == msg2.field1());
+			ASSERT_TRUE(unpack1);
+			ASSERT_TRUE(unpack2);
+			ASSERT_TRUE(msg1.field1() == msg2.field1());
 		}
 
 		it++;
 		it2++;
 	}
 	
-	REQUIRE(it2 == data2.end());
+	ASSERT_TRUE(it2 == data2.end());
 }

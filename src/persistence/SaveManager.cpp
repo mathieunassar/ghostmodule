@@ -1,5 +1,5 @@
-#include "../include/ghost/persistence/internal/SaveManager.hpp"
-#include "../include/ghost/persistence/internal/SaveFile.hpp"
+#include "SaveManager.hpp"
+#include "SaveFile.hpp"
 
 using namespace ghost::internal;
 
