@@ -1,10 +1,17 @@
 #ifndef GHOST_SAVE_DATA_HPP
 #define GHOST_SAVE_DATA_HPP
 
-#include "internal/SaveData.hpp"
+#include <string>
+#include <vector>
+#include <google/protobuf/any.pb.h>
 
 namespace ghost
 {
+	namespace internal
+	{
+		class SaveData;
+	}
+
 	/**
 	 * @brief Contains data to store in a save file.
 	 * 
@@ -20,7 +27,7 @@ namespace ghost
 	 * 
 	 * Possible extension with the ghost feature "Message" could be implemented.
 	 */
-	class SaveData : private internal::SaveData
+	class SaveData
 	{
 	public:
 		/**
@@ -86,9 +93,12 @@ namespace ghost
 		 * @return the size of this data set.
 		 */
 		size_t size() const;
+
+	private:
+		std::unique_ptr<ghost::internal::SaveData> _internal;
 	};
 
-	#include "internal/SaveData.impl.hpp"
+	#include "SaveData.impl.hpp"
 }
 
 #endif // GHOST_SAVE_DATA_HPP

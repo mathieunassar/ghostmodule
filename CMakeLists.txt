@@ -43,10 +43,10 @@ if (UNIX)
     set(GHOST_BUILD_NAME "buildUnix_x86_64")
 endif (UNIX)
 
-find_package(Protobuf REQUIRED)
-find_package(Catch REQUIRED)
+#find_package(Protobuf REQUIRED)
+#find_package(Catch REQUIRED)
 
-include(cmake/ProtobufGeneration.cmake)
+#include(cmake/ProtobufGeneration.cmake)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -75,66 +75,4 @@ link_directories(
 ############################################################ CONNECTION LIBRARY ##########################################################
 ##########################################################################################################################################
 
-##########################################################################################################################################
-
-file(GLOB header_persistence_lib
-./include/ghost/persistence/SaveData.hpp
-./include/ghost/persistence/SaveManager.hpp
-)
-
-file(GLOB header_persistence_internal_lib
-./include/ghost/persistence/internal/SaveFile.hpp
-./include/ghost/persistence/internal/SaveData.impl.hpp
-./include/ghost/persistence/internal/SaveData.hpp
-./include/ghost/persistence/internal/SaveManager.hpp
-)
-
-file(GLOB source_persistence_lib
-./src/SaveFile.cpp
-./src/SaveData.cpp
-./src/SaveManager.cpp
-)
-
-source_group("Header Files\\internal" FILES ${header_persistence_internal_lib})
-
-##########################################################################################################################################
-
-add_library(ghost_persistence ${header_persistence_internal_lib}
-	${header_persistence_lib}
-	${source_persistence_lib}
-)
-
-if (WIN32)
-	target_link_libraries(ghost_persistence ${Protobuf_LIBRARIES})
-else ()
-	target_link_libraries(ghost_persistence ${Protobuf_LIBRARIES} pthread)
-endif()
-
-##########################################################################################################################################
-
-set(PROTOC_SOURCE_CUSTOM ./tests/protobuf/)
-set(PROTOC_SOURCE_FILE ./tests/protobuf/tests.proto)
-set(PROTOC_OUTPUT ./tests/protobuf/)
-
-generate_protoc2(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
-
-# Unit tests
-file(GLOB source_persistence_tests
-./tests/SaveFileTests.cpp
-./tests/SaveDataTests.cpp
-./tests/SaveManagerTests.cpp
-./tests/PersistenceTestHelpers.cpp
-./tests/PersistenceTestHelpers.hpp
-)
-
-file(GLOB protobuf_persistence_tests
-./tests/protobuf/tests.pb.h
-./tests/protobuf/tests.pb.cc
-)
-
-set(libraries_persistence_tests
-ghost_persistence)
-
-add_executable(persistence_tests ${source_persistence_tests} ${protobuf_persistence_tests})
-target_link_libraries(persistence_tests ${libraries_persistence_tests})
-set_property(TARGET persistence_tests PROPERTY FOLDER "tests")
+add_subdirectory(src)
