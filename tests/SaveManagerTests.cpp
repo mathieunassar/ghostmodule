@@ -36,93 +36,118 @@ protected:
 	{
 
 	}
+
+	static const std::string TEST_DATA_NAME;
+	static const std::string TEST_FILE_NAME;
+	static const std::string TEST_FILE2_NAME;
+	static const std::string TEST_FILE3_NAME;
+	static const std::list<std::string> TEST_FILES_LIST;
 };
 
-TEST_F(SaveManagerTest, test_save_manager_single_data_add_get)
+const std::string SaveManagerTest::TEST_DATA_NAME = "Test";
+const std::string SaveManagerTest::TEST_FILE_NAME = "file1.dat";
+const std::string SaveManagerTest::TEST_FILE2_NAME = "file2.dat";
+const std::string SaveManagerTest::TEST_FILE3_NAME = "file3.dat";
+const std::list<std::string> SaveManagerTest::TEST_FILES_LIST{ {TEST_FILE_NAME, TEST_FILE2_NAME, TEST_FILE3_NAME} };
+
+TEST_F(SaveManagerTest, test_SaveManager_addget_When_ok)
 {
 	auto manager = ghost::SaveManager::create("");
 
-	auto data1 = ghost::SaveData::create("data1");
+	auto data1 = ghost::SaveData::create(TEST_DATA_NAME);
 
 	// single data access
-	manager->addData(data1, "file1");
+	manager->addData(data1, TEST_FILE_NAME);
 
 	auto getResult = manager->getData(data1->getName());
 	ASSERT_TRUE(getResult.size() == 1);
-	ASSERT_TRUE(getResult.count("file1") == 1);
+	ASSERT_TRUE(getResult.count(TEST_FILE_NAME) == 1);
 
-	const auto& list = getResult.at("file1");
+	const auto& list = getResult.at(TEST_FILE_NAME);
 	ASSERT_TRUE(list.size() == 1);
 	ASSERT_TRUE(list.front()->getName() == data1->getName());
 }
 
-TEST_F(SaveManagerTest, test_save_manager_two_same_name)
+TEST_F(SaveManagerTest, test_SaveManager_addget_When_twoSameNamesDifferentFiles)
 {
 	auto manager = ghost::SaveManager::create("");
 
-	auto data1 = ghost::SaveData::create("data1");
-	auto data2 = ghost::SaveData::create("data1");
+	auto data1 = ghost::SaveData::create(TEST_DATA_NAME);
+	auto data2 = ghost::SaveData::create(TEST_DATA_NAME);
 
-	manager->addData(data1, "file1");
-	manager->addData(data2, "file2");
+	manager->addData(data1, TEST_FILE_NAME);
+	manager->addData(data2, TEST_FILE2_NAME);
 
 	auto getResult = manager->getData(data1->getName());
 	ASSERT_TRUE(getResult.size() == 2);
-	ASSERT_TRUE(getResult.count("file1") == 1);
-	ASSERT_TRUE(getResult.count("file2") == 1);
+	ASSERT_TRUE(getResult.count(TEST_FILE_NAME) == 1);
+	ASSERT_TRUE(getResult.count(TEST_FILE2_NAME) == 1);
 
-	const auto& list = getResult.at("file1");
+	const auto& list = getResult.at(TEST_FILE_NAME);
 	ASSERT_TRUE(list.size() == 1);
 	ASSERT_TRUE(list.front()->getName() == data1->getName());
 
-	const auto& list3 = getResult.at("file2");
+	const auto& list3 = getResult.at(TEST_FILE2_NAME);
 	ASSERT_TRUE(list3.size() == 1);
 	ASSERT_TRUE(list3.front()->getName() == data2->getName());
+}
 
-	// remove from one file
-	bool removeSuccess = manager->removeData(data1->getName(), "file1");
+TEST_F(SaveManagerTest, test_SaveManager_remove_When_ok)
+{
+	auto manager = ghost::SaveManager::create("");
+
+	auto data1 = ghost::SaveData::create(TEST_DATA_NAME);
+	manager->addData(data1, TEST_FILE_NAME);
+
+	bool removeSuccess = manager->removeData(data1->getName());
 	ASSERT_TRUE(removeSuccess);
 
 	auto getResult2 = manager->getData(data1->getName());
-	ASSERT_TRUE(getResult2.size() == 1);
-	ASSERT_TRUE(getResult2.count("file1") == 0);
-	ASSERT_TRUE(getResult2.count("file2") == 1);
-
-	const auto& list2 = getResult2.at("file2");
-	ASSERT_TRUE(list2.size() == 1);
-	ASSERT_TRUE(list2.front()->getName() == data2->getName());
-
-	manager->addData(data1, "file1");
-
-	// remove everywhere!!!!!!!!!!!1
-	bool removeSuccess2 = manager->removeData(data1->getName());
-	ASSERT_TRUE(removeSuccess2);
-	auto getResult3 = manager->getData(data1->getName());
-	ASSERT_TRUE(getResult3.size() == 0);
+	ASSERT_TRUE(getResult2.count(TEST_FILE_NAME) == 0);
+	ASSERT_TRUE(getResult2.size() == 0);
 }
 
-TEST_F(SaveManagerTest, test_save_manager_save_load)
+TEST_F(SaveManagerTest, test_SaveManager_remove_When_twoSameNamesDifferentFiles)
+{
+	auto manager = ghost::SaveManager::create("");
+
+	auto data1 = ghost::SaveData::create(TEST_DATA_NAME);
+	auto data2 = ghost::SaveData::create(TEST_DATA_NAME);
+
+	manager->addData(data1, TEST_FILE_NAME);
+	manager->addData(data2, TEST_FILE2_NAME);
+
+	bool removeSuccess = manager->removeData(data1->getName(), TEST_FILE_NAME);
+	ASSERT_TRUE(removeSuccess);
+
+	auto getResult2 = manager->getData(data1->getName());
+	ASSERT_TRUE(getResult2.count(TEST_FILE_NAME) == 0);
+	ASSERT_TRUE(getResult2.size() == 1);
+
+	const auto& list2 = getResult2.at(TEST_FILE2_NAME);
+	ASSERT_TRUE(list2.size() == 1);
+	ASSERT_TRUE(list2.front()->getName() == data2->getName());
+}
+
+TEST_F(SaveManagerTest, test_SaveManager_saveload_When_ok)
 {
 	auto data = generateTestdata(3, 5);
-
-	const std::string file1 = "file1.dat", file2 = "file2.dat", file3 = "file3.dat";
-	std::list<std::string> files{ {file1, file2, file3} };
 
 	auto manager = ghost::SaveManager::create(".");
 
 	auto it = data.begin();
-	manager->addData(*it, file1);
+	manager->addData(*it, TEST_FILE_NAME);
 	++it;
-	manager->addData(*it, file2);
+	manager->addData(*it, TEST_FILE2_NAME);
 	++it;
-	manager->addData(*it, file3);
+	manager->addData(*it, TEST_FILE3_NAME);
 
 	// save
 	bool saveSuccess = manager->save(true);
 	ASSERT_TRUE(saveSuccess);
 
 	// load the save
-	bool loadSuccess = manager->load(files);
+	bool loadSuccess = manager->load(TEST_FILES_LIST);
 	ASSERT_TRUE(loadSuccess);
 
 	// check the data
@@ -131,8 +156,8 @@ TEST_F(SaveManagerTest, test_save_manager_save_load)
 	it = data.begin();
 	auto result1 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result1.size() == 1);
-	ASSERT_TRUE(result1.count(file1) == 1);
-	std::list<std::shared_ptr<ghost::SaveData>> tmp = result1.at(file1);
+	ASSERT_TRUE(result1.count(TEST_FILE_NAME) == 1);
+	std::list<std::shared_ptr<ghost::SaveData>> tmp = result1.at(TEST_FILE_NAME);
 	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
 	for (auto e : tmp)
 		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
@@ -140,8 +165,8 @@ TEST_F(SaveManagerTest, test_save_manager_save_load)
 	++it;
 	auto result2 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result2.size() == 1);
-	ASSERT_TRUE(result2.count(file2) == 1);
-	tmp = result2.at(file2);
+	ASSERT_TRUE(result2.count(TEST_FILE2_NAME) == 1);
+	tmp = result2.at(TEST_FILE2_NAME);
 	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
 	for (auto e : tmp)
 		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
@@ -149,8 +174,8 @@ TEST_F(SaveManagerTest, test_save_manager_save_load)
 	++it;
 	auto result3 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result3.size() == 1);
-	ASSERT_TRUE(result3.count(file3) == 1);
-	tmp = result3.at(file3);
+	ASSERT_TRUE(result3.count(TEST_FILE3_NAME) == 1);
+	tmp = result3.at(TEST_FILE3_NAME);
 	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
 	for (auto e : tmp)
 		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
@@ -158,21 +183,18 @@ TEST_F(SaveManagerTest, test_save_manager_save_load)
 	compareTestData(data, resultData);
 }
 
-TEST_F(SaveManagerTest, test_save_manager_save_not_overwrite)
+TEST_F(SaveManagerTest, test_SaveManager_save_When_noOverwrite)
 {
 	auto data = generateTestdata(3, 5);
-
-	const std::string file1 = "file1.dat", file2 = "file2.dat", file3 = "file3.dat";
-	std::list<std::string> files{ {file1, file2, file3} };
 
 	auto manager = ghost::SaveManager::create(".");
 
 	auto it = data.begin();
-	manager->addData(*it, file1);
+	manager->addData(*it, TEST_FILE_NAME);
 	++it;
-	manager->addData(*it, file2);
+	manager->addData(*it, TEST_FILE2_NAME);
 	++it;
-	manager->addData(*it, file3);
+	manager->addData(*it, TEST_FILE3_NAME);
 
 	// save
 	bool saveSuccess = manager->save(true);
@@ -182,37 +204,41 @@ TEST_F(SaveManagerTest, test_save_manager_save_not_overwrite)
 	ASSERT_TRUE(!saveSucces2);
 }
 
-TEST_F(SaveManagerTest, test_save_manager_files)
+TEST_F(SaveManagerTest, test_SaveManager_getFileNames_When_ok)
 {
 	auto data = generateTestdata(3, 5);
-
-	const std::string file1 = "file1.dat", file2 = "file2.dat", file3 = "file3.dat";
-	std::list<std::string> files{ {file1, file2, file3} };
 
 	auto manager = ghost::SaveManager::create(".");
 
 	auto it = data.begin();
-	manager->addData(*it, file1);
+	manager->addData(*it, TEST_FILE_NAME);
 	++it;
-	manager->addData(*it, file2);
+	manager->addData(*it, TEST_FILE2_NAME);
 	++it;
-	manager->addData(*it, file3);
+	manager->addData(*it, TEST_FILE3_NAME);
 
 	auto names = manager->getFileNames();
 	ASSERT_TRUE(names.size() == 3);
-	ASSERT_TRUE(names.front() == file1);
-	ASSERT_TRUE(names.back() == file3);
+	ASSERT_TRUE(names.front() == TEST_FILE_NAME);
+	ASSERT_TRUE(names.back() == TEST_FILE3_NAME);
 
-	manager->removeData((*it)->getName(), "", true);
+	manager->removeData((*it)->getName(), "", true); // remove TEST_FILE3_NAME
 
 	auto names2 = manager->getFileNames();
 	ASSERT_TRUE(names2.size() == 2);
-	ASSERT_TRUE(names2.front() == file1);
-	ASSERT_TRUE(names2.back() == file2);
+	ASSERT_TRUE(names2.front() == TEST_FILE_NAME);
+	ASSERT_TRUE(names2.back() == TEST_FILE2_NAME);
+}
 
-	--it;
-	manager->removeData((*it)->getName(), "", false);
-	ASSERT_TRUE(names2.size() == 2);
-	ASSERT_TRUE(names2.front() == file1);
-	ASSERT_TRUE(names2.back() == file2);
+TEST_F(SaveManagerTest, test_SaveManager_getFileNames_When_updateAfterResultIsGotten)
+{
+	auto data = generateTestdata(1, 5);
+
+	auto manager = ghost::SaveManager::create(".");
+
+	auto fileNames = manager->getFileNames();
+	ASSERT_TRUE(fileNames.size() == 0);
+
+	manager->addData(data.front(), TEST_FILE_NAME);
+	ASSERT_TRUE(fileNames.size() == 0); // should not change
 }

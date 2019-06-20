@@ -36,11 +36,53 @@ protected:
 	{
 
 	}
+
+	static const std::string TEST_FILE_NAME;
 };
 
-TEST_F(SaveFileTest, test_save_file)
+const std::string SaveFileTest::TEST_FILE_NAME = "file1.dat";
+
+TEST_F(SaveFileTest, test_SaveFile_open_WhenOk)
 {
-	SaveFile file("test.dat");
+	SaveFile file(TEST_FILE_NAME);
+
+	bool resultOpen = file.open(SaveFile::WRITE);
+	ASSERT_TRUE(resultOpen);
+	// close is done by the destructor
+}
+
+TEST_F(SaveFileTest, test_SaveFile_open_When_fileExistsButShouldNotOverwrite)
+{
+	SaveFile file(TEST_FILE_NAME);
+
+	bool resultOpen = file.open(SaveFile::WRITE);
+	ASSERT_TRUE(resultOpen);
+	bool resultClose = file.close();
+	ASSERT_TRUE(resultClose);
+
+	SaveFile file2(TEST_FILE_NAME);
+
+	bool resultOpen2 = file2.open(SaveFile::WRITE, false);
+	ASSERT_FALSE(resultOpen2);
+}
+
+TEST_F(SaveFileTest, test_SaveFile_open_When_fileExistsAndShouldOverwrite)
+{
+	SaveFile file(TEST_FILE_NAME);
+
+	bool resultOpen = file.open(SaveFile::WRITE);
+	ASSERT_TRUE(resultOpen);
+	file.close();
+
+	SaveFile file2(TEST_FILE_NAME);
+
+	bool resultOpen2 = file2.open(SaveFile::WRITE, true);
+	ASSERT_TRUE(resultOpen2);
+}
+
+TEST_F(SaveFileTest, test_SaveFile_writeread_When_ok)
+{
+	SaveFile file(TEST_FILE_NAME);
 
 	bool resultOpen = file.open(SaveFile::WRITE);
 	ASSERT_TRUE(resultOpen);
@@ -50,10 +92,9 @@ TEST_F(SaveFileTest, test_save_file)
 	bool writeSuccess = file.write(testData);
 	ASSERT_TRUE(writeSuccess);
 
-	bool closeSuccess = file.close();
-	//ASSERT_TRUE(closeSuccess);
+	file.close();
 
-	SaveFile file2("test.dat");
+	SaveFile file2(TEST_FILE_NAME);
 
 	bool resultOpen2 = file2.open(SaveFile::READ);
 	ASSERT_TRUE(resultOpen2);
@@ -63,8 +104,4 @@ TEST_F(SaveFileTest, test_save_file)
 	ASSERT_TRUE(readResult);
 
 	compareTestData(testData, testData2);
-
-	SaveFile fileAlreadyExisting("test.dat");
-	bool resultOpen3 = fileAlreadyExisting.open(SaveFile::WRITE, false); // do not overwrite it, hence fails
-	ASSERT_TRUE(!resultOpen3);
 }

@@ -34,21 +34,31 @@ protected:
 	{
 
 	}
+
+	static const std::string TEST_DATA_NAME;
+	static const std::string TEST_DATA_FIELD1;
+	static const std::string EXPECTED_FIELD1_VALUE_FOR_I0J0;
+	static const std::string EXPECTED_FIELD1_VALUE_FOR_I1J0;
 };
 
-TEST_F(SaveDataTest, test_saveData_get_size_update)
+const std::string SaveDataTest::TEST_DATA_NAME = "Test";
+const std::string SaveDataTest::TEST_DATA_FIELD1 = "Field";
+const std::string SaveDataTest::EXPECTED_FIELD1_VALUE_FOR_I0J0 = "field100"; // from "generateTestData's implementation
+const std::string SaveDataTest::EXPECTED_FIELD1_VALUE_FOR_I1J0 = "field110"; // from "generateTestData's implementation
+
+TEST_F(SaveDataTest, test_saveData_replace_When_ok)
 {
 	auto testData = generateTestdata(2, 5);
 
 	auto data1 = testData.front();
 	ASSERT_TRUE(data1->size() == 5);
-	
+
 	ghost::internal::protobuf::TestMessage1 msg;
 	bool getSuccess = data1->get(msg, 0);
 	ASSERT_TRUE(getSuccess);
-	ASSERT_TRUE(msg.field1() == "field100");
+	ASSERT_TRUE(msg.field1() == EXPECTED_FIELD1_VALUE_FOR_I0J0);
 
-	msg.set_field1("helloworld");
+	msg.set_field1(TEST_DATA_FIELD1);
 	bool updateSuccess = data1->replace(msg, 0);
 	ASSERT_TRUE(updateSuccess);
 	ASSERT_TRUE(data1->size() == 5);
@@ -59,7 +69,7 @@ TEST_F(SaveDataTest, test_saveData_get_size_update)
 	ASSERT_TRUE(msg.field1() == msg2.field1());
 }
 
-TEST_F(SaveDataTest, test_saveData_put)
+TEST_F(SaveDataTest, test_saveData_putget_When_ok)
 {
 	auto testData = generateTestdata(2, 5);
 
@@ -68,7 +78,7 @@ TEST_F(SaveDataTest, test_saveData_put)
 
 	// put a message
 	ghost::internal::protobuf::TestMessage1 msg = ghost::internal::protobuf::TestMessage1::default_instance();
-	msg.set_field1("helloworld");
+	msg.set_field1(TEST_DATA_FIELD1);
 	data1->put(msg);
 	ASSERT_TRUE(data1->size() == 6);
 
@@ -79,13 +89,13 @@ TEST_F(SaveDataTest, test_saveData_put)
 	ASSERT_TRUE(msg.field1() == msg2.field1());
 }
 
-TEST_F(SaveDataTest, test_saveData_wrong_type_get)
+TEST_F(SaveDataTest, test_saveData_get_When_wrongTypeProvided)
 {
 	auto testData = generateTestdata(1, 0);
 	auto data1 = testData.front();
 
 	ghost::internal::protobuf::TestMessage1 msg = ghost::internal::protobuf::TestMessage1::default_instance();
-	msg.set_field1("helloworld");
+	msg.set_field1(TEST_DATA_FIELD1);
 	data1->put(msg);
 	ASSERT_TRUE(data1->size() == 1);
 
@@ -94,7 +104,7 @@ TEST_F(SaveDataTest, test_saveData_wrong_type_get)
 	ASSERT_TRUE(!getSuccess);
 }
 
-TEST_F(SaveDataTest, test_saveData_replace_with_different_type)
+TEST_F(SaveDataTest, test_saveData_replace_When_differentTypeProvided)
 {
 	auto testData = generateTestdata(1, 1);
 	auto data1 = testData.front();
@@ -102,10 +112,10 @@ TEST_F(SaveDataTest, test_saveData_replace_with_different_type)
 	ghost::internal::protobuf::TestMessage1 msg;
 	bool getSuccess = data1->get(msg, 0);
 	ASSERT_TRUE(getSuccess);
-	ASSERT_TRUE(msg.field1() == "field100");
+	ASSERT_TRUE(msg.field1() == EXPECTED_FIELD1_VALUE_FOR_I0J0);
 
 	ghost::internal::protobuf::TestMessage2 msg2 = ghost::internal::protobuf::TestMessage2::default_instance();
-	msg2.set_field1("helloworld");
+	msg2.set_field1(TEST_DATA_FIELD1);
 	bool updateSuccess = data1->replace(msg2, 0);
 	ASSERT_TRUE(updateSuccess);
 
@@ -115,7 +125,7 @@ TEST_F(SaveDataTest, test_saveData_replace_with_different_type)
 	ASSERT_TRUE(msg2.field1() == msg3.field1());
 }
 
-TEST_F(SaveDataTest, test_saveData_erase)
+TEST_F(SaveDataTest, test_saveData_remove_When_ok)
 {
 	auto testData = generateTestdata(1, 2);
 	auto data1 = testData.front();
@@ -130,7 +140,7 @@ TEST_F(SaveDataTest, test_saveData_erase)
 	ghost::internal::protobuf::TestMessage1 msg;
 	bool getSuccess = data1->get(msg, 0);
 	ASSERT_TRUE(getSuccess);
-	ASSERT_TRUE(msg.field1() == "field110");
+	ASSERT_TRUE(msg.field1() == EXPECTED_FIELD1_VALUE_FOR_I1J0);
 
 	bool removeSuccess2 = data1->remove(0);
 	ASSERT_TRUE(removeSuccess2);
