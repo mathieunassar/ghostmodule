@@ -30,7 +30,7 @@ namespace ghost
 	 * This object can contain Google protobuf messages, which can be managed
 	 * with the help of the methods "put", "get", "replace" and "remove".
 	 * 
-	 * SaveData objects can be managed by the SaveManager, which can save them and
+	 * SaveData objects can be managed by the ghost::SaveManager, which can save them and
 	 * load them from the disk.
 	 * 
 	 * Internally, the message is stored in a Google.protobuf.Any message
@@ -43,7 +43,7 @@ namespace ghost
 	{
 	public:
 		/**
-		 * @brief Constructs a new SaveData object with the given name.
+		 * @brief Constructs a new ghost::SaveData object with the given name.
 		 * 
 		 * @param name the name of this data set.
 		 */
@@ -66,7 +66,7 @@ namespace ghost
 		/**
 		 * @brief Pushes data into the data set, effectively increasing the size by one.
 		 * 
-		 * @tparam DataType Type of data that is being added
+		 * @tparam DataType Type of data that is being added. Currently this type must be a protobuf message.
 		 * @param type data to put in the data set.
 		 */
 		template<typename DataType>
