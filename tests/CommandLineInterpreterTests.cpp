@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include "../src/CommandLineParser.hpp"
+#include "../src/module/CommandLineParser.hpp"
 
 #include <gtest/gtest.h>
 #include <ghost/module/StdoutLogger.hpp>
 #include <ghost/module/Command.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/UserManager.hpp>
-#include "../src/User.hpp"
+#include "../src/module/User.hpp"
 
 class CommandLineInterpreterTest : public testing::Test
 {

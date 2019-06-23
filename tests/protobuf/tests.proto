@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package ghost.internal.protobuf;
+
+message TestMessage1
+{
+	string field1 = 1;
+	
+	string field2 = 2;
+	
+	int64 field3 = 3;
+	
+	repeated string tags = 4;
+}
+
+message TestMessage2
+{
+	string field1 = 1;
+}

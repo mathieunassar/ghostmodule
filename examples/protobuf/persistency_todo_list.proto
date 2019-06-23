@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+
+package ghost.examples.protobuf;
+
+message Todo
+{
+	string title = 1;
+
+	string description = 2;
+
+	google.protobuf.Timestamp date_created = 3;
+}

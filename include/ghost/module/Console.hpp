@@ -75,6 +75,7 @@ namespace ghost
 		virtual bool hasCommands() const = 0;
 		/// if the command callback is not set with "setCommandCallback", user commands are collected by the console
 		/// getting a command removes it from the command queue.
+		/// Throws an exception if no command is available to get. Check if one is available with "hasCommands" first.
 		virtual std::string getCommand() = 0;
 	};
 
