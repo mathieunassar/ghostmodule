@@ -57,10 +57,9 @@ bool ConsoleDeviceUnix::awaitInputMode()
 	tv.tv_sec = 0;
 	tv.tv_usec = 100000;
 
-
 	while (_enable)
 	{
-		int selectResult = select(STDIN_FILENO + 1, &fdr, NULL, NULL, NULL);
+		int selectResult = select(STDIN_FILENO + 1, &fdr, NULL, NULL, &tv);
 		if (selectResult == -1)
 		{
 			return false; // error!!

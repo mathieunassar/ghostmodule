@@ -124,7 +124,7 @@ void InputController::inputListenerThread()
 	while (_inputThreadEnable)
 	{
 		QueueElement<std::shared_ptr<InputEvent>> event;
-		if (!_eventQueue.tryGet(std::chrono::milliseconds(1000), event)) // tryget only blocks for a second
+		if (!_eventQueue.tryGet(std::chrono::milliseconds(100), event)) // tryget only blocks for a second
 		{
 			continue;
 		}
