@@ -109,16 +109,9 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_emptyLine)
 {
 	ghost::internal::CommandLineParser parser;
 	
-	bool exceptionCaught = false;
-	try
-	{
-		parser.parseCommandLine("");
-	}
-	catch (std::exception e)
-	{
-		exceptionCaught = true;
-	}
-	ASSERT_TRUE(exceptionCaught);
+	auto commandLine = parser.parseCommandLine("");
+	ASSERT_TRUE(commandLine.getCommandName().empty());
+	ASSERT_TRUE(commandLine.getParametersMap().empty());
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_unknownParameters)
