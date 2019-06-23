@@ -55,11 +55,14 @@ namespace ghost
 		 * 
 		 * If this is the first time data is added for this file name, a new file entry will be created.
 		 * Storing the data will happen during a call to "save".
+		 *
+		 * If "file" is left empty, the data will be mapped to a file entry named using the following template:
+		 * [data->getName()] + ".dat".
 		 * 
 		 * @param data data to manage
 		 * @param file destination file in which this data will be stored.
 		 */
-		virtual void addData(std::shared_ptr<ghost::SaveData> data, const std::string& file) = 0;
+		virtual void addData(std::shared_ptr<ghost::SaveData> data, std::string file = "") = 0;
 		
 		/**
 		 * @brief Removes all managed ghost::SaveData objects in this manager with the given name and returns true

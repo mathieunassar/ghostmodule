@@ -32,8 +32,11 @@ SaveManager::SaveManager(const std::string& root)
 }
 
 // adds data to the map under the key with title "file", creates the entry if it does not exist
-void SaveManager::addData(std::shared_ptr<ghost::SaveData> data, const std::string& file)
+void SaveManager::addData(std::shared_ptr<ghost::SaveData> data, std::string file)
 {
+	if (file.empty())
+		file = data->getName() + ".dat";
+		
 	if (_saveData.count(file) == 0)
 		_saveData[file] = std::list<std::shared_ptr<ghost::internal::SaveData>>();
 

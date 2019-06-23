@@ -39,7 +39,7 @@ namespace ghost
 			SaveManager(const std::string& root);
 
 			// adds data to the map under the key with title "file", creates the entry if it does not exist
-			void addData(std::shared_ptr<ghost::SaveData> data, const std::string& file) override;
+			void addData(std::shared_ptr<ghost::SaveData> data, std::string file = "") override;
 			
 			// searches the map for data sets of the given name and removes them, returns true if at least one was removed
 			bool removeData(const std::string& dataName, const std::string& filename = "", bool pruneEmptyFiles = false) override;
