@@ -23,7 +23,7 @@ using namespace ghost::internal;
 ghost::CommandLine CommandLineParser::parseCommandLine(const std::string& commandLine)
 {
 	if (commandLine.empty())
-		throw std::invalid_argument("the command line is empty");
+		return ghost::CommandLine("", {});
 
 	std::vector<std::string> nameAndParams;
 	CommandLineParser::split(nameAndParams, commandLine, " ");
