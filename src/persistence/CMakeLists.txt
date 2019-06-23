@@ -75,11 +75,11 @@ if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
 	generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 	# minimum code to create a module
-	add_executable(persitence_todo_list
+	add_executable(persistence_todo_list
 		${GHOST_MODULE_ROOT_DIR}/examples/persistence_todo_list.cpp
 		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/persistency_todo_list.pb.h
 		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/persistency_todo_list.pb.cc)
-	target_link_libraries(persitence_todo_list ghost_module ghost_persistence)
+	target_link_libraries(persistence_todo_list ghost_module ghost_persistence)
 
-	set_property(TARGET persitence_todo_list PROPERTY FOLDER "examples")
+	set_property(TARGET persistence_todo_list PROPERTY FOLDER "examples")
 endif()

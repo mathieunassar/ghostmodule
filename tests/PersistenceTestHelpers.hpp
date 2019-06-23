@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
+#include <list>
 
 #include <ghost/persistence/SaveData.hpp>
 #include "../src/persistence/SaveData.hpp"

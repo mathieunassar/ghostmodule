@@ -8,9 +8,15 @@ function(generate_protoc source_dir output_dir source_file)
 		set(proto_include_dirs ${proto_include_dirs} -I ${dir})
 	endforeach()
 
-	set(PROTOC_PATH "${CONAN_BIN_DIRS_PROTOC_INSTALLER}/protoc.exe")
 	set(PROTOC_INCLUDES ${CONAN_INCLUDE_DIRS_PROTOC_INSTALLER})
-	set(GRPC_PLUGIN "${CONAN_BIN_DIRS_GRPC}/grpc_cpp_plugin.exe")
+
+	if (WIN32)
+		set(PROTOC_PATH "${CONAN_BIN_DIRS_PROTOC_INSTALLER}/protoc.exe")
+		set(GRPC_PLUGIN "${CONAN_BIN_DIRS_GRPC}/grpc_cpp_plugin.exe")
+	elseif (UNIX)
+		set(PROTOC_PATH "${CONAN_BIN_DIRS_PROTOC_INSTALLER}/protoc")
+		set(GRPC_PLUGIN "${CONAN_BIN_DIRS_GRPC}/grpc_cpp_plugin")
+	endif()
 
 	foreach(file ${source_file})
 		message(STATUS "Generating grpc and protobuf: ${file}")
