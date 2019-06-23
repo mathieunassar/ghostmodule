@@ -49,16 +49,16 @@ bool ConsoleDeviceUnix::setConsoleMode(ConsoleMode mode)
 
 bool ConsoleDeviceUnix::awaitInputMode()
 {
-	fd_set fdr;
-	FD_ZERO(&fdr);
-	FD_SET(STDIN_FILENO, &fdr);
-
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000;
-
 	while (_enable)
 	{
+		fd_set fdr;
+		FD_ZERO(&fdr);
+		FD_SET(STDIN_FILENO, &fdr);
+
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		
 		int selectResult = select(STDIN_FILENO + 1, &fdr, NULL, NULL, &tv);
 		if (selectResult == -1)
 		{
