@@ -21,7 +21,9 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <functional>
 #include <atomic>
+#include <string>
 
 #include "ConsoleDevice.hpp"
 
@@ -38,17 +40,27 @@ namespace ghost
 			ConsoleDeviceWindows();
 
 			bool start() override;
-
-			bool setConsoleMode(ConsoleMode mode) override;
-
-			bool awaitInputMode() override;
-
 			void stop() override;
 
+			bool setConsoleMode(ConsoleMode mode) override;
+			bool awaitInputMode() override;
+			bool read(std::string& output) override;
+			bool write(const std::string& text) override;
+
 		private:
+			enum class DeviceMode
+			{
+				IDLE,
+				AWAIT_INPUT,
+				READ
+			};
+
+			bool awaitInput(const std::function<bool()>& untilPredicate);
+
 			HANDLE _hStdin;
 			DWORD _originalConsoleMode;
 			std::atomic<bool> _enable;
+			std::atomic<DeviceMode> _mode;
 		};
 	}
 }

@@ -50,6 +50,7 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to output
 			if (controller.getInputMode() == ghost::InputMode::SEQUENTIAL)
 			{
+				// TODO here wait that the command is processed
 				controller.switchConsoleMode(ConsoleDevice::INPUT);
 				controller.printPrompt();
 				// loop is true

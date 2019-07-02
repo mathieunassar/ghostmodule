@@ -57,8 +57,8 @@ void Console::start()
 
 void Console::stop()
 {
+	_inputController->stop(); // stop receiving input first
 	_outputController->flush();
-	_inputController->stop();
 	_outputController->stop();
 }
 
