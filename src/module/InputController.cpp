@@ -44,6 +44,11 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	_device->setConsoleMode(initialMode);
 }
 
+InputController::~InputController()
+{
+	stop();
+}
+
 Prompt& InputController::getPrompt()
 {
 	return *_prompt;

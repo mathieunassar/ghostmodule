@@ -25,9 +25,26 @@ namespace ghost
 {
 	enum class InputMode
 	{
-		SEQUENTIAL, // prompt comes back directly after input
-		DISCRETE, // prompt only comes back if requested
-		NEVER // never prompts except on read
+		/**
+		 *	The sequential mode offers the possibility to enter multiple commands
+		 *	without re-activating the input mode. In this mode, the command prompt
+		 *	is automatically displayed after the previous command is submitted to
+		 *	the command callback.
+		 *	Per default, the command callback simply forwards the commands to the
+		 *	ghost::CommandLineInterpreter, which enqueues it. In this default case,
+		 *	the prompt does not wait for the end of the command's execution.
+		 *	It is recommended to use this mode only if a specific command callback
+		 *	is provided to the ghost::Console, which executes the command in the same
+		 *	thread.
+		 */
+		SEQUENTIAL,
+		/**
+		 *	In the discrete input mode, users must invoke the command prompt by
+		 *	pressing enter. After a command is entered, the prompt does not display
+		 *	automatically again.
+		 *	This is the default behavior of the ghost::Console.
+		 */
+		DISCRETE
 	};
 
 	/**
