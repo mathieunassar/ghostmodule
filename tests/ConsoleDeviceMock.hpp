@@ -17,6 +17,7 @@
 #include <gmock/gmock.h>
 
 #include "../src/module/ConsoleDevice.hpp"
+#include "../src/module/InputEvent.hpp"
 
 class ConsoleDeviceMock : public ghost::internal::ConsoleDevice
 {
