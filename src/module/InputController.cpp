@@ -44,6 +44,11 @@ InputController::InputController(std::shared_ptr<ConsoleDevice> device,
 	_device->setConsoleMode(initialMode);
 }
 
+InputController::~InputController()
+{
+	stop();
+}
+
 Prompt& InputController::getPrompt()
 {
 	return *_prompt;
@@ -77,13 +82,19 @@ void InputController::stop()
 	_device->stop();
 
 	// join this thread first to avoid that it waits for input thread which would be already finished
-	_enterPressedThreadEnable = false;
-	if (_enterPressedThread.joinable())
-		_enterPressedThread.join();
+	if (_enterPressedThreadEnable)
+	{
+		_enterPressedThreadEnable = false;
+		if (_enterPressedThread.joinable())
+			_enterPressedThread.join();
+	}
 
-	_inputThreadEnable = false;
-	if (_inputThread.joinable())
-		_inputThread.join();
+	if (_inputThreadEnable)
+	{
+		_inputThreadEnable = false;
+		if (_inputThread.joinable())
+			_inputThread.join();
+	}
 }
 
 std::string InputController::getLine()
@@ -102,7 +113,7 @@ std::string InputController::getLine()
 
 void InputController::printPrompt() const
 {
-	printf("%s", _prompt->str().c_str());
+	_device->write(_prompt->str());
 }
 
 void InputController::switchConsoleMode(ConsoleDevice::ConsoleMode newMode)
@@ -160,32 +171,12 @@ void InputController::enterPressedThread()
 
 std::string InputController::readLine()
 {
-	std::promise<std::string> p;
-	auto future = p.get_future();
-	
-	std::thread t([&p] {
-		std::string str;
-		std::getline(std::cin, str);
-		p.set_value(str); // makes a segmentation fault if the user enters something after the thread was detached...
-	});
-	
-	auto status = future.wait_for(std::chrono::seconds(0));
-	while (status != std::future_status::ready && _enterPressedThreadEnable)
-	{
-		status = future.wait_for(std::chrono::seconds(1));
-	}
-
-	if (status == std::future_status::ready)
-	{
-		t.join();
-
-		return future.get();
-	}
-	else // the program must exit, t is detached and will die peacefully without triggering exceptions on this one (->legal?? update yes but does not free allocated resources -> mem leak)
-	{
-		t.detach();
+	std::string readLine;
+	bool readSuccess = _device->read(readLine);
+	if (!readSuccess)
 		return "";
-	}
+	
+	return readLine;
 }
 
 ghost::InputMode InputController::getInputMode() const

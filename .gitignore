@@ -4,3 +4,5 @@ build/
 bin/
 examples/protobuf/*.pb.h
 examples/protobuf/*.pb.cc
+tests/protobuf/*.pb.h
+tests/protobuf/*.pb.cc

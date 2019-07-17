@@ -34,6 +34,7 @@ bool ExitCommand::execute(const ghost::CommandLine& commandLine)
 {
 	_module->setState(ghost::internal::Module::DISPOSING);
 	_module->getConsole()->setInputMode(InputMode::DISCRETE); // do that to stop expecting user input
+	_module->getConsole()->stop();
 	return true;
 }
 

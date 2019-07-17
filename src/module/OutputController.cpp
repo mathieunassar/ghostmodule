@@ -43,9 +43,12 @@ void OutputController::start()
 
 void OutputController::stop()
 {
-	_threadEnable = false;
-	if (_writerThread.joinable())
-		_writerThread.join();
+	if (_threadEnable)
+	{
+		_threadEnable = false;
+		if (_writerThread.joinable())
+			_writerThread.join();
+	}
 }
 
 void OutputController::enable()
