@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_CONSOLEDEVICE_UNIX_HPP
 
 #include <termios.h>
+#include <functional>
 #include <unistd.h>
 #include <atomic>
 
@@ -36,16 +37,26 @@ namespace ghost
 			ConsoleDeviceUnix();
 
 			bool start() override;
-
-			bool setConsoleMode(ConsoleMode mode) override;
-
-			bool awaitInputMode() override;
-
 			void stop() override;
 
+			bool setConsoleMode(ConsoleMode mode) override;
+			bool awaitInputMode() override;
+			bool read(std::string& output) override;
+			bool write(const std::string& text) override;
+
 		private:
+			enum class DeviceMode
+			{
+				IDLE,
+				AWAIT_INPUT,
+				READ
+			};
+			
+			bool awaitInput(const std::function<bool()>& untilPredicate);
+			
 			termios _referenceState;
 			std::atomic<bool> _enable;
+			std::atomic<DeviceMode> _mode;
 		};
 	}
 }

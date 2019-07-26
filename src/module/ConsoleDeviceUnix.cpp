@@ -23,6 +23,7 @@ using namespace ghost::internal;
 
 ConsoleDeviceUnix::ConsoleDeviceUnix()
 	: _enable(false)
+	, _mode(DeviceMode::IDLE)
 {
 
 }
@@ -32,6 +33,13 @@ bool ConsoleDeviceUnix::start()
 	_enable = true;
 
 	tcgetattr(STDIN_FILENO, &_referenceState);
+}
+
+void ConsoleDeviceUnix::stop()
+{
+	_enable = false;
+
+	setConsoleMode(ConsoleDevice::INPUT);
 }
 
 bool ConsoleDeviceUnix::setConsoleMode(ConsoleMode mode)
@@ -49,7 +57,42 @@ bool ConsoleDeviceUnix::setConsoleMode(ConsoleMode mode)
 
 bool ConsoleDeviceUnix::awaitInputMode()
 {
-	while (_enable)
+	_mode = DeviceMode::AWAIT_INPUT;
+
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); });
+	if (!gotInput) // _enable is false
+		return false;
+	//fprintf(stderr, "aim");
+
+	std::string str;
+	std::getline(std::cin, str);
+	return _enable; // user pressed enter, hence the string is empty but there was something to read in the select
+}
+
+bool ConsoleDeviceUnix::read(std::string& output)
+{
+	_mode = DeviceMode::READ;
+
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
+	if (!gotInput) // _enable is false
+		return false;
+
+	std::getline(std::cin, output);
+
+	_mode = DeviceMode::IDLE;
+	return true;
+}
+
+bool ConsoleDeviceUnix::write(const std::string& text)
+{
+	printf("%s", text.c_str());
+	fflush(stdout);
+	return true;
+}
+
+bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate)
+{
+	while (untilPredicate())
 	{
 		fd_set fdr;
 		FD_ZERO(&fdr);
@@ -66,23 +109,12 @@ bool ConsoleDeviceUnix::awaitInputMode()
 		}
 		else if (selectResult == 0) // nothing to read
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // but don't wait too long to stay reactive
+			std::this_thread::sleep_for(std::chrono::milliseconds(1)); // but don't wait too long to stay reactive
 			continue;
 		}
-		else // something to read
-		{
-			std::string str;
-			std::getline(std::cin, str);
-			return _enable; // user pressed enter, hence the string is empty but there was something to read in the select
-		}
+		
+		return true;
 	}
 
 	return false;
-}
-
-void ConsoleDeviceUnix::stop()
-{
-	_enable = false;
-
-	setConsoleMode(ConsoleDevice::INPUT);
 }
