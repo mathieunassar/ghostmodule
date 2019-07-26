@@ -26,7 +26,7 @@ protected:
 	void SetUp() override
 	{
 		_consoleDeviceMock = std::make_shared<ConsoleDeviceMock>();
-		_outputController = std::make_shared<ghost::internal::OutputController>();
+		_outputController = std::make_shared<ghost::internal::OutputController>(nullptr);
 	}
 
 	void TearDown() override
