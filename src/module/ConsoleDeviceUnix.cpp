@@ -60,9 +60,8 @@ bool ConsoleDeviceUnix::awaitInputMode()
 	_mode = DeviceMode::AWAIT_INPUT;
 
 	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); });
-	if (!gotInput) // _enable is false
+	if (!gotInput) // _enable is false or the console is used for something else
 		return false;
-	//fprintf(stderr, "aim");
 
 	std::string str;
 	std::getline(std::cin, str);
@@ -74,7 +73,7 @@ bool ConsoleDeviceUnix::read(std::string& output)
 	_mode = DeviceMode::READ;
 
 	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
-	if (!gotInput) // _enable is false
+	if (!gotInput) // _enable is false or the console is used for something else
 		return false;
 
 	std::getline(std::cin, output);
