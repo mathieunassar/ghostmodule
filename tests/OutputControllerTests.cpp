@@ -20,8 +20,6 @@
 
 #include "ConsoleDeviceMock.hpp"
 
-using ::testing::_;
-
 class OutputControllerTests : public testing::Test
 {
 protected:

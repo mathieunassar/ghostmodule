@@ -16,8 +16,6 @@
 
 #include <gtest/gtest.h>
 
-using ::testing::_;
-
 class ConsoleTests : public testing::Test
 {
 protected:
