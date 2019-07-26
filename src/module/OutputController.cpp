@@ -122,9 +122,10 @@ void OutputController::writerThread()
 		
 		if (!awaitOutput()) // wait again since pop() is blocking and could take a while
 			return;
-		
+
 		queue->pop();
 		printf("%s", entry.element.c_str()); // print
+		fflush(stdout);
 		entry.result->set_value(true); // (idea) the promise could be used to know when the entry is effectively executed...
 	}
 }
