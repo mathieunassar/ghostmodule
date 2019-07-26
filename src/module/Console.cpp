@@ -46,7 +46,7 @@ Console::Console()
 	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
 	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
 
-	_outputController = std::make_shared<internal::OutputController>();
+	_outputController = std::make_shared<internal::OutputController>(_device);
 }
 
 void Console::start()

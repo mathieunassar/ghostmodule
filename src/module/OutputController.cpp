@@ -18,11 +18,12 @@
 
 using namespace ghost::internal;
 
-OutputController::OutputController(bool redirectStdCout)
+OutputController::OutputController(std::shared_ptr<ConsoleDevice> device, bool redirectStdCout)
 	: _redirecter(nullptr)
 	, _activeInputQueue(&_writeQueue1)
 	, _activeOutputQueue(&_writeQueue1)
 	, _threadEnable(false)
+	, _device(device)
 	, _consoleMode(ConsoleDevice::OUTPUT)
 {
 	if (redirectStdCout)
@@ -124,8 +125,7 @@ void OutputController::writerThread()
 			return;
 
 		queue->pop();
-		printf("%s", entry.element.c_str()); // print
-		fflush(stdout);
+		_device->write(entry.element);
 		entry.result->set_value(true); // (idea) the promise could be used to know when the entry is effectively executed...
 	}
 }

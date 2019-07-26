@@ -127,5 +127,6 @@ bool ConsoleDeviceWindows::read(std::string& output)
 bool ConsoleDeviceWindows::write(const std::string& text)
 {
 	printf("%s", text.c_str());
+	fflush(stdout);
 	return true;
 }

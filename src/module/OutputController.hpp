@@ -22,6 +22,7 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "ConsoleDevice.hpp"
 #include "ConsoleStream.hpp"
 #include "BlockingQueue.hpp"
 #include "ConsoleDevice.hpp"
@@ -36,7 +37,8 @@ namespace ghost
 		class OutputController
 		{
 		public:
-			OutputController(bool redirectStdCout = true);
+			OutputController(std::shared_ptr<ConsoleDevice> device,
+				bool redirectStdCout = true);
 
 			void start();
 			void stop();
@@ -68,6 +70,7 @@ namespace ghost
 			std::mutex _waitForOutputLock;
 
 			/* state */
+			std::shared_ptr<ConsoleDevice> _device;
 			ConsoleDevice::ConsoleMode _consoleMode;
 		};
 	}
