@@ -8,7 +8,7 @@ compiler:
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install conan; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then pip install conan; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then pip3 install conan; fi
 install:
 # Automatic detection of your arch, compiler, etc.
   - conan user
