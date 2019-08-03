@@ -66,7 +66,7 @@ namespace ghost
 	class Console
 	{
 	public:
-		static std::shared_ptr<Console> create();
+		static std::shared_ptr<Console> create(bool redirectStdout = true);
 		virtual ~Console() = 0;
 
 		/// starts the console. Depending on the implementation, this operation can be unnecessary.

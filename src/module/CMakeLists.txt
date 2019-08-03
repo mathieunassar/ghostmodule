@@ -130,6 +130,8 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 		${GHOST_MODULE_ROOT_DIR}/tests/UserManagerTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/ModuleTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/InputControllerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/OutputControllerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/ConsoleTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/ConsoleDeviceMock.hpp
 	)
 

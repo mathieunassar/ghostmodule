@@ -22,6 +22,7 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "ConsoleDevice.hpp"
 #include "ConsoleStream.hpp"
 #include "BlockingQueue.hpp"
 #include "ConsoleDevice.hpp"
@@ -36,7 +37,9 @@ namespace ghost
 		class OutputController
 		{
 		public:
-			OutputController(bool redirectStdCout = true);
+			OutputController(std::shared_ptr<ConsoleDevice> device,
+				bool redirectStdCout = true);
+			~OutputController();
 
 			void start();
 			void stop();
@@ -44,6 +47,7 @@ namespace ghost
 			void disable();
 			void write(const std::string& line);
 			void flush();
+			bool isEnabled() const;
 
 		private:
 			/* redirect std::cout stuff */
@@ -51,7 +55,7 @@ namespace ghost
 			std::unique_ptr<ConsoleStream<>> _redirecter;
 
 			/* Write queue - double buffered for efficient flushing */
-			void swapQueues(BlockingQueue<QueueElement<std::string>>* queue);
+			void swapQueues(BlockingQueue<QueueElement<std::string>>** queue);
 			BlockingQueue<QueueElement<std::string>> _writeQueue1;
 			BlockingQueue<QueueElement<std::string>> _writeQueue2;
 			BlockingQueue<QueueElement<std::string>> *_activeInputQueue; // write method fills this queue
@@ -65,9 +69,10 @@ namespace ghost
 			std::thread _writerThread;
 			std::atomic<bool> _threadEnable;
 			std::condition_variable _waitForOutput;
-			std::mutex _waitForOutputLock;
+			mutable std::mutex _waitForOutputLock;
 
 			/* state */
+			std::shared_ptr<ConsoleDevice> _device;
 			ConsoleDevice::ConsoleMode _consoleMode;
 		};
 	}

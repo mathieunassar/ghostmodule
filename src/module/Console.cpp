@@ -29,12 +29,12 @@
 
 using namespace ghost::internal;
 
-std::shared_ptr<ghost::Console> ghost::Console::create()
+std::shared_ptr<ghost::Console> ghost::Console::create(bool redirectStdout)
 {
-	return std::shared_ptr<ghost::Console>(new ghost::internal::Console());
+	return std::shared_ptr<ghost::Console>(new ghost::internal::Console(redirectStdout));
 }
 
-Console::Console()
+Console::Console(bool redirectStdout)
 {
 #ifdef _WIN32
 	_device = std::shared_ptr<internal::ConsoleDevice>(new internal::ConsoleDeviceWindows());
@@ -46,7 +46,17 @@ Console::Console()
 	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
 	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
 
-	_outputController = std::make_shared<internal::OutputController>();
+	_outputController = std::make_shared<internal::OutputController>(_device, redirectStdout);
+}
+
+Console::Console(const std::shared_ptr<ConsoleDevice>& device, bool redirectStdout)
+	: _device(device)
+{
+	std::function<void(const std::string&)> cmdCallback = std::bind(&Console::onNewInput, this, std::placeholders::_1);
+	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
+	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
+
+	_outputController = std::make_shared<internal::OutputController>(_device, redirectStdout);
 }
 
 void Console::start()
