@@ -6,8 +6,6 @@ matrix:
       dist: xenial
       compiler: gcc
     - os: osx
-      compiler: gcc
-    - os: osx
       compiler: clang
 
 before_cache:
