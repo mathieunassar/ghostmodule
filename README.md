@@ -80,7 +80,7 @@ The following options can be set to customize the build:
 | **BUILD_MODULE**       | if set to "ON", the library "ghost_module" will be built.    | ON      |
 | **BUILD_PERSISTENCE*** | if set to "ON", the library "ghost_persistence" will be built. | ON      |
 
-*****: Building the unit tests and ghost_persistence have dependencies to external libraries, see the "Setup" section.
+*: Building the unit tests and ghost_persistence have dependencies to external libraries, see the "Setup" section.
 
 The following example build the whole repository and executes the unit tests (with `ctest .`)
 
