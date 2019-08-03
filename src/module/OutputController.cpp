@@ -33,6 +33,11 @@ OutputController::OutputController(std::shared_ptr<ConsoleDevice> device, bool r
 	}
 }
 
+OutputController::~OutputController()
+{
+	stop();
+}
+
 void OutputController::start()
 {
 	if (!_threadEnable)
@@ -77,10 +82,13 @@ void OutputController::write(const std::string& line)
 
 void OutputController::flush()
 {
+	if (!_threadEnable)
+		return;
+
 	// take the flush lock to avoid the swap again before the one queue empties
 	std::unique_lock<std::mutex> lock(_flushLock);
 
-	swapQueues(_activeInputQueue); // now write() will write in the second queue while the writer empties the first queue
+	swapQueues(&_activeInputQueue); // now write() will write in the second queue while the writer empties the first queue
 
 	while (_activeOutputQueue->size() != 0)
 	{
@@ -88,7 +96,13 @@ void OutputController::flush()
 	}
 
 	// now _activeOutputQueue is empty and can start writing the content of the other queue
-	swapQueues(_activeOutputQueue);
+	swapQueues(&_activeOutputQueue);
+}
+
+bool OutputController::isEnabled() const
+{
+	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	return _consoleMode == ConsoleDevice::OUTPUT;
 }
 
 void OutputController::stdcoutCallback(const char *ptr, std::streamsize count)
@@ -97,13 +111,13 @@ void OutputController::stdcoutCallback(const char *ptr, std::streamsize count)
 	write(str);
 }
 
-void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>* queue)
+void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>** queue)
 {
 	std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
-	if (queue == &_writeQueue1)
-		queue = &_writeQueue2;
+	if (*queue == &_writeQueue1)
+		*queue = &_writeQueue2;
 	else
-		queue = &_writeQueue1;
+		*queue = &_writeQueue1;
 }
 
 void OutputController::writerThread()
@@ -118,7 +132,7 @@ void OutputController::writerThread()
 		lock.unlock();
 		QueueElement<std::string> entry;
 
-		if (!queue->tryGet(std::chrono::milliseconds(1000), entry))
+		if (!queue->tryGet(std::chrono::milliseconds(1), entry))
 			continue;
 		
 		if (!awaitOutput()) // wait again since pop() is blocking and could take a while

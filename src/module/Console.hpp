@@ -34,7 +34,8 @@ namespace ghost
 		class Console : public ghost::Console
 		{
 		public:
-			Console();
+			Console(bool redirectStdout = true);
+			Console(const std::shared_ptr<ConsoleDevice>& device, bool redirectStdout = true);
 
 			void start() override;
 			void stop() override;

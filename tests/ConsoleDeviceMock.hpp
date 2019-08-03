@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#ifndef GHOST_TESTS_CONSOLEDEVICEMOCK_HPP
+#define GHOST_TESTS_CONSOLEDEVICEMOCK_HPP
+
 #include <gmock/gmock.h>
 
 #include "../src/module/ConsoleDevice.hpp"
@@ -29,3 +32,5 @@ public:
 	MOCK_METHOD1(read, bool(std::string& output));
 	MOCK_METHOD1(write, bool(const std::string& text));
 };
+
+#endif // GHOST_TESTS_CONSOLEDEVICEMOCK_HPP
