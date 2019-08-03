@@ -28,10 +28,14 @@ namespace ghost
 		class InputEvent
 		{
 		public:
+			virtual ~InputEvent() = default;
+
 			class InputEventHandler
 			{
 			public:
 				InputEventHandler(InputControllerAccess* controller) : _controller(controller) {}
+				virtual ~InputEventHandler() = default;
+
 				virtual bool handle(const InputEvent& event) = 0;
 
 			protected:

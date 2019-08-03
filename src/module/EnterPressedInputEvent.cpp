@@ -28,7 +28,6 @@ EnterPressedInputEvent::EnterPressedInputEventHandler::EnterPressedInputEventHan
 
 bool EnterPressedInputEvent::EnterPressedInputEventHandler::handle(const InputEvent& event)
 {
-	const EnterPressedInputEvent& enterEvent = getEvent(event);
 	InputControllerAccess& controller = getController();
 
 	controller.switchConsoleMode(ConsoleDevice::INPUT);

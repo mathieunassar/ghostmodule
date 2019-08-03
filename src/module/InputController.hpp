@@ -48,6 +48,7 @@ namespace ghost
 				ConsoleDevice::ConsoleMode initialMode,
 				std::function<void(const std::string&)> cmdCallback,
 				std::function<void(ConsoleDevice::ConsoleMode)> modeCallback);
+			~InputController();
 
 			void start();
 			void stop();

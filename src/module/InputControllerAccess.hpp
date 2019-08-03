@@ -34,6 +34,8 @@ namespace ghost
 		class InputControllerAccess
 		{
 		public:
+			virtual ~InputControllerAccess() = default;
+			
 			/// Prints the user configured prompt to the console
 			virtual void printPrompt() const = 0;
 			/// Switches the console mode and calls performs the necessary operations

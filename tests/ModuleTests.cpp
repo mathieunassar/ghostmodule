@@ -135,7 +135,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_programOptions)
 {
 	auto builder = ghost::ModuleBuilder::create();
 	int argc = 1;
-	char* argv[] = {"TestModule"}; // this is TEST_MODULE_NAME but I don't have internet to look for the proper conversion from const char* to char*
+	char* argv[1] = {(char*)TEST_MODULE_NAME.c_str()};
 	builder->setProgramOptions(argc, argv);
 	auto module = builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);

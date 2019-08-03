@@ -8,10 +8,11 @@
 
 Lightweight, multiplatform and accessible framework to create command line-based programs.
 
-|    Build system    |                         Build status                         |
-| :----------------: | :----------------------------------------------------------: |
-|    Windows x64     | [![Build status](https://ci.appveyor.com/api/projects/status/urayu2uebhqq3m6y?svg=true)](https://ci.appveyor.com/project/mathieunassar/ghostmodule) |
-| Linux x64 (xenial) | [![Build Status](https://travis-ci.com/mathieunassar/ghostmodule.svg?branch=master)](https://travis-ci.com/mathieunassar/ghostmodule) |
+|         Build system         |                         Build status                         |
+| :--------------------------: | :----------------------------------------------------------: |
+|      Windows x64 VS2015      | [![Build status](https://ci.appveyor.com/api/projects/status/urayu2uebhqq3m6y?svg=true)](https://ci.appveyor.com/project/mathieunassar/ghostmodule) |
+| Linux x64 (xenial) GCC 5.4.0 | [![Build Status](https://travis-ci.com/mathieunassar/ghostmodule.svg?branch=master)](https://travis-ci.com/mathieunassar/ghostmodule) |
+|    MacOS x64 apple-clang     | [![Build Status](https://travis-ci.com/mathieunassar/ghostmodule.svg?branch=master)](https://travis-ci.com/mathieunassar/ghostmodule) |
 
 ## Overview
 
@@ -21,8 +22,11 @@ ghostmodule is a C++ library providing a framework for simple command line appli
 - **Console control**: provides a way to input commands, and controls the output flow to pause when the User is typing;
 - **Command interpretation**: optionally processes user input as commands, previously defined by the developer;
 - **User management**: exposes a login system to restrict the access to some commands and program features;
-- **Data persistence**: provides a sub-library based on Google's Protobuf to store data into save files;
-- **Multiplatform**: Linux (Ubuntu Xenial, GCC compilers) and Windows (MSVC compilers) platforms are currently supported.
+- **Data persistence**: provides a sub-library (ghost_persistence) based on Google's Protobuf to store data into save files;
+- **Multiplatform**: the following platforms are supported:
+  - Linux (Ubuntu Xenial, GCC compilers);
+  - Windows (MSVC compilers);
+  - OSX (Apple clang).
 
 This README file contains the installation instructions, as well as a brief introduction to the features provided by ghostmodule.
 
@@ -34,12 +38,12 @@ ghostmodule uses CMake (<https://cmake.org/>) and Conan (<https://conan.io/>) fo
 
 The following external dependencies are used by this project:
 
-- **Googletest** (<https://github.com/google/googletest>): used for the unit testing;
-- **Google Protobuf** (<https://github.com/protocolbuffers/protobuf>): used to serialize and store data into storage files.
+- **Googletest** (<https://github.com/google/googletest>): used for unit testing;
+- **Google Protobuf** (<https://github.com/protocolbuffers/protobuf>): used by "ghost_persistence" to serialize and store data into storage files.
 
 It is possible to build (parts of) the project without any of these dependencies.
 
-When building requires one of these dependencies, **Conan** must be installed and "`conan`" must be callable from a bash console. It can be easily installed with Python3's pip install tool.
+When building requires one of these dependencies, **Conan** must be installed and "`conan`" must be callable from a bash console. It can be easily installed with Python3's pip install tool or from Homebrew for OSX hosts (https://brew.sh).
 
 #### Simple installation (without unit tests, with examples)
 
@@ -48,16 +52,16 @@ Per default, building the unit tests and the examples is disabled. To build the 
 ```bash
 mkdir build
 cd build
-cmake .. -G "Visual Studio 15 Win64" -DBUILD_EXAMPLES=True
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -G "Visual Studio 15 Win64"
 cmake --build . --config Release
 ```
 
-For debug builds, with the Linux version:
+For debug builds, with a default generator:
 
 ```bash
 mkdir build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=True
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON
 cmake --build .
 ```
 
@@ -65,38 +69,30 @@ If "`BUILD_EXAMPLES=True`" is not specified, the examples will not be built.
 
 *Note: during the configure phase of CMake, a support repository is downloaded from Github, which contains implementation details: ghostsupport.*
 
-#### Full installation (with the unit tests)
+#### Custom installation
 
-To build the unit tests and the example programs, the following script is used:
+The following options can be set to customize the build:
+
+| Option                 | Description                                                  | Default |
+| ---------------------- | ------------------------------------------------------------ | ------- |
+| **BUILD_TESTS***       | if set to "ON", the unit tests will be built (GTest will be fetched by Conan). | OFF     |
+| **BUILD_EXAMPLES**     | if set to "ON", example programs will be built.              | OFF     |
+| **BUILD_MODULE**       | if set to "ON", the library "ghost_module" will be built.    | ON      |
+| **BUILD_PERSISTENCE*** | if set to "ON", the library "ghost_persistence" will be built. | ON      |
+
+*: Building the unit tests and ghost_persistence have dependencies to external libraries, see the "Setup" section.
+
+The following example build the whole repository and executes the unit tests (with `ctest .`)
 
 ```bash
 mkdir build
 cd build
-cmake .. -DBUILD_TESTS=True -DBUILD_EXAMPLES=True -G "Visual Studio 15 Win64"
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON
 cmake --build .
 ctest .
 ```
 
-*Note: multi-configurations generators is not supported by this project. In order to switch from a Debug build to a Release build (or the contrary), `cmake` must be executed again with the corresponding value for the parameter "`CMAKE_BUILD_TYPE`".*
-
-#### Partial installation
-
-The following CMake variables can be used to perform partial builds:
-
-- **BUILD_TESTS**: if set to "True", the unit tests will be built (GTest will be fetched by Conan).
-  The default value of this parameter is "False".
-- **BUILD_EXAMPLES**: if set to "True", example programs will be built.
-  The default value of this parameter is "False".
-- **BUILD_MODULE**: if set to "True", the library "ghost_module" will be built.
-  The default value of this parameter is "True".
-- **BUILD_PERSISTENCE**: if set to "True", the library "ghost_persistence" will be built.
-  The default value of this parameter is "True".
-
-For example, you can replace the CMake calls above by the following line to build everything:
-
-```cmake
-cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=True -DBUILD_PERSISTENCE=True -DBUILD_MODULE=True -DBUILD_EXAMPLES=True -G "Visual Studio 15 Win64"
-```
+*Note: multi-configurations generators is not supported by this project. In order to switch from a Debug build to a Release build (or the contrary), cmake must be executed again with the corresponding value for the parameter "CMAKE_BUILD_TYPE".*
 
 #### Use ghostmodule as a submodule
 

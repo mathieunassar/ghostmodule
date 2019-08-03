@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_PERMISSIONENTITY_HPP
-#define GHOST_PERMISSIONENTITY_HPP
+#ifndef GHOST_TESTS_CONSOLEDEVICEMOCK_HPP
+#define GHOST_TESTS_CONSOLEDEVICEMOCK_HPP
 
-namespace ghost
+#include <gmock/gmock.h>
+
+#include "../src/module/ConsoleDevice.hpp"
+#include "../src/module/InputEvent.hpp"
+
+class ConsoleDeviceMock : public ghost::internal::ConsoleDevice
 {
-	/**
-	*	Represents a user or a group, or anything that has access rights.
-	*/
-	class PermissionEntity
-	{
-	public:
-		virtual ~PermissionEntity() = default;
-		/// used to determine whether the permissions of an entity ("other") is contained in this
-		virtual bool contains(const PermissionEntity& other) const = 0;
-	};
-}
+public:
+	MOCK_METHOD0(start, bool());
+	MOCK_METHOD0(stop, void());
+	MOCK_METHOD1(setConsoleMode, bool(ConsoleMode mode));
+	MOCK_METHOD0(awaitInputMode, bool());
+	MOCK_METHOD1(read, bool(std::string& output));
+	MOCK_METHOD1(write, bool(const std::string& text));
+};
 
-#endif // GHOST_PERMISSIONENTITY_HPP
+#endif // GHOST_TESTS_CONSOLEDEVICEMOCK_HPP

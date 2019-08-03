@@ -27,7 +27,6 @@ InputModeInputEvent::InputModeInputEventHandler::InputModeInputEventHandler(Inpu
 
 bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& event)
 {
-	const InputModeInputEvent& enterEvent = getEvent(event);
 	InputControllerAccess& controller = getController();
 
 	std::string line;
@@ -50,6 +49,7 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to output
 			if (controller.getInputMode() == ghost::InputMode::SEQUENTIAL)
 			{
+				// TODO here wait that the command is processed
 				controller.switchConsoleMode(ConsoleDevice::INPUT);
 				controller.printPrompt();
 				// loop is true

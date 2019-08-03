@@ -18,11 +18,12 @@
 
 using namespace ghost::internal;
 
-OutputController::OutputController(bool redirectStdCout)
+OutputController::OutputController(std::shared_ptr<ConsoleDevice> device, bool redirectStdCout)
 	: _redirecter(nullptr)
 	, _activeInputQueue(&_writeQueue1)
 	, _activeOutputQueue(&_writeQueue1)
 	, _threadEnable(false)
+	, _device(device)
 	, _consoleMode(ConsoleDevice::OUTPUT)
 {
 	if (redirectStdCout)
@@ -30,6 +31,11 @@ OutputController::OutputController(bool redirectStdCout)
 		_redirecter = std::unique_ptr<ConsoleStream<>>(new ConsoleStream<>(
 			std::cout, std::bind(&OutputController::stdcoutCallback, this, std::placeholders::_1, std::placeholders::_2)));
 	}
+}
+
+OutputController::~OutputController()
+{
+	stop();
 }
 
 void OutputController::start()
@@ -43,9 +49,12 @@ void OutputController::start()
 
 void OutputController::stop()
 {
-	_threadEnable = false;
-	if (_writerThread.joinable())
-		_writerThread.join();
+	if (_threadEnable)
+	{
+		_threadEnable = false;
+		if (_writerThread.joinable())
+			_writerThread.join();
+	}
 }
 
 void OutputController::enable()
@@ -73,10 +82,13 @@ void OutputController::write(const std::string& line)
 
 void OutputController::flush()
 {
+	if (!_threadEnable)
+		return;
+
 	// take the flush lock to avoid the swap again before the one queue empties
 	std::unique_lock<std::mutex> lock(_flushLock);
 
-	swapQueues(_activeInputQueue); // now write() will write in the second queue while the writer empties the first queue
+	swapQueues(&_activeInputQueue); // now write() will write in the second queue while the writer empties the first queue
 
 	while (_activeOutputQueue->size() != 0)
 	{
@@ -84,7 +96,13 @@ void OutputController::flush()
 	}
 
 	// now _activeOutputQueue is empty and can start writing the content of the other queue
-	swapQueues(_activeOutputQueue);
+	swapQueues(&_activeOutputQueue);
+}
+
+bool OutputController::isEnabled() const
+{
+	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	return _consoleMode == ConsoleDevice::OUTPUT;
 }
 
 void OutputController::stdcoutCallback(const char *ptr, std::streamsize count)
@@ -93,13 +111,13 @@ void OutputController::stdcoutCallback(const char *ptr, std::streamsize count)
 	write(str);
 }
 
-void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>* queue)
+void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>** queue)
 {
 	std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
-	if (queue == &_writeQueue1)
-		queue = &_writeQueue2;
+	if (*queue == &_writeQueue1)
+		*queue = &_writeQueue2;
 	else
-		queue = &_writeQueue1;
+		*queue = &_writeQueue1;
 }
 
 void OutputController::writerThread()
@@ -114,14 +132,14 @@ void OutputController::writerThread()
 		lock.unlock();
 		QueueElement<std::string> entry;
 
-		if (!queue->tryGet(std::chrono::milliseconds(1000), entry))
+		if (!queue->tryGet(std::chrono::milliseconds(1), entry))
 			continue;
 		
 		if (!awaitOutput()) // wait again since pop() is blocking and could take a while
 			return;
-		
+
 		queue->pop();
-		printf("%s", entry.element.c_str()); // print
+		_device->write(entry.element);
 		entry.result->set_value(true); // (idea) the promise could be used to know when the entry is effectively executed...
 	}
 }

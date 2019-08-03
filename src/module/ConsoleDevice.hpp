@@ -31,6 +31,7 @@ namespace ghost
 		class ConsoleDevice
 		{
 		public:
+			virtual ~ConsoleDevice() = default;
 			/**
 			*	Describes whether the user can see their input on the console
 			*	or not.
@@ -48,6 +49,11 @@ namespace ghost
 			virtual bool start() = 0;
 
 			/**
+			 *	Performs necessary operations on the local device to dispose it properly.
+			 */
+			virtual void stop() = 0;
+
+			/**
 			*	Switches the mode of the console window.
 			*	Depending on the "mode" parameter, this method enables or diables
 			*	the visualisation of text in the console window (@see ConsoleMode)
@@ -63,9 +69,18 @@ namespace ghost
 			virtual bool awaitInputMode() = 0;
 
 			/**
-			 *	Performs necessary operations on the local device to dispose it properly.
+			 *	Reads a line from the console device.
+			 *	@param output	Output parameter containing the result if this method returns true
+			 *	@return true if a line was read, false otherwise.
 			 */
-			virtual void stop() = 0;
+			virtual bool read(std::string& output) = 0;
+
+			/**
+			 *	Writes the given line to the console device.
+			 *	@param text		text to write to the console.
+			 *	@return true if the text was successfully written, false otherwise.
+			 */
+			virtual bool write(const std::string& text) = 0;
 		};
 	}
 }

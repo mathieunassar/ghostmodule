@@ -23,6 +23,7 @@ using namespace ghost::internal;
 
 ConsoleDeviceUnix::ConsoleDeviceUnix()
 	: _enable(false)
+	, _mode(DeviceMode::IDLE)
 {
 
 }
@@ -32,6 +33,15 @@ bool ConsoleDeviceUnix::start()
 	_enable = true;
 
 	tcgetattr(STDIN_FILENO, &_referenceState);
+
+	return true;
+}
+
+void ConsoleDeviceUnix::stop()
+{
+	_enable = false;
+
+	setConsoleMode(ConsoleDevice::INPUT);
 }
 
 bool ConsoleDeviceUnix::setConsoleMode(ConsoleMode mode)
@@ -49,41 +59,63 @@ bool ConsoleDeviceUnix::setConsoleMode(ConsoleMode mode)
 
 bool ConsoleDeviceUnix::awaitInputMode()
 {
-	fd_set fdr;
-	FD_ZERO(&fdr);
-	FD_SET(STDIN_FILENO, &fdr);
+	_mode = DeviceMode::AWAIT_INPUT;
 
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000;
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); });
+	if (!gotInput) // _enable is false or the console is used for something else
+		return false;
 
+	std::string str;
+	std::getline(std::cin, str);
+	return _enable; // user pressed enter, hence the string is empty but there was something to read in the select
+}
 
-	while (_enable)
+bool ConsoleDeviceUnix::read(std::string& output)
+{
+	_mode = DeviceMode::READ;
+
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
+	if (!gotInput) // _enable is false or the console is used for something else
+		return false;
+
+	std::getline(std::cin, output);
+
+	_mode = DeviceMode::IDLE;
+	return true;
+}
+
+bool ConsoleDeviceUnix::write(const std::string& text)
+{
+	printf("%s", text.c_str());
+	fflush(stdout);
+	return true;
+}
+
+bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate)
+{
+	while (untilPredicate())
 	{
-		int selectResult = select(STDIN_FILENO + 1, &fdr, NULL, NULL, NULL);
+		fd_set fdr;
+		FD_ZERO(&fdr);
+		FD_SET(STDIN_FILENO, &fdr);
+
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		
+		int selectResult = select(STDIN_FILENO + 1, &fdr, NULL, NULL, &tv);
 		if (selectResult == -1)
 		{
 			return false; // error!!
 		}
 		else if (selectResult == 0) // nothing to read
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // but don't wait too long to stay reactive
+			std::this_thread::sleep_for(std::chrono::milliseconds(1)); // but don't wait too long to stay reactive
 			continue;
 		}
-		else // something to read
-		{
-			std::string str;
-			std::getline(std::cin, str);
-			return _enable; // user pressed enter, hence the string is empty but there was something to read in the select
-		}
+		
+		return true;
 	}
 
 	return false;
-}
-
-void ConsoleDeviceUnix::stop()
-{
-	_enable = false;
-
-	setConsoleMode(ConsoleDevice::INPUT);
 }
