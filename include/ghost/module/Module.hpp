@@ -43,6 +43,8 @@ namespace ghost
 	class Module
 	{
 	public:
+		virtual ~Module() = default;
+		
 		/**
 		 *	Starts the module. The ghost::ModuleExecutor will be called and its
 		 *	ghost::ModuleExecutor::initialize, ghost::ModuleExecutor::run and

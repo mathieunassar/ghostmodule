@@ -35,6 +35,8 @@ namespace ghost
 	{
 	public:
 		static std::unique_ptr<ghost::ModuleBuilder> create();
+		
+		virtual ~ModuleBuilder() = default;
 
 		/**
 		 *	Sets the function that will be called to initialize the module.

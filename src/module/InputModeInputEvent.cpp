@@ -27,7 +27,6 @@ InputModeInputEvent::InputModeInputEventHandler::InputModeInputEventHandler(Inpu
 
 bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& event)
 {
-	const InputModeInputEvent& enterEvent = getEvent(event);
 	InputControllerAccess& controller = getController();
 
 	std::string line;

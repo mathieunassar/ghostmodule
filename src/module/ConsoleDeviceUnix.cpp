@@ -33,6 +33,8 @@ bool ConsoleDeviceUnix::start()
 	_enable = true;
 
 	tcgetattr(STDIN_FILENO, &_referenceState);
+
+	return true;
 }
 
 void ConsoleDeviceUnix::stop()

@@ -25,6 +25,7 @@ namespace ghost
 	class PermissionEntity
 	{
 	public:
+		virtual ~PermissionEntity() = default;
 		/// used to determine whether the permissions of an entity ("other") is contained in this
 		virtual bool contains(const PermissionEntity& other) const = 0;
 	};
