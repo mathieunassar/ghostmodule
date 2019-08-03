@@ -35,7 +35,7 @@ namespace ghost
 		{
 		public:
 			ConsoleStream(std::ostream &stream, std::function<void(const Type*, std::streamsize count)> consoleCallback)
-				: _stream(stream), _consoleCallback(consoleCallback)
+				: _consoleCallback(consoleCallback), _stream(stream)
 			{
 				// redirect stream
 				_buf = _stream.rdbuf(this);

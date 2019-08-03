@@ -73,6 +73,8 @@ public:
 				addTodo(module);
 			else if (module.getProgramOptions().getParameter<std::string>("__0") == "remove")
 				removeTodo(module);
+			else
+				GHOST_INFO(module.getLogger()) << "Usage: program [list | add | remove]";
 		}
 		else
 			GHOST_INFO(module.getLogger()) << "Usage: program [list | add | remove]";

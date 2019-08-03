@@ -27,7 +27,6 @@ LineRequestInputEvent::LineRequestInputEventHandler::LineRequestInputEventHandle
 
 bool LineRequestInputEvent::LineRequestInputEventHandler::handle(const InputEvent& event)
 {
-	const LineRequestInputEvent& enterEvent = getEvent(event);
 	InputControllerAccess& controller = getController();
 
 	ConsoleDevice::ConsoleMode oldState = controller.getConsoleMode();

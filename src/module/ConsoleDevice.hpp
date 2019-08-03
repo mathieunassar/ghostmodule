@@ -31,6 +31,7 @@ namespace ghost
 		class ConsoleDevice
 		{
 		public:
+			virtual ~ConsoleDevice() = default;
 			/**
 			*	Describes whether the user can see their input on the console
 			*	or not.
