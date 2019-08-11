@@ -17,10 +17,8 @@
 #ifndef GHOST_SUBSCRIBER_HPP
 #define GHOST_SUBSCRIBER_HPP
 
-#include <memory>
-
 #include <ghost/connection/Connection.hpp>
-#include <ghost/connection/Reader.hpp>
+#include <ghost/connection/ReadableConnection.hpp>
 
 namespace ghost
 {
@@ -37,33 +35,12 @@ namespace ghost
 	 * Particular implementations of Connection classes may define new connection
 	 * parameters which can be passed through the ConnectionConfiguration.
 	 */
-	class Subscriber : public Connection
+	class Subscriber : public ghost::Connection, public ghost::ReadableConnection
 	{
 	public:
-		/**
-		 * @brief Construct a Subscriber with the provided configuration.
-		 * 
-		 * @param configuration subscriber's configuration
-		 */
-		Subscriber(const ConnectionConfiguration& configuration);
+		virtual ~Subscriber() = default;
 
-		virtual ~Subscriber() = 0;
-
-		/**
-		 * @brief gets a Reader from the connection that reads messages of the provided
-		 * type.
-		 * 
-		 * @tparam MessageType Message type read by the Reader objects.
-		 * @return the requested reader, which will be fed by this connection.
-		 */
-		template<typename MessageType>
-		std::shared_ptr<Reader<MessageType>> getReader() // same as: using internal::Connection::getReader;
-		{
-			return internal::Connection::getReader<MessageType>();
-		}
 	};
-
-	inline Subscriber::~Subscriber() {}
 }
 
 #endif // GHOST_SUBSCRIBER_HPP

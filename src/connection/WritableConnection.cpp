@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/Server.hpp"
+#include <ghost/connection/WritableConnection.hpp>
+#include "WriterSink.hpp"
 
-ghost::Server::Server(const ConnectionConfiguration& configuration)
-	: Connection(configuration)
+using namespace ghost;
+
+WritableConnection::WritableConnection(const ghost::ConnectionConfiguration& configuration)
+	: _writerSink(std::make_shared<ghost::internal::WriterSink>())
+	, _blocking(configuration.isOperationBlocking())
 {
 
+}
+
+std::shared_ptr<ghost::WriterSink> WritableConnection::getWriterSink() const
+{
+	return _writerSink;
 }

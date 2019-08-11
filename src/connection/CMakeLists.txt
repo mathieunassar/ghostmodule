@@ -7,13 +7,14 @@ set(PROTOC_SOURCE_CUSTOM ${GHOST_MODULE_ROOT_DIR}/protobuf/)
 set(PROTOC_SOURCE_FILE
 	${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/GenericMessage.proto
 	${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/ConnectionConfiguration.proto)
-set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/protobuf/)
 
 generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} "${PROTOC_SOURCE_FILE}")
 
 # targets defintion
 file(GLOB header_connection_lib
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/Connection.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ReadableConnection.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/WritableConnection.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/Server.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ClientHandler.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/MessageHandler.hpp
@@ -28,67 +29,66 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionManager.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionFactory.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionFactory.impl.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/Writer.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/WriterSink.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/Reader.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ReaderSink.hpp
+)
+
+file(GLOB header_connection_lib_internal
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/ConnectionFactoryRule.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/MessageHandlerCallback.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/GenericWriter.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/GenericReader.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/GenericMessageConverter.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/ProtobufMessage.hpp
 )
 
 file(GLOB header_connection_internal_lib
-${GHOST_MODULE_ROOT_DIR}/src/connection/Connection.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/Connection.impl.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/GenericMessageConverter.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/ProtobufMessage.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/ProtobufConfiguration.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/Configuration.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/MessageHandler.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/MessageHandlerCallback.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionManager.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionFactory.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionFactory.impl.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionFactoryRule.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionFactoryRule.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/Writer.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/Reader.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/WriterSink.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ReaderSink.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/QueuedSink.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/GenericWriter.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/GenericWriter.impl.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/GenericReader.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/GenericReader.impl.hpp
 )
 
 file(GLOB protobuf_connection_lib
 ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/GenericMessage.pb.h
-${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/GenericMessage.grpc.pb.h
 ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/GenericMessage.pb.cc
-${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/GenericMessage.grpc.pb.cc
 ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/ConnectionConfiguration.pb.h
-${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/ConnectionConfiguration.grpc.pb.h
 ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/ConnectionConfiguration.pb.cc
-${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection/ConnectionConfiguration.grpc.pb.cc
 )
 
 file(GLOB source_connection_lib
-${GHOST_MODULE_ROOT_DIR}/src/connection/Connection.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/Server.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/Client.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/Publisher.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/Subscriber.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ProtobufMessage.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/MessageHandler.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/GenericMessageConverter.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/Configuration.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionConfiguration.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/NetworkConnectionConfiguration.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection/ProtobufConfiguration.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionManager.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionFactory.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection/ConnectionFactoryRule.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/WritableConnection.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/WriterSink.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/Writer.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/ReadableConnection.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/Reader.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection/ReaderSink.cpp
 )
 
 source_group("API" FILES ${header_connection_lib})
 source_group("Protobuf" FILES ${protobuf_connection_lib})
+source_group("API\\internal" FILES ${header_connection_lib_internal})
 
 ##########################################################################################################################################
 
 add_library(ghost_connection
 	${header_connection_lib}
+	${header_connection_lib_internal}
 	${header_connection_internal_lib}
 	${source_connection_lib}
 	${protobuf_connection_lib}

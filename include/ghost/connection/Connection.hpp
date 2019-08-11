@@ -17,21 +17,17 @@
 #ifndef GHOST_CONNECTION_HPP
 #define GHOST_CONNECTION_HPP
 
-#include <ghost/connection/internal/Connection.hpp>
-
 namespace ghost
 {
 	/**
-	 * A connection.
-	 * @author	Mathieu Nassar
-	 * @date	21.05.2018
+	 *	A connection object, whose running state can be queried.
+	 *	ghost::Connection is the base class of ghost::Server, ghost::Client, ghost::Publisher
+	 *	and ghost::Subscriber.
 	 */
-	class Connection : protected internal::Connection
+	class Connection
 	{
 	public:
-		Connection(const ConnectionConfiguration& configuration);
-
-		virtual ~Connection() = 0;
+		virtual ~Connection() = default;
 
 		/**
 		* If the start sequence is successful, then the connection is running.
@@ -57,8 +53,6 @@ namespace ghost
 		*/
 		virtual bool isRunning() const = 0;
 	};
-
-	inline Connection::~Connection() {}
 }
 
 #endif //GHOST_CONNECTION_HPP

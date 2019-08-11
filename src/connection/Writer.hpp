@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_QUEUEDSINK_HPP
-#define GHOST_INTERNAL_QUEUEDSINK_HPP
+#ifndef GHOST_INTERNAL_WRITER_HPP
+#define GHOST_INTERNAL_WRITER_HPP
 
-#include <google/protobuf/any.pb.h>
-#include <BlockingQueue.hpp>
+#include <ghost/connection/Writer.hpp>
+#include "WriterSink.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
-		class QueuedSink
+		/**
+		 *	The internal implementation of the ghost::Writer is a specialized
+		 *	type handling google::protobuf::Any messages in order to push them
+		 *	to the WriterSink object.
+		 */
+		class Writer : public ghost::Writer<google::protobuf::Any>
 		{
 		public:
-			QueuedSink()
-				: _messageQueue(new BlockingQueue<google::protobuf::Any>()) {}
-			virtual ~QueuedSink() = default;
+			Writer(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking);
 
-		protected:
-			std::shared_ptr<BlockingQueue<google::protobuf::Any>> getMessageQueue()
-			{
-				return _messageQueue;
-			}
+			bool write(const google::protobuf::Any& message) override;
 
 		private:
-			std::shared_ptr<BlockingQueue<google::protobuf::Any>> _messageQueue;
+			std::shared_ptr<WriterSink> _writerSink;
+			bool _blocking;
 		};
 	}
+	
 }
 
-#endif //GHOST_INTERNAL_QUEUEDSINK_HPP
+#endif // GHOST_INTERNAL_WRITER_HPP

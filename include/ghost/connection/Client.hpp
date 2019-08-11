@@ -17,12 +17,9 @@
 #ifndef GHOST_CLIENT_HPP
 #define GHOST_CLIENT_HPP
 
-#include <memory>
-
 #include <ghost/connection/Connection.hpp>
-#include <ghost/connection/Message.hpp>
-#include <ghost/connection/Reader.hpp>
-#include <ghost/connection/Writer.hpp>
+#include <ghost/connection/ReadableConnection.hpp>
+#include <ghost/connection/WritableConnection.hpp>
 
 namespace ghost
 {
@@ -38,41 +35,14 @@ namespace ghost
 	 * 
 	 * Particular implementations of Connection classes may define new connection
 	 * parameters which can be passed through the ConnectionConfiguration.
+	 *
+	 * It is possible to read and write through client connections.
 	 */
-	class Client : public Connection
+	class Client : public ghost::Connection, public ghost::ReadableConnection, public ghost::WritableConnection
 	{
 	public:
-		Client(const ConnectionConfiguration& configuration);
-		virtual ~Client() = 0;
-
-		/**
-		 * @brief gets a Writer from the connection that writes messages of the provided
-		 * type.
-		 * 
-		 * @tparam MessageType Message type written by the Writer objects.
-		 * @return the requested writer, which will feed this connection.
-		 */
-		template<typename MessageType = ghost::Message>
-		std::shared_ptr<Writer<MessageType>> getWriter() // same as: using internal::Connection::getWriter;
-		{
-			return internal::Connection::getWriter<MessageType>();
-		}
-
-		/**
-		 * @brief gets a Reader from the connection that reads messages of the provided
-		 * type.
-		 * 
-		 * @tparam MessageType Message type read by the Reader objects.
-		 * @return the requested reader, which will be fed by this connection.
-		 */
-		template<typename MessageType = ghost::Message>
-		std::shared_ptr<Reader<MessageType>> getReader() // same as: using internal::Connection::getReader;
-		{
-			return internal::Connection::getReader<MessageType>();
-		}
+		virtual ~Client() = default;
 	};
-
-	inline Client::~Client() {}
 }
 
 #endif //GHOST_CLIENT_HPP

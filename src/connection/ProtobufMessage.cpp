@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/internal/ProtobufMessage.hpp"
+#include <ghost/connection/internal/ProtobufMessage.hpp>
 
 using namespace ghost;
 

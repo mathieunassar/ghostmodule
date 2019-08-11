@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/Subscriber.hpp"
+#include <ghost/connection/ReadableConnection.hpp>
+#include "ReaderSink.hpp"
 
-ghost::Subscriber::Subscriber(const ConnectionConfiguration& configuration)
-	: Connection(configuration)
+using namespace ghost;
+
+ReadableConnection::ReadableConnection(const ghost::ConnectionConfiguration& configuration)
+	: _readerSink(std::make_shared<ghost::internal::ReaderSink>())
+	, _blocking(configuration.isOperationBlocking())
 {
 
+}
+
+std::shared_ptr<ghost::MessageHandler> ReadableConnection::addMessageHandler()
+{
+	return _readerSink->addMessageHandler();
+}
+
+std::shared_ptr<ghost::ReaderSink> ReadableConnection::getReaderSink() const
+{
+	return _readerSink;
 }

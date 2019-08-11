@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/internal/MessageHandler.hpp"
-#include "../include/ghost/connection/internal/GenericMessageConverter.hpp"
+#include "MessageHandler.hpp"
+#include <ghost/connection/internal/GenericMessageConverter.hpp>
 
 using namespace ghost::internal;
-
-MessageHandler::MessageHandler()
-{
-	_internal = this;
-}
 
 void MessageHandler::handle(const google::protobuf::Any& message)
 {
 	std::pair<std::string, std::string> formatAndName = GenericMessageConverter::getFormatAndName(message);
 
 	if (_handlers.count(formatAndName))
-	{
 		_handlers.at(formatAndName)->handle(message);
-	}
+}
+
+void MessageHandler::addHandler(const std::string& format, const std::string& name,
+	std::unique_ptr<ghost::internal::BaseMessageHandlerCallback>&& handler)
+{
+	_handlers[std::make_pair(format, name)] = std::move(handler);
 }

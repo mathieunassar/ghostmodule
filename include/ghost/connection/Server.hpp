@@ -40,17 +40,10 @@ namespace ghost
 	 * Particular implementations of Connection classes may define new connection
 	 * parameters which can be passed through the ConnectionConfiguration.
 	 */
-	class Server : public Connection
+	class Server : public ghost::Connection
 	{
 	public:
-		/**
-		 * @brief Constructor of a Server.
-		 * 
-		 * @param configuration the Server's configuration.
-		 */
-		Server(const ConnectionConfiguration& configuration);
-
-		virtual ~Server() = 0;
+		virtual ~Server() = default;
 
 		/**
 		 * @brief Sets the handler for incoming Client connections. The handler
@@ -58,10 +51,8 @@ namespace ghost
 		 * 
 		 * @param handler custom implementation of a ClientHandler
 		 */
-		virtual void setClientHandler(std::shared_ptr<ClientHandler> handler) = 0;
+		virtual void setClientHandler(std::shared_ptr<ghost::ClientHandler> handler) = 0;
 	};
-
-	inline Server::~Server() {}
 }
 
 #endif //GHOST_SERVER_HPP

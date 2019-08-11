@@ -20,7 +20,6 @@
 #include <memory>
 #include <list>
 
-#include <ghost/connection/internal/ConnectionFactoryRule.hpp>
 #include <ghost/connection/Server.hpp>
 #include <ghost/connection/Client.hpp>
 #include <ghost/connection/Publisher.hpp>
@@ -41,17 +40,10 @@ namespace ghost
 
 			/* Methods to set up the factory */
 
-			template<typename Connection>
-			void addServerRule(const ghost::ConnectionConfiguration& config);
-
-			template<typename Connection>
-			void addClientRule(const ghost::ConnectionConfiguration& config);
-
-			template<typename Connection>
-			void addPublisherRule(const ghost::ConnectionConfiguration& config);
-
-			template<typename Connection>
-			void addSubscriberRule(const ghost::ConnectionConfiguration& config);
+			void addServerRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+			void addClientRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+			void addPublisherRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+			void addSubscriberRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
 
 			/* Methods to create connections */
 
@@ -66,11 +58,7 @@ namespace ghost
 			std::list<std::shared_ptr<ConnectionFactoryRule>> _publisherRules;
 			std::list<std::shared_ptr<ConnectionFactoryRule>> _subscriberRules;
 		};
-
-		#include "ConnectionFactory.impl.hpp"
 	}
-
-	#include "../ConnectionFactory.impl.hpp"
 }
 
 #endif //GHOST_INTERNAL_CONNECTION_FACTORY_HPP

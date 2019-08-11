@@ -48,14 +48,14 @@ source_group("Protobuf" FILES ${protobuf_connectiongrpc_lib})
 
 ##########################################################################################################################################
 
-add_library(ghost_connectiongrpc
+add_library(ghost_connection_grpc
 	${header_connectiongrpc_internal_lib}
 	${source_connectiongrpc_lib}
 	${protobuf_connectiongrpc_lib}
 	)
 
 if (UNIX)
-	target_link_libraries(ghost_connectiongrpc pthread)
+	target_link_libraries(ghost_connection_grpc pthread)
 endif()
 
-target_link_libraries(ghost_connectiongrpc ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})
+target_link_libraries(ghost_connection_grpc ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})

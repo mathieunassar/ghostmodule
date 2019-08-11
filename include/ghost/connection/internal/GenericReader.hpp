@@ -17,12 +17,13 @@
 #ifndef GHOST_INTERNAL_GENERICREADER_HPP
 #define GHOST_INTERNAL_GENERICREADER_HPP
 
-#include <ghost/connection/internal/ReaderSink.hpp>
+#include <memory>
+#include <type_traits>
+#include <google/protobuf/any.pb.h>
 #include <ghost/connection/Reader.hpp>
-
-#include <ghost/connection/internal/MessageHandler.hpp>
-#include <ghost/connection/internal/GenericMessageConverter.hpp>
-#include <ghost/connection/internal/ProtobufMessage.hpp>
+#include <ghost/connection/ReaderSink.hpp>
+#include "GenericMessageConverter.hpp"
+#include "ProtobufMessage.hpp"
 
 namespace ghost
 {
@@ -35,27 +36,16 @@ namespace ghost
 		 *	Its implementation of the Reader interface provides the API functionality.
 		 */
 		template<typename MessageType>
-		class GenericReader : public ReaderSink, public ghost::Reader<MessageType>
+		class GenericReader : public ghost::Reader<MessageType>
 		{
 		public:
-			/// Constructor. The value of blocking determines whether calls to "read" will
-			/// be blocking or not.
-			GenericReader(bool blocking);
+			// Constructor. Initializes the internal implementation, which is bound to the internal sink.
+			GenericReader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
+				: _internal(ghost::Reader<google::protobuf::Any>::create(sink, blocking)) {}
 
-			GenericReader(const ReaderSink& other, bool blocking);
-
-			/// From ReaderSink: feeds the reader with messages to read
-			bool put(const google::protobuf::Any& message) override;
-
-			/// Reads the messages if possible. If the reader is set to be blocking, this call
-			/// will only return once a message is fed into the reader.
+			// From ghost::Reader<MessageType>
 			bool read(MessageType& message) override;
-			/// reinterprets the last message read into the provided message format.
 			bool lastRead(MessageType& message) override;
-
-			/// setting a message handler will disable the read queue; further calls to read will
-			/// return false, while new messages will automatically be processed by the message handler.
-			std::shared_ptr<ghost::MessageHandler> addMessageHandler() override;
 
 		private:
 			template<class Q = MessageType>
@@ -74,13 +64,32 @@ namespace ghost
 				return GenericMessageConverter::parse(any, message);
 			}
 
-			bool _blocking;
-
-			std::shared_ptr<MessageHandler> _messageHandler;
-			google::protobuf::Any _last;
+			std::shared_ptr<ghost::Reader<google::protobuf::Any>> _internal;
 		};
 
-		#include "GenericReader.impl.hpp"
+		// TEMPLATE DEFINITION //
+
+		template<typename MessageType>
+		bool GenericReader<MessageType>::read(MessageType& message)
+		{
+			google::protobuf::Any tmp;
+			bool readResult = _internal->read(tmp);
+			if (!readResult)
+				return false;
+
+			return makeMessage(tmp, message);
+		}
+
+		template<typename MessageType>
+		bool GenericReader<MessageType>::lastRead(MessageType& message)
+		{
+			google::protobuf::Any tmp;
+			bool readResult = _internal->lastRead(tmp);
+			if (!readResult)
+				return false;
+
+			return makeMessage(tmp, message);
+		}
 	}
 }
 

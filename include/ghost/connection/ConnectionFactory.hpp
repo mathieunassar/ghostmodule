@@ -17,15 +17,12 @@
 #ifndef GHOST_CONNECTIONFACTORY_HPP
 #define GHOST_CONNECTIONFACTORY_HPP
 
+#include <memory>
 #include <ghost/connection/ConnectionConfiguration.hpp>
+#include <ghost/connection/internal/ConnectionFactoryRule.hpp>
 
 namespace ghost
 {
-	namespace internal
-	{
-		class ConnectionFactory;
-	}
-
 	/**
 	 * @brief Factory that creates Connection objects based on a connection configuration.
 	 * 
@@ -47,13 +44,15 @@ namespace ghost
 	class ConnectionFactory
 	{
 	public:
+		virtual ~ConnectionFactory() = default;
+		
 		/**
 		 * @brief Adds a rule for a Server Connection.
 		 * 
 		 * @tparam Connection User-defined implementation of a server
 		 * @param config Minimum configuration required to match this rule.
 		 */
-		template<typename Connection>
+		template<typename ConnectionType>
 		void addServerRule(const ghost::ConnectionConfiguration& config);
 
 		/**
@@ -62,7 +61,7 @@ namespace ghost
 		 * @tparam Connection User-defined implementation of a client
 		 * @param config Minimum configuration required to match this rule.
 		 */
-		template<typename Connection>
+		template<typename ConnectionType>
 		void addClientRule(const ghost::ConnectionConfiguration& config);
 
 		/**
@@ -71,7 +70,7 @@ namespace ghost
 		 * @tparam Connection User-defined implementation of a publisher
 		 * @param config Minimum configuration required to match this rule.
 		 */
-		template<typename Connection>
+		template<typename ConnectionType>
 		void addPublisherRule(const ghost::ConnectionConfiguration& config);
 
 		/**
@@ -80,12 +79,19 @@ namespace ghost
 		 * @tparam Connection User-defined implementation of a subscriber
 		 * @param config Minimum configuration required to match this rule.
 		 */
-		template<typename Connection>
+		template<typename ConnectionType>
 		void addSubscriberRule(const ghost::ConnectionConfiguration& config);
 
 	protected:
-		internal::ConnectionFactory* _internal;
+		// the following contains internal implementation detail. Please do not rely on this in your code.
+
+		virtual void addServerRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
+		virtual void addClientRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
+		virtual void addPublisherRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
+		virtual void addSubscriberRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
 	};
+
+	#include "ConnectionFactory.impl.hpp"
 }
 
 #endif //GHOST_CONNECTIONFACTORY_HPP

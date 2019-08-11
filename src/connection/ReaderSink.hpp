@@ -18,34 +18,35 @@
 #define GHOST_INTERNAL_READERSINK_HPP
 
 #include <google/protobuf/any.pb.h>
-#include <BlockingQueue.hpp>
-#include <ghost/connection/internal/QueuedSink.hpp>
+#include <ghost/connection/ReaderSink.hpp>
+#include "MessageHandler.hpp"
+#include "QueuedSink.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
-		/*
-		This will contain the read queue, will be initialized at the beginning of a connection
-		constructor can take another sink to transfer the queue from one to another
-		Create MessageQueue class to handle the queue with its mutex
-		*/
-		class ReaderSink : public QueuedSink
+		/**
+		 *	The internal implementation of the API class ghost::ReaderSink.
+		 *	This implementation manages google::protobuf::Any messages and
+		 *	shares them with with the bound connection over a blocking queue,
+		 *	which is a member of the QueuedSink class.
+		 */
+		class ReaderSink : public QueuedSink, public ghost::ReaderSink
 		{
 		public:
-			virtual ~ReaderSink() = 0;
+			virtual ~ReaderSink() = default;
 
-			/**
-			* Puts a message in the reader.
-			* @author	Mathieu Nassar
-			* @date	21.05.2018
-			* @param	message	message to send.
-			* @return	A long.
-			*/
-			virtual bool put(const google::protobuf::Any& message) = 0;
+			// From ghost::ReaderSink
+			bool put(const google::protobuf::Any& message) override;
+			std::shared_ptr<ghost::MessageHandler> addMessageHandler() override;
+
+			// gets a message from the sink
+			bool get(google::protobuf::Any& message, bool blocking);
+
+		private:
+			std::shared_ptr<ghost::internal::MessageHandler> _messageHandler;
 		};
-
-		inline ReaderSink::~ReaderSink() {}
 	}
 }
 

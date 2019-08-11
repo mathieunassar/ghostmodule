@@ -28,11 +28,6 @@
 
 namespace ghost
 {
-	namespace internal
-	{
-		class ConnectionManager;
-	}
-
 	/**
 	 * @brief Manager for Connection objects.
 	 * 
@@ -47,17 +42,17 @@ namespace ghost
 	class ConnectionManager
 	{
 	public:
-		static std::shared_ptr<ConnectionManager> create();
-		virtual ~ConnectionManager() = 0;
+		static std::shared_ptr<ghost::ConnectionManager> create();
+		virtual ~ConnectionManager() = default;
 
 		/// Creates a server with the provided configuration. If this is impossible, returns nullptr.
-		virtual std::shared_ptr<Server> createServer(const ConnectionConfiguration& config) = 0;
+		virtual std::shared_ptr<ghost::Server> createServer(const ghost::ConnectionConfiguration& config) = 0;
 		/// Creates a client with the provided configuration. If this is impossible, returns nullptr.
-		virtual std::shared_ptr<Client> createClient(const ConnectionConfiguration& config) = 0;
+		virtual std::shared_ptr<ghost::Client> createClient(const ghost::ConnectionConfiguration& config) = 0;
 		/// Creates a publisher with the provided configuration. If this is impossible, returns nullptr.
-		virtual std::shared_ptr<Publisher> createPublisher(const ConnectionConfiguration& config) = 0;
+		virtual std::shared_ptr<ghost::Publisher> createPublisher(const ghost::ConnectionConfiguration& config) = 0;
 		/// Creates a subscriber with the provided configuration. If this is impossible, returns nullptr.
-		virtual std::shared_ptr<Subscriber> createSubscriber(const ConnectionConfiguration& config) = 0;
+		virtual std::shared_ptr<ghost::Subscriber> createSubscriber(const ghost::ConnectionConfiguration& config) = 0;
 
 		/**
 		 * @brief Accesses the connection factory.
@@ -65,14 +60,7 @@ namespace ghost
 		 * @return the connection factory of this connection manager.
 		 */
 		virtual std::shared_ptr<ghost::ConnectionFactory> getConnectionFactory() = 0;
-
-	protected:
-		internal::ConnectionManager* _internal;
 	};
-
-	inline ConnectionManager::~ConnectionManager() {}
 }
-
-#include "internal/ConnectionManager.hpp"
 
 #endif //GHOST_CONNECTION_MANAGER_HPP

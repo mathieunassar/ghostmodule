@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/NetworkConnectionConfiguration.hpp"
+#include <ghost/connection/NetworkConnectionConfiguration.hpp>
 
 using namespace ghost;
 
@@ -30,39 +30,54 @@ namespace ghost
 NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string& name)
 	: ConnectionConfiguration(name)
 {
-	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, "");
-	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, "");
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, ghost::ConfigurationValue(""));
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, ghost::ConfigurationValue(""));
 }
 
 // getters of connection configuration parameters
 std::string NetworkConnectionConfiguration::getServerIpAddress() const
 {
 	std::string res;
-	getAttribute<std::string>(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, res, ""); // if the field was removed, returns ""
+	ConfigurationValue value;
+	ConfigurationValue default;
+
+	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, default); // if the field was removed, returns ""
+	value.read<std::string>(res);
+
 	return res;
 }
 
 int NetworkConnectionConfiguration::getServerPortNumber() const
 {
 	int res;
-	getAttribute<int>(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, res, -1); // if the field was removed, returns -1
+	ConfigurationValue value;
+	ConfigurationValue default;
+	default.write<int>(-1);
+
+	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, default); // if the field was removed, returns -1
+	value.read<int>(res);
+
 	return res;
 }
 
 // setters of connection configuration parameters
 void NetworkConnectionConfiguration::setServerIpAddress(const std::string& ip)
 {
-	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, ip, true); // checks if the attribute is there as well
+	ghost::ConfigurationValue value;
+	value.write<std::string>(ip);
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, true); // checks if the attribute is there as well
 }
 
 void NetworkConnectionConfiguration::setServerPortNumber(int port)
 {
-	addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, port, true); // checks if the attribute is there as well
+	ghost::ConfigurationValue value;
+	value.write<int>(port);
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, true); // checks if the attribute is there as well
 }
 
 NetworkConnectionConfiguration NetworkConnectionConfiguration::initializeFrom(const ConnectionConfiguration& from)
 {
-	NetworkConnectionConfiguration newconfig(from.getConfigurationName());
-	from.copy(newconfig);
+	NetworkConnectionConfiguration newconfig(from.getConfiguration()->getConfigurationName());
+	from.getConfiguration()->copy(*newconfig.getConfiguration());
 	return newconfig;
 }

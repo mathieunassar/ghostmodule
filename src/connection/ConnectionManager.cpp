@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/internal/ConnectionManager.hpp"
+#include "ConnectionManager.hpp"
 
 using namespace ghost::internal;
 
@@ -26,7 +26,6 @@ std::shared_ptr<ghost::ConnectionManager> ghost::ConnectionManager::create()
 ConnectionManager::ConnectionManager()
 	: _connectionFactory(std::make_shared<ghost::internal::ConnectionFactory>())
 {
-	_internal = this;
 }
 
 ConnectionManager::~ConnectionManager()

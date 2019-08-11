@@ -17,8 +17,8 @@
 #ifndef GHOST_GENERICMESSAGECONVERTER_HPP
 #define GHOST_GENERICMESSAGECONVERTER_HPP
 
-#include "../../../../protobuf/Ghost.pb.h"
-#include "../../../../protobuf/Ghost.grpc.pb.h"
+#include <string>
+#include <google/protobuf/any.pb.h>
 #include <ghost/connection/Message.hpp>
 
 namespace ghost

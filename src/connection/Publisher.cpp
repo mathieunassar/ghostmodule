@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/Publisher.hpp"
+#include <ghost/connection/Publisher.hpp>
 
 ghost::Publisher::Publisher(const ConnectionConfiguration& configuration)
 	: Connection(configuration)

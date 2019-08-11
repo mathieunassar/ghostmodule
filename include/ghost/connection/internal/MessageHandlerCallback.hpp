@@ -21,8 +21,8 @@
 #include <google/protobuf/any.pb.h>
 
 #include <ghost/connection/Message.hpp>
-#include <ghost/connection/internal/ProtobufMessage.hpp>
-#include <ghost/connection/internal/GenericMessageConverter.hpp>
+#include "ProtobufMessage.hpp"
+#include "GenericMessageConverter.hpp"
 
 namespace ghost
 {
@@ -34,11 +34,9 @@ namespace ghost
 		class BaseMessageHandlerCallback
 		{
 		public:
-			virtual ~BaseMessageHandlerCallback() = 0;
+			virtual ~BaseMessageHandlerCallback() = default;
 			virtual void handle(const google::protobuf::Any& message) = 0;
 		};
-		
-		inline BaseMessageHandlerCallback::~BaseMessageHandlerCallback() = default;
 
 		template<typename MessageType, bool = std::is_base_of<ghost::Message, MessageType>::value>
 		class MessageHandlerCallback;

@@ -14,25 +14,43 @@
  * limitations under the License.
  */
 
-#include "../include/ghost/connection/internal/ConnectionFactory.hpp"
+#include "ConnectionFactory.hpp"
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 
-#include <ghost/connection/internal/network/ServerGRPC.hpp>
+/*#include <ghost/connection/internal/network/ServerGRPC.hpp>
 #include <ghost/connection/internal/network/PublisherGRPC.hpp>
 #include <ghost/connection/internal/network/SubscriberGRPC.hpp>
-#include <ghost/connection/internal/network/ClientGRPC.hpp>
+#include <ghost/connection/internal/network/ClientGRPC.hpp>*/
 
 using namespace ghost::internal;
 
 ConnectionFactory::ConnectionFactory()
 {
-	_internal = this;
-
 	NetworkConnectionConfiguration config;
-	addPublisherRule<internal::PublisherGRPC>(config);
+	/*addPublisherRule<internal::PublisherGRPC>(config);
 	addSubscriberRule<internal::SubscriberGRPC>(config);
 	addServerRule<internal::ServerGRPC>(config);
-	addClientRule<internal::ClientGRPC>(config);
+	addClientRule<internal::ClientGRPC>(config);*/
+}
+
+void ConnectionFactory::addServerRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+{
+	_serverRules.push_back(rule);
+}
+
+void ConnectionFactory::addClientRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+{
+	_clientRules.push_back(rule);
+}
+
+void ConnectionFactory::addPublisherRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+{
+	_publisherRules.push_back(rule);
+}
+
+void ConnectionFactory::addSubscriberRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+{
+	_subscriberRules.push_back(rule);
 }
 
 std::shared_ptr<ghost::Server> ConnectionFactory::createServer(const ghost::ConnectionConfiguration& config)

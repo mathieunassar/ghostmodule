@@ -14,33 +14,30 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_QUEUEDSINK_HPP
-#define GHOST_INTERNAL_QUEUEDSINK_HPP
+#ifndef GHOST_WRITERSOURCE_HPP
+#define GHOST_WRITERSOURCE_HPP
 
 #include <google/protobuf/any.pb.h>
-#include <BlockingQueue.hpp>
 
 namespace ghost
 {
-	namespace internal
+	/**
+	 *	A ghost::WriterSource is the interface between a connection and a
+	 *	ghost::Writer object that can write messages to the connection.
+	 *	The sink is used by the ghost::Writer object to receive message from the
+	 *	matching sink.
+	 */
+	class WriterSource
 	{
-		class QueuedSink
-		{
-		public:
-			QueuedSink()
-				: _messageQueue(new BlockingQueue<google::protobuf::Any>()) {}
-			virtual ~QueuedSink() = default;
+	public:
+		virtual ~WriterSource() = default;
 
-		protected:
-			std::shared_ptr<BlockingQueue<google::protobuf::Any>> getMessageQueue()
-			{
-				return _messageQueue;
-			}
-
-		private:
-			std::shared_ptr<BlockingQueue<google::protobuf::Any>> _messageQueue;
-		};
-	}
+		/**
+		 *	Forwards a message to the sink.
+		 *	@param message	Message to push.
+		 */
+		virtual void push(const google::protobuf::Any& message, bool blocking) = 0;
+	};
 }
 
-#endif //GHOST_INTERNAL_QUEUEDSINK_HPP
+#endif //GHOST_WRITERSOURCE_HPP

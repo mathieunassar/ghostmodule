@@ -20,7 +20,7 @@
 #include <memory>
 
 #include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/connection/internal/ConnectionFactory.hpp>
+#include "ConnectionFactory.hpp"
 
 namespace ghost
 {

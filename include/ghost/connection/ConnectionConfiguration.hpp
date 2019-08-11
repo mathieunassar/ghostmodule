@@ -17,6 +17,8 @@
 #ifndef GHOST_CONNECTIONCONFIGURATION_HPP
 #define GHOST_CONNECTIONCONFIGURATION_HPP
 
+#include <memory>
+#include <string>
 #include <ghost/connection/Configuration.hpp>
 
 namespace ghost
@@ -24,16 +26,11 @@ namespace ghost
 	/**
 	 * @brief A Configuration with specific entries for Connection objects.
 	 */
-	class ConnectionConfiguration : public Configuration
+	class ConnectionConfiguration
 	{
 	public:
-		/**
-		 * @brief Construct a new ConnectionConfiguration object
-		 * 
-		 * @param name name of the configuration.
-		 */
 		ConnectionConfiguration(const std::string& name = "");
-		virtual ~ConnectionConfiguration() {}
+		virtual ~ConnectionConfiguration() = default;
 
 		/**
 		 * @return the ID of the connection. 
@@ -65,6 +62,14 @@ namespace ghost
 		 * @param value true if the i/o operations should be blocking, false otherwise.
 		 */
 		void setOperationBlocking(bool value);
+
+		/**
+		 *	@return the configuration used by this object.
+		 */
+		std::shared_ptr<ghost::Configuration> getConfiguration() const;
+
+	protected:
+		std::shared_ptr<ghost::Configuration> _configuration;
 	};
 }
 

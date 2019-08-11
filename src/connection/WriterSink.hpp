@@ -18,37 +18,31 @@
 #define GHOST_INTERNAL_WRITERSINK_HPP
 
 #include <google/protobuf/any.pb.h>
-#include <ghost/connection/internal/QueuedSink.hpp>
+#include "QueuedSink.hpp"
+#include <ghost/connection/WriterSink.hpp>
 
 namespace ghost
 {
 	namespace internal
 	{
-		/*
-		This will contain the write queue, constructor can take another writer sink to transfer the write queue
-		*/
-		class WriterSink : public QueuedSink
+		/**
+		 *	The internal implementation of the API class ghost::WriterSink.
+		 *	This implementation manages google::protobuf::Any messages and
+		 *	shares them with with the bound connection over a blocking queue,
+		 *	which is a member of the QueuedSink class.
+		 */
+		class WriterSink : public QueuedSink, public ghost::WriterSink
 		{
 		public:
-			virtual ~WriterSink() = 0;
+			virtual ~WriterSink() = default;
 
-			/**
-			* Gets a message from the writer.
-			* @author	Mathieu Nassar
-			* @date	21.05.2018
-			* @param	message	message to send.
-			* @return	A long.
-			*/
-			virtual bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) = 0;
+			// From ghost::WriterSink
+			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) override;
+			void pop() override;
 
-			/**
-			 *	Remove the last message from the queue. This method must be called after the message
-			 *	is effectively sent.
-			 */
-			virtual void pop() = 0;
+			/// Adds a new message into the sink (todo: extract this to a source object?)
+			void push(const google::protobuf::Any& message, bool blocking);
 		};
-
-		inline WriterSink::~WriterSink() {}
 	}
 }
 

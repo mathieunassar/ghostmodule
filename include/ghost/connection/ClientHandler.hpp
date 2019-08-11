@@ -17,8 +17,8 @@
 #ifndef GHOST_CLIENTHANDLER_HPP
 #define GHOST_CLIENTHANDLER_HPP
 
+#include <memory>
 #include <ghost/connection/Client.hpp>
-#include <ghost/connection/MessageHandler.hpp>
 
 namespace ghost
 {
@@ -39,7 +39,7 @@ namespace ghost
 	class ClientHandler
 	{
 	public:
-		virtual ~ClientHandler() = 0;
+		virtual ~ClientHandler() = default;
 
 		/**
 		 * @brief Provides the possibility to configure the message handler of the client
@@ -61,8 +61,6 @@ namespace ghost
 		 */
 		virtual bool handle(std::shared_ptr<Client> client, bool& keepClientAlive) = 0;
 	};
-
-	inline ClientHandler::~ClientHandler() {}
 }
 
 #endif //GHOST_CLIENTHANDLER_HPP

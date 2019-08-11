@@ -32,6 +32,7 @@ if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 					BASIC_SETUP
 					BUILD missing)
 
+	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/protobuf/)
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/generate_protobuf.cmake)
 endif()
 
@@ -68,6 +69,7 @@ fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 SET(GHOST_MODULE_INCLUDE_DIRECTORIES
 	${GHOST_MODULE_ROOT_DIR}/include
 	${GHOST_SUPPORT_INCLUDE_DIRECTORIES}
+	${PROTOC_OUTPUT}
 	CACHE FILEPATH "Include directories of ghostmodule"
 )
 

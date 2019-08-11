@@ -17,10 +17,8 @@
 #ifndef GHOST_PUBLISHER_HPP
 #define GHOST_PUBLISHER_HPP
 
-#include <memory>
-
 #include <ghost/connection/Connection.hpp>
-#include <ghost/connection/Writer.hpp>
+#include <ghost/connection/WritableConnection.hpp>
 
 namespace ghost
 {
@@ -37,33 +35,12 @@ namespace ghost
 	 * Particular implementations of Connection classes may define new connection
 	 * parameters which can be passed through the ConnectionConfiguration.
 	 */
-	class Publisher : public Connection
+	class Publisher : public ghost::Connection, public ghost::WritableConnection
 	{
 	public:
-		/**
-		 * @brief Construct a Publisher with the provided configuration.
-		 * 
-		 * @param configuration Publisher's configuration
-		 */
-		Publisher(const ConnectionConfiguration& configuration);
+		virtual ~Publisher() = default;
 
-		virtual ~Publisher() = 0;
-
-		/**
-		 * @brief gets a Writer from the connection that writes messages of the provided
-		 * type.
-		 * 
-		 * @tparam MessageType Message type written by the Writer objects.
-		 * @return the requested writer, which will feed this connection.
-		 */
-		template<typename MessageType>
-		std::shared_ptr<Writer<MessageType>> getWriter() // same as: using internal::Connection::getWriter;
-		{
-			return internal::Connection::getWriter<MessageType>();
-		}
 	};
-
-	inline Publisher::~Publisher() {}
 }
 
 #endif //GHOST_PUBLISHER_HPP

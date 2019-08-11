@@ -17,6 +17,7 @@
 #ifndef GHOST_NETWORKCONNECTIONCONFIGURATION_HPP
 #define GHOST_NETWORKCONNECTIONCONFIGURATION_HPP
 
+#include <string>
 #include <ghost/connection/ConnectionConfiguration.hpp>
 
 namespace ghost
@@ -29,7 +30,7 @@ namespace ghost
 	 * - The IP address of the target connection
 	 * - the port number to reach.
 	 */
-	class NetworkConnectionConfiguration : public ConnectionConfiguration
+	class NetworkConnectionConfiguration : public ghost::ConnectionConfiguration
 	{
 	public:
 		/**
@@ -39,7 +40,7 @@ namespace ghost
 		 * @param name the name of the configuration
 		 */
 		NetworkConnectionConfiguration(const std::string& name = "");
-		virtual ~NetworkConnectionConfiguration() {}
+		virtual ~NetworkConnectionConfiguration() = default;
 		 
 		/**
 		 * @brief Accessor for the IP address of the target connection
@@ -75,7 +76,7 @@ namespace ghost
 		 * 
 		 * @return NetworkConnectionConfiguration the created network connection configuration
 		 */
-		static NetworkConnectionConfiguration initializeFrom(const ConnectionConfiguration& from);
+		static ghost::NetworkConnectionConfiguration initializeFrom(const ghost::ConnectionConfiguration& from);
 	};
 }
 

@@ -17,8 +17,10 @@
 #ifndef GHOST_PROTOBUFMESSAGE_HPP
 #define GHOST_PROTOBUFMESSAGE_HPP
 
-#include <ghost/connection/Message.hpp>
+#include <string>
+#include <memory>
 #include <google/protobuf/message.h>
+#include <ghost/connection/Message.hpp>
 
 namespace ghost
 {
@@ -32,7 +34,7 @@ namespace ghost
 	{
 	public:
 		ProtobufMessage(std::shared_ptr<google::protobuf::Message> message);
-		virtual ~ProtobufMessage() {}
+		virtual ~ProtobufMessage() = default;
 
 		// convenience method to default initialize with protobuf message
 		template<typename MessageType>
@@ -50,9 +52,7 @@ namespace ghost
 		std::shared_ptr<google::protobuf::Message> _payload;
 	};
 
-	//////////////////////////////////////////////////////////////////////////////////////////
-	/******************************** Template definition ***********************************/
-	//////////////////////////////////////////////////////////////////////////////////////////
+	// TEMPLATE DEFINITION //
 
 	template<typename MessageType>
 	ProtobufMessage ProtobufMessage::create()

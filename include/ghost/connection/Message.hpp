@@ -30,7 +30,7 @@ namespace ghost
 	class Message
 	{
 	public:
-		virtual ~Message() = 0;
+		virtual ~Message() = default;
 
 		/**
 		 * @brief accesses the format name.
@@ -66,8 +66,6 @@ namespace ghost
 		 */
 		virtual bool deserialize(const std::string& payload) = 0;
 	};
-
-	inline Message::~Message() {}
 }
 
 #endif //GHOST_MESSAGE_HPP

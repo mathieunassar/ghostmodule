@@ -17,13 +17,10 @@
 #ifndef GHOST_INTERNAL_GENERICWRITER_HPP
 #define GHOST_INTERNAL_GENERICWRITER_HPP
 
+#include <memory>
 #include <type_traits>
-
-#include <ghost/connection/internal/WriterSink.hpp>
 #include <ghost/connection/Writer.hpp>
 #include <ghost/connection/Message.hpp>
-
-#include <BlockingQueue.hpp>
 #include "GenericMessageConverter.hpp"
 #include "ProtobufMessage.hpp"
 
@@ -31,29 +28,15 @@ namespace ghost
 {
 	namespace internal
 	{
-		/**
-		 *	Implementation of a writer of the template message type.
-		 *	Its realization of the WriterSink interface allows connections to access the
-		 *	messages to write, and the Writer interface represents the API implementation.
-		 */
 		template<typename MessageType>
-		class GenericWriter : public WriterSink, public ghost::Writer<MessageType>
+		class GenericWriter : public ghost::Writer<MessageType>
 		{
 		public:
 			/// Constructor. The value of blocking determines whether calls to "write" will
 			/// be blocking or not.
-			GenericWriter(bool blocking);
+			GenericWriter(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking)
+				: _internal(ghost::Writer<google::protobuf::Any>::create(sink, blocking)) {}
 
-			GenericWriter(const WriterSink& other, bool blocking);
-
-			/// From WriterSink: gets the messages to write from the writer
-			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(0)) override;
-
-			void pop() override;
-
-			/// converts and store the message into the message queue.
-			/// If the writer is configured to be blocking, this method will only return once
-			/// the message queue is empty (when the connection sent the message.
 			bool write(const MessageType& message) override;
 
 		private:
@@ -77,10 +60,23 @@ namespace ghost
 				return GenericMessageConverter::create(any, message);
 			}
 
-			bool _blocking;
+			std::shared_ptr<ghost::Writer<google::protobuf::Any>> _internal;
 		};
 
-		#include "GenericWriter.impl.hpp"
+		// TEMPLATE DEFINITION //
+
+		template<typename MessageType>
+		bool GenericWriter<MessageType>::write(const MessageType& message)
+		{
+			google::protobuf::Any any;
+
+			bool createSuccess = makeAny(any, message);
+
+			if (!createSuccess)
+				return false; // conversion failed, i.e. there is no protobuf message in the input or the serialization failed (in case of a user format)
+
+			return _internal->write(any);
+		}
 	}
 }
 
