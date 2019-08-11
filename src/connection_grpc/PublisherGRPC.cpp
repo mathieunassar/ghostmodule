@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/PublisherGRPC.hpp"
-#include "../../include/ghost/connection/internal/network/PublisherClientHandler.hpp"
+#include "PublisherGRPC.hpp"
 
 using namespace ghost::internal;
 
@@ -26,7 +25,7 @@ PublisherGRPC::PublisherGRPC(const ghost::ConnectionConfiguration& config)
 }
 
 PublisherGRPC::PublisherGRPC(const ghost::NetworkConnectionConfiguration& config)
-	: Publisher(config)
+	: ghost::Publisher(config)
 	, _server(config)
 	, _writerThreadEnable(false)
 {

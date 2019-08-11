@@ -38,8 +38,10 @@ namespace ghost
 	class Publisher : public ghost::Connection, public ghost::WritableConnection
 	{
 	public:
-		virtual ~Publisher() = default;
+		Publisher(const ghost::ConnectionConfiguration& configuration)
+			: ghost::WritableConnection(configuration) {}
 
+		virtual ~Publisher() = default;
 	};
 }
 

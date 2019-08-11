@@ -17,7 +17,6 @@
 #ifndef GHOST_INTERNAL_NETWORK_BASECLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_BASECLIENTGRPC_HPP
 
-#include <ghost/connection/Client.hpp>
 
 #include <string>
 #include <deque>
@@ -25,14 +24,16 @@
 #include <memory>
 #include <mutex>
 
-#include <ghost/connection/internal/ReaderSink.hpp>
-#include <ghost/connection/internal/WriterSink.hpp>
-#include <ghost/connection/internal/GenericMessageConverter.hpp>
-#include <ghost/connection/NetworkConnectionConfiguration.hpp>
-#include <ghost/connection/internal/network/RPCStateMachine.hpp>
-
+#include <ghost/connection/Client.hpp>
+#include <ghost/connection/ReaderSink.hpp>
+#include <ghost/connection/WriterSink.hpp>
 #include <ghost/connection/MessageHandler.hpp>
 #include <ghost/connection/ClientHandler.hpp>
+#include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include "RPCStateMachine.hpp"
+
+#include <ghost/connection_grpc/ServerClientService.pb.h>
+#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
 
 namespace ghost
 {

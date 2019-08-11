@@ -22,8 +22,8 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include <ghost/connection/internal/network/BaseClientGRPC.hpp>
-#include <ghost/connection/internal/network/ClientManager.hpp>
+#include "BaseClientGRPC.hpp"
+#include "ClientManager.hpp"
 #include <ghost/connection/Server.hpp>
 #include <ghost/connection/ClientHandler.hpp>
 
@@ -35,7 +35,7 @@ namespace ghost
 		{
 		public:
 			RemoteClientGRPC(const NetworkConnectionConfiguration& config,
-				protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
+				ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
 				std::shared_ptr<ClientHandler> callback,
 				ClientManager* clientManager,
 				ghost::Server* server);
@@ -55,7 +55,7 @@ namespace ghost
 			std::function<void(bool)> _startedProcessor;
 			std::function<void(bool)> _finishProcessor;
 			std::function<void(bool)> _doneProcessor;
-			protobuf::ServerClientService::AsyncService* _service;
+			ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* _service;
 			std::shared_ptr<ClientHandler> _clientHandler;
 			std::thread _executionThread;
 

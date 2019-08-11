@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/ServerGRPC.hpp"
+#include "ServerGRPC.hpp"
 
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include "../../include/ghost/connection/internal/network/RemoteClientGRPC.hpp"
-#include "../../include/ghost/connection/internal/network/ServerGRPC.hpp"
+#include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 
@@ -32,16 +31,10 @@ ServerGRPC::ServerGRPC(const ghost::ConnectionConfiguration& config)
 }
 
 ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config)
-	: Server(config)
-	, _configuration(config)
+	:  _configuration(config)
 	, _running(false)
 {
 
-}
-
-ServerGRPC::~ServerGRPC()
-{
-	
 }
 
 bool ServerGRPC::start()

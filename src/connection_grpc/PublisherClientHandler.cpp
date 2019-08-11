@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/PublisherClientHandler.hpp"
+#include "PublisherClientHandler.hpp"
 #include <iostream>
 
 using namespace ghost::internal;

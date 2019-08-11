@@ -78,7 +78,7 @@ namespace ghost
 template<typename MessageType>
 std::shared_ptr<ghost::Writer<MessageType>> ghost::Writer<MessageType>::create(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking)
 {
-	return std::make_shared<ghost::GenericWriter<MessageType>>(sink, blocking);
+	return std::make_shared<ghost::internal::GenericWriter<MessageType>>(sink, blocking);
 }
 
 #endif //GHOST_WRITER_HPP

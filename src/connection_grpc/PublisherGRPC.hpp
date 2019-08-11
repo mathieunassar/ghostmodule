@@ -20,8 +20,8 @@
 #include <mutex>
 
 #include <ghost/connection/Publisher.hpp>
-#include <ghost/connection/internal/network/ServerGRPC.hpp>
-#include <ghost/connection/internal/network/PublisherClientHandler.hpp>
+#include "ServerGRPC.hpp"
+#include "PublisherClientHandler.hpp"
 
 namespace ghost
 {

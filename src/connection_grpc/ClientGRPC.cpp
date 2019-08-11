@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/ClientGRPC.hpp"
+#include "ClientGRPC.hpp"
 
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
-
-#include "../../include/ghost/connection/internal/GenericMessageConverter.hpp"
 
 using namespace ghost::internal;
 
@@ -56,7 +54,7 @@ bool ClientGRPC::start()
 
 	startOperation();
 	auto channel = grpc::CreateChannel(server_address.str(), grpc::InsecureChannelCredentials());
-	_stub = protobuf::ServerClientService::NewStub(channel);
+	_stub = ghost::protobuf::connectiongrpc::ServerClientService::NewStub(channel);
 
 	std::unique_lock<std::mutex> lk(_initializedMutex);
 	

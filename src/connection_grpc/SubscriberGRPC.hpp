@@ -18,7 +18,7 @@
 #define GHOST_INTERNAL_NETWORK_SUBSCRIBERGRPC_HPP
 
 #include <ghost/connection/Subscriber.hpp>
-#include <ghost/connection/internal/network/ClientGRPC.hpp>
+#include "ClientGRPC.hpp"
 
 namespace ghost
 {
@@ -35,8 +35,6 @@ namespace ghost
 			bool isRunning() const override;
 
 		private:
-			/// From internal::Connection - forwards the sink to the client
-			virtual void setReaderSink(std::shared_ptr<ReaderSink> sink) override;
 			ghost::NetworkConnectionConfiguration makeNoWriterConfig(const ghost::NetworkConnectionConfiguration& config);
 
 			ClientGRPC _client;

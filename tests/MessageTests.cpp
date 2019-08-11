@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//
-//#include <iostream>
-//#include <gtest/gtest.h>
-//
+
+#include <iostream>
+#include <gtest/gtest.h>
+
+/* To test here:
+	- GenericParser + ghost::Message + ghost::ProtobufMessage
+	- MessageHandler
+	- Reader + ReaderSink
+	- Writer + WriterSink
+	- Writable and Readable connections
+*/
+
 //#include <ghost/connection/internal/ProtobufMessage.hpp>
 //#include <ghost/connection/internal/GenericMessageConverter.hpp>
 //#include <ghost/connection/MessageHandler.hpp>

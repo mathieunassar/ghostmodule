@@ -41,6 +41,10 @@ namespace ghost
 	class Client : public ghost::Connection, public ghost::ReadableConnection, public ghost::WritableConnection
 	{
 	public:
+		Client(const ghost::ConnectionConfiguration& configuration)
+			: ghost::ReadableConnection(configuration)
+			, ghost::WritableConnection(configuration) {}
+
 		virtual ~Client() = default;
 	};
 }

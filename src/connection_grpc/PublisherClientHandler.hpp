@@ -44,7 +44,7 @@ namespace ghost
 		private:
 			std::mutex _subscribersMutex;
 			std::deque<	std::pair<	std::shared_ptr<ghost::Client>,
-									std::shared_ptr<Writer<google::protobuf::Any>>>> _subscribers;
+									std::shared_ptr<ghost::Writer<google::protobuf::Any>>>> _subscribers;
 		};
 	}
 }

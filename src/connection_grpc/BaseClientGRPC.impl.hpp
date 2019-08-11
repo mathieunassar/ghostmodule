@@ -105,7 +105,7 @@ void BaseClientGRPC<ReaderWriter, ContextType>::awaitFinished()
 template<typename ReaderWriter, typename ContextType>
 bool BaseClientGRPC<ReaderWriter, ContextType>::isWriterConfigured() const
 {
-	return !_configuration.hasAttribute(BASE_CLIENT_GRPC_CONFIG_NOWRITER);
+	return !_configuration.getConfiguration()->hasAttribute(BASE_CLIENT_GRPC_CONFIG_NOWRITER);
 }
 
 template<typename ReaderWriter, typename ContextType>

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/ClientManager.hpp"
+#include "ClientManager.hpp"
 
-#include "../../include/ghost/connection/internal/network/RemoteClientGRPC.hpp"
+#include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 

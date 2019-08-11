@@ -38,8 +38,10 @@ namespace ghost
 	class Subscriber : public ghost::Connection, public ghost::ReadableConnection
 	{
 	public:
-		virtual ~Subscriber() = default;
+		Subscriber(const ghost::ConnectionConfiguration& configuration)
+			: ghost::ReadableConnection(configuration) {}
 
+		virtual ~Subscriber() = default;
 	};
 }
 

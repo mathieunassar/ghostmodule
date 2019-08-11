@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/SubscriberGRPC.hpp"
+#include "SubscriberGRPC.hpp"
 
 using namespace ghost::internal;
 
@@ -25,7 +25,7 @@ SubscriberGRPC::SubscriberGRPC(const ghost::ConnectionConfiguration& config)
 }
 
 SubscriberGRPC::SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config)
-	: Subscriber(config)
+	: ghost::Subscriber(config)
 	, _client(makeNoWriterConfig(config))
 {
 
@@ -46,15 +46,11 @@ bool SubscriberGRPC::isRunning() const
 	return _client.isRunning();
 }
 
-void SubscriberGRPC::setReaderSink(std::shared_ptr<ReaderSink> sink)
-{
-	internal::Connection::setReaderSink(sink);
-	forwardReaderSink(_client);
-}
-
 ghost::NetworkConnectionConfiguration SubscriberGRPC::makeNoWriterConfig(const ghost::NetworkConnectionConfiguration& config)
 {
 	ghost::NetworkConnectionConfiguration newConfig(config);
-	newConfig.addAttribute<bool>(BASE_CLIENT_GRPC_CONFIG_NOWRITER, true, true);
+	ghost::ConfigurationValue noWriterValue;
+	noWriterValue.write(true);
+	newConfig.getConfiguration()->addAttribute(BASE_CLIENT_GRPC_CONFIG_NOWRITER, noWriterValue, true);
 	return newConfig;
 }

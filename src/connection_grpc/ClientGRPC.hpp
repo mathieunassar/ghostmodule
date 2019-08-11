@@ -19,8 +19,9 @@
 
 #include <mutex>
 #include <condition_variable>
-#include <ghost/connection/internal/network/BaseClientGRPC.hpp>
-#include <ghost/connection/internal/network/CompletionQueueExecutor.hpp>
+#include <grpcpp/client_context.h>
+#include "BaseClientGRPC.hpp"
+#include "CompletionQueueExecutor.hpp"
 
 namespace ghost
 {
@@ -41,7 +42,7 @@ namespace ghost
 
 			std::function<void(bool)> _startedProcessor;
 			std::function<void(bool)> _finishProcessor;
-			std::unique_ptr<protobuf::ServerClientService::Stub> _stub;
+			std::unique_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
 			CompletionQueueExecutor _executor;
 
 			std::mutex _initializedMutex;

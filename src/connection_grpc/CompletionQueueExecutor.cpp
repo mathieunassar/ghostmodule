@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/CompletionQueueExecutor.hpp"
+#include "CompletionQueueExecutor.hpp"
 #include <iostream>
 
 using namespace ghost::internal;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/RemoteClientGRPC.hpp"
+#include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 
 RemoteClientGRPC::RemoteClientGRPC(const ghost::NetworkConnectionConfiguration& config,
-		protobuf::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
+		ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
 		std::shared_ptr<ghost::ClientHandler> callback,
 		ClientManager* clientManager,
 		ghost::Server* server)

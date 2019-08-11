@@ -21,13 +21,12 @@
 #include <atomic>
 
 #include <grpcpp/server.h>
-#include "../../../../../protobuf/Ghost.pb.h"
-#include "../../../../../protobuf/Ghost.grpc.pb.h"
-
 #include <ghost/connection/Server.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
-#include <ghost/connection/internal/network/CompletionQueueExecutor.hpp>
-#include <ghost/connection/internal/network/ClientManager.hpp>
+#include <ghost/connection_grpc/ServerClientService.pb.h>
+#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
+#include "CompletionQueueExecutor.hpp"
+#include "ClientManager.hpp"
 
 namespace ghost
 {
@@ -44,7 +43,6 @@ namespace ghost
 		public:
 			ServerGRPC(const ghost::ConnectionConfiguration& config);
 			ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
-			~ServerGRPC();
 
 			bool start() override;
 			bool stop() override;
@@ -56,7 +54,7 @@ namespace ghost
 			ghost::NetworkConnectionConfiguration _configuration;
 			std::atomic<bool> _running;
 
-			protobuf::ServerClientService::AsyncService _service;
+			ghost::protobuf::connectiongrpc::ServerClientService::AsyncService _service;
 			std::unique_ptr<grpc::Server> _grpcServer;
 			CompletionQueueExecutor _completionQueueExecutor;
 			

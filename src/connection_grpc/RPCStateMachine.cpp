@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../../include/ghost/connection/internal/network/RPCStateMachine.hpp"
+#include "RPCStateMachine.hpp"
 
 using namespace ghost::internal;
 
