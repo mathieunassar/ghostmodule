@@ -17,7 +17,9 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
+#include <ghost/connection/Configuration.hpp>
 #include <ghost/connection/ConnectionConfiguration.hpp>
+#include <ghost/connection/NetworkConnectionConfiguration.hpp>
 
 using namespace ghost;
 
@@ -33,100 +35,214 @@ protected:
 	{
 
 	}
+
+	static const std::string TEST_CONFIGURATION_NAME;
+	static const std::string TEST_CONFIGURATION_FIELD;
+	static const std::string TEST_CONFIGURATION_VALUE;
+	static const std::string TEST_CONFIGURATION_VALUE2;
+	static const int TEST_CONFIGURATION_VALUE_INT;
 };
 
-TEST_F(ConfigurationTests, test_configuration)
+const std::string ConfigurationTests::TEST_CONFIGURATION_NAME = "TEST_NAME";
+const std::string ConfigurationTests::TEST_CONFIGURATION_FIELD = "TEST_FIELD";
+const std::string ConfigurationTests::TEST_CONFIGURATION_VALUE = "TEST_VALUE";
+const std::string ConfigurationTests::TEST_CONFIGURATION_VALUE2 = "TEST_VALUE2";
+const int ConfigurationTests::TEST_CONFIGURATION_VALUE_INT = 42;
+
+
+TEST_F(ConfigurationTests, test_configuration_addElement)
 {
-	ConnectionConfiguration config("super");
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	ASSERT_FALSE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
 
-	// Test: add element
-	bool addSuccess0 = config.addAttribute("attribute1", 57);
-	ASSERT_TRUE(addSuccess0);
+	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	// Test: standard get function
-	int val;
-	bool getSuccess = config.getAttribute("attribute1", val);
-	ASSERT_TRUE(getSuccess);
-	ASSERT_TRUE(val == 57);
-	ASSERT_TRUE(config.hasAttribute("attribute1"));
-
-	// Test: add without override existing parameter
-	bool addSuccess = config.addAttribute("attribute1", "super");
-	ASSERT_TRUE(!addSuccess);
-
-	// Test: add and override existing parameter
-	bool addSuccess2 = config.addAttribute("attribute1", "super2", true);
-	ASSERT_TRUE(addSuccess2);
-	std::string result;
-	bool getSuccess4 = config.getAttribute("attribute1", result);
-	ASSERT_TRUE(getSuccess4);
-	ASSERT_TRUE(result == "super2");
-
-	// Test: update existing parameter
-	bool updateSuccess = config.updateAttribute("attribute1", "fini");
-	ASSERT_TRUE(updateSuccess);
-	std::string result2;
-	bool getSuccess5 = config.getAttribute("attribute1", result2);
-	ASSERT_TRUE(getSuccess5);
-	ASSERT_TRUE(result2 == "fini");
-
-	// Test: update non-existent parameter
-	bool updateSuccess2 = config.updateAttribute("yo", "test");
-	ASSERT_TRUE(!updateSuccess2);
-
-	// Test: removal and removal of non existing parameter
-	bool removeSuccess = config.removeAttribute("attribute1");
-	ASSERT_TRUE(removeSuccess);
-	bool removeSuccess2 = config.removeAttribute("attribute1");
-	ASSERT_TRUE(!removeSuccess2);
-
-	// Test: get configuration name
-	ASSERT_TRUE(config.getConfigurationName() == "super");
-
-	// Test: get element after deletion
-	int sup = 4;
-	bool getSuccess2 = config.getAttribute("attribute1", sup);
-	ASSERT_TRUE(!getSuccess2);
-	ASSERT_TRUE(sup == 4);
-
-	// Test: wrong conversion
-	config.addAttribute("strAttribute", "mystring");
-	int intValue = 42;
-	bool getSuccess3 = config.getAttribute("strAttribute", intValue);
-	ASSERT_TRUE(!getSuccess3);
-	//ASSERT_TRUE(intValue == 42); // if the conversion fails, there is no guarantee on the result
-
-	// Test: empty configuration field
-	config.addAttribute("empty", "");
-	bool hasSuccess = config.hasAttribute("empty");
-	bool emptySuccess = config.isAttributeEmpty("empty");
-	ASSERT_TRUE(hasSuccess);
-	ASSERT_TRUE(emptySuccess);
+	ASSERT_TRUE(addResult);
+	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
+	ASSERT_TRUE(configuration->getAttributes().size() == 1);
 }
 
-TEST_F(ConfigurationTests, test_connectionConfiguration)
+TEST_F(ConfigurationTests, test_configuration_addElement_When_alreadyExistsAndNoOverwrite)
 {
-	ConnectionConfiguration config;
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	ASSERT_TRUE(config.getThreadPoolSize() == 2);
-
-	config.removeAttribute("CONNECTIONCONFIGURATION_ID");
-
-	ASSERT_TRUE(config.getConnectionId() == -1);
+	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 	
-	config.setConnectionId(45);
+	ASSERT_FALSE(addResult);
+	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
+	ASSERT_TRUE(configuration->getAttributes().size() == 1);
+}
 
-	ASSERT_TRUE(config.getConnectionId() == 45);
+TEST_F(ConfigurationTests, test_configuration_addElement_When_alreadyExistsAndOverwrite)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	config.setOperationBlocking(false);
-	ASSERT_TRUE(!config.isOperationBlocking());
+	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE), true);
 
-	config.setOperationBlocking(true);
-	ASSERT_TRUE(config.isOperationBlocking());
+	ASSERT_TRUE(addResult);
+	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
+	ASSERT_TRUE(configuration->getAttributes().size() == 1);
+}
 
-	ConnectionConfiguration copied;
-	config.copy(copied);
+TEST_F(ConfigurationTests, test_configuration_getElement)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	ASSERT_TRUE(config.isOperationBlocking());
-	ASSERT_TRUE(config.getConnectionId() == 45);
+	ghost::ConfigurationValue value;
+	bool getResult = configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
+
+	ASSERT_TRUE(getResult);
+
+	std::string myValue;
+	bool readResult = value.read(myValue);
+	ASSERT_TRUE(readResult);
+	ASSERT_TRUE(myValue == TEST_CONFIGURATION_VALUE);
+}
+
+TEST_F(ConfigurationTests, test_configuration_getElement_When_elementDoesNotExist)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	
+	ghost::ConfigurationValue value;
+	bool getResult = configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
+
+	ASSERT_FALSE(getResult);
+}
+
+TEST_F(ConfigurationTests, test_configuration_update)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+
+	bool updateResult = configuration->updateAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE2));
+	ASSERT_TRUE(updateResult);
+	
+	ghost::ConfigurationValue value;
+	configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
+
+	std::string myValue;
+	bool readResult = value.read(myValue);
+	ASSERT_TRUE(myValue == TEST_CONFIGURATION_VALUE2);
+}
+
+TEST_F(ConfigurationTests, test_configuration_update_When_elementDoesNotExist)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+
+	bool updateResult = configuration->updateAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE2));
+	ASSERT_FALSE(updateResult);
+
+	ASSERT_TRUE(configuration->getAttributes().size() == 0);
+}
+
+TEST_F(ConfigurationTests, test_configuration_remove)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+
+	bool removeResult = configuration->removeAttribute(TEST_CONFIGURATION_FIELD);
+	ASSERT_TRUE(removeResult);
+	ASSERT_TRUE(configuration->getAttributes().size() == 0);
+	ASSERT_FALSE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
+}
+
+TEST_F(ConfigurationTests, test_configuration_remove_When_elementDoesNotExist)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+
+	bool removeResult = configuration->removeAttribute(TEST_CONFIGURATION_FIELD);
+	ASSERT_FALSE(removeResult);
+	ASSERT_TRUE(configuration->getAttributes().size() == 0);
+	ASSERT_FALSE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
+}
+
+TEST_F(ConfigurationTests, test_configuration_getConfigurationName)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	ASSERT_TRUE(configuration->getConfigurationName() == TEST_CONFIGURATION_NAME);
+}
+
+TEST_F(ConfigurationTests, test_configuration_get_When_elementWasRemoved)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+	configuration->removeAttribute(TEST_CONFIGURATION_FIELD);
+
+	ghost::ConfigurationValue value;
+	bool getResult = configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
+
+	ASSERT_FALSE(getResult);
+}
+
+TEST_F(ConfigurationTests, test_configuration_get_When_wrongConversion)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+
+	ghost::ConfigurationValue value;
+	configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
+
+	int myValue;
+	bool readResult = value.read(myValue);
+	ASSERT_FALSE(readResult);
+}
+
+TEST_F(ConfigurationTests, test_configuration_emptyField)
+{
+	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
+	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::Configuration::EMPTY);
+
+	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
+	ASSERT_TRUE(configuration->isAttributeEmpty(TEST_CONFIGURATION_FIELD));
+}
+
+TEST_F(ConfigurationTests, test_connectionConfiguration_blocking)
+{
+	ghost::ConnectionConfiguration configuration;
+	ASSERT_TRUE(configuration.isOperationBlocking());
+	configuration.setOperationBlocking(false);
+	ASSERT_FALSE(configuration.isOperationBlocking());
+}
+
+TEST_F(ConfigurationTests, test_connectionConfiguration_connectionId)
+{
+	ghost::ConnectionConfiguration configuration;
+	ASSERT_TRUE(configuration.getConnectionId() == -1);
+	configuration.setConnectionId(TEST_CONFIGURATION_VALUE_INT);
+	ASSERT_TRUE(configuration.getConnectionId() == TEST_CONFIGURATION_VALUE_INT);
+}
+
+TEST_F(ConfigurationTests, test_connectionConfiguration_threadPoolSize)
+{
+	ghost::ConnectionConfiguration configuration;
+	ASSERT_TRUE(configuration.getThreadPoolSize() == 2);
+	configuration.setThreadPoolSize(TEST_CONFIGURATION_VALUE_INT);
+	ASSERT_TRUE(configuration.getThreadPoolSize() == TEST_CONFIGURATION_VALUE_INT);
+}
+
+TEST_F(ConfigurationTests, test_connectionConfiguration_configurationIsUpdateable)
+{
+	ghost::ConnectionConfiguration configuration;
+	ASSERT_TRUE(configuration.getConfiguration()->getAttributes().size() == 3);
+	configuration.getConfiguration()->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+	ASSERT_TRUE(configuration.getConfiguration()->hasAttribute(TEST_CONFIGURATION_FIELD));
+}
+
+TEST_F(ConfigurationTests, test_networkconnectionConfiguration_ip)
+{
+	ghost::NetworkConnectionConfiguration configuration;
+	ASSERT_TRUE(configuration.getServerIpAddress() == "127.0.0.1");
+	configuration.setServerIpAddress(TEST_CONFIGURATION_VALUE);
+	ASSERT_TRUE(configuration.getServerIpAddress() == TEST_CONFIGURATION_VALUE);
+}
+
+TEST_F(ConfigurationTests, test_networkconnectionConfiguration_port)
+{
+	ghost::NetworkConnectionConfiguration configuration;
+	ASSERT_TRUE(configuration.getServerPortNumber() == -1);
+	configuration.setServerPortNumber(TEST_CONFIGURATION_VALUE_INT);
+	ASSERT_TRUE(configuration.getServerPortNumber() == TEST_CONFIGURATION_VALUE_INT);
 }

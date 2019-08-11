@@ -23,7 +23,7 @@ bool ReaderSink::put(const google::protobuf::Any& message)
 	if (_messageHandler) // if there is a message handler, don't use the read queue
 		_messageHandler->handle(message);
 	else
-	getMessageQueue()->push(message);
+		getMessageQueue()->push(message);
 
 	return true;
 }

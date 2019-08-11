@@ -32,9 +32,17 @@ ConnectionConfiguration::ConnectionConfiguration(const std::string& name)
 {
 	_configuration = ghost::Configuration::create(name);
 
-	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_ID, ghost::ConfigurationValue(""));
-	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, ghost::ConfigurationValue(""));
-	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, ghost::ConfigurationValue(""));
+	ghost::ConfigurationValue defaultId;
+	defaultId.write((int)-1);
+	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_ID, defaultId);
+
+	ghost::ConfigurationValue defaultThreadPoolSize;
+	defaultThreadPoolSize.write((size_t)2);
+	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, defaultThreadPoolSize);
+
+	ghost::ConfigurationValue defaultBlocking;
+	defaultBlocking.write(true);
+	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, defaultBlocking);
 }
 
 int ConnectionConfiguration::getConnectionId() const

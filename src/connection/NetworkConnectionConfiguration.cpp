@@ -30,8 +30,12 @@ namespace ghost
 NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string& name)
 	: ConnectionConfiguration(name)
 {
-	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, ghost::ConfigurationValue(""));
-	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, ghost::ConfigurationValue(""));
+	ghost::ConfigurationValue defaultIp("127.0.0.1");
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, defaultIp);
+
+	ghost::ConfigurationValue defaultPort;
+	defaultPort.write((int)-1);
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, defaultPort);
 }
 
 // getters of connection configuration parameters
