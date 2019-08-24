@@ -20,15 +20,10 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
+#include "IncomingRPC.hpp"
 #include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
-
-ServerGRPC::ServerGRPC(const ghost::ConnectionConfiguration& config)
-	: ServerGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
-{
-
-}
 
 ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config)
 	:  _configuration(config)
@@ -44,13 +39,12 @@ bool ServerGRPC::start()
 
 	_running = true;
 
-	std::ostringstream server_address;
-	server_address << _configuration.getServerIpAddress() << ":" << _configuration.getServerPortNumber();
+	std::string serverAddress = _configuration.getServerIpAddress() + ":" + std::to_string(_configuration.getServerPortNumber());
 
 	grpc::ServerBuilder builder;
 
 	// Listen on the given address without any authentication mechanism.
-	builder.AddListeningPort(server_address.str(), ::grpc::InsecureServerCredentials());
+	builder.AddListeningPort(serverAddress, ::grpc::InsecureServerCredentials());
 
 	// Register "_service" as the instance through which we'll communicate with
 	// clients. In this case it corresponds to an *asynchronous* service.
@@ -65,11 +59,14 @@ bool ServerGRPC::start()
 
 	_completionQueueExecutor.start(_configuration.getThreadPoolSize());
 
+	auto callback = std::bind(&ServerGRPC::onClientConnected, this, std::placeholders::_1);
+
 	auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
 	for (size_t i = 0; i < _configuration.getThreadPoolSize(); i++) // start as many calls as there can be concurrent rpcs
 	{
 		// Spawn a new CallData instance to serve new clients
-		auto client = std::make_shared<RemoteClientGRPC>(_configuration, &_service, cq, _clientHandler, &_clientManager, this);
+		auto client = std::make_shared<RemoteClientGRPC>(_configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
+		client->getRPC()->setParent(client);
 		_clientManager.addClient(client);
 	}
 	_clientManager.start();
@@ -100,4 +97,24 @@ bool ServerGRPC::isRunning() const
 void ServerGRPC::setClientHandler(std::shared_ptr<ghost::ClientHandler> handler)
 {
 	_clientHandler = handler;
+}
+
+const std::shared_ptr<ghost::ClientHandler> ServerGRPC::getClientHandler() const
+{
+	return _clientHandler;
+}
+
+void ServerGRPC::onClientConnected(std::shared_ptr<RemoteClientGRPC> client)
+{
+	if (isRunning())
+	{
+		// restart the process of creating the request for the next client
+		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
+		auto callback = std::bind(&ServerGRPC::onClientConnected, this, std::placeholders::_1);
+		auto newClient = std::make_shared<RemoteClientGRPC>(_configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
+		_clientManager.addClient(newClient);
+	}
+
+	// Execute the application's code in a separate thread
+	client->execute();
 }

@@ -66,9 +66,9 @@ void ClientManager::deleteDisposableClients()
 	while (it != _allClients.end())
 	{
 		// dispose and delete the client if it is finished and only owned by this
-		if ((*it)->isFinished() && it->use_count() == 1)
+		if ((*it)->getRPC()->isFinished() && it->use_count() == 1)
 		{
-			(*it)->dispose();
+			(*it)->getRPC()->dispose();
 			it = _allClients.erase(it);
 		}
 		else
@@ -80,7 +80,7 @@ void ClientManager::deleteAllClients()
 {
 	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
 	{
-		(*it)->dispose();
+		(*it)->getRPC()->dispose();
 	}
 	_allClients.clear();
 }

@@ -35,7 +35,7 @@ namespace ghost
 		 *	@return a writer configured for this connection.
 		 */
 		template<typename MessageType>
-		const std::shared_ptr<ghost::Writer<MessageType>>& getWriter() const
+		std::shared_ptr<ghost::Writer<MessageType>> getWriter() const
 		{
 			return ghost::Writer<MessageType>::create(_writerSink, _blocking);
 		}

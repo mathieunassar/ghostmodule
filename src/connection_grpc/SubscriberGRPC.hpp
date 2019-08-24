@@ -18,7 +18,7 @@
 #define GHOST_INTERNAL_NETWORK_SUBSCRIBERGRPC_HPP
 
 #include <ghost/connection/Subscriber.hpp>
-#include "ClientGRPC.hpp"
+#include "OutgoingRPC.hpp"
 
 namespace ghost
 {
@@ -27,7 +27,6 @@ namespace ghost
 		class SubscriberGRPC : public ghost::Subscriber
 		{
 		public:
-			SubscriberGRPC(const ghost::ConnectionConfiguration& config);
 			SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;
@@ -35,9 +34,7 @@ namespace ghost
 			bool isRunning() const override;
 
 		private:
-			ghost::NetworkConnectionConfiguration makeNoWriterConfig(const ghost::NetworkConnectionConfiguration& config);
-
-			ClientGRPC _client;
+			OutgoingRPC _client;
 		};
 	}
 }

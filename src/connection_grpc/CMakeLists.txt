@@ -12,8 +12,19 @@ generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 # targets defintion
 file(GLOB header_connectiongrpc_internal_lib
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/BaseClientGRPC.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/BaseClientGRPC.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPC.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPC.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCOperation.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCOperation.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCRead.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCWrite.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCRequest.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCConnect.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCFinish.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCServerFinish.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCDone.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/OutgoingRPC.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/IncomingRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RemoteClientGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherGRPC.hpp
@@ -28,6 +39,8 @@ file(GLOB source_connectiongrpc_lib
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RemoteClientGRPC.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/OutgoingRPC.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/IncomingRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherClientHandler.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/SubscriberGRPC.cpp

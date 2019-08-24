@@ -30,7 +30,7 @@ namespace ghost
 			enum State
 			{
 				CREATED,
-				INIT,
+				INITIALIZING,
 				EXECUTING, INACTIVE,
 				DISPOSING,
 				FINISHED
@@ -40,8 +40,7 @@ namespace ghost
 			State getState(bool lock = true) const;
 			void setState(State state, bool lock = true);
 
-			void lock();
-			void unlock();
+			std::unique_lock<std::mutex> lock();
 
 		private:
 			State _state;

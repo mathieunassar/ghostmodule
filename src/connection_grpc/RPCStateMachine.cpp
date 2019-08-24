@@ -38,7 +38,7 @@ RPCStateMachine::State RPCStateMachine::getState(bool lockk) const
 void RPCStateMachine::setState(State state, bool lockk)
 {
 	if (lockk)
-		lock();
+		_mutex.lock();
 
 	bool transitionAllowed = false;
 	switch (_state)
@@ -46,7 +46,7 @@ void RPCStateMachine::setState(State state, bool lockk)
 	case CREATED:
 		transitionAllowed = (state != EXECUTING && state != INACTIVE);
 		break;
-	case INIT:
+	case INITIALIZING:
 		transitionAllowed = (state != CREATED);
 		break;
 	case EXECUTING:
@@ -66,15 +66,10 @@ void RPCStateMachine::setState(State state, bool lockk)
 		_state = state;
 
 	if (lockk)
-		unlock();
+		_mutex.unlock();
 }
 
-void RPCStateMachine::lock()
+std::unique_lock<std::mutex> RPCStateMachine::lock()
 {
-	_mutex.lock();
-}
-
-void RPCStateMachine::unlock()
-{
-	_mutex.unlock();
+	return std::unique_lock<std::mutex>(_mutex);
 }

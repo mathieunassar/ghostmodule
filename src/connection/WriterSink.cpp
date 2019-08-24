@@ -20,7 +20,7 @@ using namespace ghost::internal;
 
 bool WriterSink::get(google::protobuf::Any& message, std::chrono::milliseconds timeout)
 {
-	if (timeout == std::chrono::milliseconds(0))
+	if (timeout == std::chrono::milliseconds(-1))
 	{
 		message = getMessageQueue()->get();
 		return true;

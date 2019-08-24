@@ -18,17 +18,11 @@
 
 using namespace ghost::internal;
 
-SubscriberGRPC::SubscriberGRPC(const ghost::ConnectionConfiguration& config)
-	: SubscriberGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
-{
-
-}
-
 SubscriberGRPC::SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config)
 	: ghost::Subscriber(config)
-	, _client(makeNoWriterConfig(config))
+	, _client(config.getServerIpAddress(), config.getServerPortNumber(), config.getThreadPoolSize())
 {
-
+	_client.setReaderSink(getReaderSink());
 }
 
 bool SubscriberGRPC::start()
@@ -44,13 +38,4 @@ bool SubscriberGRPC::stop()
 bool SubscriberGRPC::isRunning() const
 {
 	return _client.isRunning();
-}
-
-ghost::NetworkConnectionConfiguration SubscriberGRPC::makeNoWriterConfig(const ghost::NetworkConnectionConfiguration& config)
-{
-	ghost::NetworkConnectionConfiguration newConfig(config);
-	ghost::ConfigurationValue noWriterValue;
-	noWriterValue.write(true);
-	newConfig.getConfiguration()->addAttribute(BASE_CLIENT_GRPC_CONFIG_NOWRITER, noWriterValue, true);
-	return newConfig;
 }

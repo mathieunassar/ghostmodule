@@ -17,50 +17,37 @@
 #ifndef GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 
-#include <thread>
-#include <grpcpp/server.h>
-#include <grpcpp/server_builder.h>
-#include <grpcpp/security/server_credentials.h>
-
-#include "BaseClientGRPC.hpp"
-#include "ClientManager.hpp"
-#include <ghost/connection/Server.hpp>
-#include <ghost/connection/ClientHandler.hpp>
+#include <ghost/connection/Client.hpp>
+#include "ServerGRPC.hpp"
+#include "IncomingRPC.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
-		class RemoteClientGRPC : public BaseClientGRPC<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ServerContext>
+		class RemoteClientGRPC : public ghost::Client
 		{
 		public:
-			RemoteClientGRPC(const NetworkConnectionConfiguration& config,
-				ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* service, grpc::ServerCompletionQueue* completionQueue,
-				std::shared_ptr<ClientHandler> callback,
-				ClientManager* clientManager,
-				ghost::Server* server);
+			RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration,
+				const std::shared_ptr<IncomingRPC>& rpc,
+				ServerGRPC* parentServer);
 			~RemoteClientGRPC();
 
 			bool start() override;
 			bool stop() override;
+			bool isRunning() const override;
 
-			void dispose();
-
-		protected:
-			void onStarted(bool ok);
-			void onFinished(bool ok);
-			void onDone(bool ok);
 			void execute();
 
-			std::function<void(bool)> _startedProcessor;
-			std::function<void(bool)> _finishProcessor;
-			std::function<void(bool)> _doneProcessor;
-			ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* _service;
-			std::shared_ptr<ClientHandler> _clientHandler;
-			std::thread _executionThread;
+			std::shared_ptr<ghost::ReaderSink> getReaderSink() const;
+			std::shared_ptr<ghost::WriterSink> getWriterSink() const;
+			const std::shared_ptr<IncomingRPC> getRPC() const;
 
-			ClientManager* _clientManager;
-			ghost::Server* _server;
+		private:
+			std::shared_ptr<IncomingRPC> _rpc;
+			std::thread _executor;
+
+			ServerGRPC* _parentServer;
 		};
 	}
 }

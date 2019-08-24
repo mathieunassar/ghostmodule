@@ -32,6 +32,8 @@ namespace ghost
 {
 	namespace internal
 	{
+		class IncomingRPC;
+
 		/**
 		 * Server implementation using the gRPC library. Runs a gRPC server which accepts connections, and create
 		 * a writing/sending interface which is returned to the server object.
@@ -41,7 +43,6 @@ namespace ghost
 		class ServerGRPC : public ghost::Server
 		{
 		public:
-			ServerGRPC(const ghost::ConnectionConfiguration& config);
 			ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;
@@ -49,8 +50,11 @@ namespace ghost
 			bool isRunning() const override;
 
 			void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
+			const std::shared_ptr<ClientHandler> getClientHandler() const;
 
 		private:
+			void onClientConnected(std::shared_ptr<RemoteClientGRPC> client);
+
 			ghost::NetworkConnectionConfiguration _configuration;
 			std::atomic<bool> _running;
 

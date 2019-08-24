@@ -49,7 +49,7 @@ namespace ghost
 		 *	@return a reader configured for this connection.
 		 */
 		template<typename MessageType>
-		const std::shared_ptr<ghost::Reader<MessageType>>& getReader() const
+		std::shared_ptr<ghost::Reader<MessageType>> getReader() const
 		{
 			return ghost::Reader<MessageType>::create(_readerSink, _blocking);
 		}

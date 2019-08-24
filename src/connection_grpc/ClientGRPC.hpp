@@ -17,37 +17,29 @@
 #ifndef GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP
 
-#include <mutex>
-#include <condition_variable>
-#include <grpcpp/client_context.h>
-#include "BaseClientGRPC.hpp"
-#include "CompletionQueueExecutor.hpp"
+#include <ghost/connection/Client.hpp>
+#include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include "OutgoingRPC.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
-		class ClientGRPC : public BaseClientGRPC<grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ClientContext>
+		// RemoteGRPCClient vs GRPCClient (find better names) use RPC + operations for ghost workflow
+		// - give the operations an interface which can be faked
+		// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
+
+		class ClientGRPC : ghost::Client
 		{
 		public:
-			ClientGRPC(const ghost::ConnectionConfiguration& config);
 			ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;
 			bool stop() override;
+			bool isRunning() const override;
 
-		protected:
-			void onStarted(bool ok);
-			void onFinished(bool ok);
-
-			std::function<void(bool)> _startedProcessor;
-			std::function<void(bool)> _finishProcessor;
-			std::unique_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
-			CompletionQueueExecutor _executor;
-
-			std::mutex _initializedMutex;
-			std::condition_variable _initializedConditionVariable;
-			bool _initialized;
+		private:
+			OutgoingRPC _client;
 		};
 	}
 }
