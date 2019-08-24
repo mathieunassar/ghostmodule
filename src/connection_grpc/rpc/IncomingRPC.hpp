@@ -21,7 +21,7 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include "RemoteClientGRPC.hpp"
+#include "../RemoteClientGRPC.hpp"
 #include "RPC.hpp"
 #include "RPCRead.hpp"
 #include "RPCWrite.hpp"

@@ -12,41 +12,47 @@ generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 # targets defintion
 file(GLOB header_connectiongrpc_internal_lib
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPC.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPC.impl.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCOperation.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCOperation.impl.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCRead.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCWrite.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCRequest.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCConnect.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCFinish.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCServerFinish.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCDone.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/OutgoingRPC.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/IncomingRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RemoteClientGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherClientHandler.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/SubscriberGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/CompletionQueueExecutor.hpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCStateMachine.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientManager.hpp
+)
+
+file(GLOB header_connectiongrpc_internal_lib_rpc
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPC.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPC.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCOperation.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCOperation.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCRead.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCWrite.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCRequest.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCConnect.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCFinish.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCServerFinish.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCDone.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/OutgoingRPC.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/IncomingRPC.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.hpp
 )
 
 file(GLOB source_connectiongrpc_lib
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RemoteClientGRPC.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/OutgoingRPC.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/IncomingRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherClientHandler.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/SubscriberGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/CompletionQueueExecutor.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RPCStateMachine.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientManager.cpp
+)
+
+file(GLOB source_connectiongrpc_lib_rpc
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/OutgoingRPC.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/IncomingRPC.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.cpp
 )
 
 file(GLOB protobuf_connectiongrpc_lib
@@ -58,12 +64,17 @@ ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection_grpc/ServerClientService.grpc
 
 #source_group("API" FILES ${header_connection_lib})
 source_group("Protobuf" FILES ${protobuf_connectiongrpc_lib})
+source_group("Header Files\\RPC" FILES ${header_connectiongrpc_internal_lib_rpc})
+source_group("Source Files\\RPC" FILES ${source_connectiongrpc_lib_rpc})
+source_group("Protobuf" FILES ${protobuf_connectiongrpc_lib})
 
 ##########################################################################################################################################
 
 add_library(ghost_connection_grpc
 	${header_connectiongrpc_internal_lib}
 	${source_connectiongrpc_lib}
+	${header_connectiongrpc_internal_lib_rpc}
+	${source_connectiongrpc_lib_rpc}
 	${protobuf_connectiongrpc_lib}
 	)
 

@@ -19,7 +19,7 @@
 
 #include <ghost/connection/Client.hpp>
 #include "ServerGRPC.hpp"
-#include "IncomingRPC.hpp"
+#include "rpc/IncomingRPC.hpp"
 
 namespace ghost
 {

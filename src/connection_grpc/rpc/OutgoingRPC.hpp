@@ -21,7 +21,7 @@
 #include <grpcpp/client_context.h>
 
 #include "RPC.hpp"
-#include "CompletionQueueExecutor.hpp"
+#include "../CompletionQueueExecutor.hpp"
 #include "RPCRead.hpp"
 #include "RPCWrite.hpp"
 

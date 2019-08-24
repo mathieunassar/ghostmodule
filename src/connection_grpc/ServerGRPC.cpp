@@ -20,7 +20,7 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include "IncomingRPC.hpp"
+#include "rpc/IncomingRPC.hpp"
 #include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
