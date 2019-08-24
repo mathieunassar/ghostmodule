@@ -18,6 +18,11 @@
 #define GHOST_INTERNAL_NETWORK_RPCOPERATION_HPP
 
 #include <memory>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+
 #include "RPC.hpp"
 
 namespace ghost

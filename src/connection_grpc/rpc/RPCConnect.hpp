@@ -17,6 +17,11 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCCONNECT_HPP
 #define GHOST_INTERNAL_NETWORK_RPCCONNECT_HPP
 
+#include <memory>
+#include <grpcpp/completion_queue.h>
+#include <ghost/connection_grpc/ServerClientService.pb.h>
+#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
+
 #include "RPCOperation.hpp"
 
 namespace ghost

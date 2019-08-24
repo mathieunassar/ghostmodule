@@ -17,6 +17,10 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCREAD_HPP
 #define GHOST_INTERNAL_NETWORK_RPCREAD_HPP
 
+#include <memory>
+
+#include <ghost/connection/ReaderSink.hpp>
+
 #include "RPCOperation.hpp"
 
 namespace ghost

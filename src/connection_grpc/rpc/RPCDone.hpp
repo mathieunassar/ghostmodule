@@ -17,6 +17,8 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCDONE_HPP
 #define GHOST_INTERNAL_NETWORK_RPCDONE_HPP
 
+#include <memory>
+
 #include "RPCOperation.hpp"
 
 namespace ghost

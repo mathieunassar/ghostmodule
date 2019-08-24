@@ -17,21 +17,13 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPC_HPP
 #define GHOST_INTERNAL_NETWORK_RPC_HPP
 
-#include <string>
-#include <deque>
 #include <atomic>
 #include <memory>
-#include <mutex>
-
-#include <ghost/connection/ReaderSink.hpp>
-#include <ghost/connection/WriterSink.hpp>
-#include <ghost/connection/MessageHandler.hpp>
-#include <ghost/connection/ClientHandler.hpp>
-#include <ghost/connection/NetworkConnectionConfiguration.hpp>
-#include "RPCStateMachine.hpp"
 
 #include <ghost/connection_grpc/ServerClientService.pb.h>
 #include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
+
+#include "RPCStateMachine.hpp"
 
 namespace ghost
 {

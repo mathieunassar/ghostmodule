@@ -17,6 +17,10 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCREQUEST_HPP
 #define GHOST_INTERNAL_NETWORK_RPCREQUEST_HPP
 
+#include <memory>
+#include <functional>
+
+#include <grpcpp/completion_queue.h>
 #include "RPCOperation.hpp"
 
 namespace ghost

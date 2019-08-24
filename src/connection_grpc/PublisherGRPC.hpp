@@ -17,7 +17,9 @@
 #ifndef GHOST_INTERNAL_NETWORK_PUBLISHERGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_PUBLISHERGRPC_HPP
 
-#include <mutex>
+#include <memory>
+#include <thread>
+#include <atomic>
 
 #include <ghost/connection/Publisher.hpp>
 #include "ServerGRPC.hpp"

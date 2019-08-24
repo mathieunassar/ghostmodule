@@ -19,9 +19,9 @@
 
 #include <mutex>
 #include <deque>
-#include <iostream>
 
 #include <ghost/connection/ClientHandler.hpp>
+#include <ghost/connection/Client.hpp>
 #include <ghost/connection/Writer.hpp>
 
 namespace ghost

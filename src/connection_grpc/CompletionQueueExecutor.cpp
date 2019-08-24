@@ -15,7 +15,6 @@
  */
 
 #include "CompletionQueueExecutor.hpp"
-#include <iostream>
 
 using namespace ghost::internal;
 

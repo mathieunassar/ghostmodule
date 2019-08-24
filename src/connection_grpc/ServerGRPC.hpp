@@ -17,14 +17,15 @@
 #ifndef GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 
-#include <functional>
 #include <atomic>
+#include <memory>
 
 #include <grpcpp/server.h>
 #include <ghost/connection/Server.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection_grpc/ServerClientService.pb.h>
 #include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
+
 #include "CompletionQueueExecutor.hpp"
 #include "ClientManager.hpp"
 

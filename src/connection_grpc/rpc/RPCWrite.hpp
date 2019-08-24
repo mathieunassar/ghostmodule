@@ -17,6 +17,10 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCWRITE_HPP
 #define GHOST_INTERNAL_NETWORK_RPCWRITE_HPP
 
+#include <memory>
+
+#include <ghost/connection/WriterSink.hpp>
+
 #include "RPCOperation.hpp"
 
 namespace ghost

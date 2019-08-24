@@ -17,11 +17,12 @@
 #ifndef GHOST_INTERNAL_NETWORK_INCOMINGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_INCOMINGRPC_HPP
 
-#include <grpcpp/server.h>
-#include <grpcpp/server_builder.h>
-#include <grpcpp/security/server_credentials.h>
+#include <memory>
+#include <functional>
 
-#include "../RemoteClientGRPC.hpp"
+#include <ghost/connection/ReaderSink.hpp>
+#include <ghost/connection/WriterSink.hpp>
+
 #include "RPC.hpp"
 #include "RPCRead.hpp"
 #include "RPCWrite.hpp"
@@ -33,6 +34,8 @@ namespace ghost
 {
 	namespace internal
 	{
+		class RemoteClientGRPC;
+
 		class IncomingRPC
 		{
 		public:

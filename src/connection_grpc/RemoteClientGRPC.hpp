@@ -17,14 +17,18 @@
 #ifndef GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 
+#include <memory>
+#include <thread>
+
 #include <ghost/connection/Client.hpp>
-#include "ServerGRPC.hpp"
 #include "rpc/IncomingRPC.hpp"
 
 namespace ghost
 {
 	namespace internal
 	{
+		class ServerGRPC;
+
 		class RemoteClientGRPC : public ghost::Client
 		{
 		public:

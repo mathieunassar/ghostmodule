@@ -19,9 +19,11 @@
 
 #include <memory>
 #include <grpcpp/client_context.h>
+#include <ghost/connection/ReaderSink.hpp>
+#include <ghost/connection/WriterSink.hpp>
 
-#include "RPC.hpp"
 #include "../CompletionQueueExecutor.hpp"
+#include "RPC.hpp"
 #include "RPCRead.hpp"
 #include "RPCWrite.hpp"
 

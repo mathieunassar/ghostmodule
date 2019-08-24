@@ -15,6 +15,7 @@
  */
 
 #include "RemoteClientGRPC.hpp"
+#include "ServerGRPC.hpp"
 
 using namespace ghost::internal;
 

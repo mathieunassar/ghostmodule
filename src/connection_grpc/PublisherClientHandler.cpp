@@ -15,7 +15,6 @@
  */
 
 #include "PublisherClientHandler.hpp"
-#include <iostream>
 
 using namespace ghost::internal;
 

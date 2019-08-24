@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_NETWORK_SUBSCRIBERGRPC_HPP
 
 #include <ghost/connection/Subscriber.hpp>
+#include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include "rpc/OutgoingRPC.hpp"
 
 namespace ghost

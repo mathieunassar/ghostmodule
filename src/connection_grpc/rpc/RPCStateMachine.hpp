@@ -18,7 +18,7 @@
 #define GHOST_INTERNAL_NETWORK_RPCSTATEMACHINE_HPP
 
 #include <mutex>
-#include <atomic>
+#include <memory>
 
 namespace ghost
 {
