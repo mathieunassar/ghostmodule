@@ -25,6 +25,12 @@
 
 using namespace ghost::internal;
 
+ServerGRPC::ServerGRPC(const ghost::ConnectionConfiguration& config)
+	:ServerGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+{
+
+}
+
 ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config)
 	:  _configuration(config)
 	, _running(false)

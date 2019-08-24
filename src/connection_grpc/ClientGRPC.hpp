@@ -29,9 +29,10 @@ namespace ghost
 		// - give the operations an interface which can be faked
 		// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
 
-		class ClientGRPC : ghost::Client
+		class ClientGRPC : public ghost::Client
 		{
 		public:
+			ClientGRPC(const ghost::ConnectionConfiguration& config);
 			ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;

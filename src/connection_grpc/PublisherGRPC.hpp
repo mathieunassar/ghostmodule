@@ -32,6 +32,7 @@ namespace ghost
 		class PublisherGRPC : public ghost::Publisher
 		{
 		public:
+			PublisherGRPC(const ghost::ConnectionConfiguration& config);
 			PublisherGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;

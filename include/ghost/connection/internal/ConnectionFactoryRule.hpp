@@ -44,7 +44,7 @@ namespace ghost
 		};
 
 		/* Generic class */
-		template<typename Connection>
+		template<typename ConnectionType>
 		class ConnectionFactoryGenericRule : public ConnectionFactoryRule
 		{
 		public:

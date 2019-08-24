@@ -10,6 +10,11 @@ set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/protobuf/)
 generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 # targets defintion
+
+file(GLOB header_connectiongrpc_lib
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection_grpc/ConnectionGRPC.hpp
+)
+
 file(GLOB header_connectiongrpc_internal_lib
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.hpp
@@ -39,6 +44,7 @@ ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.hpp
 )
 
 file(GLOB source_connectiongrpc_lib
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ConnectionGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RemoteClientGRPC.cpp
@@ -62,7 +68,7 @@ ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection_grpc/ServerClientService.pb.c
 ${GHOST_MODULE_ROOT_DIR}/protobuf/ghost/connection_grpc/ServerClientService.grpc.pb.cc
 )
 
-#source_group("API" FILES ${header_connection_lib})
+source_group("API" FILES ${header_connectiongrpc_lib})
 source_group("Protobuf" FILES ${protobuf_connectiongrpc_lib})
 source_group("Header Files\\RPC" FILES ${header_connectiongrpc_internal_lib_rpc})
 source_group("Source Files\\RPC" FILES ${source_connectiongrpc_lib_rpc})
@@ -71,6 +77,7 @@ source_group("Protobuf" FILES ${protobuf_connectiongrpc_lib})
 ##########################################################################################################################################
 
 add_library(ghost_connection_grpc
+	${header_connectiongrpc_lib}
 	${header_connectiongrpc_internal_lib}
 	${source_connectiongrpc_lib}
 	${header_connectiongrpc_internal_lib_rpc}

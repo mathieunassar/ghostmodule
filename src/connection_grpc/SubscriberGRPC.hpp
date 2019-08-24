@@ -28,6 +28,7 @@ namespace ghost
 		class SubscriberGRPC : public ghost::Subscriber
 		{
 		public:
+			SubscriberGRPC(const ghost::ConnectionConfiguration& config);
 			SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config);
 
 			bool start() override;

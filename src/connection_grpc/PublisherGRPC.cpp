@@ -18,6 +18,12 @@
 
 using namespace ghost::internal;
 
+PublisherGRPC::PublisherGRPC(const ghost::ConnectionConfiguration& config)
+	:PublisherGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+{
+
+}
+
 PublisherGRPC::PublisherGRPC(const ghost::NetworkConnectionConfiguration& config)
 	: ghost::Publisher(config)
 	, _server(config)

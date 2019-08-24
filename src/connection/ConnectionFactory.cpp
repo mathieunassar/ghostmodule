@@ -17,20 +17,10 @@
 #include "ConnectionFactory.hpp"
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 
-/*#include <ghost/connection/internal/network/ServerGRPC.hpp>
-#include <ghost/connection/internal/network/PublisherGRPC.hpp>
-#include <ghost/connection/internal/network/SubscriberGRPC.hpp>
-#include <ghost/connection/internal/network/ClientGRPC.hpp>*/
-
 using namespace ghost::internal;
 
 ConnectionFactory::ConnectionFactory()
 {
-	NetworkConnectionConfiguration config;
-	/*addPublisherRule<internal::PublisherGRPC>(config);
-	addSubscriberRule<internal::SubscriberGRPC>(config);
-	addServerRule<internal::ServerGRPC>(config);
-	addClientRule<internal::ClientGRPC>(config);*/
 }
 
 void ConnectionFactory::addServerRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
