@@ -15,10 +15,12 @@
  */
 
 template<typename ReaderWriter, typename ContextType>
-RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, bool autoRestart, bool blocking)
+RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
+	bool autoRestart, bool blocking, bool accountAsRunningOperation)
 	: _rpc(parent)
 	, _autoRestart(autoRestart)
 	, _blocking(blocking)
+	, _accountAsRunningOperation(accountAsRunningOperation)
 	, _state(OperationProgress::IDLE)
 {
 	_operationCompletedCallback = std::bind(&RPCOperation<ReaderWriter, ContextType>::onOperationCompleted, this, std::placeholders::_1);
@@ -45,7 +47,7 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 	if (!rpc)
 		return false;
 
-	while (rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING)
+	while (rpc->getStateMachine().getState() != RPCStateMachine::FINISHED)
 	{
 		std::unique_lock<std::mutex> lock(_operationMutex);
 
@@ -59,16 +61,17 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 		{
 			// Switch states to prevent parallel executions and tell the RPC that something is ongoing.
 			_state = OperationProgress::IN_PROGRESS;
-			rpc->startOperation();
+			if (_accountAsRunningOperation)
+				rpc->startOperation();
 
 			// If this call is blocking, wait until it finishes
 			if (_blocking)
 				_operationCompletedConditionVariable.wait(lock, [this] { return _state == OperationProgress::IDLE; });
-
-			// If this call is not blocking, potential restarts will happen when the operation completes
-			if (!_blocking || !_autoRestart)
-				return true;
 		}
+
+		// If this call is not blocking, potential restarts will happen when the operation completes
+		if (!_blocking || !_autoRestart)
+			return true;
 	}
 	return false;
 }
@@ -86,15 +89,16 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 		// The operation completed, we can start another one right away.
 		_state = OperationProgress::IDLE;
 
-		// If the RPC should continue (next line returns true), continue.
-		if (!rpc->finishOperation())
-		{
-			// Let the implementation do something with the result.
-			if (ok)
-				onOperationSucceeded();
-			else
-				onOperationFailed();
-		}
+		// finishOperation returns true if the RPC is still operating
+		bool rpcFinished = false;
+		if (_accountAsRunningOperation)
+			rpcFinished = !rpc->finishOperation();
+		
+		// Let the implementation do something with the result.
+		if (ok)
+			onOperationSucceeded(rpcFinished);
+		else
+			onOperationFailed(rpcFinished);
 	}
 
 	// Free "start" threads that are potentially waiting for this.

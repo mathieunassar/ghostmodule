@@ -32,8 +32,8 @@ namespace ghost
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationSucceeded() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
 
 		private:
 			const grpc::Status& _status;
@@ -61,7 +61,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCServerFinish<ReaderWriter, ContextType>::onOperationSucceeded()
+		void RPCServerFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)
@@ -71,7 +71,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCServerFinish<ReaderWriter, ContextType>::onOperationFailed()
+		void RPCServerFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)

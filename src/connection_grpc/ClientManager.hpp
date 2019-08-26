@@ -43,6 +43,8 @@ namespace ghost
 
 			/// Adds a client to the manager
 			void addClient(std::shared_ptr<RemoteClientGRPC> client);
+			/// Stops currently running clients.
+			void stopClients();
 			/// dispose and delete clients that are in finished state and owned solely by this manager
 			void deleteDisposableClients();
 			

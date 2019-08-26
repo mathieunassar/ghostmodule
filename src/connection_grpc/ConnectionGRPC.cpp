@@ -22,7 +22,7 @@
 
 using namespace ghost;
 
-void initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager)
+void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager)
 {
 	// This is the minimal configuration for gRPC-based connections.
 	ghost::NetworkConnectionConfiguration config;

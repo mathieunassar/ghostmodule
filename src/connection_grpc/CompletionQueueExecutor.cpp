@@ -20,7 +20,6 @@ using namespace ghost::internal;
 
 CompletionQueueExecutor::CompletionQueueExecutor()
 {
-
 }
 
 CompletionQueueExecutor::CompletionQueueExecutor(grpc::CompletionQueue* completion)
@@ -53,7 +52,9 @@ void CompletionQueueExecutor::start(size_t threadsCount)
 
 void CompletionQueueExecutor::stop()
 {
-	_completionQueue->Shutdown();
+	if (_completionQueue)
+		_completionQueue->Shutdown();
+	
 	for (auto& t : _threadPool)
 	{
 		if (t.joinable())

@@ -30,6 +30,7 @@ namespace ghost
 	 */
 	class ConnectionGRPC
 	{
+	public:
 		/**
 		 *	Loads factory rules into the given connection manager objects to enable the creation
 		 *	of gRPC-based connections.

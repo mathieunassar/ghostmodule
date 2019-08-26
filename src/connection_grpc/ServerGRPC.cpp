@@ -87,9 +87,13 @@ bool ServerGRPC::stop()
 
 	_running = false;
 
+	// Stop currently active clients so that shutting down the grpc server does not hang
+	_clientManager.stopClients();
+	// Shut down the grpc server - this will wait until current RPCs are processed
 	_grpcServer->Shutdown();
-	_completionQueueExecutor.stop(); // shutdowns the completion queue
-
+	// Stop the completion queue, finishing the remaining open operations
+	_completionQueueExecutor.stop();
+	// Stops not stopped clients and delete all objects.
 	_clientManager.stop();
 
 	return true;
@@ -118,6 +122,7 @@ void ServerGRPC::onClientConnected(std::shared_ptr<RemoteClientGRPC> client)
 		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
 		auto callback = std::bind(&ServerGRPC::onClientConnected, this, std::placeholders::_1);
 		auto newClient = std::make_shared<RemoteClientGRPC>(_configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
+		newClient->getRPC()->setParent(newClient);
 		_clientManager.addClient(newClient);
 	}
 

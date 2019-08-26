@@ -72,6 +72,9 @@ namespace ghost
 	};
 }
 
+template<>
+std::shared_ptr<ghost::Writer<google::protobuf::Any>> ghost::Writer<google::protobuf::Any>::create(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking);
+
 #include <ghost/connection/internal/GenericWriter.hpp>
 
 // Template definition //

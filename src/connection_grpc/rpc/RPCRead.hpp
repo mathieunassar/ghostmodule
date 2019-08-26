@@ -36,8 +36,8 @@ namespace ghost
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationSucceeded() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
 
 		private:
 			ReadMessageType _incomingMessage;
@@ -67,16 +67,22 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>
-		void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationSucceeded()
+		void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationSucceeded(bool rpcFinished)
 		{
 			google::protobuf::Any anyMessage;
-			anyMessage.PackFrom(_incomingMessage);
+			if (_incomingMessage.GetTypeName() == anyMessage.GetTypeName())
+				anyMessage = _incomingMessage;
+			else
+				anyMessage.PackFrom(_incomingMessage);
 			_readerSink->put(anyMessage);
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>
-		void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationFailed()
+		void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationFailed(bool rpcFinished)
 		{
+			if (rpcFinished)
+				return; // nothing to do here
+
 			auto rpc = _rpc.lock();
 			if (!rpc)
 				return;

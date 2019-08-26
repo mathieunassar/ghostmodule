@@ -30,11 +30,11 @@ namespace ghost
 NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string& name)
 	: ConnectionConfiguration(name)
 {
-	ghost::ConfigurationValue defaultIp("127.0.0.1");
+	// Default values are provided in the getters. A default construction creates empty values (For minimal configurations)
+	ghost::ConfigurationValue defaultIp;
 	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, defaultIp);
 
 	ghost::ConfigurationValue defaultPort;
-	defaultPort.write((int)-1);
 	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, defaultPort);
 }
 
@@ -43,10 +43,11 @@ std::string NetworkConnectionConfiguration::getServerIpAddress() const
 {
 	std::string res;
 	ConfigurationValue value;
-	ConfigurationValue default;
+	ConfigurationValue default("127.0.0.1");
 
 	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, default); // if the field was removed, returns ""
-	value.read<std::string>(res);
+	if (!value.read<std::string>(res))
+		default.read<std::string>(res);
 
 	return res;
 }
@@ -59,7 +60,8 @@ int NetworkConnectionConfiguration::getServerPortNumber() const
 	default.write<int>(-1);
 
 	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, default); // if the field was removed, returns -1
-	value.read<int>(res);
+	if (!value.read<int>(res))
+		default.read<int>(res);
 
 	return res;
 }

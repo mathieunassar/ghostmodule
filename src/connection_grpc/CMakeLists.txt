@@ -90,3 +90,18 @@ if (UNIX)
 endif()
 
 target_link_libraries(ghost_connection_grpc ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})
+
+##### Unit tests #####
+
+if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+	file(GLOB source_connection_gprc_tests
+		${GHOST_MODULE_ROOT_DIR}/tests/ConnectionGRPCTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/ConnectionMocks.hpp)
+
+	add_executable(connection_grpc_tests ${source_connection_gprc_tests})
+	target_link_libraries(connection_grpc_tests ghost_connection_grpc ${CONAN_LIBS_GTEST})
+	
+	gtest_add_tests(TARGET connection_grpc_tests)
+
+	set_property(TARGET connection_grpc_tests PROPERTY FOLDER "tests")
+endif()

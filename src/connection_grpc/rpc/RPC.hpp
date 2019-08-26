@@ -34,6 +34,8 @@ namespace ghost
 		 *	This class contains the call's state machine, the necessary gRPC objects as well
 		 *	as the list of operations currently active.
 		 */
+		// TODO add a disconnection callback to offer the possibility to react
+		// TODO + in outgoingRPC, try to reconnect by restarting RPCConnect
 		template<typename ReaderWriter, typename ContextType>
 		class RPC
 		{

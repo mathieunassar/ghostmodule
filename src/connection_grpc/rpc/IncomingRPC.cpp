@@ -23,6 +23,7 @@ IncomingRPC::IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::A
 		grpc::ServerCompletionQueue* completionQueue,
 		const std::function<void(std::shared_ptr<RemoteClientGRPC>)>& clientConnectedCallback)
 	: _serverCallback(clientConnectedCallback)
+	, _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
 	, _requestOperation(std::make_shared<RPCRequest<ReaderWriter, ContextType, ServiceType>>(_rpc, service, completionQueue, completionQueue))
 	, _doneOperation(std::make_shared<RPCDone<ReaderWriter, ContextType>>(_rpc))
 {

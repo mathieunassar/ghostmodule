@@ -37,7 +37,8 @@ namespace ghost
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
 
 		private:
 			std::shared_ptr<ghost::WriterSink> _writerSink;
@@ -77,9 +78,14 @@ namespace ghost
 			if (success)
 			{
 				WriteMessageType msg;
-				bool unpackSuccess = message.UnpackTo(&msg);
-				if (!unpackSuccess)
-					return false;
+				if (msg.GetTypeName() == message.GetTypeName()) // Don't unpack any to any because it will fail
+					msg = message;
+				else
+				{
+					bool unpackSuccess = message.UnpackTo(&msg);
+					if (!unpackSuccess)
+						return false;
+				}
 
 				rpc->getClient()->Write(msg, &_operationCompletedCallback);
 			}
@@ -88,8 +94,20 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
-		void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationFailed()
+		void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationSucceeded(bool rpcFinished)
 		{
+			if (rpcFinished)
+				return; // nothing to do here
+
+			_writerSink->pop();
+		}
+
+		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
+		void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationFailed(bool rpcFinished)
+		{
+			if (rpcFinished)
+				return; // nothing to do here
+
 			auto rpc = _rpc.lock();
 			if (!rpc)
 				return;

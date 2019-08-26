@@ -1,61 +1,31 @@
+/*
+ * Copyright 2019 Mathieu Nassar
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #ifndef GHOST_TESTS_CONNECTIONMOCKS_HPP
 #define GHOST_TESTS_CONNECTIONMOCKS_HPP
 
-#include <ghost/connection/Publisher.hpp>
-#include <ghost/connection/Subscriber.hpp>
-#include <ghost/connection/Client.hpp>
-#include <ghost/connection/Server.hpp>
+#include <gmock/gmock.h>
 
-class PublisherMock : public ghost::Publisher
+#include <ghost/connection/ClientHandler.hpp>
+
+class ClientHandlerMock : public ghost::ClientHandler
 {
 public:
-	PublisherMock(const ghost::ConnectionConfiguration& config);
-	virtual bool start() override;
-	virtual bool stop() override;
-	virtual bool isRunning() const override;
-
-private:
-	bool m_running;
-};
-
-
-class SubscriberMock : public ghost::Subscriber
-{
-public:
-	SubscriberMock(const ghost::ConnectionConfiguration& config);
-	virtual bool start() override;
-	virtual bool stop() override;
-	virtual bool isRunning() const override;
-
-private:
-	bool m_running;
-};
-
-
-class ClientMock : public ghost::Client
-{
-public:
-	ClientMock(const ghost::ConnectionConfiguration& config);
-	virtual bool start() override;
-	virtual bool stop() override;
-	virtual bool isRunning() const override;
-
-private:
-	bool m_running;
-};
-
-class ServerMock : public ghost::Server
-{
-public:
-	ServerMock(const ghost::ConnectionConfiguration& config);
-	virtual bool start() override;
-	virtual bool stop() override;
-	virtual bool isRunning() const override;
-
-	virtual void setClientHandler(std::shared_ptr<ghost::ClientHandler> handler) override;
-
-private:
-	bool m_running;
+	MOCK_METHOD1(configureClient, void(const std::shared_ptr<ghost::Client>& client));
+	MOCK_METHOD2(handle, bool(std::shared_ptr<ghost::Client> client, bool& keepClientAlive));
 };
 
 #endif // GHOST_TESTS_CONNECTIONMOCKS_HPP

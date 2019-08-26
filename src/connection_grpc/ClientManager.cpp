@@ -50,13 +50,22 @@ void ClientManager::stop()
 	if (_clientManagerThread.joinable())
 		_clientManagerThread.join();
 
-	deleteAllClients();
+	// do not delete the clients -> this might be called by a client's thread shutting down the server. In that case, its executor thread would try to join itself
 }
 
 void ClientManager::addClient(std::shared_ptr<RemoteClientGRPC> client)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 	_allClients.push_back(client);
+}
+
+void ClientManager::stopClients()
+{
+	std::lock_guard<std::mutex> lock(_mutex);
+	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
+	{
+		(*it)->stop();
+	}
 }
 
 void ClientManager::deleteDisposableClients()
@@ -90,6 +99,6 @@ void ClientManager::manageClients()
 	while (_clientManagerThreadEnable)
 	{
 		deleteDisposableClients(); // stop, dispose grpc and delete all clients whose shared_ptr has a counter of 1
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }

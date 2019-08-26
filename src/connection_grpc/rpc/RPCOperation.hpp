@@ -51,7 +51,8 @@ namespace ghost
 				IN_PROGRESS
 			};
 
-			RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, bool autoRestart, bool blocking);
+			RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, bool autoRestart, bool blocking,
+				bool accountAsRunningOperation = true);
 			virtual ~RPCOperation();
 
 			bool startAsync();
@@ -59,15 +60,17 @@ namespace ghost
 
 		protected:
 			/// Push an operation in the RPC's completion queue.
+			/// @return true if the completion of this operation must be waited for.
 			virtual bool initiateOperation() = 0;
 			/// This will be called if the processor is called with ok = false
-			virtual void onOperationSucceeded() {}
+			virtual void onOperationSucceeded(bool rpcFinished) {}
 			/// This will be called if the processor is called with ok = true
-			virtual void onOperationFailed() {}
+			virtual void onOperationFailed(bool rpcFinished) {}
 
 			std::weak_ptr<RPC<ReaderWriter, ContextType>> _rpc;
 			bool _autoRestart;
 			bool _blocking;
+			bool _accountAsRunningOperation;
 			std::thread _executor;
 			OperationProgress _state;
 			std::mutex _operationMutex;

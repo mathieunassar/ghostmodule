@@ -29,19 +29,26 @@ namespace ghost
 		class RPCFinish : public RPCOperation<ReaderWriter, ContextType>
 		{
 		public:
-			RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
+			RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status = grpc::Status::CANCELLED);
+
+			const grpc::Status& getStatus() const;
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationSucceeded() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
+
+		private:
+			grpc::Status _status;
 		};
 
 		/////////////////////////// Template definition ///////////////////////////
 
 		template<typename ReaderWriter, typename ContextType>
-		RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
-			: RPCOperation(parent, false, false) // restart = false, blocking = false
+		RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
+			const grpc::Status& status)
+			: RPCOperation(parent, false, true) // restart = false, blocking = false
+			, _status(status)
 		{
 		}
 
@@ -52,14 +59,13 @@ namespace ghost
 			if (!rpc)
 				return false;
 
-			grpc::Status status = grpc::Status::CANCELLED;
 			rpc->getContext()->TryCancel();
-			rpc->getClient()->Finish(&status, &_operationCompletedCallback);
+			rpc->getClient()->Finish(&_status, &_operationCompletedCallback);
 			return true;
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded()
+		void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)
@@ -69,7 +75,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCFinish<ReaderWriter, ContextType>::onOperationFailed()
+		void RPCFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)
@@ -77,7 +83,12 @@ namespace ghost
 
 			rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
 		}
-
+		
+		template<typename ReaderWriter, typename ContextType>
+		const grpc::Status& RPCFinish<ReaderWriter, ContextType>::getStatus() const
+		{
+			return _status;
+		}
 	}
 }
 

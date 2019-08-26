@@ -60,9 +60,9 @@ namespace ghost
 	template<typename MessageType, typename std::enable_if<!std::is_base_of<ghost::Message, MessageType>::value, void>::type*>
 	void ghost::MessageHandler::addHandler(std::function<void(const MessageType & message)> handler)
 	{
-		std::string format = GHOSTMESSAGE_FORMAT_NAME;
+		std::string format = ghost::internal::GHOSTMESSAGE_FORMAT_NAME;
 		std::string name = MessageType().GetTypeName();
-		addHandler(format, name, std::unique_ptr<MessageHandlerCallback<MessageType>>(new MessageHandlerCallback<MessageType>(handler)));
+		addHandler(format, name, std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
 	}
 
 	/// Implementation for ghost::Message
@@ -72,7 +72,7 @@ namespace ghost
 		auto msg = MessageType();
 		std::string format = msg.getMessageFormatName();
 		std::string name = msg.getMessageTypeName();
-		addHandler(format, name, std::unique_ptr<MessageHandlerCallback<MessageType>>(new MessageHandlerCallback<MessageType>(handler)));
+		addHandler(format, name, std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
 	}
 }
 

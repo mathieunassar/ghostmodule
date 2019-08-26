@@ -47,7 +47,7 @@ Configuration::Configuration(const std::string& name)
 
 void Configuration::copy(ghost::Configuration& to) const
 {
-	auto config = dynamic_cast<ghost::internal::Configuration&>(to);
+	ghost::internal::Configuration& config = dynamic_cast<ghost::internal::Configuration&>(to);
 	config._configuration = _configuration;
 }
 

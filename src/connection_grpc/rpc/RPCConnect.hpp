@@ -38,8 +38,8 @@ namespace ghost
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationSucceeded() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
 
 		private:
 			std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
@@ -70,8 +70,11 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCConnect<ReaderWriter, ContextType>::onOperationSucceeded()
+		void RPCConnect<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
+			if (rpcFinished)
+				return; // nothing to do here
+
 			auto rpc = _rpc.lock();
 			if (!rpc)
 				return;
@@ -80,7 +83,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCConnect<ReaderWriter, ContextType>::onOperationFailed()
+		void RPCConnect<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)

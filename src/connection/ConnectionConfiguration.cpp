@@ -30,18 +30,16 @@ namespace ghost
 
 ConnectionConfiguration::ConnectionConfiguration(const std::string& name)
 {
+	// Default values are provided in the getters. A default construction creates empty values (For minimal configurations)
 	_configuration = ghost::Configuration::create(name);
 
 	ghost::ConfigurationValue defaultId;
-	defaultId.write((int)-1);
 	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_ID, defaultId);
 
 	ghost::ConfigurationValue defaultThreadPoolSize;
-	defaultThreadPoolSize.write((size_t)2);
 	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, defaultThreadPoolSize);
 
 	ghost::ConfigurationValue defaultBlocking;
-	defaultBlocking.write(true);
 	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, defaultBlocking);
 }
 
@@ -53,7 +51,8 @@ int ConnectionConfiguration::getConnectionId() const
 	default.write<int>(-1);
 	
 	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_ID, value, default); // if the field was removed, returns -1
-	value.read<int>(res);
+	if (!value.read<int>(res))
+		default.read<int>(res);
 	
 	return res;
 }
@@ -66,7 +65,8 @@ size_t ConnectionConfiguration::getThreadPoolSize() const
 	default.write<size_t>(2);
 
 	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value, default); // if the field was removed, returns 2
-	value.read<size_t>(res);
+	if (!value.read<size_t>(res))
+		default.read<size_t>(res);
 
 	return res;
 }
@@ -79,7 +79,8 @@ bool ConnectionConfiguration::isOperationBlocking() const
 	default.write<size_t>(true);
 
 	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, default); // if the field was removed, returns true
-	value.read<bool>(res);
+	if (!value.read<bool>(res))
+		default.read<bool>(res);
 
 	return res;
 }

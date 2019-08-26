@@ -40,8 +40,8 @@ namespace ghost
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationSucceeded() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
 
 		private:
 			ServiceType* _service;
@@ -85,8 +85,11 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationSucceeded()
+		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationSucceeded(bool rpcFinished)
 		{
+			if (rpcFinished)
+				return; // nothing to do here
+
 			auto rpc = _rpc.lock();
 			if (!rpc)
 				return;
@@ -97,7 +100,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed()
+		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)

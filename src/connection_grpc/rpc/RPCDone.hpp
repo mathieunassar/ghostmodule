@@ -33,15 +33,15 @@ namespace ghost
 
 		protected:
 			bool initiateOperation() override;
-			void onOperationSucceeded() override;
-			void onOperationFailed() override;
+			void onOperationSucceeded(bool rpcFinished) override;
+			void onOperationFailed(bool rpcFinished) override;
 		};
 
 		/////////////////////////// Template definition ///////////////////////////
 
 		template<typename ReaderWriter, typename ContextType>
 		RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
-			: RPCOperation(parent, false, false) // restart = false, blocking = false
+			: RPCOperation(parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
 		{
 		}
 
@@ -57,7 +57,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded()
+		void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)
@@ -67,7 +67,7 @@ namespace ghost
 		}
 
 		template<typename ReaderWriter, typename ContextType>
-		void RPCDone<ReaderWriter, ContextType>::onOperationFailed()
+		void RPCDone<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
 			auto rpc = _rpc.lock();
 			if (!rpc)

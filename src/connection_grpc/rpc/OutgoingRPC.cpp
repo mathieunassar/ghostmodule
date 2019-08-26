@@ -76,7 +76,6 @@ bool OutgoingRPC::stop()
 	if (!_rpc->dispose())
 		return false;
 
-	grpc::Status status = grpc::Status::CANCELLED;
 	std::shared_ptr<RPCFinish<ReaderWriter, ContextType>> finishOperation;
 	if (_rpc->getStateMachine().getState() == RPCStateMachine::DISPOSING)
 	{
@@ -89,7 +88,7 @@ bool OutgoingRPC::stop()
 	_rpc->disposeGRPC();
 
 	// finishOperation completed since _rpc->awaitFinished() returned, it is therefore okay to be deleted.
-	return status.ok();
+	return finishOperation->getStatus().ok() || finishOperation->getStatus().error_code() == grpc::StatusCode::CANCELLED;
 }
 
 bool OutgoingRPC::isRunning() const
