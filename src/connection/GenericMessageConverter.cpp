@@ -28,7 +28,7 @@ bool GenericMessageConverter::create(google::protobuf::Any& message, const ghost
 	std::string formatName = from.getMessageFormatName();
 	if (formatName == internal::GHOSTMESSAGE_FORMAT_NAME) // this is already a protobuf message
 	{
-		const ghost::ProtobufMessage& fromProtobuf = static_cast<const ghost::ProtobufMessage&>(from);
+		const ghost::internal::ProtobufMessage& fromProtobuf = static_cast<const ghost::internal::ProtobufMessage&>(from);
 		payload = fromProtobuf.getProtobufMessage();
 
 		if (!payload)
@@ -92,7 +92,7 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 		return false; // payload is a protobuf message, but user expected something else, return false as documented
 	}
 	
-	ghost::ProtobufMessage& toProtobuf = static_cast<ghost::ProtobufMessage&>(to);
+	ghost::internal::ProtobufMessage& toProtobuf = static_cast<ghost::internal::ProtobufMessage&>(to);
 	
 	if (!toProtobuf.getProtobufMessage())
 	{

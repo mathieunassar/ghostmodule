@@ -16,7 +16,7 @@
 
 #include <ghost/connection/internal/ProtobufMessage.hpp>
 
-using namespace ghost;
+using namespace ghost::internal;
 
 //const std::string internal::GHOSTMESSAGE_FORMAT_NAME = "PROTOBUF";
 
@@ -41,7 +41,7 @@ ProtobufMessage::ProtobufMessage(std::shared_ptr<google::protobuf::Message> mess
  */
 std::string ProtobufMessage::getMessageFormatName() const
 {
-	return internal::GHOSTMESSAGE_FORMAT_NAME;
+	return GHOSTMESSAGE_FORMAT_NAME;
 }
 
 /**

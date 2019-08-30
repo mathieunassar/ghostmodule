@@ -52,7 +52,7 @@ namespace ghost
 			void handle(const google::protobuf::Any& message) override
 			{
 				auto proto = std::make_shared<MessageType>();
-				ghost::ProtobufMessage msg(proto);
+				ghost::internal::ProtobufMessage msg(proto);
 				bool parseSuccess = GenericMessageConverter::parse(message, msg);
 				if (parseSuccess)
 					_callback(*proto);

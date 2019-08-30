@@ -13,29 +13,89 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//
-//#include <iostream>
-//#include <gtest/gtest.h>
-//
-//#include <ghost/connection/ConnectionManager.hpp>
-//#include "ConnectionMocks.hpp"
-//
-//using namespace ghost;
-//
-//class ConnectionTests : public testing::Test
-//{
-//protected:
-//	void SetUp() override
-//	{
-//
-//	}
-//
-//	void TearDown() override
-//	{
-//
-//	}
-//};
-//
+
+#include <iostream>
+#include <gtest/gtest.h>
+
+/**
+ *	This test class groups the following test categories:
+ *	- ConnectionManger
+ *	- ConnectionFactory
+ */
+class ConnectionTests : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+
+	}
+
+	void TearDown() override
+	{
+
+	}
+};
+
+TEST_F(ConnectionTests, test_ConnectionManager_createServerFails_When_nothingConfigured)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createClientFails_When_nothingConfigured)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createPublisherFails_When_nothingConfigured)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createSubscriberFails_When_nothingConfigured)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createServerSucceeds_When_configurationExists)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createClientSucceeds_When_configurationExists)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createPublisherSucceeds_When_configurationExists)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createSubscriberSucceeds_When_configurationExists)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createSucceeds_When_requiredEmptyConfigurationAttributeIsSet)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createFails_When_requiredNonEmptyConfigurationAttributeIsDifferent)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_createFails_When_requiredConfigurationAttributeIsMissing)
+{
+
+}
+
+TEST_F(ConnectionTests, test_ConnectionManager_closesConnection_When_destructorIsCalled)
+{
+
+}
+
 //TEST_F(ConnectionTests, test_connection_manager)
 //{
 //	ghost::ConnectionConfiguration config;

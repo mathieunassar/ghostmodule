@@ -16,37 +16,110 @@
 
 #include <iostream>
 #include <gtest/gtest.h>
+#include <ghost/connection/internal/ProtobufMessage.hpp>
 
-/* To test here:
-	- GenericParser + ghost::Message + ghost::ProtobufMessage
-	- MessageHandler
-	- Reader + ReaderSink
-	- Writer + WriterSink
-	- Writable and Readable connections
-*/
+/**
+ *	This test class groups the following test categories:
+ *	- GenericParser + ghost::Message + ghost::ProtobufMessage
+ */
+class MessageTests : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+	
+	}
+	
+	void TearDown() override
+	{
+	
+	}
+};
 
-//#include <ghost/connection/internal/ProtobufMessage.hpp>
-//#include <ghost/connection/internal/GenericMessageConverter.hpp>
-//#include <ghost/connection/MessageHandler.hpp>
-//#include <ghost/connection/internal/MessageHandler.hpp>
-//#include "../protobuf/Ghost.pb.h"
-//
-//using namespace ghost;
-//
-//class MessageTests : public testing::Test
-//{
-//protected:
-//	void SetUp() override
-//	{
-//
-//	}
-//
-//	void TearDown() override
-//	{
-//
-//	}
-//};
-//
+/* ProtobufMessage class */
+
+TEST_F(MessageTests, test_ProtobufMessage_typeInformationIsCorrect_When_defaultConstructed)
+{
+	
+}
+
+TEST_F(MessageTests, test_ProtobufMessage_serializationSucceeds_When_defaultConstructed)
+{
+
+}
+
+TEST_F(MessageTests, test_ProtobufMessage_serializationFails_When_emptyConstructed)
+{
+
+}
+
+TEST_F(MessageTests, test_ProtobufMessage_deserializationSucceeds_When_previouslySerializedMessageIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_ProtobufMessage_deserializationFails_When_badMessageIsGiven)
+{
+
+}
+
+/* GenericMessageConverter */
+
+TEST_F(MessageTests, test_GenericMessageConverter_createFromProtobufSucceeds_When_protobufMessageIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_createFromProtobufFailsWithoutCrashing_When_nullptrIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufSucceeds_When_validAnyMessageIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufFails_When_emptyAnyIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufFails_When_differentAnyMessageTypeIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_createFromGhostMessageSucceeds_When_customGhostMessageIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageSucceeds_When_validAnyMessageIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufFails_When_anyFromGhostMessageIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageFails_When_anyFromProtobufIsGiven)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_createFromGhostMessageFails_When_serializationFails)
+{
+
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageFails_When_deserializationFails)
+{
+
+}
+
 //class MyMessage : public Message
 //{
 //public:
@@ -169,31 +242,4 @@
 //	// Test any to failing mymessage
 //	bool success14 = internal::GenericMessageConverter::parse(customAny, message4);
 //	ASSERT_TRUE(!success14);
-//}
-//
-//TEST_F(MessageTests, test_messagehandler)
-//{
-//	int counter = 0;
-//	MessageHandlerMock mock;
-//	mock.addHandler<ghost::internal::protobuf::GenericMessageHeader>
-//		([&counter](const ghost::internal::protobuf::GenericMessageHeader& message)
-//	{
-//		counter++;
-//	});
-//
-//	ghost::internal::protobuf::GenericMessageHeader message;
-//	message.set_timestamp(12);
-//
-//	google::protobuf::Any any;
-//	any.PackFrom(message);
-//
-//	ghost::internal::protobuf::GenericMessage gen;
-//	google::protobuf::Any any2;
-//	any2.PackFrom(gen);
-//
-//	mock.getInternal()->handle(any);
-//
-//	ASSERT_TRUE(counter == 1); // first message was sent to the message handler
-//	mock.getInternal()->handle(any2);
-//	ASSERT_TRUE(counter == 1); // second message didnt find a handler.
 //}

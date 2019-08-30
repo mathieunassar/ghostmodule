@@ -51,7 +51,7 @@ namespace ghost
 			typename std::enable_if<!std::is_base_of<ghost::Message, Q>::value
 				&& !std::is_same<google::protobuf::Any, Q>::value, bool>::type makeAny(google::protobuf::Any& any, const MessageType& message)
 			{
-				return GenericMessageConverter::create(any, ghost::ProtobufMessage(std::make_shared<MessageType>(message)));
+				return GenericMessageConverter::create(any, ghost::internal::ProtobufMessage(std::make_shared<MessageType>(message)));
 			}
 
 			template<class Q = MessageType>

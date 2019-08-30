@@ -171,7 +171,11 @@ protected:
 
 	int _doubleValueMessageWasHandledCounter;
 	std::map<int, int> _doubleValueMessageWasHandledMap;
+
+	static const int TEST_PORT;
 };
+
+const int ConnectionGRPCTests::TEST_PORT = 45000;
 
 TEST_F(ConnectionGRPCTests, test_ConnectionGRPC_populatesConnectionManagerWithServerRule)
 {
@@ -238,7 +242,7 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_startsAndStop_When_noServer)
 TEST_F(ConnectionGRPCTests, test_ClientGRPC_connectsToServerGRPC)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createServer(config);
 	startServer();
@@ -250,7 +254,7 @@ TEST_F(ConnectionGRPCTests, test_ClientGRPC_connectsToServerGRPC)
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_supportsMultipleClients)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createServer(config);
 	startServer();
@@ -261,7 +265,7 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_supportsMultipleClients)
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandling)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createServer(config);
 	startServer();
@@ -284,7 +288,7 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandl
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createServer(config);
 	startServer();
@@ -306,7 +310,7 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createServer(config);
 	startServer();
@@ -332,7 +336,7 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse
 TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createPublisher(config);
 	startPublisher();
@@ -351,7 +355,7 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createPublisher(config);
 	startPublisher();
@@ -370,7 +374,7 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_continuesOperation_When_subscriberDies)
 {
 	ghost::NetworkConnectionConfiguration config;
-	config.setServerPortNumber(45000);
+	config.setServerPortNumber(TEST_PORT);
 
 	createPublisher(config);
 	startPublisher();
@@ -398,9 +402,9 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_continuesOperation_When_subscribe
 	ASSERT_FALSE(_subscribers[1]->isRunning());
 }
 
-TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_continuesOperation_When_PublisherDies)
+/*TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_continuesOperation_When_PublisherDies)
 {
 	// stop publisher and then restart it
 
 	// That will not work!
-}
+}*/

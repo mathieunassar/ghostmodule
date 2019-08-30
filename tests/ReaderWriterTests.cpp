@@ -13,141 +13,125 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//
-//#include <iostream>
-//#include <gtest/gtest.h>
-//
-//#include <ghost/connection/internal/GenericReader.hpp>
-//#include <ghost/connection/internal/GenericWriter.hpp>
-//
-//#include "../protobuf/Ghost.pb.h"
-//
-//using namespace ghost::internal;
-//
-//class ReaderWriterTests : public testing::Test
-//{
-//protected:
-//	void SetUp() override
-//	{
-//
-//	}
-//
-//	void TearDown() override
-//	{
-//
-//	}
-//};
-//
-//TEST_F(ReaderWriterTests, test_genericreader_proto)
-//{
-//	GenericReader<protobuf::GenericMessageHeader> reader(false);
-//
-//	// create a test message
-//	auto proto = std::make_shared<protobuf::GenericMessageHeader>();
-//	proto->set_timestamp(582);
-//
-//	// convert it to any
-//	google::protobuf::Any anymessage;
-//	anymessage.PackFrom(*proto);
-//
-//	// feed the reader
-//	reader.put(anymessage);
-//
-//	// check that you can read it now
-//	protobuf::GenericMessageHeader newmessage;
-//	bool readSuccess = reader.read(newmessage);
-//	ASSERT_TRUE(readSuccess);
-//	ASSERT_TRUE(newmessage.timestamp() == 582);
-//
-//	// read again, should return false because the call is non blocking
-//	bool readSuccess2 = reader.read(newmessage);
-//	ASSERT_TRUE(!readSuccess2);
-//
-//	// add it again...
-//	reader.put(anymessage);
-//
-//	// copy the reader
-//	GenericReader<protobuf::GenericMessageHeader> reader2(reader, false);
-//
-//	// normally it is possible to read from it
-//	protobuf::GenericMessageHeader newmessage2;
-//	bool readSuccess3 = reader2.read(newmessage2);
-//	ASSERT_TRUE(readSuccess3);
-//	ASSERT_TRUE(newmessage2.timestamp() == 582);
-//
-//	// and reading from the old one is now finished (they share the queue)
-//	bool readSuccess4 = reader.read(newmessage2);
-//	ASSERT_TRUE(!readSuccess4);
-//}
-//
-//TEST_F(ReaderWriterTests, test_genericWriter_any)
-//{
-//	GenericWriter<google::protobuf::Any> writer(false);
-//
-//	auto proto = std::make_shared<protobuf::GenericMessageHeader>();
-//	proto->set_timestamp(582);
-//	google::protobuf::Any anymessage;
-//	anymessage.PackFrom(*proto);
-//
-//	bool writeSuccess = writer.write(anymessage);
-//	ASSERT_TRUE(writeSuccess);
-//}
-//
-//TEST_F(ReaderWriterTests, test_genericwriter_proto)
-//{
-//	GenericWriter<protobuf::GenericMessageHeader> writer(false);
-//
-//	// create a test message
-//	auto proto = std::make_shared<protobuf::GenericMessageHeader>();
-//	proto->set_timestamp(582);
-//
-//	bool writeSuccess = writer.write(*proto);
-//	ASSERT_TRUE(writeSuccess);
-//
-//	google::protobuf::Any anymessage;
-//	bool getSuccess = writer.get(anymessage);
-//	ASSERT_TRUE(getSuccess);
-//
-//	protobuf::GenericMessageHeader newmessage;
-//	bool unpackSuccess = anymessage.UnpackTo(&newmessage);
-//	ASSERT_TRUE(unpackSuccess);
-//	ASSERT_TRUE(newmessage.timestamp() == 582);
-//}
-//
-//TEST_F(ReaderWriterTests, test_genericreader_ghost)
-//{
-//	GenericReader<ghost::ProtobufMessage> reader(false);
-//
-//	// create a test message
-//	auto proto = std::make_shared<protobuf::GenericMessageHeader>();
-//	proto->set_timestamp(582);
-//	ghost::ProtobufMessage message(proto);
-//
-//	// convert it to any
-//	google::protobuf::Any anymessage;
-//	anymessage.PackFrom(*proto);
-//
-//	reader.put(anymessage);
-//
-//	// check that it is readable
-//	ghost::ProtobufMessage message2(std::make_shared<protobuf::GenericMessageHeader>());
-//	bool readSuccess = reader.read(message2);
-//	ASSERT_TRUE(readSuccess);
-//}
-//
-//TEST_F(ReaderWriterTests, test_genericwriter_ghost)
-//{
-//	GenericWriter<ghost::ProtobufMessage> writer(false);
-//
-//	// create a test message
-//	auto proto = std::make_shared<protobuf::GenericMessageHeader>();
-//	proto->set_timestamp(582);
-//	ghost::ProtobufMessage message(proto);
-//
-//	bool writeSuccess = writer.write(message);
-//	ASSERT_TRUE(writeSuccess);
-//
-//	google::protobuf::Any anymessage;
-//	bool getSuccess = writer.get(anymessage);
-//	ASSERT_TRUE(getSuccess);
-//}
+
+#include <iostream>
+#include <gtest/gtest.h>
+
+ /**
+  *	This test class groups the following test categories:
+  *	- MessageHandler
+  *	- Reader, ReaderSink and ReadableConnection
+  *	- Writer, WriterSink and WritableConnection
+  */
+class ReaderWriterTests : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+
+	}
+
+	void TearDown() override
+	{
+
+	}
+};
+
+/* Reader - ReaderSink - ReadableConnection */
+
+TEST_F(ReaderWriterTests, test_ReadableConnection_messageGoesToReader_When_protobufMessageOfProperTypeIsPassedToSink)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_ReadableConnection_messageGoesToReader_When_ghostMessageOfProperTypeIsPassedToSink)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_lastMessageIsAvailable_When_protobufMessageIsReadAndProperTypeIsRequested)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_lastMessageFails_When_protobufMessageIsReadAndWrongTypeIsRequested)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_lastMessageIsAvailable_When_ghostMessageIsReadAndProperTypeIsRequested)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_lastMessageFails_When_ghostMessageIsReadAndWrongTypeIsRequested)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_readFails_When_passedProtobufMessageTypeIsWrong)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_readFails_When_passedGhostMessageTypeIsWrong)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Reader_readFails_When_connectionWasBlockingAndNoMessageWasAvailable)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_ReaderSink_readFails_When_messageHandlerWasAdded)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerHandlesGhostMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerHandlesProtobufMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerDoesNotHandleMessage_When_noCorrespondingHandlerExists)
+{
+
+}
+
+/* Writer - WriterSink - WritableConnection */
+
+TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_protobufMessageOfProperTypeIsPassedToWriter)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_messageOfTypeAnyIsPassedToWriter)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_ghostMessageOfProperTypeIsPassedToWriter)
+{
+
+}
+
+TEST_F(ReaderWriterTests, test_Writer_writeFails_When_passedProtobufMessageTypeIsWrong)
+{
+	// this will probably hard to get to fail
+}
+
+TEST_F(ReaderWriterTests, test_Writer_writeFails_When_passedGhostMessageTypeIsWrong)
+{
+	// this will probably hard to get to fail
+}
+
+TEST_F(ReaderWriterTests, test_WriterSink_writeBlocks_When_connectionWasBlocking)
+{
+
+}
