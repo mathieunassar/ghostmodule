@@ -16,7 +16,13 @@
 
 #include <iostream>
 #include <gtest/gtest.h>
+#include <google/protobuf/wrappers.pb.h>
+
 #include <ghost/connection/internal/ProtobufMessage.hpp>
+#include <ghost/connection/internal/GenericMessageConverter.hpp>
+#include "ConnectionMocks.hpp"
+
+using testing::_;
 
 /**
  *	This test class groups the following test categories:
@@ -27,219 +33,222 @@ class MessageTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-	
+		setupProtobufMessages();
+		setupGhostMessages();
 	}
 	
 	void TearDown() override
 	{
 	
 	}
+
+	void setupProtobufMessages()
+	{
+		_doubleValue = std::make_shared<google::protobuf::DoubleValue>();
+		_doubleValue->set_value(TEST_DOUBLE_VALUE);
+		_message = std::make_shared<ghost::internal::ProtobufMessage>(_doubleValue);
+		_message2 = std::make_shared<ghost::internal::ProtobufMessage>(_doubleValue);
+		_otherTypeMessage = std::make_shared<ghost::internal::ProtobufMessage>(std::make_shared<google::protobuf::Int32Value>());
+		_emptyMessage = std::make_shared<ghost::internal::ProtobufMessage>(nullptr);
+	}
+
+	void setupGhostMessages()
+	{
+		_ghostMessage = std::make_shared<MessageMock>();
+		_ghostMessage2 = std::make_shared<MessageMock>();
+		_otherTypeGhostMessage = std::make_shared<MessageMock>();
+		_emptyGhostMessage = std::make_shared<MessageMock>();
+
+		setGhostMessageExpectations(_ghostMessage, TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED);
+		setGhostMessageExpectations(_ghostMessage2, TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED);
+		setGhostMessageExpectations(_otherTypeGhostMessage, TEST_GHOST_MESSAGE_CUSTOM_OTHER_TYPE_NAME, TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED);
+		setGhostMessageExpectations(_emptyGhostMessage, TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, "");
+	}
+
+	void setGhostMessageExpectations(const std::shared_ptr<MessageMock>& message, const std::string& type, const std::string& serialized)
+	{
+		EXPECT_CALL(*message, getMessageFormatName()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(TEST_GHOST_MESSAGE_CUSTOM_FORMAT));
+		EXPECT_CALL(*message, getMessageTypeName()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(type));
+		EXPECT_CALL(*message, serialize(_)).Times(testing::AnyNumber()).WillRepeatedly(testing::DoAll(
+			testing::SetArgReferee<0>(serialized),
+			testing::Return(true)));
+		EXPECT_CALL(*message, deserialize(_)).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
+	}
+
+	std::shared_ptr<ghost::internal::ProtobufMessage> _message;
+	std::shared_ptr<ghost::internal::ProtobufMessage> _message2;
+	std::shared_ptr<ghost::internal::ProtobufMessage> _otherTypeMessage;
+	std::shared_ptr<ghost::internal::ProtobufMessage> _emptyMessage;
+
+	std::shared_ptr<MessageMock> _ghostMessage;
+	std::shared_ptr<MessageMock> _ghostMessage2;
+	std::shared_ptr<MessageMock> _otherTypeGhostMessage;
+	std::shared_ptr<MessageMock> _emptyGhostMessage;
+
+	std::shared_ptr<google::protobuf::DoubleValue> _doubleValue;
+	google::protobuf::Any _any;
+
+	static const std::string TEST_BAD_SERIALIZED_MESSAGE;
+	static const std::string TEST_GHOST_MESSAGE_CUSTOM_FORMAT;
+	static const std::string TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME;
+	static const std::string TEST_GHOST_MESSAGE_CUSTOM_OTHER_TYPE_NAME;
+	static const std::string TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED;
+	static const std::string TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED;
+	static const double TEST_DOUBLE_VALUE;
 };
+
+const std::string MessageTests::TEST_BAD_SERIALIZED_MESSAGE = "Bad message";
+const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_FORMAT = "Format";
+const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME = "Type name";
+const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_OTHER_TYPE_NAME = "Other type name";
+const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED = "Serialized";
+const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED = "Other serialized";
+const double MessageTests::TEST_DOUBLE_VALUE = 42;
 
 /* ProtobufMessage class */
 
 TEST_F(MessageTests, test_ProtobufMessage_typeInformationIsCorrect_When_defaultConstructed)
 {
-	
+	ASSERT_TRUE(_message->getMessageTypeName() == _doubleValue->GetTypeName());
+	ASSERT_TRUE(_message->getMessageFormatName() == ghost::internal::GHOSTMESSAGE_FORMAT_NAME);
 }
 
 TEST_F(MessageTests, test_ProtobufMessage_serializationSucceeds_When_defaultConstructed)
 {
-
+	std::string serialized;
+	bool serializationResult = _message->serialize(serialized);
+	
+	ASSERT_TRUE(serializationResult);
+	ASSERT_TRUE(serialized == _doubleValue->SerializeAsString());
 }
 
 TEST_F(MessageTests, test_ProtobufMessage_serializationFails_When_emptyConstructed)
 {
+	ghost::internal::ProtobufMessage message({});
+	std::string serialized;
+	bool serializationResult = message.serialize(serialized);
 
+	ASSERT_FALSE(serializationResult);
 }
 
 TEST_F(MessageTests, test_ProtobufMessage_deserializationSucceeds_When_previouslySerializedMessageIsGiven)
 {
+	std::string serialized;
+	_message->serialize(serialized);
+	bool deserializationResult = _message2->deserialize(serialized);
 
+	ASSERT_TRUE(deserializationResult);
+	ASSERT_TRUE(_message2->getMessageTypeName() == _doubleValue->GetTypeName());
+	ASSERT_TRUE(_message2->getMessageFormatName() == ghost::internal::GHOSTMESSAGE_FORMAT_NAME);
+	auto proto = std::static_pointer_cast<google::protobuf::DoubleValue>(_message2->getProtobufMessage());
+	ASSERT_TRUE(proto->value() == TEST_DOUBLE_VALUE);
 }
 
 TEST_F(MessageTests, test_ProtobufMessage_deserializationFails_When_badMessageIsGiven)
 {
-
+	bool deserializationResult = _message->deserialize(TEST_BAD_SERIALIZED_MESSAGE);
+	ASSERT_FALSE(deserializationResult);
 }
 
 /* GenericMessageConverter */
 
 TEST_F(MessageTests, test_GenericMessageConverter_createFromProtobufSucceeds_When_protobufMessageIsGiven)
 {
-
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_message);
+	ASSERT_TRUE(creationSuccess);
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getTrueTypeName(_any) == _message->getMessageTypeName());
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_createFromProtobufFailsWithoutCrashing_When_nullptrIsGiven)
 {
-
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_emptyMessage);
+	ASSERT_FALSE(creationSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufSucceeds_When_validAnyMessageIsGiven)
 {
-
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_message);
+	ASSERT_TRUE(creationSuccess);
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_message2);
+	ASSERT_TRUE(parsingSuccess);
+	ASSERT_TRUE(_message2->getMessageFormatName() == _message->getMessageFormatName());
+	ASSERT_TRUE(_message2->getMessageTypeName() == _message->getMessageTypeName());
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufFails_When_emptyAnyIsGiven)
 {
-
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_message);
+	ASSERT_FALSE(parsingSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufFails_When_differentAnyMessageTypeIsGiven)
 {
-
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_message);
+	ASSERT_TRUE(creationSuccess);
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_otherTypeMessage);
+	ASSERT_FALSE(parsingSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_createFromGhostMessageSucceeds_When_customGhostMessageIsGiven)
 {
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
 
+	ASSERT_TRUE(creationSuccess);
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatName(_any) == _ghostMessage->getMessageFormatName());
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatAndName(_any).first == _ghostMessage->getMessageFormatName());
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatAndName(_any).second == _ghostMessage->getMessageTypeName());
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageSucceeds_When_validAnyMessageIsGiven)
 {
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
+	ASSERT_TRUE(creationSuccess);
 
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_ghostMessage2);
+	ASSERT_TRUE(parsingSuccess);
+	ASSERT_TRUE(_ghostMessage2->getMessageFormatName() == _ghostMessage->getMessageFormatName());
+	ASSERT_TRUE(_ghostMessage2->getMessageTypeName() == _ghostMessage->getMessageTypeName());
+}
+
+TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageFails_When_differentAnyMessageTypeIsGiven)
+{
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
+	ASSERT_TRUE(creationSuccess);
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_otherTypeGhostMessage);
+	ASSERT_FALSE(parsingSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToProtobufFails_When_anyFromGhostMessageIsGiven)
 {
-
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
+	ASSERT_TRUE(creationSuccess);
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_message);
+	ASSERT_FALSE(parsingSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageFails_When_anyFromProtobufIsGiven)
 {
-
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_message);
+	ASSERT_TRUE(creationSuccess);
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_ghostMessage2);
+	ASSERT_FALSE(parsingSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_createFromGhostMessageFails_When_serializationFails)
 {
+	EXPECT_CALL(*_ghostMessage, serialize(_)).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
 
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
+	ASSERT_FALSE(creationSuccess);
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageFails_When_deserializationFails)
 {
+	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
+	ASSERT_TRUE(creationSuccess);
 
+	EXPECT_CALL(*_ghostMessage2, deserialize(_)).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+
+	bool parsingSuccess = ghost::internal::GenericMessageConverter::parse(_any, *_ghostMessage2);
+	ASSERT_FALSE(parsingSuccess);
 }
-
-//class MyMessage : public Message
-//{
-//public:
-//	MyMessage(const std::string& msg) : _willfail(false), _string(msg) {}
-//
-//	void setWillFail(bool val) { _willfail = val; }
-//
-//	std::string getMessageFormatName() const override { return "TESTFORMAT"; }
-//
-//	std::string getMessageTypeName() const override { return "MYMESSAGE"; }
-//
-//	bool serialize(std::string& result) const override { result = _string; return !_willfail; }
-//
-//	bool deserialize(const std::string& payload) override { _string = payload; return !_willfail; }
-//
-//	bool _willfail;
-//	std::string _string;
-//};
-//
-//class MessageHandlerMock : public internal::MessageHandler
-//{
-//public:
-//	internal::MessageHandler* getInternal()
-//	{
-//		return _internal;
-//	}
-//};
-//
-//TEST_F(MessageTests, test_conversion)
-//{
-//	auto proto = std::make_shared<ghost::internal::protobuf::GenericMessage>();
-//	proto->set_format("bonjour");
-//	proto->set_serial("ceci est mon message");
-//	proto->mutable_header()->set_timestamp(582);
-//
-//	// Test: ProtobufMessage return values
-//	ProtobufMessage message(proto);
-//	ASSERT_TRUE(message.getMessageTypeName() == proto->GetTypeName());
-//	ASSERT_TRUE(message.getMessageFormatName() == internal::GHOSTMESSAGE_FORMAT_NAME);
-//	
-//	// Test: protobuf serialization from message
-//	std::string serialized;
-//	bool success = message.serialize(serialized);
-//	ASSERT_TRUE(success);
-//	ASSERT_TRUE(serialized == message.getProtobufMessage()->SerializeAsString());
-//
-//	// Test: protobuf deserialization to message
-//	ProtobufMessage reformed = ProtobufMessage::create<ghost::internal::protobuf::GenericMessage>();
-//	bool success2 = reformed.deserialize(serialized);
-//	ASSERT_TRUE(success2);
-//	ASSERT_TRUE(reformed.getMessageTypeName() == proto->GetTypeName());
-//	ASSERT_TRUE(reformed.getMessageFormatName() == internal::GHOSTMESSAGE_FORMAT_NAME);
-//	auto reformedProto = std::static_pointer_cast<ghost::internal::protobuf::GenericMessage>(reformed.getProtobufMessage());
-//	ASSERT_TRUE(reformedProto->header().timestamp() == 582);
-//
-//	// Test: conversion to Any from real protobuf message
-//	auto proto2 = std::make_shared<ghost::internal::protobuf::GenericMessageHeader>();
-//	proto2->set_timestamp(582);
-//	ProtobufMessage message3(proto2);
-//
-//	google::protobuf::Any any;
-//	bool success3 = internal::GenericMessageConverter::create(any, message3);
-//	ASSERT_TRUE(success3);
-//	ASSERT_TRUE(internal::GenericMessageConverter::getTrueTypeName(any) == message3.getMessageTypeName());
-//
-//	// Test: conversion from nullptr protobuf message
-//	google::protobuf::Any poorAny;
-//	ProtobufMessage nullMessage(nullptr);
-//	bool success4 = internal::GenericMessageConverter::create(poorAny, nullMessage);
-//	ASSERT_TRUE(!success4);
-//
-//	// Test: conversion from any to nullptr ProtobufMessage
-//	bool success5 = internal::GenericMessageConverter::parse(any, nullMessage);
-//	ASSERT_TRUE(!success5);
-//
-//	// Test: conversion from no any to real message
-//	ProtobufMessage message2 = ProtobufMessage::create<ghost::internal::protobuf::GenericMessage>();
-//	bool success6 = internal::GenericMessageConverter::parse(poorAny, message2);
-//	std::cout << "any type: " << internal::GenericMessageConverter::getTrueTypeName(poorAny) << std::endl;
-//	ASSERT_TRUE(!success6);
-//
-//	// Test: conversion from any to different message type
-//	bool success7 = internal::GenericMessageConverter::parse(any, message2);
-//	ASSERT_TRUE(!success7);
-//
-//	// Test: conversion from good any to good ProtobufMessage
-//	bool success8 = internal::GenericMessageConverter::parse(any, message3);
-//	ASSERT_TRUE(success8);
-//	auto reformedProto2 = std::static_pointer_cast<ghost::internal::protobuf::GenericMessageHeader>(message3.getProtobufMessage());
-//	ASSERT_TRUE(reformedProto2->timestamp() == 582);
-//
-//	// Test: MyMessage to any
-//	MyMessage message4("superstring123");
-//	google::protobuf::Any customAny;
-//	bool success9 = internal::GenericMessageConverter::create(customAny, message4);
-//	ASSERT_TRUE(success9);
-//	ASSERT_TRUE(internal::GenericMessageConverter::getTrueTypeName(customAny) == internal::protobuf::GenericMessage().GetTypeName());
-//
-//	// Test: Any to MyMessage
-//	MyMessage reformed2("");
-//	bool success10 = internal::GenericMessageConverter::parse(customAny, reformed2);
-//	ASSERT_TRUE(success10);
-//	ASSERT_TRUE(reformed2._string == "superstring123");
-//
-//	// Test: Any to protobufMessage
-//	ProtobufMessage illformed = ProtobufMessage::create<ghost::internal::protobuf::GenericMessage>();
-//	bool success11 = internal::GenericMessageConverter::parse(customAny, illformed);
-//	ASSERT_TRUE(!success11);
-//
-//	// Test: protobuf any to MyMessage
-//	bool success12 = internal::GenericMessageConverter::parse(any, reformed2);
-//	ASSERT_TRUE(!success12);
-//
-//	// Test: failing mymessage to any
-//	message4.setWillFail(true);
-//	google::protobuf::Any customAny2;
-//	bool success13 = internal::GenericMessageConverter::create(customAny2, message4);
-//	ASSERT_TRUE(!success13);
-//
-//	// Test any to failing mymessage
-//	bool success14 = internal::GenericMessageConverter::parse(customAny, message4);
-//	ASSERT_TRUE(!success14);
-//}

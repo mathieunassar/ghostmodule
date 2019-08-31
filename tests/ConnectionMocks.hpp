@@ -20,12 +20,22 @@
 #include <gmock/gmock.h>
 
 #include <ghost/connection/ClientHandler.hpp>
+#include <ghost/connection/Message.hpp>
 
 class ClientHandlerMock : public ghost::ClientHandler
 {
 public:
 	MOCK_METHOD1(configureClient, void(const std::shared_ptr<ghost::Client>& client));
 	MOCK_METHOD2(handle, bool(std::shared_ptr<ghost::Client> client, bool& keepClientAlive));
+};
+
+class MessageMock : public ghost::Message
+{
+public:
+	MOCK_CONST_METHOD0(getMessageFormatName, std::string());
+	MOCK_CONST_METHOD0(getMessageTypeName, std::string());
+	MOCK_CONST_METHOD1(serialize, bool(std::string& result));
+	MOCK_METHOD1(deserialize, bool(const std::string& payload));
 };
 
 #endif // GHOST_TESTS_CONNECTIONMOCKS_HPP

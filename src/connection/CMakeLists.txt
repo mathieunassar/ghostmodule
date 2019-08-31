@@ -105,6 +105,7 @@ target_link_libraries(ghost_connection ${CONAN_LIBS_PROTOBUF})
 if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	# Unit tests: Primitive Serialization
 	file(GLOB source_connection_tests
+		${GHOST_MODULE_ROOT_DIR}/tests/ConnectionMocks.hpp
 		${GHOST_MODULE_ROOT_DIR}/tests/MessageTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/ConfigurationTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/ReaderWriterTests.cpp
