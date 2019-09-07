@@ -13,6 +13,7 @@ generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 file(GLOB header_connectiongrpc_lib
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection_grpc/ConnectionGRPC.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection_grpc/ConnectionConfigurationGRPC.hpp
 )
 
 file(GLOB header_connectiongrpc_internal_lib
@@ -45,6 +46,7 @@ ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.hpp
 
 file(GLOB source_connectiongrpc_lib
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ConnectionGRPC.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ConnectionConfigurationGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ServerGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientGRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/RemoteClientGRPC.cpp

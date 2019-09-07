@@ -15,6 +15,7 @@
  */
 
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
+#include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
 #include "ServerGRPC.hpp"
 #include "PublisherGRPC.hpp"
 #include "ClientGRPC.hpp"
@@ -22,14 +23,12 @@
 
 using namespace ghost;
 
-void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager)
+void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+	const ghost::NetworkConnectionConfiguration& minimumConfiguration)
 {
-	// This is the minimal configuration for gRPC-based connections.
-	ghost::NetworkConnectionConfiguration config;
-
 	// Assign the gRPC implementations to this configuration.
-	connectionManager->getConnectionFactory()->addServerRule<internal::ServerGRPC>(config);
-	connectionManager->getConnectionFactory()->addClientRule<internal::ClientGRPC>(config);
-	connectionManager->getConnectionFactory()->addPublisherRule<internal::PublisherGRPC>(config);
-	connectionManager->getConnectionFactory()->addSubscriberRule<internal::SubscriberGRPC>(config);
+	connectionManager->getConnectionFactory()->addServerRule<internal::ServerGRPC>(minimumConfiguration);
+	connectionManager->getConnectionFactory()->addClientRule<internal::ClientGRPC>(minimumConfiguration);
+	connectionManager->getConnectionFactory()->addPublisherRule<internal::PublisherGRPC>(minimumConfiguration);
+	connectionManager->getConnectionFactory()->addSubscriberRule<internal::SubscriberGRPC>(minimumConfiguration);
 }
