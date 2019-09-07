@@ -28,6 +28,8 @@ protected:
 	void SetUp() override
 	{
 		_consoleDeviceMock = std::make_shared<ConsoleDeviceMock>();
+		_writeCallsCounter = 0;
+		_expectedWriteCallsCount = 0;
 	}
 
 	void TearDown() override
@@ -63,8 +65,37 @@ protected:
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
+	void waitForWriteCalls()
+	{
+		auto now = std::chrono::steady_clock::now();
+		auto deadline = now + std::chrono::seconds(1);
+		while (_writeCallsCounter < _expectedWriteCallsCount && now < deadline)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			now = std::chrono::steady_clock::now();
+		}
+	}
+
+	void setupWriteCallExpectation(const std::string& writeCallParameter)
+	{
+		_expectedWriteCallsCount++;
+		EXPECT_CALL(*_consoleDeviceMock, write(writeCallParameter)).Times(1).WillRepeatedly([this](const std::string&) {
+			_writeCallsCounter++; return true;
+			});
+	}
+
+	void setupWriteCallExpectation()
+	{
+		_expectedWriteCallsCount++;
+		EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1).WillRepeatedly([this](const std::string&) {
+			_writeCallsCounter++; return true;
+			});
+	}
+
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
 	std::shared_ptr<ghost::internal::OutputController> _outputController;
+	int _writeCallsCounter;
+	int _expectedWriteCallsCount;
 
 	static const std::string TEST_WRITE_LINE;
 	static const std::string TEST_WRITE_LINE2;
@@ -144,11 +175,11 @@ TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsCalled_When_Con
 	_outputController->write(TEST_WRITE_LINE);
 	std::this_thread::sleep_for(std::chrono::milliseconds(200)); // wait to see that write is never called
 
-	EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1);
+	setupWriteCallExpectation();
 	_outputController->enable();
 	ASSERT_TRUE(_outputController->isEnabled());
-	// wait to let internal threads reach the test points
-	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+	waitForWriteCalls();
 }
 
 TEST_F(OutputControllerTests, Test_OutputController_flushAndWrite)
@@ -156,12 +187,12 @@ TEST_F(OutputControllerTests, Test_OutputController_flushAndWrite)
 	setupOutputController();
 	_outputController->start();
 
-	EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE)).Times(1);
-	EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE2)).Times(1);
+	setupWriteCallExpectation(TEST_WRITE_LINE);
+	setupWriteCallExpectation(TEST_WRITE_LINE2);
 
 	_outputController->write(TEST_WRITE_LINE);
 	_outputController->flush();
 	_outputController->write(TEST_WRITE_LINE2);
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	waitForWriteCalls();
 }
