@@ -26,7 +26,8 @@ namespace ghost
 	/**
 	 *	A ghost::ReaderSink is the interface between a connection and a
 	 *	ghost::Reader object that can read messages coming from the connection.
-	 *	The sink must be used by implementations of connection types.
+	 *	The sink must be used by implementations of connection types to forward
+	 *	messages to the user of the connection reader.
 	 */
 	class ReaderSink
 	{

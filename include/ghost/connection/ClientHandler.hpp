@@ -43,7 +43,7 @@ namespace ghost
 
 		/**
 		 * @brief Provides the possibility to configure the message handler of the client
-		 * before it is started.
+		 * before read and write operations are started.
 		 * @param client represents the client connection. At that point, the connection is
 		 * established but the readers and writers are not started yet.
 		 */

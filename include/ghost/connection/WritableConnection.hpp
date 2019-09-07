@@ -24,6 +24,11 @@
 
 namespace ghost
 {
+	/**
+	 *	A ghost::WritableConnection is a connection that can send messages.
+	 *	This class provides a method to create a ghost::Writer, responsible for
+	 *	forwarding outgoing messages to the connection's implementation.
+	 */
 	class WritableConnection
 	{
 	public:
