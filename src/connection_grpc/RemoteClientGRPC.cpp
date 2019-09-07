@@ -24,6 +24,7 @@ RemoteClientGRPC::RemoteClientGRPC(const ghost::ConnectionConfiguration& configu
 	ServerGRPC* parentServer)
 	: ghost::Client(configuration)
 	, _rpc(rpc)
+	, _running(false)
 	, _parentServer(parentServer)
 {
 }
@@ -46,13 +47,15 @@ bool RemoteClientGRPC::stop()
 
 bool RemoteClientGRPC::isRunning() const
 {
-	return !_rpc->isFinished();
+	return !_rpc->isFinished() || _running;
 }
 
 void RemoteClientGRPC::execute()
 {
 	_executor = std::thread([this]
 		{
+			_running = true;
+
 			if (_parentServer->getClientHandler())
 				_parentServer->getClientHandler()->configureClient(_rpc->getParent());
 
@@ -73,6 +76,8 @@ void RemoteClientGRPC::execute()
 			// if continueExecution is false, stop the server
 			if (!continueExecution)
 				_parentServer->stop();
+
+			_running = false;
 		});
 }
 

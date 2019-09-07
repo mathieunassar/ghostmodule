@@ -49,6 +49,7 @@ namespace ghost
 
 		private:
 			std::shared_ptr<IncomingRPC> _rpc;
+			std::atomic_bool _running;
 			std::thread _executor;
 
 			ServerGRPC* _parentServer;

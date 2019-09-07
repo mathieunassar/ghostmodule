@@ -75,7 +75,7 @@ void ClientManager::deleteDisposableClients()
 	while (it != _allClients.end())
 	{
 		// dispose and delete the client if it is finished and only owned by this
-		if ((*it)->getRPC()->isFinished() && it->use_count() == 1)
+		if (!(*it)->isRunning() && it->use_count() == 1)
 		{
 			(*it)->getRPC()->dispose();
 			it = _allClients.erase(it);
@@ -99,6 +99,6 @@ void ClientManager::manageClients()
 	while (_clientManagerThreadEnable)
 	{
 		deleteDisposableClients(); // stop, dispose grpc and delete all clients whose shared_ptr has a counter of 1
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }

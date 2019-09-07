@@ -76,13 +76,16 @@ namespace ghost
 	};
 }
 
+template<>
+std::shared_ptr<ghost::Reader<google::protobuf::Any>> ghost::Reader<google::protobuf::Any>::create(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking);
+
 #include <ghost/connection/internal/GenericReader.hpp>
 
 // Template definition //
 template<typename MessageType>
 std::shared_ptr<ghost::Reader<MessageType>> ghost::Reader<MessageType>::create(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
 {
-	return std::make_shared<ghost::GenericReader<MessageType>>(sink, blocking);
+	return std::make_shared<ghost::internal::GenericReader<MessageType>>(sink, blocking);
 }
 
 #endif //GHOST_WRITER_HPP

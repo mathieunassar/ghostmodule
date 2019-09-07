@@ -44,6 +44,7 @@ bool Reader::read(google::protobuf::Any& message)
 	
 	if (messageGotten)
 	{
+		message = msg;
 		_last = msg;
 		return true;
 	}
@@ -53,6 +54,6 @@ bool Reader::read(google::protobuf::Any& message)
 
 bool Reader::lastRead(google::protobuf::Any& message)
 {
-	_last = message;
+	message = _last;
 	return true;
 }

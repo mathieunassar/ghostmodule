@@ -20,7 +20,7 @@
 
 #include <ghost/connection/internal/ProtobufMessage.hpp>
 #include <ghost/connection/internal/GenericMessageConverter.hpp>
-#include "ConnectionMocks.hpp"
+#include "ConnectionTestUtils.hpp"
 
 using testing::_;
 
@@ -28,7 +28,7 @@ using testing::_;
  *	This test class groups the following test categories:
  *	- GenericParser + ghost::Message + ghost::ProtobufMessage
  */
-class MessageTests : public testing::Test
+class MessageTests : public testing::Test, public GhostMessageTester
 {
 protected:
 	void SetUp() override
@@ -52,57 +52,19 @@ protected:
 		_emptyMessage = std::make_shared<ghost::internal::ProtobufMessage>(nullptr);
 	}
 
-	void setupGhostMessages()
-	{
-		_ghostMessage = std::make_shared<MessageMock>();
-		_ghostMessage2 = std::make_shared<MessageMock>();
-		_otherTypeGhostMessage = std::make_shared<MessageMock>();
-		_emptyGhostMessage = std::make_shared<MessageMock>();
-
-		setGhostMessageExpectations(_ghostMessage, TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED);
-		setGhostMessageExpectations(_ghostMessage2, TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED);
-		setGhostMessageExpectations(_otherTypeGhostMessage, TEST_GHOST_MESSAGE_CUSTOM_OTHER_TYPE_NAME, TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED);
-		setGhostMessageExpectations(_emptyGhostMessage, TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, "");
-	}
-
-	void setGhostMessageExpectations(const std::shared_ptr<MessageMock>& message, const std::string& type, const std::string& serialized)
-	{
-		EXPECT_CALL(*message, getMessageFormatName()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(TEST_GHOST_MESSAGE_CUSTOM_FORMAT));
-		EXPECT_CALL(*message, getMessageTypeName()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(type));
-		EXPECT_CALL(*message, serialize(_)).Times(testing::AnyNumber()).WillRepeatedly(testing::DoAll(
-			testing::SetArgReferee<0>(serialized),
-			testing::Return(true)));
-		EXPECT_CALL(*message, deserialize(_)).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
-	}
-
 	std::shared_ptr<ghost::internal::ProtobufMessage> _message;
 	std::shared_ptr<ghost::internal::ProtobufMessage> _message2;
 	std::shared_ptr<ghost::internal::ProtobufMessage> _otherTypeMessage;
 	std::shared_ptr<ghost::internal::ProtobufMessage> _emptyMessage;
 
-	std::shared_ptr<MessageMock> _ghostMessage;
-	std::shared_ptr<MessageMock> _ghostMessage2;
-	std::shared_ptr<MessageMock> _otherTypeGhostMessage;
-	std::shared_ptr<MessageMock> _emptyGhostMessage;
-
 	std::shared_ptr<google::protobuf::DoubleValue> _doubleValue;
 	google::protobuf::Any _any;
 
 	static const std::string TEST_BAD_SERIALIZED_MESSAGE;
-	static const std::string TEST_GHOST_MESSAGE_CUSTOM_FORMAT;
-	static const std::string TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME;
-	static const std::string TEST_GHOST_MESSAGE_CUSTOM_OTHER_TYPE_NAME;
-	static const std::string TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED;
-	static const std::string TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED;
 	static const double TEST_DOUBLE_VALUE;
 };
 
 const std::string MessageTests::TEST_BAD_SERIALIZED_MESSAGE = "Bad message";
-const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_FORMAT = "Format";
-const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME = "Type name";
-const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_OTHER_TYPE_NAME = "Other type name";
-const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED = "Serialized";
-const std::string MessageTests::TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED = "Other serialized";
 const double MessageTests::TEST_DOUBLE_VALUE = 42;
 
 /* ProtobufMessage class */

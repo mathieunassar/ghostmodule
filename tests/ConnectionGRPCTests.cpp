@@ -23,7 +23,7 @@
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection/Writer.hpp>
 
-#include "ConnectionMocks.hpp"
+#include "ConnectionTestUtils.hpp"
 
 using namespace ghost;
 

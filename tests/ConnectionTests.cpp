@@ -17,6 +17,9 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
+#include <ghost/connection/ConnectionManager.hpp>
+#include "ConnectionTestUtils.hpp"
+
 /**
  *	This test class groups the following test categories:
  *	- ConnectionManger
@@ -27,160 +30,121 @@ class ConnectionTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-
+		_connectionManager = ghost::ConnectionManager::create();
 	}
 
 	void TearDown() override
 	{
 
 	}
+
+	void registerMockFactories(const ghost::ConnectionConfiguration minimumConfiguration)
+	{
+		_connectionManager->getConnectionFactory()->addServerRule<ServerMock>(minimumConfiguration);
+		_connectionManager->getConnectionFactory()->addClientRule<ClientMock>(minimumConfiguration);
+		_connectionManager->getConnectionFactory()->addPublisherRule<PublisherMock>(minimumConfiguration);
+		_connectionManager->getConnectionFactory()->addSubscriberRule<SubscriberMock>(minimumConfiguration);
+	}
+
+	ghost::ConnectionConfiguration _connectionConfiguration;
+	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
+
+	static const int TEST_CONNETION_ID;
+	static const std::string TEST_CONFIGURATION_ELEMENT;
 };
+
+const int ConnectionTests::TEST_CONNETION_ID = 42;
+const std::string ConnectionTests::TEST_CONFIGURATION_ELEMENT = "element";
 
 TEST_F(ConnectionTests, test_ConnectionManager_createServerFails_When_nothingConfigured)
 {
-
+	auto server = _connectionManager->createServer(_connectionConfiguration);
+	ASSERT_FALSE(server);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createClientFails_When_nothingConfigured)
 {
-
+	auto client = _connectionManager->createClient(_connectionConfiguration);
+	ASSERT_FALSE(client);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createPublisherFails_When_nothingConfigured)
 {
-
+	auto publisher = _connectionManager->createPublisher(_connectionConfiguration);
+	ASSERT_FALSE(publisher);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createSubscriberFails_When_nothingConfigured)
 {
-
+	auto subscriber = _connectionManager->createSubscriber(_connectionConfiguration);
+	ASSERT_FALSE(subscriber);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createServerSucceeds_When_configurationExists)
 {
-
+	registerMockFactories(_connectionConfiguration);
+	auto server = _connectionManager->createServer(_connectionConfiguration);
+	ASSERT_TRUE(server);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createClientSucceeds_When_configurationExists)
 {
-
+	registerMockFactories(_connectionConfiguration);
+	auto client = _connectionManager->createClient(_connectionConfiguration);
+	ASSERT_TRUE(client);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createPublisherSucceeds_When_configurationExists)
 {
-
+	registerMockFactories(_connectionConfiguration);
+	auto publisher = _connectionManager->createPublisher(_connectionConfiguration);
+	ASSERT_TRUE(publisher);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createSubscriberSucceeds_When_configurationExists)
 {
-
+	registerMockFactories(_connectionConfiguration);
+	auto subscriber = _connectionManager->createSubscriber(_connectionConfiguration);
+	ASSERT_TRUE(subscriber);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createSucceeds_When_requiredEmptyConfigurationAttributeIsSet)
 {
-
+	registerMockFactories(_connectionConfiguration);
+	ghost::ConnectionConfiguration config;
+	config.setConnectionId(TEST_CONNETION_ID);
+	auto server = _connectionManager->createServer(config);
+	ASSERT_TRUE(server);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createFails_When_requiredNonEmptyConfigurationAttributeIsDifferent)
 {
-
+	_connectionConfiguration.setConnectionId(TEST_CONNETION_ID);
+	registerMockFactories(_connectionConfiguration);
+	ghost::ConnectionConfiguration config;
+	auto server = _connectionManager->createServer(config);
+	ASSERT_FALSE(server);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_createFails_When_requiredConfigurationAttributeIsMissing)
 {
-
+	ghost::ConfigurationValue v;
+	v.write<int>(TEST_CONNETION_ID);
+	_connectionConfiguration.getConfiguration()->addAttribute(TEST_CONFIGURATION_ELEMENT, v);
+	registerMockFactories(_connectionConfiguration);
+	ghost::ConnectionConfiguration config;
+	auto server = _connectionManager->createServer(config);
+	ASSERT_FALSE(server);
 }
 
 TEST_F(ConnectionTests, test_ConnectionManager_closesConnection_When_destructorIsCalled)
 {
+	registerMockFactories(_connectionConfiguration);
+	auto server = _connectionManager->createServer(_connectionConfiguration);
+	ASSERT_TRUE(server);
 
+	auto cast = std::dynamic_pointer_cast<ServerMock>(server);
+	EXPECT_CALL(*cast, stop).Times(1);
+
+	_connectionManager.reset();
 }
-
-//TEST_F(ConnectionTests, test_connection_manager)
-//{
-//	ghost::ConnectionConfiguration config;
-//	config.addAttribute("param", "");
-//
-//	auto connectionManager = ghost::ConnectionManager::create();
-//	auto factory = connectionManager->getConnectionFactory();
-//
-//	auto client = connectionManager->createClient(config);
-//	auto server = connectionManager->createServer(config);
-//	auto publisher = connectionManager->createPublisher(config);
-//	auto subscriber = connectionManager->createSubscriber(config);
-//	ASSERT_TRUE(!client); // no rules -> no response
-//	ASSERT_TRUE(!server); // no rules -> no response
-//	ASSERT_TRUE(!publisher); // no rules -> no response
-//	ASSERT_TRUE(!subscriber); // no rules -> no response
-//	
-//	factory->addPublisherRule<PublisherMock>(config); // empty
-//	auto client2 = connectionManager->createClient(config);
-//	auto server2 = connectionManager->createServer(config);
-//	auto publisher2 = connectionManager->createPublisher(config);
-//	auto subscriber2 = connectionManager->createSubscriber(config);
-//	ASSERT_TRUE(!client2); // no rules -> no response
-//	ASSERT_TRUE(!server2); // no rules -> no response
-//	ASSERT_TRUE(publisher2); // open rule -> will return something
-//	ASSERT_TRUE(!subscriber2); // no rules -> no response
-//	
-//	publisher2->start();
-//	ASSERT_TRUE(publisher2->isRunning());
-//
-//	factory->addServerRule<ServerMock>(config); // empty
-//	auto client3 = connectionManager->createClient(config);
-//	auto server3 = connectionManager->createServer(config);
-//	auto publisher3 = connectionManager->createPublisher(config);
-//	auto subscriber3 = connectionManager->createSubscriber(config);
-//	ASSERT_TRUE(!client3); // no rules -> no response
-//	ASSERT_TRUE(server3); // open rule -> will return something
-//	ASSERT_TRUE(publisher3); // open rule -> will return something
-//	ASSERT_TRUE(!subscriber3); // no rules -> no response
-//
-//	server3->start();
-//	ASSERT_TRUE(server3->isRunning());
-//	publisher3->start();
-//	ASSERT_TRUE(publisher3->isRunning());
-//
-//	config.updateAttribute("param", "john");
-//
-//	factory->addClientRule<ClientMock>(config); // empty
-//	factory->addSubscriberRule<SubscriberMock>(config); // empty
-//	auto client4 = connectionManager->createClient(config);
-//	auto server4 = connectionManager->createServer(config);
-//	auto publisher4 = connectionManager->createPublisher(config);
-//	auto subscriber4 = connectionManager->createSubscriber(config);
-//	ASSERT_TRUE(client4); // open rule -> will return something
-//	ASSERT_TRUE(server4); // open rule -> will return something
-//	ASSERT_TRUE(publisher4); // open rule -> will return something
-//	ASSERT_TRUE(subscriber4); // open rule -> will return something
-//
-//	client4->start();
-//	ASSERT_TRUE(client4->isRunning());
-//	server4->start();
-//	ASSERT_TRUE(server4->isRunning());
-//	publisher4->start();
-//	ASSERT_TRUE(publisher4->isRunning());
-//	subscriber4->start();
-//	ASSERT_TRUE(subscriber4->isRunning());
-//
-//	ghost::ConnectionConfiguration config2; // empty configuration
-//
-//	auto client5 = connectionManager->createClient(config2);
-//	auto server5 = connectionManager->createServer(config2);
-//	auto publisher5 = connectionManager->createPublisher(config2);
-//	auto subscriber5 = connectionManager->createSubscriber(config2);
-//	ASSERT_TRUE(!client5); // different rule -> no response
-//	ASSERT_TRUE(!server5); // different rule -> no response
-//	ASSERT_TRUE(!publisher5); // different rule -> no response
-//	ASSERT_TRUE(!subscriber5); // different rule -> no respons
-//	
-//	connectionManager.reset();
-//
-//	ASSERT_TRUE(!publisher2->isRunning());
-//	ASSERT_TRUE(!server3->isRunning());
-//	ASSERT_TRUE(!publisher3->isRunning());
-//	ASSERT_TRUE(!client4->isRunning());
-//	ASSERT_TRUE(!server4->isRunning());
-//	ASSERT_TRUE(!publisher4->isRunning());
-//	ASSERT_TRUE(!subscriber4->isRunning());
-//}

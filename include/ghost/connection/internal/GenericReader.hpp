@@ -52,7 +52,7 @@ namespace ghost
 			typename std::enable_if<!std::is_base_of<ghost::Message, Q>::value, bool>::type makeMessage(const google::protobuf::Any& any, MessageType& message)
 			{
 				auto proto = std::make_shared<MessageType>();
-				ghost::ProtobufMessage container(proto);
+				ghost::internal::ProtobufMessage container(proto);
 				bool parseResult = GenericMessageConverter::parse(any, container);
 				message = *proto;
 				return parseResult;
