@@ -42,6 +42,12 @@ namespace ghost
 		virtual bool put(const google::protobuf::Any& message) = 0;
 
 		virtual std::shared_ptr<ghost::MessageHandler> addMessageHandler() = 0;
+
+		/**
+		 *	Shuts down the sink - future calls to put or get will fail.
+		 *	Call this function when the connection stopped.
+		 */
+		virtual void drain() = 0;
 	};
 }
 

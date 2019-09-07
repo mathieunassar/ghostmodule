@@ -33,6 +33,7 @@ OutgoingRPC::OutgoingRPC(const std::string& serverIp, int serverPort, size_t ded
 	, _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
 	, _executor(_completionQueue) // now owns the completion queue
 {
+	_rpc->getStateMachine().setStateChangedCallback(std::bind(&OutgoingRPC::onRPCStateChanged, this, std::placeholders::_1));
 	_executor.start(dedicatedThreads);
 }
 
@@ -94,7 +95,8 @@ bool OutgoingRPC::stop()
 bool OutgoingRPC::isRunning() const
 {
 	return _rpc->getStateMachine().getState() == RPCStateMachine::INITIALIZING ||
-		_rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING;
+		_rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING ||
+		_rpc->getStateMachine().getState() == RPCStateMachine::INACTIVE;
 }
 
 void OutgoingRPC::setWriterSink(const std::shared_ptr<ghost::WriterSink>& sink)
@@ -105,4 +107,15 @@ void OutgoingRPC::setWriterSink(const std::shared_ptr<ghost::WriterSink>& sink)
 void OutgoingRPC::setReaderSink(const std::shared_ptr<ghost::ReaderSink>& sink)
 {
 	_readerSink = sink;
+}
+
+void OutgoingRPC::onRPCStateChanged(RPCStateMachine::State newState)
+{
+	if (newState == RPCStateMachine::INACTIVE || newState == RPCStateMachine::FINISHED)
+	{
+		if (_readerSink)
+			_readerSink->drain();
+		if (_writerSink)
+			_writerSink->drain();
+	}
 }

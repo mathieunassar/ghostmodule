@@ -40,6 +40,5 @@ Writer::Writer(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking)
 
 bool Writer::write(const google::protobuf::Any& message)
 {
-	_writerSink->push(message, _blocking);
-	return true;
+	return _writerSink->push(message, _blocking);
 }

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package ghost.examples.protobuf;
+
+// Represents a command for the example robot
+message RobotCommand
+{
+	double x = 1; // m/s
+
+	double y = 2; // m/s
+
+	double theta = 3; // rad/s
+}
+
+// Represents the odometry pose of the example robot
+message RobotOdometry
+{
+	double x = 1; // m
+
+	double y = 2; // m
+
+	double theta = 3; // rad
+}

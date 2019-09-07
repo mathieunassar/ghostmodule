@@ -108,3 +108,33 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 
 	set_property(TARGET connection_grpc_tests PROPERTY FOLDER "tests")
 endif()
+
+##### Examples #####
+
+if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
+	set(PROTOC_SOURCE_CUSTOM ${GHOST_MODULE_ROOT_DIR}/examples/protobuf/)
+	set(PROTOC_SOURCE_FILE
+		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/connection_grpc_messenger.proto
+		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/connection_grpc_robot.proto)
+	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/examples/protobuf/)
+
+	generate_protoc("${PROTOC_SOURCE_CUSTOM}" "${PROTOC_OUTPUT}" "${PROTOC_SOURCE_FILE}")
+
+	# usage of servers and clients as a messenger application
+	add_executable(connection_grpc_messenger
+		${GHOST_MODULE_ROOT_DIR}/examples/connection_grpc_messenger.cpp
+		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/connection_grpc_messenger.pb.h
+		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/connection_grpc_messenger.pb.cc)
+	target_link_libraries(connection_grpc_messenger ghost_module ghost_connection ghost_connection_grpc)
+
+	set_property(TARGET connection_grpc_messenger PROPERTY FOLDER "examples")
+
+	# usage of publishers and subscribers for a minimalist robot
+	add_executable(connection_grpc_robot
+		${GHOST_MODULE_ROOT_DIR}/examples/connection_grpc_robot.cpp
+		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/connection_grpc_robot.pb.h
+		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/connection_grpc_robot.pb.cc)
+	target_link_libraries(connection_grpc_robot ghost_module ghost_connection ghost_connection_grpc)
+
+	set_property(TARGET connection_grpc_robot PROPERTY FOLDER "examples")
+endif()

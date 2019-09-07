@@ -51,6 +51,8 @@ namespace ghost
 			void setReaderSink(const std::shared_ptr<ghost::ReaderSink>& sink);
 
 		private:
+			void onRPCStateChanged(RPCStateMachine::State newState);
+
 			grpc::CompletionQueue* _completionQueue;
 			std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
 

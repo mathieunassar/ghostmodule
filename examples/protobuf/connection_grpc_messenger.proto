@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package ghost.examples.protobuf;
+
+message MessengerMessage
+{
+	string author = 1;
+
+	string content = 2;
+
+	google.protobuf.Timestamp date_created = 3;
+}
