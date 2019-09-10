@@ -19,6 +19,7 @@
 
 #include <atomic>
 #include <memory>
+#include <thread>
 
 #include <ghost/connection_grpc/ServerClientService.pb.h>
 #include <ghost/connection_grpc/ServerClientService.grpc.pb.h>

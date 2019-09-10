@@ -43,11 +43,11 @@ std::string NetworkConnectionConfiguration::getServerIpAddress() const
 {
 	std::string res;
 	ConfigurationValue value;
-	ConfigurationValue default("127.0.0.1");
+	ConfigurationValue defaultValue("127.0.0.1");
 
-	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, default); // if the field was removed, returns ""
+	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, defaultValue); // if the field was removed, returns ""
 	if (!value.read<std::string>(res))
-		default.read<std::string>(res);
+		defaultValue.read<std::string>(res);
 
 	return res;
 }
@@ -56,12 +56,12 @@ int NetworkConnectionConfiguration::getServerPortNumber() const
 {
 	int res;
 	ConfigurationValue value;
-	ConfigurationValue default;
-	default.write<int>(-1);
+	ConfigurationValue defaultValue;
+	defaultValue.write<int>(-1);
 
-	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, default); // if the field was removed, returns -1
+	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, defaultValue); // if the field was removed, returns -1
 	if (!value.read<int>(res))
-		default.read<int>(res);
+		defaultValue.read<int>(res);
 
 	return res;
 }

@@ -49,7 +49,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>
 		RPCRead<ReaderWriter, ContextType, ReadMessageType>::RPCRead(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 			const std::shared_ptr<ghost::ReaderSink>& readerSink)
-			: RPCOperation(parent, true, false) // restart = true, blocking = false
+			: RPCOperation<ReaderWriter, ContextType>(parent, true, false) // restart = true, blocking = false
 			, _readerSink(readerSink)
 		{
 		}
@@ -57,12 +57,12 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>
 		bool RPCRead<ReaderWriter, ContextType, ReadMessageType>::initiateOperation()
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
 			// start reading some stuff
-			rpc->getClient()->Read(&_incomingMessage, &_operationCompletedCallback);
+			rpc->getClient()->Read(&_incomingMessage, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
 			return true;
 		}
 
@@ -83,7 +83,7 @@ namespace ghost
 			if (rpcFinished)
 				return; // nothing to do here
 
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 

@@ -47,7 +47,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 			const grpc::Status& status)
-			: RPCOperation(parent, false, true) // restart = false, blocking = false
+			: RPCOperation<ReaderWriter, ContextType>(parent, false, true) // restart = false, blocking = false
 			, _status(status)
 		{
 		}
@@ -55,19 +55,19 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		bool RPCFinish<ReaderWriter, ContextType>::initiateOperation()
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
 			rpc->getContext()->TryCancel();
-			rpc->getClient()->Finish(&_status, &_operationCompletedCallback);
+			rpc->getClient()->Finish(&_status, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
 			return true;
 		}
 
 		template<typename ReaderWriter, typename ContextType>
 		void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 
@@ -77,7 +77,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		void RPCFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 

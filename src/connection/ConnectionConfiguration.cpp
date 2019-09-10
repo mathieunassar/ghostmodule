@@ -47,12 +47,12 @@ int ConnectionConfiguration::getConnectionId() const
 {
 	int res;
 	ConfigurationValue value;
-	ConfigurationValue default;
-	default.write<int>(-1);
+	ConfigurationValue defaultValue;
+	defaultValue.write<int>(-1);
 	
-	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_ID, value, default); // if the field was removed, returns -1
+	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_ID, value, defaultValue); // if the field was removed, returns -1
 	if (!value.read<int>(res))
-		default.read<int>(res);
+		defaultValue.read<int>(res);
 	
 	return res;
 }
@@ -61,12 +61,12 @@ size_t ConnectionConfiguration::getThreadPoolSize() const
 {
 	size_t res;
 	ConfigurationValue value;
-	ConfigurationValue default;
-	default.write<size_t>(2);
+	ConfigurationValue defaultValue;
+	defaultValue.write<size_t>(2);
 
-	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value, default); // if the field was removed, returns 2
+	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value, defaultValue); // if the field was removed, returns 2
 	if (!value.read<size_t>(res))
-		default.read<size_t>(res);
+		defaultValue.read<size_t>(res);
 
 	return res;
 }
@@ -75,12 +75,12 @@ bool ConnectionConfiguration::isOperationBlocking() const
 {
 	bool res;
 	ConfigurationValue value;
-	ConfigurationValue default;
-	default.write<size_t>(true);
+	ConfigurationValue defaultValue;
+	defaultValue.write<size_t>(true);
 
-	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, default); // if the field was removed, returns true
+	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, defaultValue); // if the field was removed, returns true
 	if (!value.read<bool>(res))
-		default.read<bool>(res);
+		defaultValue.read<bool>(res);
 
 	return res;
 }

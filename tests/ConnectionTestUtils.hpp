@@ -79,6 +79,7 @@ class MessageMock : public ghost::Message
 {
 public:
 	MessageMock();
+	MessageMock(const MessageMock& other);
 	MOCK_CONST_METHOD0(getMessageFormatName, std::string());
 	MOCK_CONST_METHOD0(getMessageTypeName, std::string());
 	MOCK_CONST_METHOD1(serialize, bool(std::string& result));

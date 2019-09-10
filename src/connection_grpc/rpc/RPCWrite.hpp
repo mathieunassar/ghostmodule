@@ -50,7 +50,7 @@ namespace ghost
 		RPCWrite<ReaderWriter, ContextType, WriteMessageType>::RPCWrite(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 			bool autoRestart, bool blocking,
 			const std::shared_ptr<ghost::WriterSink>& writerSink)
-			: RPCOperation(parent, autoRestart, blocking)
+			: RPCOperation<ReaderWriter, ContextType>(parent, autoRestart, blocking)
 			, _writerSink(writerSink)
 		{
 		}
@@ -58,14 +58,14 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
 		bool RPCWrite<ReaderWriter, ContextType, WriteMessageType>::initiateOperation()
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
 			google::protobuf::Any message;
 			bool success = false;
 
-			if (_blocking)
+			if (RPCOperation<ReaderWriter, ContextType>::_blocking)
 			{
 				while (!success && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING)
 				{
@@ -87,7 +87,7 @@ namespace ghost
 						return false;
 				}
 
-				rpc->getClient()->Write(msg, &_operationCompletedCallback);
+				rpc->getClient()->Write(msg, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
 			}
 
 			return success;
@@ -108,7 +108,7 @@ namespace ghost
 			if (rpcFinished)
 				return; // nothing to do here
 
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 

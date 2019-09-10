@@ -236,7 +236,7 @@ TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerDoesNotHandleMessage_Whe
 TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_protobufMessageOfProperTypeIsPassedToWriter)
 {
 	auto writer = _writable->getWriter<google::protobuf::DoubleValue>();
-	std::atomic_bool writeResult = false;
+	std::atomic_bool writeResult(false);
 	std::thread t([&](){
 		writeResult = writer->write(_doubleValue);
 		});
@@ -251,7 +251,7 @@ TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_message
 	auto writer = _writable->getWriter<google::protobuf::Any>();
 	google::protobuf::Any any;
 	any.PackFrom(_doubleValue);
-	std::atomic_bool writeResult = false;
+	std::atomic_bool writeResult(false);
 	std::thread t([&]() {
 		writeResult = writer->write(any);
 		});
@@ -264,7 +264,7 @@ TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_message
 TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_ghostMessageOfProperTypeIsPassedToWriter)
 {
 	auto writer = _writable->getWriter<MessageMock>();
-	std::atomic_bool writeResult = false;
+	std::atomic_bool writeResult(false);
 	std::thread t([&]() {
 		writeResult = writer->write(*_ghostMessage);
 		});
@@ -277,7 +277,7 @@ TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_ghostMe
 TEST_F(ReaderWriterTests, test_WriterSink_writeBlocks_When_connectionWasBlocking)
 {
 	auto writer = _writable->getWriter<google::protobuf::DoubleValue>();
-	std::atomic_bool writeCompleted = false;
+	std::atomic_bool writeCompleted(false);
 	std::thread t([&]() {
 		writer->write(_doubleValue);
 		writeCompleted = true;

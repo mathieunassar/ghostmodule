@@ -15,6 +15,7 @@
  */
 
 #include <iostream>
+#include <thread>
 #include <gtest/gtest.h>
 
 #include <google/protobuf/wrappers.pb.h>
@@ -147,19 +148,6 @@ protected:
 		}
 	}
 
-	void doubleMessageHandler(const google::protobuf::DoubleValue& message)
-	{
-		_doubleValueMessageWasHandledCounter++;
-	}
-
-	void doubleMessageMassHandler(int id, const google::protobuf::DoubleValue& message)
-	{
-		if (_doubleValueMessageWasHandledMap.find(id) == _doubleValueMessageWasHandledMap.end())
-			_doubleValueMessageWasHandledMap[id] = 1;
-		else
-			_doubleValueMessageWasHandledMap[id]++;
-	}
-
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 
 	std::shared_ptr<ghost::Server> _server;
@@ -173,6 +161,20 @@ protected:
 	std::map<int, int> _doubleValueMessageWasHandledMap;
 
 	static const int TEST_PORT;
+
+public:
+	void doubleMessageHandler(const google::protobuf::DoubleValue& message)
+	{
+		_doubleValueMessageWasHandledCounter++;
+	}
+
+	void doubleMessageMassHandler(int id, const google::protobuf::DoubleValue& message)
+	{
+		if (_doubleValueMessageWasHandledMap.find(id) == _doubleValueMessageWasHandledMap.end())
+			_doubleValueMessageWasHandledMap[id] = 1;
+		else
+			_doubleValueMessageWasHandledMap[id]++;
+	}
 };
 
 const int ConnectionGRPCTests::TEST_PORT = 45000;
