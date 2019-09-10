@@ -17,6 +17,7 @@
 #ifndef GHOST_INTERNAL_WRITERSINK_HPP
 #define GHOST_INTERNAL_WRITERSINK_HPP
 
+#include <atomic>
 #include <google/protobuf/any.pb.h>
 #include "QueuedSink.hpp"
 #include <ghost/connection/WriterSink.hpp>
@@ -34,14 +35,19 @@ namespace ghost
 		class WriterSink : public QueuedSink, public ghost::WriterSink
 		{
 		public:
+			WriterSink();
 			virtual ~WriterSink() = default;
 
 			// From ghost::WriterSink
 			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) override;
 			void pop() override;
+			void drain() override;
 
-			/// Adds a new message into the sink (todo: extract this to a source object?)
-			void push(const google::protobuf::Any& message, bool blocking);
+			/// Adds a new message into the sink
+			bool push(const google::protobuf::Any& message, bool blocking);
+
+		private:
+			std::atomic_bool _drained;
 		};
 	}
 }

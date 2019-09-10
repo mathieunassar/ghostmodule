@@ -18,8 +18,17 @@
 
 using namespace ghost::internal;
 
+WriterSink::WriterSink()
+	: _drained(false)
+{
+
+}
+
 bool WriterSink::get(google::protobuf::Any& message, std::chrono::milliseconds timeout)
 {
+	if (_drained)
+		return false;
+
 	if (timeout == std::chrono::milliseconds(-1))
 	{
 		message = getMessageQueue()->get();
@@ -34,15 +43,25 @@ void WriterSink::pop()
 	getMessageQueue()->pop();
 }
 
-void WriterSink::push(const google::protobuf::Any& message, bool blocking)
+void WriterSink::drain()
 {
+	_drained = true;
+}
+
+bool WriterSink::push(const google::protobuf::Any& message, bool blocking)
+{
+	if (_drained)
+		return false;
+
 	getMessageQueue()->push(message);
 
 	if (blocking)
 	{
-		while (getMessageQueue()->size() != 0) // blocks until the message is gone, use blocking queue instead!
+		while (getMessageQueue()->size() != 0 && !_drained) // blocks until the message is gone, use blocking queue instead!
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
+
+	return true;
 }

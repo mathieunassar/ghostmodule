@@ -36,8 +36,6 @@ namespace ghost
 	 * 
 	 * The connection manager includes a connection factory which creates the connections. It is possible
 	 * to add factory rules to create user-defined connections. See ConnectionFactory for more information.
-	 * 
-	 * The default implementation contains factory rules to create network connections based on gRPC.
 	 */
 	class ConnectionManager
 	{

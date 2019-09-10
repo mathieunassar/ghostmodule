@@ -26,7 +26,8 @@ namespace ghost
 	/**
 	 *	A ghost::ReaderSink is the interface between a connection and a
 	 *	ghost::Reader object that can read messages coming from the connection.
-	 *	The sink must be used by implementations of connection types.
+	 *	The sink must be used by implementations of connection types to forward
+	 *	messages to the user of the connection reader.
 	 */
 	class ReaderSink
 	{
@@ -41,6 +42,12 @@ namespace ghost
 		virtual bool put(const google::protobuf::Any& message) = 0;
 
 		virtual std::shared_ptr<ghost::MessageHandler> addMessageHandler() = 0;
+
+		/**
+		 *	Shuts down the sink - future calls to put or get will fail.
+		 *	Call this function when the connection stopped.
+		 */
+		virtual void drain() = 0;
 	};
 }
 

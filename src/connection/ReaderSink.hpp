@@ -17,6 +17,7 @@
 #ifndef GHOST_INTERNAL_READERSINK_HPP
 #define GHOST_INTERNAL_READERSINK_HPP
 
+#include <atomic>
 #include <google/protobuf/any.pb.h>
 #include <ghost/connection/ReaderSink.hpp>
 #include "MessageHandler.hpp"
@@ -35,17 +36,20 @@ namespace ghost
 		class ReaderSink : public QueuedSink, public ghost::ReaderSink
 		{
 		public:
+			ReaderSink();
 			virtual ~ReaderSink() = default;
 
 			// From ghost::ReaderSink
 			bool put(const google::protobuf::Any& message) override;
 			std::shared_ptr<ghost::MessageHandler> addMessageHandler() override;
+			void drain() override;
 
 			// gets a message from the sink
 			bool get(google::protobuf::Any& message, bool blocking);
 
 		private:
 			std::shared_ptr<ghost::internal::MessageHandler> _messageHandler;
+			std::atomic_bool _drained;
 		};
 	}
 }

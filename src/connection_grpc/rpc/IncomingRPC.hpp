@@ -60,9 +60,13 @@ namespace ghost
 			void setParent(std::weak_ptr<RemoteClientGRPC> parent);
 			std::shared_ptr<RemoteClientGRPC> getParent();
 
-		protected:
+		private:
 			void onRPCConnected();
+			void onRPCStateChanged(RPCStateMachine::State newState);
 			std::function<void(std::shared_ptr<RemoteClientGRPC>)> _serverCallback;
+
+			std::shared_ptr<ghost::ReaderSink> _readerSink;
+			std::shared_ptr<ghost::WriterSink> _writerSink;
 			
 			std::weak_ptr<RemoteClientGRPC> _parent;
 			std::shared_ptr<RPC<ReaderWriter, ContextType>> _rpc;

@@ -29,6 +29,9 @@ namespace ghost
 	 * The method "addHandler" can be used to set up handlers for specific types
 	 * of messages. The type of message is passed as a template parameter to this
 	 * call.
+	 *
+	 * The ghost::MessageHandler is compatible with messages of type ghost::Message
+	 * and for protobuf message types.
 	 */
 	class MessageHandler
 	{

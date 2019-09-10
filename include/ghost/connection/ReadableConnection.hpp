@@ -25,6 +25,16 @@
 
 namespace ghost
 {
+	/**
+	 *	A ghost::ReadableConnection is a connection that can receive messages.
+	 *	This class provides methods to handles messages, for example by adding
+	 *	a ghost::MessageHandler that will process incoming message or by creating
+	 *	a ghost::Reader that can read specific message types.
+	 *
+	 *	A ghost::MessageHandler will immediatly process incoming messages (in the
+	 *	connection's thread), while a ghost::Reader is executed by the user when
+	 *	calling its read method.
+	 */
 	class ReadableConnection
 	{
 	public:
@@ -40,7 +50,7 @@ namespace ghost
 		 *
 		 * After the message handler was added, handler functions can be added to it.
 		 *
-		 * @return the message handler that was added to the reader.
+		 * @return the message handler that was added to the readerSink.
 		 */
 		std::shared_ptr<ghost::MessageHandler> addMessageHandler();
 

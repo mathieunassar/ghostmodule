@@ -49,6 +49,12 @@ namespace ghost
 		 *	is effectively sent.
 		 */
 		virtual void pop() = 0;
+
+		/**
+		 *	Shuts down the sink - future calls to put or get will fail.
+		 *	Call this function when the connection stopped.
+		 */
+		virtual void drain() = 0;
 	};
 }
 
