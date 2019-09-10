@@ -18,8 +18,17 @@
 
 using namespace ghost::internal;
 
+ReaderSink::ReaderSink()
+	: _drained(false)
+{
+
+}
+
 bool ReaderSink::put(const google::protobuf::Any& message)
 {
+	if (_drained)
+		return false;
+	
 	if (_messageHandler) // if there is a message handler, don't use the read queue
 		_messageHandler->handle(message);
 	else
@@ -34,8 +43,16 @@ std::shared_ptr<ghost::MessageHandler> ReaderSink::addMessageHandler()
 	return _messageHandler;
 }
 
+void ReaderSink::drain()
+{
+	_drained = true;
+}
+
 bool ReaderSink::get(google::protobuf::Any& message, bool blocking)
 {
+	if (_drained)
+		return false;
+
 	if (_messageHandler)
 		return false;
 

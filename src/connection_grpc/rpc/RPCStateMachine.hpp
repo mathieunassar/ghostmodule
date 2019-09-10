@@ -39,11 +39,13 @@ namespace ghost
 			RPCStateMachine();
 			State getState(bool lock = true) const;
 			void setState(State state, bool lock = true);
+			void setStateChangedCallback(const std::function<void(State)>& callback);
 
 			std::unique_lock<std::mutex> lock();
 
 		private:
 			State _state;
+			std::function<void(State)> _stateChangedCallback;
 			mutable std::mutex _mutex;
 		};
 	}

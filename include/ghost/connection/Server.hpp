@@ -33,12 +33,6 @@ namespace ghost
 	 * A Server can be created via a ConnectionManager, which will also
 	 * manage its lifetime.
 	 * 
-	 * The configuration provided in the constructor is used to set up the connection
-	 * parameters such as the target IP address, port number or threading or blocking
-	 * parameters.
-	 * 
-	 * Particular implementations of Connection classes may define new connection
-	 * parameters which can be passed through the ConnectionConfiguration.
 	 */
 	class Server : public ghost::Connection
 	{

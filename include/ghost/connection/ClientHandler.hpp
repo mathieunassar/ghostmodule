@@ -43,11 +43,11 @@ namespace ghost
 
 		/**
 		 * @brief Provides the possibility to configure the message handler of the client
-		 * before it is started.
+		 * before read and write operations are started.
 		 * @param client represents the client connection. At that point, the connection is
 		 * established but the readers and writers are not started yet.
 		 */
-		virtual void configureClient(const std::shared_ptr<Client>& client) {}
+		virtual void configureClient(const std::shared_ptr<ghost::Client>& client) {}
 
 		/**
 		 * @brief Handles a client connection.
@@ -59,7 +59,7 @@ namespace ghost
 		 * @return true if the server should continue to run
 		 * @return false to shutdown the server
 		 */
-		virtual bool handle(std::shared_ptr<Client> client, bool& keepClientAlive) = 0;
+		virtual bool handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive) = 0;
 	};
 }
 

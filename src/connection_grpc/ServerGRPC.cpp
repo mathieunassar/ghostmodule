@@ -62,6 +62,8 @@ bool ServerGRPC::start()
 
 	// Finally assemble the server.
 	_grpcServer = builder.BuildAndStart();
+	if (!_grpcServer)
+		return false; // Starting the server failed
 
 	_completionQueueExecutor.start(_configuration.getThreadPoolSize());
 

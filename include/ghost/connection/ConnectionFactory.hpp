@@ -26,16 +26,16 @@ namespace ghost
 	/**
 	 * @brief Factory that creates Connection objects based on a connection configuration.
 	 * 
-	 * The factory contains connection types mapped to minimal connection configurations.
+	 * The factory contains connection types mapped to minimal connection configurations called rules.
 	 * When creating connections based on a connection configuration, the factory searches
-	 * for the first entry in the map, for which the given configuration matches the minimal
+	 * for the first rule entry, for which the given configuration matches the minimal
 	 * required configuration.
 	 * 
-	 * For example, the default implementation of the connection manager adds factory rules
-	 * for network based connections. The minimum configuration for such connections contain
+	 * For example, the connection_grpc library (ghost::ConnectionGRPC class) adds factory rules
+	 * for gRPC-based connections. The minimum configuration for such connections contain
 	 * a server IP address and a remote port number (note that this minimal configuration can
-	 * be created by the default constructor of NetworkConnectionConfiguration). Hence,
-	 * attempting to create a connection with a NetworkConnectionConfiguration will match
+	 * be created by the default constructor of ghost::ConnectionConfigurationGRPC). Hence,
+	 * attempting to create a connection with any ghost::ConnectionConfigurationGRPC will match
 	 * these factory rules.
 	 * 
 	 * The public interface of the connection factory only allows the user to add more rules.

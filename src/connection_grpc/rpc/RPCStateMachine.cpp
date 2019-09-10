@@ -51,7 +51,7 @@ void RPCStateMachine::setState(State state, bool lockk)
 		break;
 	case EXECUTING:
 	case INACTIVE:
-		transitionAllowed = (state == DISPOSING || state == FINISHED);
+		transitionAllowed = (state == INACTIVE || state == DISPOSING || state == FINISHED);
 		break;
 	case DISPOSING:
 		transitionAllowed = (state == FINISHED);
@@ -67,6 +67,15 @@ void RPCStateMachine::setState(State state, bool lockk)
 
 	if (lockk)
 		_mutex.unlock();
+
+	// Call the callback if one was set.
+	if (transitionAllowed && _stateChangedCallback)
+		_stateChangedCallback(state);
+}
+
+void RPCStateMachine::setStateChangedCallback(const std::function<void(State)>& callback)
+{
+	_stateChangedCallback = callback;
 }
 
 std::unique_lock<std::mutex> RPCStateMachine::lock()

@@ -31,6 +31,7 @@ IncomingRPC::IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::A
 	_requestOperation->setConnectionCallback(rpcCallback);
 
 	_rpc->setClient(std::make_unique<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>>(_rpc->getContext().get()));
+	_rpc->getStateMachine().setStateChangedCallback(std::bind(&IncomingRPC::onRPCStateChanged, this, std::placeholders::_1));
 	
 	_doneOperation->start();
 	start();
@@ -68,6 +69,7 @@ void IncomingRPC::startWriter(const std::shared_ptr<ghost::WriterSink>& sink)
 {
 	if (sink)
 	{
+		_writerSink = sink;
 		_writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, true, true, sink);
 		_writerOperation->startAsync();
 	}
@@ -77,6 +79,7 @@ void IncomingRPC::startReader(const std::shared_ptr<ghost::ReaderSink>& sink)
 {
 	if (sink)
 	{
+		_readerSink = sink;
 		_readerOperation = std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, sink);
 		_readerOperation->start();
 	}
@@ -115,4 +118,15 @@ void IncomingRPC::onRPCConnected()
 		_serverCallback(parent);
 	else
 		stop();
+}
+
+void IncomingRPC::onRPCStateChanged(RPCStateMachine::State newState)
+{
+	if (newState == RPCStateMachine::INACTIVE || newState == RPCStateMachine::FINISHED)
+	{
+		if (_readerSink)
+			_readerSink->drain();
+		if (_writerSink)
+			_writerSink->drain();
+	}
 }
