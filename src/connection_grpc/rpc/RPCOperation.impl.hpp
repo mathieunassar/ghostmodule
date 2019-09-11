@@ -77,6 +77,14 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 template<typename ReaderWriter, typename ContextType>
 void RPCOperation<ReaderWriter, ContextType>::stop()
 {
+	{
+		std::unique_lock<std::mutex> lock(_operationMutex);
+
+		_blocking = false;
+		if (_accountAsRunningOperation)
+			_operationCompletedConditionVariable.wait(lock, [this] { return _state == OperationProgress::IDLE; });
+	}
+
 	if (_executor.joinable())
 		_executor.join();
 }
@@ -107,7 +115,7 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 	}
 
 	// Free "start" threads that are potentially waiting for this.
-	_operationCompletedConditionVariable.notify_one();
+	_operationCompletedConditionVariable.notify_all();
 
 	// If autorestart is configured and the call is not blocking, do it here
 	if (_autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING)
