@@ -47,6 +47,8 @@ protected:
 		_connectionManager = ghost::ConnectionManager::create();
 		ghost::ConnectionGRPC::initialize(_connectionManager, _config);
 
+		_config.setServerPortNumber(4567);
+
 		_doubleValueMessageWasHandledCounter = 0;
 		_doubleValueMessageWasHandledMap.clear();
 	}
