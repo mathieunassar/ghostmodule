@@ -47,7 +47,7 @@ protected:
 		_connectionManager = ghost::ConnectionManager::create();
 		ghost::ConnectionGRPC::initialize(_connectionManager, _config);
 
-		_config.setServerPortNumber(4567);
+		_config.setServerPortNumber(TEST_PORT);
 
 		_doubleValueMessageWasHandledCounter = 0;
 		_doubleValueMessageWasHandledMap.clear();
@@ -71,7 +71,8 @@ protected:
 	{
 		if (_server)
 		{
-			_server->start();
+			bool startResult = _server->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(_server->isRunning());
 		}
 	}
@@ -89,7 +90,8 @@ protected:
 		{
 			auto client = _connectionManager->createClient(config);
 			ASSERT_TRUE(client);
-			client->start();
+			bool startResult = client->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(client->isRunning());
 			_clients.push_back(client);
 		}
@@ -106,7 +108,8 @@ protected:
 	{
 		if (_publisher)
 		{
-			_publisher->start();
+			bool startResult = _publisher->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(_publisher->isRunning());
 		}
 	}
@@ -181,7 +184,7 @@ public:
 	}
 };
 
-const int ConnectionGRPCTests::TEST_PORT = 45000;
+const int ConnectionGRPCTests::TEST_PORT = 5678;
 
 TEST_F(ConnectionGRPCTests, test_ConnectionGRPC_populatesConnectionManagerWithServerRule)
 {
@@ -239,8 +242,6 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_startsAndStop_When_noServer)
 
 TEST_F(ConnectionGRPCTests, test_ClientGRPC_connectsToServerGRPC)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -250,8 +251,6 @@ TEST_F(ConnectionGRPCTests, test_ClientGRPC_connectsToServerGRPC)
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_supportsMultipleClients)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -260,8 +259,6 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_supportsMultipleClients)
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandling)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -282,8 +279,6 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandl
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -303,8 +298,6 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -328,8 +321,6 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse
 
 TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createPublisher(_config);
 	startPublisher();
 
@@ -346,8 +337,6 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createPublisher(_config);
 	startPublisher();
 
@@ -364,8 +353,6 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_continuesOperation_When_subscriberDies)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createPublisher(_config);
 	startPublisher();
 

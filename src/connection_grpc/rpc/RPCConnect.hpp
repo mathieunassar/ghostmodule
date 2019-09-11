@@ -85,6 +85,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		void RPCConnect<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
+			printf("Connect operation failed!\n");
 			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
