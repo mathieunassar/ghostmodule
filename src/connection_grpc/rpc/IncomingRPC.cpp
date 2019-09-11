@@ -62,6 +62,8 @@ bool IncomingRPC::stop(const grpc::Status& status)
 		_finishOperation->start();
 	}
 
+	dispose();
+
 	return true;
 }
 
@@ -87,6 +89,17 @@ void IncomingRPC::startReader(const std::shared_ptr<ghost::ReaderSink>& sink)
 
 void IncomingRPC::dispose()
 {
+	if (_writerOperation)
+		_writerOperation->stop();
+	if (_readerOperation)
+		_readerOperation->stop();
+	if (_requestOperation)
+		_requestOperation->stop();
+	if (_finishOperation)
+		_finishOperation->stop();
+	if (_doneOperation)
+		_doneOperation->stop();
+
 	// only delete this object when the state is finished and no other operations are running
 	// if operations were running after this gets deleted, function pointers to callbacks would be lead to segmentation faults.
 	_rpc->awaitFinished();

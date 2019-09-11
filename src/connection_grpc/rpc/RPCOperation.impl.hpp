@@ -29,8 +29,6 @@ RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWr
 template<typename ReaderWriter, typename ContextType>
 RPCOperation<ReaderWriter, ContextType>::~RPCOperation()
 {
-	if (_executor.joinable())
-		_executor.join();
 }
 
 template<typename ReaderWriter, typename ContextType>
@@ -74,6 +72,13 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 			return true;
 	}
 	return false;
+}
+
+template<typename ReaderWriter, typename ContextType>
+void RPCOperation<ReaderWriter, ContextType>::stop()
+{
+	if (_executor.joinable())
+		_executor.join();
 }
 
 template<typename ReaderWriter, typename ContextType>

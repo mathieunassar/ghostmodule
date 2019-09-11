@@ -82,7 +82,9 @@ bool RPC<ReaderWriter, ContextType>::isFinished() const
 template<typename ReaderWriter, typename ContextType>
 void RPC<ReaderWriter, ContextType>::awaitFinished()
 {
-	while (_statemachine.getState() != RPCStateMachine::FINISHED || _operationsRunning > 0)
+	while ((_statemachine.getState() != RPCStateMachine::FINISHED
+		&& _statemachine.getState() != RPCStateMachine::CREATED)
+		|| _operationsRunning > 0)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}

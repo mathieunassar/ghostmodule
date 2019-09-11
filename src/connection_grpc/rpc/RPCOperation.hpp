@@ -57,6 +57,7 @@ namespace ghost
 
 			bool startAsync();
 			bool start();
+			void stop();
 
 			std::function<void(bool)> _operationCompletedCallback;
 
