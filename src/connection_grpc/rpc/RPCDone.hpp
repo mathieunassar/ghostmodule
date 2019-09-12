@@ -30,6 +30,7 @@ namespace ghost
 		{
 		public:
 			RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
+			~RPCDone();
 
 		protected:
 			bool initiateOperation() override;
@@ -43,6 +44,12 @@ namespace ghost
 		RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
 			: RPCOperation<ReaderWriter, ContextType>(parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType>
+		RPCDone<ReaderWriter, ContextType>::~RPCDone()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>

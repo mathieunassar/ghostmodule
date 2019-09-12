@@ -35,6 +35,7 @@ namespace ghost
 			RPCConnect(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 				const std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub>& stub,
 				grpc::CompletionQueue* completionQueue);
+			~RPCConnect();
 
 		protected:
 			bool initiateOperation() override;
@@ -56,6 +57,12 @@ namespace ghost
 			, _stub(stub)
 			, _completionQueue(completionQueue)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType>
+		RPCConnect<ReaderWriter, ContextType>::~RPCConnect()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>

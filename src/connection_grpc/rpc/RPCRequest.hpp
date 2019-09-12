@@ -35,6 +35,7 @@ namespace ghost
 				ServiceType* service,
 				grpc::CompletionQueue* rpcCompletionQueue,
 				grpc::ServerCompletionQueue* completionQueue);
+			~RPCRequest();
 
 			void setConnectionCallback(const std::function<void()>& callback);
 
@@ -62,6 +63,12 @@ namespace ghost
 			, _rpcCompletionQueue(rpcCompletionQueue)
 			, _completionQueue(completionQueue)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType, typename ServiceType>
+		RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>

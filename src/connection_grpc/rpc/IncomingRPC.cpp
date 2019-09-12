@@ -33,7 +33,7 @@ IncomingRPC::IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::A
 	_rpc->setClient(std::make_unique<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>>(_rpc->getContext().get()));
 	_rpc->getStateMachine().setStateChangedCallback(std::bind(&IncomingRPC::onRPCStateChanged, this, std::placeholders::_1));
 	
-	_doneOperation->start();
+	//_doneOperation->start();
 	start();
 }
 
@@ -111,7 +111,6 @@ bool IncomingRPC::isFinished() const
 {
 	return _rpc->isFinished();
 }
-
 
 void IncomingRPC::setParent(std::weak_ptr<RemoteClientGRPC> parent)
 {

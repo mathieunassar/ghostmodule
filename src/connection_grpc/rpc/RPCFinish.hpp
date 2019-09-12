@@ -30,6 +30,7 @@ namespace ghost
 		{
 		public:
 			RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status = grpc::Status::CANCELLED);
+			~RPCFinish();
 
 			const grpc::Status& getStatus() const;
 
@@ -50,6 +51,12 @@ namespace ghost
 			: RPCOperation<ReaderWriter, ContextType>(parent, false, true) // restart = false, blocking = false
 			, _status(status)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType>
+		RPCFinish<ReaderWriter, ContextType>::~RPCFinish()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>

@@ -33,6 +33,7 @@ namespace ghost
 		public:
 			RPCRead(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 				const std::shared_ptr<ghost::ReaderSink>& readerSink);
+			~RPCRead();
 
 		protected:
 			bool initiateOperation() override;
@@ -52,6 +53,12 @@ namespace ghost
 			: RPCOperation<ReaderWriter, ContextType>(parent, true, false) // restart = true, blocking = false
 			, _readerSink(readerSink)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>
+		RPCRead<ReaderWriter, ContextType, ReadMessageType>::~RPCRead()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>

@@ -29,6 +29,7 @@ namespace ghost
 		{
 		public:
 			RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status);
+			~RPCServerFinish();
 
 		protected:
 			bool initiateOperation() override;
@@ -47,6 +48,12 @@ namespace ghost
 			: RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
 			, _status(status)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType>
+		RPCServerFinish<ReaderWriter, ContextType>::~RPCServerFinish()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>

@@ -34,6 +34,7 @@ namespace ghost
 			RPCWrite(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 				bool autoRestart, bool blocking,
 				const std::shared_ptr<ghost::WriterSink>& writerSink);
+			~RPCWrite();
 
 		protected:
 			bool initiateOperation() override;
@@ -53,6 +54,12 @@ namespace ghost
 			: RPCOperation<ReaderWriter, ContextType>(parent, autoRestart, blocking)
 			, _writerSink(writerSink)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
+		RPCWrite<ReaderWriter, ContextType, WriteMessageType>::~RPCWrite()
+		{
+			stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
