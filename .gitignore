@@ -2,8 +2,8 @@
 /.project
 build/
 bin/
-protobuf/*.pb.h
-protobuf/*.pb.cc
+*.pb.h
+*.pb.cc
 examples/protobuf/*.pb.h
 examples/protobuf/*.pb.cc
 tests/protobuf/*.pb.h
