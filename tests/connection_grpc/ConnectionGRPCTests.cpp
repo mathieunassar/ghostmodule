@@ -25,7 +25,7 @@
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection/Writer.hpp>
 
-#include "ConnectionTestUtils.hpp"
+#include "../connection/ConnectionTestUtils.hpp"
 
 using namespace ghost;
 
