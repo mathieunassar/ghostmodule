@@ -70,10 +70,10 @@ namespace ghost
 		 */
 		virtual bool write(const MessageType& message) = 0;
 	};
-}
 
-template<>
-std::shared_ptr<ghost::Writer<google::protobuf::Any>> ghost::Writer<google::protobuf::Any>::create(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking);
+	template<>
+	std::shared_ptr<ghost::Writer<google::protobuf::Any>> ghost::Writer<google::protobuf::Any>::create(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking);
+}
 
 #include <ghost/connection/internal/GenericWriter.hpp>
 
