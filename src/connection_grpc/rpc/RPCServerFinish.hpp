@@ -48,12 +48,13 @@ namespace ghost
 			: RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
 			, _status(status)
 		{
+
 		}
 
 		template<typename ReaderWriter, typename ContextType>
 		RPCServerFinish<ReaderWriter, ContextType>::~RPCServerFinish()
 		{
-			stop();
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>

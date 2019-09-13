@@ -96,6 +96,7 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 	if (!rpc)
 		return;
 
+	bool willRestart = false;
 	{
 		std::unique_lock<std::mutex> lock(_operationMutex);
 
@@ -112,12 +113,15 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 			onOperationSucceeded(rpcFinished);
 		else
 			onOperationFailed(rpcFinished);
+
+		// Collect information about the current state before releasing waiting threads.
+		willRestart = _autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING;
 	}
 
 	// Free "start" threads that are potentially waiting for this.
 	_operationCompletedConditionVariable.notify_all();
 
 	// If autorestart is configured and the call is not blocking, do it here
-	if (_autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING)
+	if (willRestart)
 		start();
 }

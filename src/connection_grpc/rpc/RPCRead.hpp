@@ -58,7 +58,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>
 		RPCRead<ReaderWriter, ContextType, ReadMessageType>::~RPCRead()
 		{
-			stop();
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ReadMessageType>

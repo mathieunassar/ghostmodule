@@ -68,7 +68,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>
 		RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
 		{
-			stop();
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>

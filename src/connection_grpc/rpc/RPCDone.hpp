@@ -49,7 +49,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		RPCDone<ReaderWriter, ContextType>::~RPCDone()
 		{
-			stop();
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>

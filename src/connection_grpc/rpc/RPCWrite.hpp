@@ -54,12 +54,13 @@ namespace ghost
 			: RPCOperation<ReaderWriter, ContextType>(parent, autoRestart, blocking)
 			, _writerSink(writerSink)
 		{
+
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
 		RPCWrite<ReaderWriter, ContextType, WriteMessageType>::~RPCWrite()
 		{
-			stop();
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename WriteMessageType>
