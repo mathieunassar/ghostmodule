@@ -35,6 +35,7 @@ namespace ghost
 			RPCConnect(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 				const std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub>& stub,
 				grpc::CompletionQueue* completionQueue);
+			~RPCConnect();
 
 		protected:
 			bool initiateOperation() override;
@@ -52,20 +53,26 @@ namespace ghost
 		RPCConnect<ReaderWriter, ContextType>::RPCConnect(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 			const std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub>& stub,
 			grpc::CompletionQueue* completionQueue)
-			: RPCOperation(parent, false, true) // restart = false, blocking = true
+			: RPCOperation<ReaderWriter, ContextType>(parent, false, true) // restart = false, blocking = true
 			, _stub(stub)
 			, _completionQueue(completionQueue)
 		{
 		}
 
 		template<typename ReaderWriter, typename ContextType>
+		RPCConnect<ReaderWriter, ContextType>::~RPCConnect()
+		{
+			RPCOperation<ReaderWriter, ContextType>::stop();
+		}
+
+		template<typename ReaderWriter, typename ContextType>
 		bool RPCConnect<ReaderWriter, ContextType>::initiateOperation()
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
-			rpc->setClient(_stub->Asyncconnect(rpc->getContext().get(), _completionQueue, &_operationCompletedCallback));
+			rpc->setClient(_stub->Asyncconnect(rpc->getContext().get(), _completionQueue, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback)));
 			return true;
 		}
 
@@ -75,7 +82,7 @@ namespace ghost
 			if (rpcFinished)
 				return; // nothing to do here
 
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 
@@ -85,7 +92,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		void RPCConnect<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 

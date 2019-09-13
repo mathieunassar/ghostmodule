@@ -41,6 +41,7 @@ namespace ghost
 			using ContextType = grpc::ClientContext;
 
 			OutgoingRPC(const std::string& serverIp, int serverPort, size_t dedicatedThreads);
+			~OutgoingRPC();
 
 			bool start();
 			bool stop();
@@ -52,6 +53,7 @@ namespace ghost
 
 		private:
 			void onRPCStateChanged(RPCStateMachine::State newState);
+			void dispose();
 
 			grpc::CompletionQueue* _completionQueue;
 			std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;

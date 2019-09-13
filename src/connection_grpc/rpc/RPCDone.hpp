@@ -30,6 +30,7 @@ namespace ghost
 		{
 		public:
 			RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
+			~RPCDone();
 
 		protected:
 			bool initiateOperation() override;
@@ -41,25 +42,31 @@ namespace ghost
 
 		template<typename ReaderWriter, typename ContextType>
 		RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
-			: RPCOperation(parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
+			: RPCOperation<ReaderWriter, ContextType>(parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType>
+		RPCDone<ReaderWriter, ContextType>::~RPCDone()
+		{
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>
 		bool RPCDone<ReaderWriter, ContextType>::initiateOperation()
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
-			rpc->getContext()->AsyncNotifyWhenDone(&_operationCompletedCallback);
+			rpc->getContext()->AsyncNotifyWhenDone(&(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
 			return true;
 		}
 
 		template<typename ReaderWriter, typename ContextType>
 		void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 
@@ -69,7 +76,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		void RPCDone<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 

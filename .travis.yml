@@ -5,8 +5,15 @@ matrix:
       python: 3.7
       dist: xenial
       compiler: gcc
+      cache:
+        directories:
+          - $HOME/.conan/data
     - os: osx
       compiler: clang
+      cache:
+        directories:
+          - $HOME/.conan/data
+          - /usr/local/Homebrew
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi

@@ -57,6 +57,9 @@ namespace ghost
 
 			bool startAsync();
 			bool start();
+			void stop();
+
+			std::function<void(bool)> _operationCompletedCallback;
 
 		protected:
 			/// Push an operation in the RPC's completion queue.
@@ -75,7 +78,6 @@ namespace ghost
 			OperationProgress _state;
 			std::mutex _operationMutex;
 			std::condition_variable _operationCompletedConditionVariable;
-			std::function<void(bool)> _operationCompletedCallback;
 
 		private:
 			void onOperationCompleted(bool ok);

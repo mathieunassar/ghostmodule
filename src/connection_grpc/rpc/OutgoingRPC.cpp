@@ -37,6 +37,11 @@ OutgoingRPC::OutgoingRPC(const std::string& serverIp, int serverPort, size_t ded
 	_executor.start(dedicatedThreads);
 }
 
+OutgoingRPC::~OutgoingRPC()
+{
+	dispose();
+}
+
 /**
  *	Blocks until the client is connected thanks to the condition variable.
  */
@@ -84,9 +89,7 @@ bool OutgoingRPC::stop()
 		finishOperation->start();
 	}
 
-	_rpc->awaitFinished();
-	_executor.stop();
-	_rpc->disposeGRPC();
+	dispose();
 
 	// finishOperation completed since _rpc->awaitFinished() returned, it is therefore okay to be deleted.
 	return finishOperation->getStatus().ok() || finishOperation->getStatus().error_code() == grpc::StatusCode::CANCELLED;
@@ -118,4 +121,16 @@ void OutgoingRPC::onRPCStateChanged(RPCStateMachine::State newState)
 		if (_writerSink)
 			_writerSink->drain();
 	}
+}
+
+void OutgoingRPC::dispose()
+{
+	if (_writerOperation)
+		_writerOperation->stop();
+	if (_readerOperation)
+		_readerOperation->stop();
+
+	_rpc->awaitFinished();
+	_executor.stop();
+	_rpc->disposeGRPC();
 }

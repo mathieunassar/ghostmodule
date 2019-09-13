@@ -15,6 +15,7 @@
  */
 
 #include <iostream>
+#include <thread>
 #include <gtest/gtest.h>
 
 #include <google/protobuf/wrappers.pb.h>
@@ -46,8 +47,13 @@ protected:
 		_connectionManager = ghost::ConnectionManager::create();
 		ghost::ConnectionGRPC::initialize(_connectionManager, _config);
 
+		_config.setServerPortNumber(TEST_PORT);
+
 		_doubleValueMessageWasHandledCounter = 0;
 		_doubleValueMessageWasHandledMap.clear();
+		
+		_clientsHandledCount = 0;
+		_clientsHandledExpected = 0;
 	}
 
 	void TearDown() override
@@ -68,27 +74,42 @@ protected:
 	{
 		if (_server)
 		{
-			_server->start();
+			bool startResult = _server->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(_server->isRunning());
 		}
 	}
 
 	void startClients(const ghost::NetworkConnectionConfiguration config, size_t count, bool standardExpectations = true)
 	{
+		_clientsHandledExpected = count;
+
 		if (standardExpectations)
 		{
 			EXPECT_CALL(*_clientHandlerMock, configureClient(_)).Times(count);
 			EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(count)
-				.WillRepeatedly(testing::Return(true));
+				.WillRepeatedly([&](std::shared_ptr<ghost::Client>, bool&) { _clientsHandledCount++; return true; });
 		}
 
 		for (size_t i = 0; i < count; ++i)
 		{
 			auto client = _connectionManager->createClient(config);
 			ASSERT_TRUE(client);
-			client->start();
+			bool startResult = client->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(client->isRunning());
 			_clients.push_back(client);
+		}
+	}
+
+	void waitForClientsHandled()
+	{
+		auto now = std::chrono::steady_clock::now();
+		auto deadline = now + std::chrono::seconds(1);
+		while (_clientsHandledCount < _clientsHandledExpected && now < deadline)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			now = std::chrono::steady_clock::now();
 		}
 	}
 
@@ -103,7 +124,8 @@ protected:
 	{
 		if (_publisher)
 		{
-			_publisher->start();
+			bool startResult = _publisher->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(_publisher->isRunning());
 		}
 	}
@@ -114,12 +136,13 @@ protected:
 		{
 			auto subscriber = _connectionManager->createSubscriber(config);
 			ASSERT_TRUE(subscriber);
-			subscriber->start();
+			bool startResult = subscriber->start();
+			ASSERT_TRUE(startResult);
 			ASSERT_TRUE(subscriber->isRunning());
 			_subscribers.push_back(subscriber);
 		}
 		// allow the publisher to register them
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
 	void setupSubscribers(int count)
@@ -148,6 +171,24 @@ protected:
 		}
 	}
 
+	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
+	ghost::ConnectionConfigurationGRPC _config;
+
+	std::shared_ptr<ghost::Server> _server;
+	std::vector<std::shared_ptr<ghost::Client>> _clients;
+	std::shared_ptr<ClientHandlerMock> _clientHandlerMock;
+	int _clientsHandledCount;
+	int _clientsHandledExpected;
+
+	std::shared_ptr<ghost::Publisher> _publisher;
+	std::vector<std::shared_ptr<ghost::Subscriber>> _subscribers;
+
+	int _doubleValueMessageWasHandledCounter;
+	std::map<int, int> _doubleValueMessageWasHandledMap;
+	
+	static const int TEST_PORT;
+
+public:
 	void doubleMessageHandler(const google::protobuf::DoubleValue& message)
 	{
 		_doubleValueMessageWasHandledCounter++;
@@ -160,24 +201,9 @@ protected:
 		else
 			_doubleValueMessageWasHandledMap[id]++;
 	}
-
-	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
-	ghost::ConnectionConfigurationGRPC _config;
-
-	std::shared_ptr<ghost::Server> _server;
-	std::vector<std::shared_ptr<ghost::Client>> _clients;
-	std::shared_ptr<ClientHandlerMock> _clientHandlerMock;
-
-	std::shared_ptr<ghost::Publisher> _publisher;
-	std::vector<std::shared_ptr<ghost::Subscriber>> _subscribers;
-
-	int _doubleValueMessageWasHandledCounter;
-	std::map<int, int> _doubleValueMessageWasHandledMap;
-
-	static const int TEST_PORT;
 };
 
-const int ConnectionGRPCTests::TEST_PORT = 45000;
+const int ConnectionGRPCTests::TEST_PORT = 5678;
 
 TEST_F(ConnectionGRPCTests, test_ConnectionGRPC_populatesConnectionManagerWithServerRule)
 {
@@ -235,29 +261,24 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_startsAndStop_When_noServer)
 
 TEST_F(ConnectionGRPCTests, test_ClientGRPC_connectsToServerGRPC)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
 	startClients(_config, 1);
-	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	waitForClientsHandled();
 }
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_supportsMultipleClients)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
 	startClients(_config, 5);
+	waitForClientsHandled();
 }
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandling)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -272,14 +293,13 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandl
 
 	startClients(_config, 1, false);
 	_clients[0]->getWriter<google::protobuf::DoubleValue>()->write(google::protobuf::DoubleValue::default_instance());
+	waitForClientsHandled();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	ASSERT_TRUE(_doubleValueMessageWasHandledCounter == 1);
 }
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -292,15 +312,14 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 		testing::Return(true)));
 
 	startClients(_config, 1, false);
-	std::this_thread::sleep_for(std::chrono::milliseconds(100)); // wait until the server has had enough time to process the client
+	waitForClientsHandled();
+	std::this_thread::sleep_for(std::chrono::milliseconds(10)); // after the client is handled, wait a bit to check that the server didn't close it
 	ASSERT_TRUE(remote);
 	ASSERT_TRUE(remote->isRunning());
 }
 
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createServer(_config);
 	startServer();
 
@@ -324,8 +343,6 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse
 
 TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createPublisher(_config);
 	startPublisher();
 
@@ -342,8 +359,6 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createPublisher(_config);
 	startPublisher();
 
@@ -360,8 +375,6 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_continuesOperation_When_subscriberDies)
 {
-	_config.setServerPortNumber(TEST_PORT);
-
 	createPublisher(_config);
 	startPublisher();
 

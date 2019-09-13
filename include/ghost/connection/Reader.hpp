@@ -74,10 +74,10 @@ namespace ghost
 		 */
 		virtual bool lastRead(MessageType& message) = 0;
 	};
-}
 
-template<>
-std::shared_ptr<ghost::Reader<google::protobuf::Any>> ghost::Reader<google::protobuf::Any>::create(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking);
+	template<>
+	std::shared_ptr<ghost::Reader<google::protobuf::Any>> ghost::Reader<google::protobuf::Any>::create(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking);
+}
 
 #include <ghost/connection/internal/GenericReader.hpp>
 

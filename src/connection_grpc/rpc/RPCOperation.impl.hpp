@@ -29,8 +29,6 @@ RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWr
 template<typename ReaderWriter, typename ContextType>
 RPCOperation<ReaderWriter, ContextType>::~RPCOperation()
 {
-	if (_executor.joinable())
-		_executor.join();
 }
 
 template<typename ReaderWriter, typename ContextType>
@@ -77,12 +75,28 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 }
 
 template<typename ReaderWriter, typename ContextType>
+void RPCOperation<ReaderWriter, ContextType>::stop()
+{
+	{
+		std::unique_lock<std::mutex> lock(_operationMutex);
+
+		_blocking = false;
+		if (_accountAsRunningOperation)
+			_operationCompletedConditionVariable.wait(lock, [this] { return _state == OperationProgress::IDLE; });
+	}
+
+	if (_executor.joinable())
+		_executor.join();
+}
+
+template<typename ReaderWriter, typename ContextType>
 void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 {
 	auto rpc = _rpc.lock();
 	if (!rpc)
 		return;
 
+	bool willRestart = false;
 	{
 		std::unique_lock<std::mutex> lock(_operationMutex);
 
@@ -99,12 +113,15 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 			onOperationSucceeded(rpcFinished);
 		else
 			onOperationFailed(rpcFinished);
+
+		// Collect information about the current state before releasing waiting threads.
+		willRestart = _autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING;
 	}
 
 	// Free "start" threads that are potentially waiting for this.
-	_operationCompletedConditionVariable.notify_one();
+	_operationCompletedConditionVariable.notify_all();
 
 	// If autorestart is configured and the call is not blocking, do it here
-	if (_autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING)
+	if (willRestart)
 		start();
 }

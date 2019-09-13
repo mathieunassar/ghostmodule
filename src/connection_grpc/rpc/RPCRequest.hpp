@@ -35,6 +35,7 @@ namespace ghost
 				ServiceType* service,
 				grpc::CompletionQueue* rpcCompletionQueue,
 				grpc::ServerCompletionQueue* completionQueue);
+			~RPCRequest();
 
 			void setConnectionCallback(const std::function<void()>& callback);
 
@@ -57,11 +58,17 @@ namespace ghost
 			ServiceType* service,
 			grpc::CompletionQueue* rpcCompletionQueue,
 			grpc::ServerCompletionQueue* completionQueue)
-			: RPCOperation(parent, false, false) // restart = false, blocking = false
+			: RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
 			, _service(service)
 			, _rpcCompletionQueue(rpcCompletionQueue)
 			, _completionQueue(completionQueue)
 		{
+		}
+
+		template<typename ReaderWriter, typename ContextType, typename ServiceType>
+		RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
+		{
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>
@@ -76,11 +83,11 @@ namespace ghost
 			if (!_connectionCallback)
 				return false;
 
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
-			_service->Requestconnect(rpc->getContext().get(), rpc->getClient().get(), _rpcCompletionQueue, _completionQueue, &_operationCompletedCallback);
+			_service->Requestconnect(rpc->getContext().get(), rpc->getClient().get(), _rpcCompletionQueue, _completionQueue, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
 			return true;
 		}
 
@@ -90,7 +97,7 @@ namespace ghost
 			if (rpcFinished)
 				return; // nothing to do here
 
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 
@@ -102,7 +109,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType, typename ServiceType>
 		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 

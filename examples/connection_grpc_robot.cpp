@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <thread>
 #include <ghost/module/ModuleBuilder.hpp>
 #include <ghost/module/Module.hpp>
 #include <ghost/module/GhostLogger.hpp>

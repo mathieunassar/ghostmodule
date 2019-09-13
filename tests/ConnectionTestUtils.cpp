@@ -78,3 +78,8 @@ MessageMock::MessageMock()
 {
 	GhostMessageTester::setGhostMessageExpectations(this, GhostMessageTester::TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, GhostMessageTester::TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED);
 }
+
+MessageMock::MessageMock(const MessageMock& other)
+{
+	GhostMessageTester::setGhostMessageExpectations(this, GhostMessageTester::TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME, GhostMessageTester::TEST_GHOST_MESSAGE_CUSTOM_SERIALIZED);
+}

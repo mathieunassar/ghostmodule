@@ -29,6 +29,7 @@ namespace ghost
 		{
 		public:
 			RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status);
+			~RPCServerFinish();
 
 		protected:
 			bool initiateOperation() override;
@@ -44,26 +45,33 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		RPCServerFinish<ReaderWriter, ContextType>::RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 			const grpc::Status& status)
-			: RPCOperation(parent, false, false) // restart = false, blocking = false
+			: RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
 			, _status(status)
 		{
+
+		}
+
+		template<typename ReaderWriter, typename ContextType>
+		RPCServerFinish<ReaderWriter, ContextType>::~RPCServerFinish()
+		{
+			RPCOperation<ReaderWriter, ContextType>::stop();
 		}
 
 		template<typename ReaderWriter, typename ContextType>
 		bool RPCServerFinish<ReaderWriter, ContextType>::initiateOperation()
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return false;
 
-			rpc->getClient()->Finish(_status, &_operationCompletedCallback);
+			rpc->getClient()->Finish(_status, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
 			return true;
 		}
 
 		template<typename ReaderWriter, typename ContextType>
 		void RPCServerFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 
@@ -73,7 +81,7 @@ namespace ghost
 		template<typename ReaderWriter, typename ContextType>
 		void RPCServerFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
 		{
-			auto rpc = _rpc.lock();
+			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 			if (!rpc)
 				return;
 
