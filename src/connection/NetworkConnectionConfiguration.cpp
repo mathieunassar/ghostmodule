@@ -54,14 +54,13 @@ std::string NetworkConnectionConfiguration::getServerIpAddress() const
 
 int NetworkConnectionConfiguration::getServerPortNumber() const
 {
-	int res;
+	int res = -1;
 	ConfigurationValue value;
 	ConfigurationValue defaultValue;
 	defaultValue.write<int>(-1);
 
 	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, defaultValue); // if the field was removed, returns -1
-	if (!value.read<int>(res))
-		defaultValue.read<int>(res);
+	value.read<int>(res);
 
 	return res;
 }
