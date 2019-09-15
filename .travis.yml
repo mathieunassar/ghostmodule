@@ -8,6 +8,10 @@ matrix:
       cache:
         directories:
           - $HOME/.conan/data
+      addons:
+        apt:
+          packages:
+            - cppcheck
     - os: osx
       compiler: clang
       cache:
@@ -33,3 +37,5 @@ script:
   - cmake --build .
 # Run the tests
   - ctest . -C Release
+# Run code analysis
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cppcheck --error-exitcode=1 --enable=warning,performance,information,style *.cpp *.h ; fi
