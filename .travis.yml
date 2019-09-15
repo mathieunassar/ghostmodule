@@ -33,9 +33,9 @@ script:
   - mkdir build
   - cd build
 # Call the build system
-  - cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=True -DBUILD_TESTS=True
+  - cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
   - cmake --build .
 # Run the tests
   - ctest . -C Release
 # Run code analysis
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cppcheck --project=compile_commands.json --error-exitcode=1 --enable=warning,performance,information,style ; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cppcheck ../ --error-exitcode=1 --enable=warning,performance,information,style ; fi
