@@ -38,4 +38,4 @@ script:
 # Run the tests
   - ctest . -C Release
 # Run code analysis
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cppcheck --error-exitcode=1 --enable=warning,performance,information,style *.cpp *.h ; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cppcheck --error-exitcode=1 --enable=warning,performance,information,style *.cpp *.h ; fi
