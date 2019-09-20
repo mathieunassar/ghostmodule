@@ -41,6 +41,7 @@ ConnectionManager::~ConnectionManager()
 
 std::shared_ptr<ghost::Server> ConnectionManager::createServer(const ghost::ConnectionConfiguration& config)
 {
+	purgeDeadClients();
 	auto conn = _connectionFactory->createServer(config);
 	if (conn)
 		_connections.push_back(conn);
@@ -49,6 +50,7 @@ std::shared_ptr<ghost::Server> ConnectionManager::createServer(const ghost::Conn
 
 std::shared_ptr<ghost::Client> ConnectionManager::createClient(const ghost::ConnectionConfiguration& config)
 {
+	purgeDeadClients();
 	auto conn = _connectionFactory->createClient(config);
 	if (conn)
 		_connections.push_back(conn);
@@ -57,6 +59,7 @@ std::shared_ptr<ghost::Client> ConnectionManager::createClient(const ghost::Conn
 
 std::shared_ptr<ghost::Publisher> ConnectionManager::createPublisher(const ghost::ConnectionConfiguration& config)
 {
+	purgeDeadClients();
 	auto conn = _connectionFactory->createPublisher(config);
 	if (conn)
 		_connections.push_back(conn);
@@ -65,6 +68,7 @@ std::shared_ptr<ghost::Publisher> ConnectionManager::createPublisher(const ghost
 
 std::shared_ptr<ghost::Subscriber> ConnectionManager::createSubscriber(const ghost::ConnectionConfiguration& config)
 {
+	purgeDeadClients();
 	auto conn = _connectionFactory->createSubscriber(config);
 	if (conn)
 		_connections.push_back(conn);
@@ -74,4 +78,16 @@ std::shared_ptr<ghost::Subscriber> ConnectionManager::createSubscriber(const gho
 std::shared_ptr<ghost::ConnectionFactory> ConnectionManager::getConnectionFactory()
 {
 	return _connectionFactory;
+}
+
+void ConnectionManager::purgeDeadClients()
+{
+	auto it = _connections.begin();
+	while (it != _connections.end())
+	{
+		if (!(*it)->isRunning() && it->use_count() == 1)
+			it = _connections.erase(it);
+		else
+			++it;
+	}
 }
