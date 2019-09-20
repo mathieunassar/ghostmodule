@@ -15,6 +15,7 @@
  */
 
 #include "ConnectionStressTest.hpp"
+#include <thread>
 
 const std::string ConnectionStressTest::TEST_NAME = "ConnectionStress";
 

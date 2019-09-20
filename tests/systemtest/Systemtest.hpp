@@ -20,6 +20,7 @@
 #include <string>
 #include <chrono>
 #include <mutex>
+#include <memory>
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/CommandLine.hpp>
 #include <gtest/gtest.h>
@@ -53,7 +54,7 @@ public:
 	Systemtest(const std::shared_ptr<ghost::Logger>& logger);
 	virtual ~Systemtest() = default;
 
-	bool execute(const Parameters& params);
+	bool execute(const Systemtest::Parameters& params);
 	void stop();
 	State getState() const;
 

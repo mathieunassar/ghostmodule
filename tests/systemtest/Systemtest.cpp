@@ -33,7 +33,7 @@ Systemtest::Systemtest(const std::shared_ptr<ghost::Logger>& logger)
 
 }
 
-bool Systemtest::execute(const Parameters& params)
+bool Systemtest::execute(const Systemtest::Parameters& params)
 {
 	std::string testName = getName();
 
