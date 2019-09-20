@@ -232,29 +232,43 @@ TEST_F(ConnectionGRPCTests, test_ConnectionGRPC_populatesConnectionManagerWithSu
 TEST_F(ConnectionGRPCTests, test_ServerGRPC_startsAndStop)
 {
 	auto server = _connectionManager->createServer(_config);
-	server->start();
+	bool startResult = server->start();
+	ASSERT_TRUE(startResult);
 	// will be stopped by the connection manager
 }
 
 TEST_F(ConnectionGRPCTests, test_ClientGRPC_startsAndStop_When_noServer)
 {
 	auto client = _connectionManager->createClient(_config);
-	client->start();
+	bool startResult = client->start();
+	ASSERT_FALSE(startResult);
 	// will be stopped by the connection manager
 }
 
 TEST_F(ConnectionGRPCTests, test_PublisherGRPC_startsAndStop)
 {
 	auto publisher = _connectionManager->createPublisher(_config);
-	publisher->start();
+	bool startResult = publisher->start();
+	ASSERT_TRUE(startResult);
 	// will be stopped by the connection manager
 }
 
 TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_startsAndStop_When_noServer)
 {
 	auto subscriber = _connectionManager->createSubscriber(_config);
-	subscriber->start();
+	bool startResult = subscriber->start();
+	ASSERT_FALSE(startResult);
 	// will be stopped by the connection manager
+}
+
+TEST_F(ConnectionGRPCTests, test_ServerGRPC_doesNotStart_When_PortIsAlreadyUSed)
+{
+	auto server = _connectionManager->createServer(_config);
+	bool startResult = server->start();
+	ASSERT_TRUE(startResult);
+	auto server2 = _connectionManager->createServer(_config);
+	bool startResult2 = server2->start();
+	ASSERT_FALSE(startResult2);
 }
 
 /* Client / Server connections */

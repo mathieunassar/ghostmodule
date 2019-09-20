@@ -63,31 +63,31 @@ protected:
 		ASSERT_TRUE(_writerSink);
 	}
 
-	void getFromWriterSink()
+	void getFromWriterSink(bool expected = true)
 	{
 		google::protobuf::Any any;
 		bool getResult = _writerSink->get(any, std::chrono::seconds(1));
-		ASSERT_TRUE(getResult);
+		ASSERT_TRUE(getResult == expected);
 		_writerSink->pop();
 	}
 
-	void putToReadersink(const google::protobuf::Message& message)
+	void putToReadersink(const google::protobuf::Message& message, bool expected = true)
 	{
 		google::protobuf::Any any;
 		any.PackFrom(message);
 
 		bool putResult = _readerSink->put(any);
-		ASSERT_TRUE(putResult);
+		ASSERT_TRUE(putResult == expected);
 	}
 
-	void putToReadersink(const ghost::Message& message)
+	void putToReadersink(const ghost::Message& message, bool expected = true)
 	{
 		google::protobuf::Any any;
 		bool creationSuccess = ghost::internal::GenericMessageConverter::create(any, message);
 		ASSERT_TRUE(creationSuccess);
 
 		bool putResult = _readerSink->put(any);
-		ASSERT_TRUE(putResult);
+		ASSERT_TRUE(putResult == expected);
 	}
 
 	template<typename MessageType>
@@ -195,6 +195,24 @@ TEST_F(ReaderWriterTests, test_ReaderSink_readFails_When_messageHandlerWasAdded)
 	ASSERT_FALSE(readResult);
 }
 
+TEST_F(ReaderWriterTests, test_ReaderSink_readFails_When_sinkWasDrained)
+{
+	putToReadersink(*_ghostMessage);
+	auto reader = makeReader<MessageMock>();
+
+	_readerSink->drain();
+
+	bool readResult = reader->read(*_ghostMessage2);
+	ASSERT_FALSE(readResult);
+}
+
+TEST_F(ReaderWriterTests, test_ReaderSink_putToSinkFails_When_sinkWasDrained)
+{
+	_readerSink->drain();
+
+	putToReadersink(*_ghostMessage, false);
+}
+
 TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerHandlesGhostMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
 {
 	auto messageHandler = _readable->addMessageHandler();
@@ -289,4 +307,28 @@ TEST_F(ReaderWriterTests, test_WriterSink_writeBlocks_When_connectionWasBlocking
 	getFromWriterSink();
 	t.join();
 	ASSERT_TRUE(writeCompleted);
+}
+
+TEST_F(ReaderWriterTests, test_WriterSink_writeFails_When_sinkWasDrained)
+{
+	_config.setOperationBlocking(false);
+	setupWriter();
+	auto writer = _writable->getWriter<google::protobuf::DoubleValue>();
+
+	_writerSink->drain();
+	bool writeResult = writer->write(_doubleValue);
+	ASSERT_FALSE(writeResult);
+}
+
+TEST_F(ReaderWriterTests, test_WriterSink_getFromSinkFails_When_sinkWasDrained)
+{
+	_config.setOperationBlocking(false);
+	setupWriter();
+	auto writer = _writable->getWriter<google::protobuf::DoubleValue>();
+
+	bool writeResult = writer->write(_doubleValue);
+	ASSERT_TRUE(writeResult);
+
+	_writerSink->drain();
+	getFromWriterSink(false);
 }
