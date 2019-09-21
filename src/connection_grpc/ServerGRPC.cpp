@@ -49,6 +49,9 @@ bool ServerGRPC::start()
 
 	grpc::ServerBuilder builder;
 
+	// Prevents two servers from using the same port.
+	builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 0);
+
 	// Listen on the given address without any authentication mechanism.
 	builder.AddListeningPort(serverAddress, ::grpc::InsecureServerCredentials());
 

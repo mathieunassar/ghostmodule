@@ -77,7 +77,7 @@ void SystemtestExecutorModule::executeSystemtest(const std::string& testName, co
 		_testThread.join();
 
 	_activeTest = _tests[testName];
-	_testThread = std::thread([&](){ _activeTest->execute(testParams); });
+	_testThread = std::thread([testParams, this](){ _activeTest->execute(testParams); });
 }
 
 void SystemtestExecutorModule::stopSystemtest()
