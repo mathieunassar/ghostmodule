@@ -22,14 +22,12 @@ const std::string ConnectionMonkeyTest::TEST_NAME = "ConnectionMonkey";
 
 ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>& logger)
 	: Systemtest(logger)
-	, _connectionManager(ghost::ConnectionManager::create())
 	, _lastSentId(0)
 	, _minPort(7600)
 	, _maxPort(7610)
 	, _generator(std::random_device().operator()())
 	, _distribution(std::uniform_int_distribution<>(0, 0))
 {
-	ghost::ConnectionGRPC::initialize(_connectionManager);	
 }
 
 bool ConnectionMonkeyTest::setUp()
@@ -38,6 +36,11 @@ bool ConnectionMonkeyTest::setUp()
 	GHOST_INFO(_logger) << "_  c( oo )-   _";
 	GHOST_INFO(_logger) << " \\    (_)    /";
 	GHOST_INFO(_logger) << "  \\____|____/";
+
+	_connectionManager = ghost::ConnectionManager::create();
+	ghost::ConnectionGRPC::initialize(_connectionManager);
+
+	_lastSentId = 0;
 
 	// populate the action map
 	_actions.emplace_back(std::bind(&ConnectionMonkeyTest::sleepAction, this));
@@ -51,6 +54,18 @@ bool ConnectionMonkeyTest::setUp()
 	_distribution = std::uniform_int_distribution<>(0, _actions.size() - 1);
 
 	return true;
+}
+
+void ConnectionMonkeyTest::tearDown()
+{
+	_connectionManager.reset();
+
+	_publisherWriters.clear();
+	_publishers.clear();
+	_subscriberWriters.clear();
+	_subscribers.clear();
+
+	_actions.clear();
 }
 
 bool ConnectionMonkeyTest::run()
@@ -201,6 +216,10 @@ bool ConnectionMonkeyTest::killPublisherAction()
 	size_t publishersErased = _publisherWriters.erase(chosenPort);
 
 	// check the subscribers?
+	const auto& subscribers = _subscribers[chosenPort];
+	for (const auto& subscriber : subscribers)
+		subscriber->stop();
+
 	_subscriberWriters.erase(chosenPort);
 	size_t subscribersErased = _subscribers.erase(chosenPort);
 

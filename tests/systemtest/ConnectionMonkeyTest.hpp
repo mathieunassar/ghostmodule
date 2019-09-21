@@ -32,6 +32,7 @@ public:
 	ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>& logger);
 
 	bool setUp() override;
+	void tearDown() override;
 	bool run() override;
 	std::string getName() const override;
 

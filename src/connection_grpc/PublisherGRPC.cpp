@@ -43,6 +43,8 @@ bool PublisherGRPC::start()
 
 bool PublisherGRPC::stop()
 {
+	getWriterSink()->drain();
+
 	_writerThreadEnable = false;
 	if (_writerThread.joinable())
 		_writerThread.join();
