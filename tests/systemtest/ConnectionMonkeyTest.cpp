@@ -297,7 +297,7 @@ bool ConnectionMonkeyTest::shouldReallyDoIt(int percentage)
 bool ConnectionMonkeyTest::hasEnoughConnections() const
 {
 	int connectionsCount = _publishers.size();
-	for (auto& it = _subscribers.begin(); it != _subscribers.end(); ++it)
+	for (auto it = _subscribers.begin(); it != _subscribers.end(); ++it)
 		connectionsCount += it->second.size();
 
 	return connectionsCount >= _maxConnections;
