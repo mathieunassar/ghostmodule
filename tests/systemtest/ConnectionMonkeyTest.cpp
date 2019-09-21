@@ -25,8 +25,14 @@ ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>&
 	, _lastSentId(0)
 	, _minPort(7600)
 	, _maxPort(7610)
+	, _maxConnections(100)
 	, _generator(std::random_device().operator()())
 	, _distribution(std::uniform_int_distribution<>(0, 0))
+	, _publishersCreated(0)
+	, _subscribersCreated(0)
+	, _publishersKilled(0)
+	, _subscribersKilled(0)
+	, _waitedTime(0)
 {
 }
 
@@ -77,7 +83,7 @@ bool ConnectionMonkeyTest::run()
 		int nextAction = _distribution(_generator);
 		// execute the action and assert its success
 		bool actionResult = _actions[nextAction]();
-		EXPECT_TRUE(actionResult);
+		require(actionResult);
 
 		// loop again
 		state = getState();
@@ -86,10 +92,21 @@ bool ConnectionMonkeyTest::run()
 	return true;
 }
 
+void ConnectionMonkeyTest::onPrintSummary() const
+{
+	GHOST_INFO(_logger) << "Publishers created: " << _publishersCreated;
+	GHOST_INFO(_logger) << "Subscribers created: " << _subscribersCreated;
+	GHOST_INFO(_logger) << "Publishers killed: " << _publishersKilled;
+	GHOST_INFO(_logger) << "Subscribers killed: " << _subscribersKilled;
+	GHOST_INFO(_logger) << "Messages sent: " << _lastSentId;
+	GHOST_INFO(_logger) << "Time waited: " << _waitedTime;
+}
+
 bool ConnectionMonkeyTest::sleepAction()
 {
 	auto sleepDistribution = std::uniform_int_distribution<>(0, 1000);
 	int sleepTime = sleepDistribution(_generator);
+	_waitedTime += sleepTime;
 
 	GHOST_INFO(_logger) << "sleepAction for " << sleepTime << " ms.";
 	std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
@@ -99,6 +116,9 @@ bool ConnectionMonkeyTest::sleepAction()
 
 bool ConnectionMonkeyTest::createPublisherAction()
 {
+	if (hasEnoughConnections())
+		return true;
+
 	auto portDistribution = std::uniform_int_distribution<>(_minPort, _maxPort);
 	int chosenPort = portDistribution(_generator);
 
@@ -114,15 +134,16 @@ bool ConnectionMonkeyTest::createPublisherAction()
 	// there is already a publisher there, the call should fail
 	if (_publishers.find(chosenPort) != _publishers.end())
 	{
-		EXPECT_FALSE(startResult);
+		require(!startResult);
 		publisher->stop();
 		GHOST_INFO(_logger) << "createPublisherAction on port " << chosenPort << ": a publisher was already started for that port.";
 	}
 	else
 	{
-		EXPECT_TRUE(startResult);
+		require(startResult);
 		_publisherWriters[chosenPort] = publisher->getWriter<google::protobuf::StringValue>();
 		_publishers[chosenPort] = publisher;
+		_publishersCreated++;
 		GHOST_INFO(_logger) << "createPublisherAction on port " << chosenPort << ": started new publisher - waiting 200 ms for setup";
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
@@ -132,6 +153,9 @@ bool ConnectionMonkeyTest::createPublisherAction()
 
 bool ConnectionMonkeyTest::createSubscriberAction()
 {
+	if (hasEnoughConnections())
+		return true;
+
 	auto portDistribution = std::uniform_int_distribution<>(_minPort, _maxPort);
 	int chosenPort = portDistribution(_generator);
 
@@ -147,15 +171,16 @@ bool ConnectionMonkeyTest::createSubscriberAction()
 	// if there is a publisher there, the call should succeed
 	if (_publishers.find(chosenPort) != _publishers.end())
 	{
-		EXPECT_TRUE(startResult);
+		require(startResult);
 		_subscriberWriters[chosenPort].push_back(subscriber->getReader<google::protobuf::StringValue>());
 		_subscribers[chosenPort].push_back(subscriber);
+		_subscribersCreated++;
 		GHOST_INFO(_logger) << "createSubscriberAction on port " << chosenPort << ": started new subscriber - waiting 200 ms for setup";
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 	else
 	{
-		EXPECT_FALSE(startResult);
+		require(!startResult);
 		subscriber->stop();
 		GHOST_INFO(_logger) << "createSubscriberAction on port " << chosenPort << ": no publisher was started for that port.";
 	}
@@ -178,15 +203,15 @@ bool ConnectionMonkeyTest::sendMessageAction()
 	message.set_value(std::to_string(_lastSentId));
 
 	bool writeResult = publisher->second->write(message);
-	EXPECT_TRUE(writeResult);
+	require(writeResult);
 
 	const auto& subscribers = _subscriberWriters[publisher->first];
 	for (const auto& subscriber : subscribers)
 	{
 		auto readMessage = google::protobuf::StringValue::default_instance();
 		bool readResult = subscriber->read(readMessage);
-		EXPECT_TRUE(readResult);
-		EXPECT_TRUE(std::stoll(readMessage.value()) == _lastSentId);
+		require(readResult);
+		require(std::stoll(readMessage.value()) == _lastSentId);
 	}
 
 	GHOST_INFO(_logger) << "sendMessageAction for publisher on port: " << publisher->first << ": sent to " << subscribers.size() << " subscribers.";
@@ -199,7 +224,7 @@ bool ConnectionMonkeyTest::killPublisherAction()
 	if (_publishers.size() == 0)
 		return true;
 
-	if (!shouldReallyDoIt())
+	if (!shouldReallyDoIt(5)) // 5% execution chance
 		return true;
 
 	auto publisherMapDistribution = std::uniform_int_distribution<>(0, _publishers.size() - 1);
@@ -210,10 +235,11 @@ bool ConnectionMonkeyTest::killPublisherAction()
 	GHOST_INFO(_logger) << "killPublisherAction for publisher on port: " << chosenPort << ".";
 
 	bool stopResult = publisher->second->stop();
-	EXPECT_TRUE(stopResult);
+	require(stopResult);
 
 	_publishers.erase(chosenPort);
 	size_t publishersErased = _publisherWriters.erase(chosenPort);
+	_publishersKilled++;
 
 	// check the subscribers?
 	const auto& subscribers = _subscribers[chosenPort];
@@ -233,7 +259,7 @@ bool ConnectionMonkeyTest::killSubscriberAction()
 	if (_subscribers.size() == 0)
 		return true;
 
-	if (!shouldReallyDoIt())
+	if (!shouldReallyDoIt(10)) // 10% execution chance
 		return true;
 
 	auto subscriberMapDistribution = std::uniform_int_distribution<>(0, _subscribers.size() - 1);
@@ -250,7 +276,8 @@ bool ConnectionMonkeyTest::killSubscriberAction()
 	int subscriberIndex = subscriberMapDistribution(_generator);
 
 	bool stopResult = subscriberList->second[subscriberIndex]->stop();
-	EXPECT_TRUE(stopResult);
+	require(stopResult);
+	_subscribersKilled++;
 
 	// Erase the deleted subscriber
 	subscriberList->second.erase(subscriberList->second.begin() + subscriberIndex);
@@ -260,11 +287,20 @@ bool ConnectionMonkeyTest::killSubscriberAction()
 	return true;
 }
 
-bool ConnectionMonkeyTest::shouldReallyDoIt()
+bool ConnectionMonkeyTest::shouldReallyDoIt(int percentage)
 {
 	auto chanceDistribution = std::uniform_int_distribution<>(0, 100);
 	int randomNumber = chanceDistribution(_generator);
-	return randomNumber == 0;
+	return randomNumber < percentage;
+}
+
+bool ConnectionMonkeyTest::hasEnoughConnections() const
+{
+	int connectionsCount = _publishers.size();
+	for (auto& it = _subscribers.begin(); it != _subscribers.end(); ++it)
+		connectionsCount += it->second.size();
+
+	return connectionsCount >= _maxConnections;
 }
 
 std::string ConnectionMonkeyTest::getName() const

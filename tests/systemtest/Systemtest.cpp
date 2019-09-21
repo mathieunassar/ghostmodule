@@ -47,16 +47,36 @@ bool Systemtest::execute(const Systemtest::Parameters& params)
 
 	bool testResult = true;
 
+	/* Setup the test */
 	GHOST_INFO(_logger) << "Executing system test '" << testName << "': setup...";
 	setState(State::SETTING_UP);
-	bool setupResult = setUp();
+	bool setupResult = false;
+	try
+	{
+		setupResult = setUp();
+	}
+	catch (std::logic_error e)
+	{
+		GHOST_ERROR(_logger) << "caught test exception: " << e.what();
+		setupResult = false;
+	}
 	EXPECT_TRUE(setupResult);
 
 	if (setupResult)
 	{
+		/* Run the test */
 		GHOST_INFO(_logger) << "Executing system test '" << testName << "': setup succeeded! Now executing...";
 		setState(State::EXECUTING);
-		bool executionResult = run();
+		bool executionResult = false;
+		try
+		{
+			executionResult = run();
+		}
+		catch (std::logic_error e)
+		{
+			GHOST_ERROR(_logger) << "caught test exception: " << e.what();
+			executionResult = false;
+		}
 		if (!executionResult)
 		{
 			GHOST_ERROR(_logger) << "Systemtest '" << testName << "': execution failed!";
@@ -72,13 +92,34 @@ bool Systemtest::execute(const Systemtest::Parameters& params)
 		testResult = false;
 	}
 
-	GHOST_INFO(_logger) << "Executing system test '" << testName << "': tearing down...";
+	/* Print summary and tear down */
 	setState(State::TEARING_DOWN);
+	printSummary();
+
+	GHOST_INFO(_logger) << "Executing system test '" << testName << "': tearing down...";
 	tearDown();
 	GHOST_INFO(_logger) << "Executing system test '" << testName << "': tear down completed.";
 
 	setState(State::FINISHED);
 	return testResult;
+}
+
+void Systemtest::require(bool condition, bool fatal)
+{
+	EXPECT_TRUE(condition);
+	if (!condition && fatal)
+	{
+		GHOST_ERROR(_logger) << "expectation failed, finshing the test.";
+		setState(State::DISPOSING);
+	}
+}
+
+void Systemtest::printSummary() const
+{
+	GHOST_INFO(_logger) << "======================= Test completed =======================";
+	GHOST_INFO(_logger) << "Total duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(_endTime - _startTime).count() << " ms.";
+	onPrintSummary();
+	GHOST_INFO(_logger) << "==============================================================";
 }
 
 void Systemtest::stop()

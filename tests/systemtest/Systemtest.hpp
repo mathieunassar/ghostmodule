@@ -71,6 +71,10 @@ protected:
 	/// Executes the test prrogram.
 	virtual bool run() = 0;
 
+	void require(bool condition, bool fatal = true);
+	void printSummary() const;
+	virtual void onPrintSummary() const {}
+
 	std::shared_ptr<ghost::Logger> _logger;
 
 private:

@@ -31,12 +31,14 @@ class ConnectionMonkeyTest : public Systemtest
 public:
 	ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>& logger);
 
-	bool setUp() override;
-	void tearDown() override;
-	bool run() override;
 	std::string getName() const override;
 
 private:
+	bool setUp() override;
+	void tearDown() override;
+	bool run() override;
+	void onPrintSummary() const override;
+
 	bool sleepAction();
 	bool createPublisherAction();
 	bool createSubscriberAction();
@@ -44,7 +46,8 @@ private:
 	bool killPublisherAction();
 	bool killSubscriberAction();
 
-	bool shouldReallyDoIt();
+	bool shouldReallyDoIt(int percentage);
+	bool hasEnoughConnections() const;
 
 	static const std::string TEST_NAME;
 
@@ -60,10 +63,18 @@ private:
 	// port range configuration
 	int _minPort;
 	int _maxPort;
+	int _maxConnections;
 
 	// random generator
 	std::mt19937 _generator;
 	std::uniform_int_distribution<> _distribution;
+
+	// statistics
+	long long _publishersCreated;
+	long long _subscribersCreated;
+	long long _publishersKilled;
+	long long _subscribersKilled;
+	long long _waitedTime;
 };
 
 #endif // GHOST_TESTS_CONNECTIONMONKEYTEST_HPP

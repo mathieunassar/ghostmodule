@@ -29,12 +29,14 @@ class ConnectionStressTest : public Systemtest
 public:
 	ConnectionStressTest(const std::shared_ptr<ghost::Logger>& logger);
 
-	bool setUp() override;
-	void tearDown() override;
-	bool run() override;
 	std::string getName() const override;
 
 private:
+	bool setUp() override;
+	void tearDown() override;
+	bool run() override;
+	void onPrintSummary() const override;
+
 	static const std::string TEST_NAME;
 
 	bool messageHandler(const google::protobuf::StringValue& message, size_t subscriberId);

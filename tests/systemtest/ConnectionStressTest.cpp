@@ -39,18 +39,18 @@ bool ConnectionStressTest::setUp()
 
 	// create a publisher to send test messages
 	auto publisher = _connectionManager->createPublisher(configuration);
-	EXPECT_TRUE(publisher);
+	require(publisher.operator bool());
 	if (!publisher)
 		return false;
 
 	// store the writer of the publisher to be able to send the test messages.
 	_publisherWriter = publisher->getWriter<google::protobuf::StringValue>();
-	EXPECT_TRUE(_publisherWriter);
+	require(_publisherWriter.operator bool());
 	if (!_publisherWriter)
 		return false;
 
 	bool publisherStartResult = publisher->start();
-	EXPECT_TRUE(publisherStartResult);
+	require(publisherStartResult);
 
 	// create subscribers that will receive the publisher's messages
 	bool subscriberStartResult = true;
@@ -59,7 +59,7 @@ bool ConnectionStressTest::setUp()
 		_messageReceivedIndex.push_back(0);
 
 		auto subscriber = _connectionManager->createSubscriber(configuration);
-		EXPECT_TRUE(subscriber);
+		require(subscriber.operator bool());
 		if (!subscriber)
 			return false;
 
@@ -68,7 +68,7 @@ bool ConnectionStressTest::setUp()
 		messageHandler->addHandler<google::protobuf::StringValue>(std::bind(&ConnectionStressTest::messageHandler, this, std::placeholders::_1, i));
 
 		subscriberStartResult = subscriberStartResult && subscriber->start();
-		EXPECT_TRUE(subscriberStartResult);
+		require(subscriberStartResult);
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -97,7 +97,7 @@ bool ConnectionStressTest::run()
 			msg.set_value(std::to_string(_messageSentIndex));
 			bool writeResult = _publisherWriter->write(msg);
 			_messageSentIndex++;
-			EXPECT_TRUE(writeResult);
+			require(writeResult);
 
 			if (nextLog < std::chrono::steady_clock::now())
 			{
@@ -119,10 +119,15 @@ bool ConnectionStressTest::run()
 	return true;
 }
 
+void ConnectionStressTest::onPrintSummary() const
+{
+	GHOST_INFO(_logger) << "Sent " << _messageSentIndex << " and received " << _messageReceivedIndex[0] << " messages.";
+}
+
 bool ConnectionStressTest::messageHandler(const google::protobuf::StringValue& message, size_t subscriberId)
 {
 	long long newIndex = std::stoll(message.value());
-	EXPECT_TRUE(newIndex >= _messageReceivedIndex[subscriberId]);
+	require(newIndex >= _messageReceivedIndex[subscriberId]);
 	_messageReceivedIndex[subscriberId]++;
 	return true;
 }
