@@ -21,14 +21,17 @@ const std::string ConnectionStressTest::TEST_NAME = "ConnectionStress";
 
 ConnectionStressTest::ConnectionStressTest(const std::shared_ptr<ghost::Logger>& logger)
 	: Systemtest(logger)
-	, _connectionManager(ghost::ConnectionManager::create())
 	, _messageSentIndex(0)
 {
-	ghost::ConnectionGRPC::initialize(_connectionManager);
 }
 
 bool ConnectionStressTest::setUp()
 {
+	_connectionManager = ghost::ConnectionManager::create();
+	ghost::ConnectionGRPC::initialize(_connectionManager);
+	_messageSentIndex = 0;
+	_messageReceivedIndex.clear();
+
 	// set up the configuration to use for the static pubsub
 	ghost::ConnectionConfigurationGRPC configuration;
 	configuration.setServerPortNumber(17000);
@@ -70,6 +73,14 @@ bool ConnectionStressTest::setUp()
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	return publisherStartResult && subscriberStartResult;
+}
+
+void ConnectionStressTest::tearDown()
+{
+	_publisherWriter.reset();
+	_connectionManager.reset();
+
+	_messageReceivedIndex.clear();
 }
 
 bool ConnectionStressTest::run()

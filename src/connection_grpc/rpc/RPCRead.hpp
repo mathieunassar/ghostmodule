@@ -77,7 +77,7 @@ namespace ghost
 		void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationSucceeded(bool rpcFinished)
 		{
 			google::protobuf::Any anyMessage;
-			if (_incomingMessage.GetTypeName() == anyMessage.GetTypeName())
+			if (_incomingMessage.GetTypeName() == anyMessage.descriptor()->full_name())
 				anyMessage = _incomingMessage;
 			else
 				anyMessage.PackFrom(_incomingMessage);

@@ -99,7 +99,11 @@ bool ServerGRPC::stop()
 	_clientManager.stopClients();
 	// Shut down the grpc server - this will wait until current RPCs are processed
 	if (_grpcServer)
+	{
 		_grpcServer->Shutdown();
+		_grpcServer->Wait();
+		_grpcServer.reset();
+	}
 	// Stop the completion queue, finishing the remaining open operations
 	_completionQueueExecutor.stop();
 	// Stops not stopped clients and delete all objects.

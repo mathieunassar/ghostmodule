@@ -63,7 +63,7 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 	std::string targetFormatName = to.getMessageFormatName();
 	std::string targetTypeName = to.getMessageTypeName();
 
-	if (getTrueTypeName(message) == protobuf::connection::GenericMessage().GetTypeName()) // payload is of a user defined format
+	if (getTrueTypeName(message) == protobuf::connection::GenericMessage::descriptor()->full_name()) // payload is of a user defined format
 	{
 		protobuf::connection::GenericMessage defaultPayload;
 		bool unpackSuccess = message.UnpackTo(&defaultPayload);
@@ -106,7 +106,7 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 std::string GenericMessageConverter::getFormatName(const google::protobuf::Any& message)
 {
 	// if the any message is not a default payload, then it's already a protobuf message
-	if (getTrueTypeName(message) != protobuf::connection::GenericMessage().GetTypeName())
+	if (getTrueTypeName(message) != protobuf::connection::GenericMessage::descriptor()->full_name())
 	{
 		return internal::GHOSTMESSAGE_FORMAT_NAME;
 	}
@@ -126,7 +126,7 @@ std::pair<std::string, std::string> GenericMessageConverter::getFormatAndName(co
 	std::string format, name;
 
 	// if the any message is not a default payload, then it's already a protobuf message
-	if (getTrueTypeName(message) != protobuf::connection::GenericMessage().GetTypeName())
+	if (getTrueTypeName(message) != protobuf::connection::GenericMessage::descriptor()->full_name())
 	{
 		format = internal::GHOSTMESSAGE_FORMAT_NAME;
 		name = getTrueTypeName(message);
