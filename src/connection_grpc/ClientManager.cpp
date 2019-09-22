@@ -16,6 +16,7 @@
 
 #include "ClientManager.hpp"
 
+#include <list>
 #include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
@@ -27,8 +28,6 @@ ClientManager::ClientManager()
 
 ClientManager::~ClientManager()
 {
-	stop();
-
 	deleteAllClients();
 }
 
@@ -40,11 +39,7 @@ void ClientManager::start()
 
 void ClientManager::stop()
 {
-	std::lock_guard<std::mutex> lock(_mutex);
-	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
-	{
-		(*it)->stop();
-	}
+	stopClients();
 
 	_clientManagerThreadEnable = false;
 	if (_clientManagerThread.joinable())
@@ -60,29 +55,39 @@ void ClientManager::addClient(std::shared_ptr<RemoteClientGRPC> client)
 }
 
 void ClientManager::stopClients()
-{
-	std::lock_guard<std::mutex> lock(_mutex);
-	for (auto it = _allClients.begin(); it != _allClients.end(); ++it)
+{	
+	std::deque<std::shared_ptr<RemoteClientGRPC>> allClients;
 	{
-		(*it)->stop();
+		std::lock_guard<std::mutex> lock(_mutex);
+		allClients = _allClients;
 	}
+
+	for (auto it = allClients.begin(); it != allClients.end(); ++it)
+		(*it)->stop();
 }
 
 void ClientManager::deleteDisposableClients()
 {
-	std::lock_guard<std::mutex> lock(_mutex);
-	auto it = _allClients.begin();
-	while (it != _allClients.end())
+	std::list<std::shared_ptr<RemoteClientGRPC>> clientsToStop;
 	{
-		// dispose and delete the client if it is finished and only owned by this
-		if (!(*it)->isRunning() && it->use_count() == 1)
+		std::lock_guard<std::mutex> lock(_mutex);
+		auto it = _allClients.begin();
+		while (it != _allClients.end())
 		{
-			(*it)->getRPC()->dispose();
-			it = _allClients.erase(it);
+			// remember the client to delete it once the mutex is released
+			if (!(*it)->isRunning() && it->use_count() == 1)
+			{
+				clientsToStop.push_back(*it);
+				it = _allClients.erase(it);
+			}
+			else
+				++it;
 		}
-		else
-			++it;
 	}
+
+	// stop the clients marked above
+	for (auto& clientToStop : clientsToStop)
+		clientToStop->getRPC()->dispose();
 }
 
 void ClientManager::deleteAllClients()

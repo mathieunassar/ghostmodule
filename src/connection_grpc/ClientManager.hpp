@@ -37,7 +37,7 @@ namespace ghost
 
 			/// Starts a thread periodically deleting old clients
 			void start();
-			/// stops the thread periodically deleting old clients, and deltes all the clients after disposing them
+			/// stops the thread periodically deleting old clients, and deletes all the clients after disposing them
 			/// this call might be blocking while the clients are disposing
 			void stop();
 
@@ -45,10 +45,10 @@ namespace ghost
 			void addClient(std::shared_ptr<RemoteClientGRPC> client);
 			/// Stops currently running clients.
 			void stopClients();
-			/// dispose and delete clients that are in finished state and owned solely by this manager
-			void deleteDisposableClients();
 			
 		private:
+			/// dispose and delete clients that are in finished state and owned solely by this manager
+			void deleteDisposableClients();
 			/// Deletes all managed clients. Should not be called concurrently with "add"
 			void deleteAllClients();
 			/// loops over the managed clients and tries to delte unused clients with "deleteDisposableClients"
