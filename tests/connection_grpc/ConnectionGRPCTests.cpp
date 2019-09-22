@@ -415,6 +415,15 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_continuesOperation_When_subscribe
 	ASSERT_FALSE(_subscribers[1]->isRunning());
 }
 
+TEST_F(ConnectionGRPCTests, test_ServerGRPC_doesNotHang_When_remoteClientIsAddedWhileStopIsCalled)
+{
+	createServer(_config);
+	startServer();
+	startClients(_config, 1, false);
+	bool stopResult = _server->stop();
+	ASSERT_TRUE(stopResult);
+}
+
 /*TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_continuesOperation_When_PublisherDies)
 {
 	// stop publisher and then restart it
