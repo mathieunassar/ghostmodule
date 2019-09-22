@@ -67,7 +67,6 @@ private:
 
 	// random generator
 	std::mt19937 _generator;
-	std::uniform_int_distribution<> _distribution;
 
 	// statistics
 	long long _publishersCreated;

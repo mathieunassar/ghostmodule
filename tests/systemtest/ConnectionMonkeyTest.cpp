@@ -27,7 +27,6 @@ ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>&
 	, _maxPort(7610)
 	, _maxConnections(100)
 	, _generator(std::random_device().operator()())
-	, _distribution(std::uniform_int_distribution<>(0, 0))
 	, _publishersCreated(0)
 	, _subscribersCreated(0)
 	, _publishersKilled(0)
@@ -49,6 +48,7 @@ bool ConnectionMonkeyTest::setUp()
 	_lastSentId = 0;
 
 	// populate the action map
+	_actions.clear();
 	_actions.emplace_back(std::bind(&ConnectionMonkeyTest::sleepAction, this));
 	_actions.emplace_back(std::bind(&ConnectionMonkeyTest::createPublisherAction, this));
 	_actions.emplace_back(std::bind(&ConnectionMonkeyTest::createSubscriberAction, this));
@@ -56,9 +56,6 @@ bool ConnectionMonkeyTest::setUp()
 	_actions.emplace_back(std::bind(&ConnectionMonkeyTest::killPublisherAction, this));
 	_actions.emplace_back(std::bind(&ConnectionMonkeyTest::killSubscriberAction, this));
 	
-	// initialize the distribution
-	_distribution = std::uniform_int_distribution<>(0, _actions.size() - 1);
-
 	return true;
 }
 
@@ -76,11 +73,13 @@ void ConnectionMonkeyTest::tearDown()
 
 bool ConnectionMonkeyTest::run()
 {
+	std::uniform_int_distribution<> distribution(0, _actions.size() - 1);
+
 	auto state = getState();
 	while (state == State::EXECUTING && checkTestDuration())
 	{
 		// Randomly determine the next action to execute
-		int nextAction = _distribution(_generator);
+		int nextAction = distribution(_generator);
 		// execute the action and assert its success
 		bool actionResult = _actions[nextAction]();
 		require(actionResult);
