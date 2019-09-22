@@ -6,8 +6,8 @@
 #include <list>
 
 #include <ghost/persistence/SaveData.hpp>
-#include "../src/persistence/SaveData.hpp"
-#include "protobuf/tests.pb.h"
+#include "../../src/persistence/SaveData.hpp"
+#include "../protobuf/tests.pb.h"
 
 std::list<std::shared_ptr<ghost::internal::SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet);
 

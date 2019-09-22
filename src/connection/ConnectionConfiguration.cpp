@@ -45,42 +45,39 @@ ConnectionConfiguration::ConnectionConfiguration(const std::string& name)
 
 int ConnectionConfiguration::getConnectionId() const
 {
-	int res;
+	int res = -1;
 	ConfigurationValue value;
 	ConfigurationValue defaultValue;
 	defaultValue.write<int>(-1);
 	
 	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_ID, value, defaultValue); // if the field was removed, returns -1
-	if (!value.read<int>(res))
-		defaultValue.read<int>(res);
+	value.read<int>(res);
 	
 	return res;
 }
 
 size_t ConnectionConfiguration::getThreadPoolSize() const
 {
-	size_t res;
+	size_t res = 2;
 	ConfigurationValue value;
 	ConfigurationValue defaultValue;
 	defaultValue.write<size_t>(2);
 
 	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value, defaultValue); // if the field was removed, returns 2
-	if (!value.read<size_t>(res))
-		defaultValue.read<size_t>(res);
+	value.read<size_t>(res);
 
 	return res;
 }
 
 bool ConnectionConfiguration::isOperationBlocking() const
 {
-	bool res;
+	bool res = true;
 	ConfigurationValue value;
 	ConfigurationValue defaultValue;
 	defaultValue.write<size_t>(true);
 
 	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, defaultValue); // if the field was removed, returns true
-	if (!value.read<bool>(res))
-		defaultValue.read<bool>(res);
+	value.read<bool>(res);
 
 	return res;
 }

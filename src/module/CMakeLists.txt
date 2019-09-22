@@ -126,13 +126,13 @@ endif()
 
 if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	file(GLOB module_tests_src
-		${GHOST_MODULE_ROOT_DIR}/tests/CommandLineInterpreterTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/UserManagerTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/ModuleTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/InputControllerTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/OutputControllerTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/ConsoleTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/ConsoleDeviceMock.hpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/CommandLineInterpreterTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/UserManagerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/ModuleTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/InputControllerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/OutputControllerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/ConsoleTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/ConsoleDeviceMock.hpp
 	)
 
 	add_executable(module_tests ${module_tests_src})

@@ -45,6 +45,8 @@ namespace ghost
 			std::shared_ptr<ghost::ConnectionFactory> getConnectionFactory() override;
 
 		private:
+			void purgeDeadClients();
+
 			std::shared_ptr<ghost::internal::ConnectionFactory> _connectionFactory;
 
 			std::list<std::shared_ptr<ghost::Connection>> _connections;

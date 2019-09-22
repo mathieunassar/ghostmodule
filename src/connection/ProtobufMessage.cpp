@@ -55,7 +55,7 @@ std::string ProtobufMessage::getMessageTypeName() const
 	if (!_payload)
 		return "";
 
-	return _payload->GetTypeName();
+	return _payload->GetDescriptor()->full_name();
 }
 
 /**

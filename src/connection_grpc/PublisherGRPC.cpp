@@ -43,6 +43,8 @@ bool PublisherGRPC::start()
 
 bool PublisherGRPC::stop()
 {
+	getWriterSink()->drain();
+
 	_writerThreadEnable = false;
 	if (_writerThread.joinable())
 		_writerThread.join();
@@ -54,6 +56,11 @@ bool PublisherGRPC::stop()
 bool PublisherGRPC::isRunning() const
 {
 	return _server.isRunning();
+}
+
+size_t PublisherGRPC::countSubscribers() const
+{
+	return _handler->countSubscribers();
 }
 
 void PublisherGRPC::writerThread()

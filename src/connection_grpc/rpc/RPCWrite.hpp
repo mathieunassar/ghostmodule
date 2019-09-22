@@ -86,7 +86,7 @@ namespace ghost
 			if (success)
 			{
 				WriteMessageType msg;
-				if (msg.GetTypeName() == message.GetTypeName()) // Don't unpack any to any because it will fail
+				if (msg.GetTypeName() == message.descriptor()->full_name()) // Don't unpack any to any because it will fail
 					msg = message;
 				else
 				{

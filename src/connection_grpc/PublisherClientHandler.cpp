@@ -47,6 +47,7 @@ bool PublisherClientHandler::send(const google::protobuf::Any& message)
 		if (!it->first->isRunning() // if the client is not running anymore, dont send anything
 			|| !it->second->write(message)) // if the write failed
 		{
+			it->first->stop();
 			it = _subscribers.erase(it);
 		}
 		else
@@ -54,6 +55,12 @@ bool PublisherClientHandler::send(const google::protobuf::Any& message)
 	}
 	
 	return true;
+}
+
+size_t PublisherClientHandler::countSubscribers() const
+{
+	std::lock_guard<std::mutex> lock(_subscribersMutex);
+	return _subscribers.size();
 }
 
 void PublisherClientHandler::releaseClients()

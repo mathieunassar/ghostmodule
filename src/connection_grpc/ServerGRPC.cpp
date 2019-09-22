@@ -49,6 +49,9 @@ bool ServerGRPC::start()
 
 	grpc::ServerBuilder builder;
 
+	// Prevents two servers from using the same port.
+	builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 0);
+
 	// Listen on the given address without any authentication mechanism.
 	builder.AddListeningPort(serverAddress, ::grpc::InsecureServerCredentials());
 
@@ -63,7 +66,10 @@ bool ServerGRPC::start()
 	// Finally assemble the server.
 	_grpcServer = builder.BuildAndStart();
 	if (!_grpcServer)
+	{
+		stop();
 		return false; // Starting the server failed
+	}
 
 	_completionQueueExecutor.start(_configuration.getThreadPoolSize());
 
@@ -92,11 +98,18 @@ bool ServerGRPC::stop()
 	// Stop currently active clients so that shutting down the grpc server does not hang
 	_clientManager.stopClients();
 	// Shut down the grpc server - this will wait until current RPCs are processed
-	_grpcServer->Shutdown();
+	if (_grpcServer)
+		_grpcServer->Shutdown();
 	// Stop the completion queue, finishing the remaining open operations
 	_completionQueueExecutor.stop();
 	// Stops not stopped clients and delete all objects.
 	_clientManager.stop();
+
+	if (_grpcServer)
+	{
+		_grpcServer->Wait();
+		_grpcServer.reset();
+	}
 
 	return true;
 }

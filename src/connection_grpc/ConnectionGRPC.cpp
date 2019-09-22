@@ -23,9 +23,13 @@
 
 using namespace ghost;
 
+void blackholeLogger(gpr_log_func_args* args) {}
+
 void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 	const ghost::NetworkConnectionConfiguration& minimumConfiguration)
 {
+	gpr_set_log_function(blackholeLogger);
+
 	// Assign the gRPC implementations to this configuration.
 	connectionManager->getConnectionFactory()->addServerRule<internal::ServerGRPC>(minimumConfiguration);
 	connectionManager->getConnectionFactory()->addClientRule<internal::ClientGRPC>(minimumConfiguration);

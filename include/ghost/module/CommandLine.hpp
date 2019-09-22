@@ -36,7 +36,7 @@ namespace ghost
 	class CommandLine
 	{
 	public:
-		CommandLine(const std::string& commandName, const std::map<std::string, std::string>& parameters = {});
+		CommandLine(const std::string& commandName = "", const std::map<std::string, std::string>& parameters = {});
 
 		/**
 		 *	@return the name of this command.

@@ -97,9 +97,9 @@ target_link_libraries(ghost_connection_grpc ghost_connection ${CONAN_LIBS_GRPC} 
 
 if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	file(GLOB source_connection_gprc_tests
-		${GHOST_MODULE_ROOT_DIR}/tests/ConnectionGRPCTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/ConnectionTestUtils.hpp
-		${GHOST_MODULE_ROOT_DIR}/tests/ConnectionTestUtils.cpp)
+		${GHOST_MODULE_ROOT_DIR}/tests/connection_grpc/ConnectionGRPCTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/connection/ConnectionTestUtils.hpp
+		${GHOST_MODULE_ROOT_DIR}/tests/connection/ConnectionTestUtils.cpp)
 
 	add_executable(connection_grpc_tests ${source_connection_gprc_tests})
 	target_link_libraries(connection_grpc_tests ghost_connection_grpc ${CONAN_LIBS_GTEST})

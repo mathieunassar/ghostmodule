@@ -71,7 +71,7 @@ const double MessageTests::TEST_DOUBLE_VALUE = 42;
 
 TEST_F(MessageTests, test_ProtobufMessage_typeInformationIsCorrect_When_defaultConstructed)
 {
-	ASSERT_TRUE(_message->getMessageTypeName() == _doubleValue->GetTypeName());
+	ASSERT_TRUE(_message->getMessageTypeName() == _doubleValue->descriptor()->full_name());
 	ASSERT_TRUE(_message->getMessageFormatName() == ghost::internal::GHOSTMESSAGE_FORMAT_NAME);
 }
 
@@ -100,7 +100,7 @@ TEST_F(MessageTests, test_ProtobufMessage_deserializationSucceeds_When_previousl
 	bool deserializationResult = _message2->deserialize(serialized);
 
 	ASSERT_TRUE(deserializationResult);
-	ASSERT_TRUE(_message2->getMessageTypeName() == _doubleValue->GetTypeName());
+	ASSERT_TRUE(_message2->getMessageTypeName() == _doubleValue->descriptor()->full_name());
 	ASSERT_TRUE(_message2->getMessageFormatName() == ghost::internal::GHOSTMESSAGE_FORMAT_NAME);
 	auto proto = std::static_pointer_cast<google::protobuf::DoubleValue>(_message2->getProtobufMessage());
 	ASSERT_TRUE(proto->value() == TEST_DOUBLE_VALUE);

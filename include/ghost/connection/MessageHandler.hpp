@@ -64,7 +64,7 @@ namespace ghost
 	void ghost::MessageHandler::addHandler(std::function<void(const MessageType & message)> handler)
 	{
 		std::string format = ghost::internal::GHOSTMESSAGE_FORMAT_NAME;
-		std::string name = MessageType().GetTypeName();
+		std::string name = MessageType::descriptor()->full_name();
 		addHandler(format, name, std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
 	}
 
