@@ -39,6 +39,8 @@ namespace ghost
 			bool stop() override;
 			bool isRunning() const override;
 
+			size_t countSubscribers() const;
+
 		private:
 			void writerThread(); // waits for the writer to be fed and sends the data to the handler
 

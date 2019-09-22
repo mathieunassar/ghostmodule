@@ -26,6 +26,7 @@
 #include <ghost/connection/Writer.hpp>
 
 #include "../connection/ConnectionTestUtils.hpp"
+#include "../../src/connection_grpc/PublisherGRPC.hpp"
 
 using namespace ghost;
 
@@ -141,8 +142,19 @@ protected:
 			ASSERT_TRUE(subscriber->isRunning());
 			_subscribers.push_back(subscriber);
 		}
-		// allow the publisher to register them
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+
+	size_t getSubscribersCount()
+	{
+		if (!_publisher)
+			return 0;
+		
+		auto internalPublisher = std::dynamic_pointer_cast<ghost::internal::PublisherGRPC>(_publisher);
+		
+		if (!internalPublisher)
+			return 0;
+		
+		return internalPublisher->countSubscribers();
 	}
 
 	void setupSubscribers(int count)
@@ -153,6 +165,18 @@ protected:
 			handler->addHandler<google::protobuf::DoubleValue>(
 				std::bind(&ConnectionGRPCTests::doubleMessageMassHandler, this, i, std::placeholders::_1));
 		}
+	}
+
+	void waitForSubscribers(int count)
+	{
+		auto now = std::chrono::steady_clock::now();
+		auto deadline = now + std::chrono::seconds(2);
+		while (getSubscribersCount() < count && now < deadline)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			now = std::chrono::steady_clock::now();
+		}
+		ASSERT_EQ(getSubscribersCount(), count);
 	}
 
 	void checkSubscribersReceivedMessages(int count)
@@ -364,6 +388,8 @@ TEST_F(ConnectionGRPCTests, test_SubscriberGRPC_connectsToPublisherGRPC)
 	startSubscribers(_config, subscribersCount);
 	setupSubscribers(subscribersCount);
 
+	waitForSubscribers(subscribersCount);
+
 	auto writer = _publisher->getWriter<google::protobuf::DoubleValue>();
 	bool writeResult = writer->write(google::protobuf::DoubleValue::default_instance());
 	ASSERT_TRUE(writeResult);
@@ -379,6 +405,7 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_supportsMultipleClients)
 	int subscribersCount = 10;
 	startSubscribers(_config, subscribersCount);
 	setupSubscribers(subscribersCount);
+	waitForSubscribers(subscribersCount);
 
 	auto writer = _publisher->getWriter<google::protobuf::DoubleValue>();
 	bool writeResult = writer->write(google::protobuf::DoubleValue::default_instance());
@@ -397,6 +424,7 @@ TEST_F(ConnectionGRPCTests, test_PublisherGRPC_continuesOperation_When_subscribe
 	setupSubscribers(subscribersCount);
 
 	// send the first message, both subscribers should receive it
+	waitForSubscribers(subscribersCount);
 	auto writer = _publisher->getWriter<google::protobuf::DoubleValue>();
 	bool writeResult = writer->write(google::protobuf::DoubleValue::default_instance());
 	ASSERT_TRUE(writeResult);
@@ -420,6 +448,11 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_doesNotHang_When_remoteClientIsAdded
 	createServer(_config);
 	startServer();
 	startClients(_config, 1, false);
+
+	EXPECT_CALL(*_clientHandlerMock, configureClient(_)).Times(testing::AnyNumber());
+	EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(testing::AnyNumber())
+		.WillRepeatedly([&](std::shared_ptr<ghost::Client>, bool&) { _clientsHandledCount++; return true; });
+
 	bool stopResult = _server->stop();
 	ASSERT_TRUE(stopResult);
 }

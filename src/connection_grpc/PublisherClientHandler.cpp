@@ -57,6 +57,12 @@ bool PublisherClientHandler::send(const google::protobuf::Any& message)
 	return true;
 }
 
+size_t PublisherClientHandler::countSubscribers() const
+{
+	std::lock_guard<std::mutex> lock(_subscribersMutex);
+	return _subscribers.size();
+}
+
 void PublisherClientHandler::releaseClients()
 {
 	std::lock_guard<std::mutex> lock(_subscribersMutex);

@@ -40,9 +40,10 @@ namespace ghost
 			
 			bool send(const google::protobuf::Any& message);
 			void releaseClients();
+			size_t countSubscribers() const;
 
 		private:
-			std::mutex _subscribersMutex;
+			mutable std::mutex _subscribersMutex;
 			std::deque<	std::pair<	std::shared_ptr<ghost::Client>,
 									std::shared_ptr<ghost::Writer<google::protobuf::Any>>>> _subscribers;
 		};

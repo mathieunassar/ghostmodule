@@ -58,6 +58,11 @@ bool PublisherGRPC::isRunning() const
 	return _server.isRunning();
 }
 
+size_t PublisherGRPC::countSubscribers() const
+{
+	return _handler->countSubscribers();
+}
+
 void PublisherGRPC::writerThread()
 {
 	while (_writerThreadEnable)
