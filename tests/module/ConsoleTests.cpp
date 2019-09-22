@@ -130,10 +130,13 @@ TEST_F(ConsoleTests, Test_Console_getLineFlushesBeforeReading)
 	_console->write(TEST_WRITE_LINE);
 	_console->write(TEST_WRITE_LINE2);
 
+	bool ready4GetLine = false;
+
 	{
 		testing::InSequence seq;
 		// the first call to write will take 100ms so that "_console->getLine()" reaches flush before all write lines are processed
-		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE)).Times(1).WillOnce(testing::InvokeWithoutArgs([] {
+		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE)).Times(1).WillOnce(testing::InvokeWithoutArgs([&] {
+			ready4GetLine = true;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100)); return true; }));
 		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE2)).Times(1);
 
@@ -142,8 +145,10 @@ TEST_F(ConsoleTests, Test_Console_getLineFlushesBeforeReading)
 
 	_console->start(); // necessary to be before getLine, otherwise flush won't flush
 
-	std::thread t([this]{
-		_console->getLine();
+	std::thread t([this, &ready4GetLine]{
+		while (!ready4GetLine)
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		(void) _console->getLine();
 		});
 
 	t.join();

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(projectName ghost_module)
-set(GHOST_MODULE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE FILEPATH "Root directory of ghost_module")
+set(projectName ghostmodule)
+set(GHOST_MODULE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE FILEPATH "Root directory of ghostmodule")
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
 set(CMAKE_CXX_FLAGS "-std=c++14")
@@ -23,14 +23,16 @@ include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
 
 # fetch the dependencies with conan
 if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
-	OR (NOT DEFINED BUILD_PERSISTENCE)
-	OR (${BUILD_PERSISTENCE}))
+	OR (NOT DEFINED BUILD_PERSISTENCE) OR (${BUILD_PERSISTENCE})
+	OR (NOT DEFINED BUILD_CONNECTION) OR (${BUILD_CONNECTION})
+	OR (NOT DEFINED BUILD_CONNECTIONGRPC) OR (${BUILD_CONNECTIONGRPC}))
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
 	conan_check(REQUIRED)
 	conan_cmake_run(CONANFILE conanfile.txt
 					BASIC_SETUP
 					BUILD missing)
 
+	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/protobuf/)
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/generate_protobuf.cmake)
 endif()
 
@@ -67,7 +69,8 @@ fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 SET(GHOST_MODULE_INCLUDE_DIRECTORIES
 	${GHOST_MODULE_ROOT_DIR}/include
 	${GHOST_SUPPORT_INCLUDE_DIRECTORIES}
-	CACHE FILEPATH "Include directories of ghost_module"
+	${PROTOC_OUTPUT}
+	CACHE FILEPATH "Include directories of ghostmodule"
 )
 
 # provide path to include directories
@@ -80,3 +83,4 @@ include_directories(
 ##########################################################################################################################################
 
 add_subdirectory(src)
+add_subdirectory(tests/systemtest)

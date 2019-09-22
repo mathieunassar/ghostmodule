@@ -17,8 +17,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "../src/persistence/SaveFile.hpp"
-#include "protobuf/tests.pb.h"
+#include "../../src/persistence/SaveFile.hpp"
+#include "../protobuf/tests.pb.h"
 
 #include "PersistenceTestHelpers.hpp"
 

@@ -1,12 +1,13 @@
 ``` ascii
- _______ _      _  ______  ________ _________
-|  _____ |______| |      | |_______     |
-|______| |      | |______| _______|     |
+                                                           ____
+_______  _      _  ______  ________ _________              '_' \
+|  _____ |______| |      | |_______     |                \_\    \_/    _
+|______| |      | |______| _______|     |                   \____\____|_|
 ```
 
 # ghostmodule
 
-Lightweight, multiplatform and accessible framework to create command line-based programs.
+Lightweight, multiplatform and accessible framework for command line-based programs and C++ microservices.
 
 |         Build system         |                         Build status                         |
 | :--------------------------: | :----------------------------------------------------------: |
@@ -16,14 +17,15 @@ Lightweight, multiplatform and accessible framework to create command line-based
 
 ## Overview
 
-ghostmodule is a C++ library providing a framework for simple command line applications. It provides the following functionalities:
+ghostmodule is a C++ library providing a framework for simple to complex command line-based applications and microservices. It provides the following functionalities:
 
 - **Program lifetime management**: separates the different stages of the program's life: its initialization, runtime and finalization;
 - **Console control**: provides a way to input commands, and controls the output flow to pause when the User is typing;
 - **Command interpretation**: optionally processes user input as commands, previously defined by the developer;
 - **User management**: exposes a login system to restrict the access to some commands and program features;
 - **Data persistence**: provides a sub-library (ghost_persistence) based on Google's Protobuf to store data into save files;
-- **Multiplatform**: the following platforms are supported:
+- **Connectivity and messaging:** provides sub-libraries (ghost_connection and ghost_connection_grpc) to exchange messages within your program and beyond. Define the transported data, ghostmodule does the rest;
+- **Multiplatform**: the following platforms are officially supported:
   - Linux (Ubuntu Xenial, GCC compilers);
   - Windows (MSVC compilers);
   - OSX (Apple clang).
@@ -39,7 +41,8 @@ ghostmodule uses CMake (<https://cmake.org/>) and Conan (<https://conan.io/>) fo
 The following external dependencies are used by this project:
 
 - **Googletest** (<https://github.com/google/googletest>): used for unit testing;
-- **Google Protobuf** (<https://github.com/protocolbuffers/protobuf>): used by "ghost_persistence" to serialize and store data into storage files.
+- **Google Protobuf** (<https://github.com/protocolbuffers/protobuf>): used by "ghost_persistence" to serialize and store data into storage files;
+- **Google gRPC** (https://github.com/grpc): used by "ghost_connection_grpc" to transport messages over the networked HTTP2 protocol.
 
 It is possible to build (parts of) the project without any of these dependencies.
 
@@ -73,21 +76,24 @@ If "`BUILD_EXAMPLES=True`" is not specified, the examples will not be built.
 
 The following options can be set to customize the build:
 
-| Option                 | Description                                                  | Default |
-| ---------------------- | ------------------------------------------------------------ | ------- |
-| **BUILD_TESTS***       | if set to "ON", the unit tests will be built (GTest will be fetched by Conan). | OFF     |
-| **BUILD_EXAMPLES**     | if set to "ON", example programs will be built.              | OFF     |
-| **BUILD_MODULE**       | if set to "ON", the library "ghost_module" will be built.    | ON      |
-| **BUILD_PERSISTENCE*** | if set to "ON", the library "ghost_persistence" will be built. | ON      |
+| Option                   | Description                                                  | Default |
+| ------------------------ | ------------------------------------------------------------ | ------- |
+| **BUILD_TESTS**          | if set to "ON", the unit tests will be built.                | OFF     |
+| **BUILD_SYSTEMTESTS**    | if set to "ON", the system tests will be built.              | OFF     |
+| **BUILD_EXAMPLES**       | if set to "ON", example programs will be built.              | OFF     |
+| **BUILD_MODULE***        | if set to "ON", the library "ghost_module" will be built.    | ON      |
+| **BUILD_PERSISTENCE**    | if set to "ON", the library "ghost_persistence" will be built. | ON      |
+| **BUILD_CONNECTION**     | if set to "ON", the library "ghost_connection" will be built. | ON      |
+| **BUILD_CONNECTIONGRPC** | if set to "ON", the library "ghost_connection_grpc" will be built. | ON      |
 
-*: Building the unit tests and ghost_persistence have dependencies to external libraries, see the "Setup" section.
+*: Building the "ghost_module" library only does not require any dependency, see the "Setup" section.
 
 The following example build the whole repository and executes the unit tests (with `ctest .`)
 
 ```bash
 mkdir build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_SYSTEMTESTS=ON -DBUILD_EXAMPLES=ON
 cmake --build .
 ctest .
 ```
@@ -126,6 +132,8 @@ Three examples are provided to grasp the basic features provided by ghostmodule:
 - examples/module_minimum.cpp: The program shows how to create a simple module and illustrates the feature "**program lifetime management**", which is contained in the library "ghost_module".
 - examples/module_with_console.cpp: This example implements a program that cyclically displays a text, and that provides a command to update the text. The program uses the "**console control**" feature to request a user input, and the "**command interpretation**" feature to automatically process the command. These features are also contained in the library "ghost_module".
 - examples/persistence_todo_list.cpp: In this example, a TODO list is managed by successive calls to the program with different parameters. By using the "**data persistence**" feature, the list is stored in a file and loaded when the program is used to edit it.
+- examples/connection_grpc_messenger.cpp: a classic and simplistic implementation of a messenger program. "**Connectivity and messaging**" is used through the "ghost_connection" and its specialization for networked connections "ghost_connection_grpc" to illustrate the message exchange between a chat server and client.
+- examples/connection_grpc_robot.cpp: This example gets closer to common uses of distributed system in that it simulates a (very simplified) robot that can move with a fixed velocity and provide its current odometry. While the "**console control**" feature is used to manipulate the velocity of the robot, this example emphasizes the usage of "**Connectivity and messaging**" to illustrate the odometry provision.
 
 In order to build the examples, pass the flag "`-DBUILD_EXAMPLES=True`" to CMake. After quickly inspecting the source code, you can execute the programs and play around with them.
 
