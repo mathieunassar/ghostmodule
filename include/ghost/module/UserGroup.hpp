@@ -21,6 +21,7 @@
 #include <ghost/module/User.hpp>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace ghost
 {
