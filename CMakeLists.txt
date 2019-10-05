@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 
 if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
@@ -35,6 +36,11 @@ if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/protobuf/)
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/generate_protobuf.cmake)
 endif()
+
+# clang-format
+set(CLANG_FORMAT_BIN_NAME clang-format)
+set(CLANG_FORMAT_EXCLUDE_PATTERNS  "build/" ${CMAKE_BINARY_DIR})
+find_package(ClangFormat)
 
 # Windows specific stuff
 if (MSVC)

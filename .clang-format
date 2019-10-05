@@ -8,4 +8,5 @@ AllowShortIfStatementsOnASingleLine: true
 BreakBeforeBraces: Allman
 SpacesBeforeTrailingComments: 1
 BreakConstructorInitializersBeforeComma: true
+AccessModifierOffset: -8
 ...
