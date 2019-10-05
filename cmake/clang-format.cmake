@@ -28,7 +28,7 @@ add_custom_target(format
     ${ALL_SOURCE_FILES}
 )
 
-
+message("setting clang-format target for file " ${ALL_SOURCE_FILES})
 add_custom_target(format-check
     COMMENT "Checking clang-format changes"
     # Use ! to negate the result for correct output
