@@ -39,7 +39,7 @@ endif()
 
 # clang-format
 set(CLANG_FORMAT_BIN_NAME clang-format)
-set(CLANG_FORMAT_EXCLUDE_PATTERNS  "build/" ${CMAKE_BINARY_DIR})
+set(CLANG_FORMAT_EXCLUDE_PATTERNS  "build/" "protobuf/" ${CMAKE_BINARY_DIR})
 find_package(ClangFormat)
 
 # Windows specific stuff

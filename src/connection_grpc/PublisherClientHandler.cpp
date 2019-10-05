@@ -44,7 +44,7 @@ bool PublisherClientHandler::send(const google::protobuf::Any& message)
 	auto it = _subscribers.begin();
 	while (it != _subscribers.end())
 	{
-		if (!it->first->isRunning()	    // if the client is not running anymore, dont send anything
+		if (!it->first->isRunning()	 // if the client is not running anymore, dont send anything
 		    || !it->second->write(message)) // if the write failed
 		{
 			it->first->stop();

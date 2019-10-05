@@ -71,9 +71,9 @@ bool ConsoleDeviceWindows::awaitInputMode()
 	if (!gotInput) // _enable is false
 		return false;
 
-	if (!ReadConsoleInput(_hStdin,	  // input buffer handle
-			      irInBuf,	  // buffer to read into
-			      128,	  // size of read buffer
+	if (!ReadConsoleInput(_hStdin,    // input buffer handle
+			      irInBuf,    // buffer to read into
+			      128,	// size of read buffer
 			      &cNumRead)) // number of records read
 		return false;
 

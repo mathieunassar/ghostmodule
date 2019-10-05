@@ -19,9 +19,9 @@
 
 #include <ghost/module/PermissionEntity.hpp>
 #include <ghost/module/User.hpp>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace ghost
 {
