@@ -28,10 +28,12 @@ add_custom_target(format
     ${ALL_SOURCE_FILES}
 )
 
+
 add_custom_target(format-check
     COMMENT "Checking clang-format changes"
     # Use ! to negate the result for correct output
-    COMMAND !${CLANG_FORMAT_BIN}
+    COMMAND !
+    ${CLANG_FORMAT_BIN}
     -style=file
     -output-replacements-xml
     ${ALL_SOURCE_FILES}
