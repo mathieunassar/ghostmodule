@@ -37,7 +37,7 @@ add_custom_target(format-check
     -style=file
     -output-replacements-xml
     ${ALL_SOURCE_FILES}
-    | grep "replacement offset" 
+    | grep -q "replacement offset" 
 )
 
 # Get the path to this file
