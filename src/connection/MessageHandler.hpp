@@ -17,35 +17,36 @@
 #ifndef GHOST_INTERNAL_MESSAGEHANDLER_HPP
 #define GHOST_INTERNAL_MESSAGEHANDLER_HPP
 
-#include <string>
-#include <map>
-#include <memory>
 #include <google/protobuf/any.pb.h>
+
 #include <ghost/connection/MessageHandler.hpp>
 #include <ghost/connection/internal/MessageHandlerCallback.hpp>
+#include <map>
+#include <memory>
+#include <string>
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		* Base class for message handlers.
-		* @author	Mathieu Nassar
-		* @date	15.06.2018
-		*/
-		class MessageHandler : public ghost::MessageHandler
-		{
-		public:
-			void handle(const google::protobuf::Any& message);
+namespace internal
+{
+/**
+ * Base class for message handlers.
+ * @author	Mathieu Nassar
+ * @date	15.06.2018
+ */
+class MessageHandler : public ghost::MessageHandler
+{
+public:
+	void handle(const google::protobuf::Any& message);
 
-		protected:
-			void addHandler(const std::string& format, const std::string& name,
-				std::unique_ptr<ghost::internal::BaseMessageHandlerCallback>&& handler) override;
-		
-		private:
-			std::map<std::pair<std::string, std::string>, std::unique_ptr<BaseMessageHandlerCallback>> _handlers;
-		};
-	}
-}
+protected:
+	void addHandler(const std::string& format, const std::string& name,
+			std::unique_ptr<ghost::internal::BaseMessageHandlerCallback>&& handler) override;
 
-#endif //GHOST_INTERNAL_MESSAGEHANDLER_HPP
+private:
+	std::map<std::pair<std::string, std::string>, std::unique_ptr<BaseMessageHandlerCallback>> _handlers;
+};
+} // namespace internal
+} // namespace ghost
+
+#endif // GHOST_INTERNAL_MESSAGEHANDLER_HPP

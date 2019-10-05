@@ -16,28 +16,27 @@
 
 #include "InputController.hpp"
 
-#include <iostream>
-#include <future>
 #include <chrono>
+#include <future>
+#include <iostream>
 
 #include "EnterPressedInputEvent.hpp"
-#include "LineRequestInputEvent.hpp"
 #include "InputModeInputEvent.hpp"
+#include "LineRequestInputEvent.hpp"
 
 using namespace ghost::internal;
 
-InputController::InputController(std::shared_ptr<ConsoleDevice> device,
-	ConsoleDevice::ConsoleMode initialMode,
-	std::function<void(const std::string&)> cmdCallback,
-	std::function<void(ConsoleDevice::ConsoleMode)> modeCallback)
-	: _inputThreadEnable(false)
-	, _enterPressedThreadEnable(false)
-	, _device(device)
-	, _prompt(new Prompt(">"))
-	, _consoleMode(initialMode)
-	, _inputMode(ghost::InputMode::DISCRETE)
-	, _commandCallback(cmdCallback)
-	, _modeCallback(modeCallback)
+InputController::InputController(std::shared_ptr<ConsoleDevice> device, ConsoleDevice::ConsoleMode initialMode,
+				 std::function<void(const std::string&)> cmdCallback,
+				 std::function<void(ConsoleDevice::ConsoleMode)> modeCallback)
+    : _inputThreadEnable(false)
+    , _enterPressedThreadEnable(false)
+    , _device(device)
+    , _prompt(new Prompt(">"))
+    , _consoleMode(initialMode)
+    , _inputMode(ghost::InputMode::DISCRETE)
+    , _commandCallback(cmdCallback)
+    , _modeCallback(modeCallback)
 {
 	registerEventHandlers();
 
@@ -85,15 +84,13 @@ void InputController::stop()
 	if (_enterPressedThreadEnable)
 	{
 		_enterPressedThreadEnable = false;
-		if (_enterPressedThread.joinable())
-			_enterPressedThread.join();
+		if (_enterPressedThread.joinable()) _enterPressedThread.join();
 	}
 
 	if (_inputThreadEnable)
 	{
 		_inputThreadEnable = false;
-		if (_inputThread.joinable())
-			_inputThread.join();
+		if (_inputThread.joinable()) _inputThread.join();
 	}
 }
 
@@ -125,9 +122,12 @@ void InputController::switchConsoleMode(ConsoleDevice::ConsoleMode newMode)
 
 void InputController::registerEventHandlers()
 {
-	_eventHandlers[EnterPressedInputEvent::_NAME] = std::make_shared<EnterPressedInputEvent::EnterPressedInputEventHandler>(this);
-	_eventHandlers[LineRequestInputEvent::_NAME] = std::make_shared<LineRequestInputEvent::LineRequestInputEventHandler>(this);
-	_eventHandlers[InputModeInputEvent::_NAME] = std::make_shared<InputModeInputEvent::InputModeInputEventHandler>(this);
+	_eventHandlers[EnterPressedInputEvent::_NAME] =
+	    std::make_shared<EnterPressedInputEvent::EnterPressedInputEventHandler>(this);
+	_eventHandlers[LineRequestInputEvent::_NAME] =
+	    std::make_shared<LineRequestInputEvent::LineRequestInputEventHandler>(this);
+	_eventHandlers[InputModeInputEvent::_NAME] =
+	    std::make_shared<InputModeInputEvent::InputModeInputEventHandler>(this);
 }
 
 void InputController::inputListenerThread()
@@ -139,7 +139,7 @@ void InputController::inputListenerThread()
 		{
 			continue;
 		}
-		
+
 		_eventQueue.pop();
 		auto& handler = _eventHandlers.at(event.element->getEventName());
 		bool success = handler->handle(*event.element);
@@ -163,7 +163,8 @@ void InputController::enterPressedThread()
 		}
 		if (_device->awaitInputMode() && _consoleMode == ConsoleDevice::OUTPUT)
 		{
-			auto promise = onNewEvent(std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
+			auto promise = onNewEvent(
+			    std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
 			promise->get_future().wait();
 		}
 	}
@@ -173,9 +174,8 @@ std::string InputController::readLine()
 {
 	std::string readLine;
 	bool readSuccess = _device->read(readLine);
-	if (!readSuccess)
-		return "";
-	
+	if (!readSuccess) return "";
+
 	return readLine;
 }
 

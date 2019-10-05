@@ -17,76 +17,75 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPC_HPP
 #define GHOST_INTERNAL_NETWORK_RPC_HPP
 
+#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
+#include <ghost/connection_grpc/ServerClientService.pb.h>
+
 #include <atomic>
 #include <memory>
 #include <thread>
-
-#include <ghost/connection_grpc/ServerClientService.pb.h>
-#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
 
 #include "RPCStateMachine.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		 *	Container for runtime information about the RPC call.
-		 *	This class contains the call's state machine, the necessary gRPC objects as well
-		 *	as the list of operations currently active.
-		 */
-		// TODO add a disconnection callback to offer the possibility to react
-		// TODO + in outgoingRPC, try to reconnect by restarting RPCConnect
-		template<typename ReaderWriter, typename ContextType>
-		class RPC
-		{
-		public:
-			RPC();
-			~RPC();
+namespace internal
+{
+/**
+ *	Container for runtime information about the RPC call.
+ *	This class contains the call's state machine, the necessary gRPC objects as well
+ *	as the list of operations currently active.
+ */
+// TODO add a disconnection callback to offer the possibility to react
+// TODO + in outgoingRPC, try to reconnect by restarting RPCConnect
+template <typename ReaderWriter, typename ContextType>
+class RPC
+{
+public:
+	RPC();
+	~RPC();
 
-			/// Clears gRPC objects. Call this before the destructor.
-			void disposeGRPC();
+	/// Clears gRPC objects. Call this before the destructor.
+	void disposeGRPC();
 
-			/* RPC State management */
-			/// Transitions from CREATED to INITIALIZING.
-			bool initialize();
-			/// Transitions from EXECUTING or INACTIVE to DISPOSING.
-			bool dispose();
-			/// Increases the number of ongoing operations by one.
-			void startOperation();
-			/// Decreases the number of ongoing operations by one, and returns false if the RPC completed.
-			bool finishOperation();
+	/* RPC State management */
+	/// Transitions from CREATED to INITIALIZING.
+	bool initialize();
+	/// Transitions from EXECUTING or INACTIVE to DISPOSING.
+	bool dispose();
+	/// Increases the number of ongoing operations by one.
+	void startOperation();
+	/// Decreases the number of ongoing operations by one, and returns false if the RPC completed.
+	bool finishOperation();
 
-			/* RPC state accessors */
-			/// Checks that the RPC is completed and has no operation ongoing.
-			bool isFinished() const;
-			/// Blocks until no more operations are ongoing.
-			void awaitFinished();
+	/* RPC state accessors */
+	/// Checks that the RPC is completed and has no operation ongoing.
+	bool isFinished() const;
+	/// Blocks until no more operations are ongoing.
+	void awaitFinished();
 
-			/* Object accessors */
-			/// @return the state machine of this RPC.
-			const RPCStateMachine& getStateMachine() const;
-			RPCStateMachine& getStateMachine();
-			/// Sets this RPC's connection.
-			void setClient(std::unique_ptr<ReaderWriter>&& client);
-			/// @return the client handle.
-			const std::unique_ptr<ReaderWriter>& getClient() const;
-			/// @return this RPC's context.
-			const std::unique_ptr<ContextType>& getContext() const;
+	/* Object accessors */
+	/// @return the state machine of this RPC.
+	const RPCStateMachine& getStateMachine() const;
+	RPCStateMachine& getStateMachine();
+	/// Sets this RPC's connection.
+	void setClient(std::unique_ptr<ReaderWriter>&& client);
+	/// @return the client handle.
+	const std::unique_ptr<ReaderWriter>& getClient() const;
+	/// @return this RPC's context.
+	const std::unique_ptr<ContextType>& getContext() const;
 
-		protected:
-			/* async operations management */
-			std::atomic<int> _operationsRunning;
+protected:
+	/* async operations management */
+	std::atomic<int> _operationsRunning;
 
-			/* gRPC and connection objects */
-			RPCStateMachine _statemachine;
-			std::unique_ptr<ReaderWriter> _client;
-			std::unique_ptr<ContextType> _context;
+	/* gRPC and connection objects */
+	RPCStateMachine _statemachine;
+	std::unique_ptr<ReaderWriter> _client;
+	std::unique_ptr<ContextType> _context;
+};
 
-		};
-
-		#include "RPC.impl.hpp"
-	}
-}
+#include "RPC.impl.hpp"
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_RPC_HPP

@@ -25,16 +25,17 @@ class SystemtestExecutorModule;
 class StopSystemtestCommand : public ghost::Command
 {
 public:
-	StopSystemtestCommand(SystemtestExecutorModule* parent)
-		: _parent(parent) {}
-	
+	StopSystemtestCommand(SystemtestExecutorModule* parent) : _parent(parent)
+	{
+	}
+
 	bool execute(const ghost::CommandLine& commandLine) override;
 
 	std::string getName() const override;
 	std::string getShortcut() const override;
 	std::string getDescription() const override;
 
-private:	
+private:
 	SystemtestExecutorModule* _parent;
 };
 

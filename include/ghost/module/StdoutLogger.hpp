@@ -17,16 +17,16 @@
 #ifndef GHOST_MODULE_STDOUT_LOGGER_HPP
 #define GHOST_MODULE_STDOUT_LOGGER_HPP
 
-#include <memory>
 #include <ghost/module/Logger.hpp>
+#include <memory>
 
 namespace ghost
 {
-	class StdoutLogger : public Logger
-	{
-	public:
-		static std::shared_ptr<StdoutLogger> create();
-	};
-}
+class StdoutLogger : public Logger
+{
+public:
+	static std::shared_ptr<StdoutLogger> create();
+};
+} // namespace ghost
 
 #endif // GHOST_MODULE_STDOUT_LOGGER_HPP

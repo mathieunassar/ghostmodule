@@ -15,6 +15,7 @@
  */
 
 #include "StdoutLogger.hpp"
+
 #include <iostream>
 
 using namespace ghost::internal;
@@ -26,7 +27,6 @@ std::shared_ptr<ghost::StdoutLogger> ghost::StdoutLogger::create()
 
 StdoutLogger::StdoutLogger()
 {
-
 }
 
 /* From ghost::Logger */

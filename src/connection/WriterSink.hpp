@@ -17,39 +17,41 @@
 #ifndef GHOST_INTERNAL_WRITERSINK_HPP
 #define GHOST_INTERNAL_WRITERSINK_HPP
 
-#include <atomic>
 #include <google/protobuf/any.pb.h>
-#include "QueuedSink.hpp"
+
+#include <atomic>
 #include <ghost/connection/WriterSink.hpp>
+
+#include "QueuedSink.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		 *	The internal implementation of the API class ghost::WriterSink.
-		 *	This implementation manages google::protobuf::Any messages and
-		 *	shares them with with the bound connection over a blocking queue,
-		 *	which is a member of the QueuedSink class.
-		 */
-		class WriterSink : public QueuedSink, public ghost::WriterSink
-		{
-		public:
-			WriterSink();
-			virtual ~WriterSink() = default;
+namespace internal
+{
+/**
+ *	The internal implementation of the API class ghost::WriterSink.
+ *	This implementation manages google::protobuf::Any messages and
+ *	shares them with with the bound connection over a blocking queue,
+ *	which is a member of the QueuedSink class.
+ */
+class WriterSink : public QueuedSink, public ghost::WriterSink
+{
+public:
+	WriterSink();
+	virtual ~WriterSink() = default;
 
-			// From ghost::WriterSink
-			bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) override;
-			void pop() override;
-			void drain() override;
+	// From ghost::WriterSink
+	bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) override;
+	void pop() override;
+	void drain() override;
 
-			/// Adds a new message into the sink
-			bool push(const google::protobuf::Any& message, bool blocking);
+	/// Adds a new message into the sink
+	bool push(const google::protobuf::Any& message, bool blocking);
 
-		private:
-			std::atomic_bool _drained;
-		};
-	}
-}
+private:
+	std::atomic_bool _drained;
+};
+} // namespace internal
+} // namespace ghost
 
-#endif //GHOST_INTERNAL_WRITERSINK_HPP
+#endif // GHOST_INTERNAL_WRITERSINK_HPP

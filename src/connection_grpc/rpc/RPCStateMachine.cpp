@@ -18,10 +18,8 @@
 
 using namespace ghost::internal;
 
-RPCStateMachine::RPCStateMachine()
-	: _state(CREATED)
+RPCStateMachine::RPCStateMachine() : _state(CREATED)
 {
-
 }
 
 RPCStateMachine::State RPCStateMachine::getState(bool lockk) const
@@ -37,40 +35,37 @@ RPCStateMachine::State RPCStateMachine::getState(bool lockk) const
 
 void RPCStateMachine::setState(State state, bool lockk)
 {
-	if (lockk)
-		_mutex.lock();
+	if (lockk) _mutex.lock();
 
 	bool transitionAllowed = false;
 	switch (_state)
 	{
-	case CREATED:
-		transitionAllowed = (state != EXECUTING && state != INACTIVE);
-		break;
-	case INITIALIZING:
-		transitionAllowed = (state != CREATED);
-		break;
-	case EXECUTING:
-	case INACTIVE:
-		transitionAllowed = (state == INACTIVE || state == DISPOSING || state == FINISHED);
-		break;
-	case DISPOSING:
-		transitionAllowed = (state == FINISHED);
-		break;
-	case FINISHED:
-		transitionAllowed = false;
-		break;
-	default: break;
+		case CREATED:
+			transitionAllowed = (state != EXECUTING && state != INACTIVE);
+			break;
+		case INITIALIZING:
+			transitionAllowed = (state != CREATED);
+			break;
+		case EXECUTING:
+		case INACTIVE:
+			transitionAllowed = (state == INACTIVE || state == DISPOSING || state == FINISHED);
+			break;
+		case DISPOSING:
+			transitionAllowed = (state == FINISHED);
+			break;
+		case FINISHED:
+			transitionAllowed = false;
+			break;
+		default:
+			break;
 	}
 
-	if (transitionAllowed)
-		_state = state;
+	if (transitionAllowed) _state = state;
 
-	if (lockk)
-		_mutex.unlock();
+	if (lockk) _mutex.unlock();
 
 	// Call the callback if one was set.
-	if (transitionAllowed && _stateChangedCallback)
-		_stateChangedCallback(state);
+	if (transitionAllowed && _stateChangedCallback) _stateChangedCallback(state);
 }
 
 void RPCStateMachine::setStateChangedCallback(const std::function<void(State)>& callback)

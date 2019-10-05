@@ -20,19 +20,18 @@ using namespace ghost::internal;
 
 // specialization of ghost::Writer<>::create to introduce the internal implementation
 
-template<>
-std::shared_ptr<ghost::Reader<google::protobuf::Any>> ghost::Reader<google::protobuf::Any>::create(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
+template <>
+std::shared_ptr<ghost::Reader<google::protobuf::Any>> ghost::Reader<google::protobuf::Any>::create(
+    const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
 {
 	return std::make_shared<ghost::internal::Reader>(sink, blocking);
 }
 
 // Implementation of the internal part (ghost::internal::Writer)
-Reader::Reader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
-	: _blocking(blocking)
+Reader::Reader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking) : _blocking(blocking)
 {
 	auto internalSink = std::dynamic_pointer_cast<ghost::internal::ReaderSink>(sink);
-	if (!internalSink)
-		throw std::invalid_argument("The provided connection does not have a valid reader sink.");
+	if (!internalSink) throw std::invalid_argument("The provided connection does not have a valid reader sink.");
 
 	_readerSink = internalSink;
 }
@@ -41,7 +40,7 @@ bool Reader::read(google::protobuf::Any& message)
 {
 	google::protobuf::Any msg;
 	bool messageGotten = _readerSink->get(msg, _blocking);
-	
+
 	if (messageGotten)
 	{
 		message = msg;

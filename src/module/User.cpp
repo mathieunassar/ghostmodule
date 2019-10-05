@@ -18,11 +18,8 @@
 
 using namespace ghost::internal;
 
-User::User(const std::string& name, const std::string& password)
-	: _name(name)
-	, _password(password)
+User::User(const std::string& name, const std::string& password) : _name(name), _password(password)
 {
-
 }
 
 const std::string& User::getName() const

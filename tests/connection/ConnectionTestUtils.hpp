@@ -19,14 +19,14 @@
 
 #include <gmock/gmock.h>
 
+#include <ghost/connection/Client.hpp>
 #include <ghost/connection/ClientHandler.hpp>
 #include <ghost/connection/Message.hpp>
-#include <ghost/connection/ReadableConnection.hpp>
-#include <ghost/connection/WritableConnection.hpp>
-#include <ghost/connection/Client.hpp>
-#include <ghost/connection/Server.hpp>
 #include <ghost/connection/Publisher.hpp>
+#include <ghost/connection/ReadableConnection.hpp>
+#include <ghost/connection/Server.hpp>
 #include <ghost/connection/Subscriber.hpp>
+#include <ghost/connection/WritableConnection.hpp>
 
 class ServerMock : public ghost::Server
 {
@@ -92,7 +92,8 @@ public:
 class GhostMessageTester
 {
 public:
-	static void setGhostMessageExpectations(MessageMock* message, const std::string& type, const std::string& serialized);
+	static void setGhostMessageExpectations(MessageMock* message, const std::string& type,
+						const std::string& serialized);
 
 	static const std::string TEST_GHOST_MESSAGE_CUSTOM_FORMAT;
 	static const std::string TEST_GHOST_MESSAGE_CUSTOM_TYPE_NAME;
@@ -115,8 +116,9 @@ protected:
 class ReadableConnectionWithSink : public ghost::ReadableConnection
 {
 public:
-	ReadableConnectionWithSink(const ghost::ConnectionConfiguration& config)
-		: ghost::ReadableConnection(config) {}
+	ReadableConnectionWithSink(const ghost::ConnectionConfiguration& config) : ghost::ReadableConnection(config)
+	{
+	}
 
 	std::shared_ptr<ghost::ReaderSink> getSink() const
 	{
@@ -130,8 +132,9 @@ public:
 class WritableConnectionWithSink : public ghost::WritableConnection
 {
 public:
-	WritableConnectionWithSink(const ghost::ConnectionConfiguration& config)
-		: ghost::WritableConnection(config) {}
+	WritableConnectionWithSink(const ghost::ConnectionConfiguration& config) : ghost::WritableConnection(config)
+	{
+	}
 
 	std::shared_ptr<ghost::WriterSink> getSink() const
 	{

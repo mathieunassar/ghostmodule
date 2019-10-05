@@ -15,6 +15,7 @@
  */
 
 #include "ModuleBuilder.hpp"
+
 #include "CommandLineParser.hpp"
 
 using namespace ghost::internal;
@@ -24,10 +25,8 @@ std::unique_ptr<ghost::ModuleBuilder> ghost::ModuleBuilder::create()
 	return std::make_unique<ghost::internal::ModuleBuilder>();
 }
 
-ModuleBuilder::ModuleBuilder()
-	: _options("undefined")
+ModuleBuilder::ModuleBuilder() : _options("undefined")
 {
-
 }
 
 void ModuleBuilder::setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior)
@@ -64,7 +63,6 @@ void ModuleBuilder::setLogger(const std::shared_ptr<ghost::Logger>& logger)
 
 std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleName)
 {
-	return std::make_shared<ghost::internal::Module>(moduleName,
-		_console, _logger, _options,
-		_initializationBehavior, _runningBehavior, _disposeBehavior);
+	return std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options,
+							 _initializationBehavior, _runningBehavior, _disposeBehavior);
 }

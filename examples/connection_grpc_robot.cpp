@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <ghost/module/ModuleBuilder.hpp>
-#include <ghost/module/Module.hpp>
-#include <ghost/module/GhostLogger.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
 #include <ghost/module/Command.hpp>
+#include <ghost/module/GhostLogger.hpp>
+#include <ghost/module/Module.hpp>
+#include <ghost/module/ModuleBuilder.hpp>
+#include <thread>
+
 #include "protobuf/connection_grpc_robot.pb.h"
 
- /***************************
-	 TRY IT: Run this program once with the program option "robot". Using the ghost::Console,
-	 enter "updateVel 1.0 0.0" to change the current velocity of the robot to 1.0 m/s.
-	 The program automatically subscribes to the robot and displays the current odometry.
-	 You can start the program multiple times without any program options to start new subscribers
-	 to the odometry.
- ***************************/
+/***************************
+	TRY IT: Run this program once with the program option "robot". Using the ghost::Console,
+	enter "updateVel 1.0 0.0" to change the current velocity of the robot to 1.0 m/s.
+	The program automatically subscribes to the robot and displays the current odometry.
+	You can start the program multiple times without any program options to start new subscribers
+	to the odometry.
+***************************/
 
-
- // Handling method to process messages of type "ghost::examples::protobuf::RobotOdometry")
- // This is provided to ghost::MessageHandler objects later in this example
+// Handling method to process messages of type "ghost::examples::protobuf::RobotOdometry")
+// This is provided to ghost::MessageHandler objects later in this example
 void odmetryMessageHandler(const ghost::examples::protobuf::RobotOdometry& message)
 {
 	std::cout << "Received odometry: " << message.x() << "; " << message.y() << " [m/s; m/s]" << std::endl;
@@ -48,8 +48,9 @@ void odmetryMessageHandler(const ghost::examples::protobuf::RobotOdometry& messa
 class Robot
 {
 public:
-	Robot(const std::shared_ptr<ghost::ConnectionManager>& connectionManager, const ghost::ConnectionConfigurationGRPC& config)
-		: _odoX(0.0), _odoY(0.0), _velX(0.0), _velY(0.0), _lastTime(std::chrono::steady_clock::now())
+	Robot(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+	      const ghost::ConnectionConfigurationGRPC& config)
+	    : _odoX(0.0), _odoY(0.0), _velX(0.0), _velY(0.0), _lastTime(std::chrono::steady_clock::now())
 	{
 		// Creates a publisher with the provided configuration. The publisher belongs to the connection manager
 		// and therefore doesn't have to be stored or deleted.
@@ -68,9 +69,8 @@ public:
 
 	void update()
 	{
-		if (!_odometryWriter)
-			return;
-		
+		if (!_odometryWriter) return;
+
 		auto delta = std::chrono::steady_clock::now() - _lastTime;
 		// Perform very complex operations to compute the super-high-resolution odometry.
 		_odoX = _odoX + _velX * std::chrono::duration_cast<std::chrono::milliseconds>(delta).count() / 1000;
@@ -99,14 +99,14 @@ private:
 class UpdateVelocityCommand : public ghost::Command
 {
 public:
-	UpdateVelocityCommand(const std::shared_ptr<Robot>& robot)
-		: _robot(robot) {}
+	UpdateVelocityCommand(const std::shared_ptr<Robot>& robot) : _robot(robot)
+	{
+	}
 
 	// The execute method corresponds to the action of this command.
 	bool execute(const ghost::CommandLine& commandLine) override
 	{
-		if (!commandLine.hasParameter("__0") || !commandLine.hasParameter("__1") || !_robot)
-			return false;
+		if (!commandLine.hasParameter("__0") || !commandLine.hasParameter("__1") || !_robot) return false;
 
 		double vx = commandLine.getParameter<double>("__0");
 		double vy = commandLine.getParameter<double>("__1");
@@ -115,10 +115,19 @@ public:
 		return true;
 	}
 
-	std::string getName() const override { return "UpdateVelocityCommand"; }
+	std::string getName() const override
+	{
+		return "UpdateVelocityCommand";
+	}
 	// This method defines the command that he user will have to enter to invoke this command
-	std::string getShortcut() const override { return "updateVel"; }
-	std::string getDescription() const override { return "Updates the robot's velocity"; }
+	std::string getShortcut() const override
+	{
+		return "updateVel";
+	}
+	std::string getDescription() const override
+	{
+		return "Updates the robot's velocity";
+	}
 
 private:
 	std::shared_ptr<Robot> _robot;
@@ -147,7 +156,8 @@ public:
 		_configuration.setServerIpAddress("127.0.0.1");
 		_configuration.setServerPortNumber(8562);
 
-		if (module.getProgramOptions().hasParameter("__0") && module.getProgramOptions().getParameter<std::string>("__0") == "robot")
+		if (module.getProgramOptions().hasParameter("__0") &&
+		    module.getProgramOptions().getParameter<std::string>("__0") == "robot")
 		{
 			_robot = std::make_shared<Robot>(_connectionManager, _configuration);
 
@@ -172,8 +182,7 @@ public:
 
 	bool run(const ghost::Module& module)
 	{
-		if (_robot)
-			_robot->update();
+		if (_robot) _robot->update();
 		// The robot will send new odometry data (roughly) with a 20 Hz frequency
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		return true;
@@ -196,18 +205,19 @@ int main(int argc, char** argv)
 	auto builder = ghost::ModuleBuilder::create();
 	// This line will provide the intialization method.
 	builder->setInitializeBehavior(std::bind(&RobotModule::initialize, &myModule, std::placeholders::_1));
-	// The module will run until the user enters the "#exit" command in the console, hence we return "true" after waiting for a little bit.
+	// The module will run until the user enters the "#exit" command in the console, hence we return "true" after
+	// waiting for a little bit.
 	builder->setRunningBehavior(std::bind(&RobotModule::run, &myModule, std::placeholders::_1));
 	// We will use a ghost::Console in this example to control the inputs while the odometry is being printed
-	(void) builder->setConsole();
+	(void)builder->setConsole();
 	// Parse the program options to determine what to do:
 	builder->setProgramOptions(argc, argv);
 
 	// The following line creates the module with all the parameters, and names it "ghostRobotExample".
 	std::shared_ptr<ghost::Module> module = builder->build("ghostRobotExample");
-	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr here.
-	if (module)
-		module->start();
+	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr
+	// here.
+	if (module) module->start();
 
 	// Start blocks until the module ends.
 	return 0;

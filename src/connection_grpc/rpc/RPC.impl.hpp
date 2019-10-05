@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-template<typename ReaderWriter, typename ContextType>
-RPC<ReaderWriter, ContextType>::RPC()
-	:  _operationsRunning(0)
-	, _context(new ContextType())
+template <typename ReaderWriter, typename ContextType>
+RPC<ReaderWriter, ContextType>::RPC() : _operationsRunning(0), _context(new ContextType())
 {
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 RPC<ReaderWriter, ContextType>::~RPC()
 {
 	disposeGRPC();
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 void RPC<ReaderWriter, ContextType>::disposeGRPC()
 {
 	_client.reset();
 	_context.reset();
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 bool RPC<ReaderWriter, ContextType>::initialize()
 {
 	auto lock = _statemachine.lock();
@@ -47,11 +45,13 @@ bool RPC<ReaderWriter, ContextType>::initialize()
 	return false;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 bool RPC<ReaderWriter, ContextType>::dispose()
 {
-	auto lock = _statemachine.lock(); // mutex taken because user can call it concurrently - avoids entering twice in the if
-	if (_statemachine.getState(false) == RPCStateMachine::EXECUTING || _statemachine.getState(false) == RPCStateMachine::INACTIVE)
+	auto lock =
+	    _statemachine.lock(); // mutex taken because user can call it concurrently - avoids entering twice in the if
+	if (_statemachine.getState(false) == RPCStateMachine::EXECUTING ||
+	    _statemachine.getState(false) == RPCStateMachine::INACTIVE)
 	{
 		_statemachine.setState(RPCStateMachine::DISPOSING, false);
 		return true;
@@ -59,13 +59,13 @@ bool RPC<ReaderWriter, ContextType>::dispose()
 	return false;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 void RPC<ReaderWriter, ContextType>::startOperation()
 {
 	_operationsRunning++;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 bool RPC<ReaderWriter, ContextType>::finishOperation()
 {
 	_operationsRunning--;
@@ -73,48 +73,48 @@ bool RPC<ReaderWriter, ContextType>::finishOperation()
 	return !(_operationsRunning == 0 && _statemachine.getState() == RPCStateMachine::FINISHED);
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 bool RPC<ReaderWriter, ContextType>::isFinished() const
 {
 	return _statemachine.getState() == RPCStateMachine::FINISHED && _operationsRunning == 0;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 void RPC<ReaderWriter, ContextType>::awaitFinished()
 {
-	while ((_statemachine.getState() != RPCStateMachine::FINISHED
-		&& _statemachine.getState() != RPCStateMachine::CREATED)
-		|| _operationsRunning > 0)
+	while ((_statemachine.getState() != RPCStateMachine::FINISHED &&
+		_statemachine.getState() != RPCStateMachine::CREATED) ||
+	       _operationsRunning > 0)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 const RPCStateMachine& RPC<ReaderWriter, ContextType>::getStateMachine() const
 {
 	return _statemachine;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 RPCStateMachine& RPC<ReaderWriter, ContextType>::getStateMachine()
 {
 	return _statemachine;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 void RPC<ReaderWriter, ContextType>::setClient(std::unique_ptr<ReaderWriter>&& client)
 {
 	_client = std::move(client);
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 const std::unique_ptr<ReaderWriter>& RPC<ReaderWriter, ContextType>::getClient() const
 {
 	return _client;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 const std::unique_ptr<ContextType>& RPC<ReaderWriter, ContextType>::getContext() const
 {
 	return _context;

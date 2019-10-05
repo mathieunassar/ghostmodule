@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include <iostream>
 #include <gtest/gtest.h>
 
 #include <ghost/connection/Configuration.hpp>
 #include <ghost/connection/ConnectionConfiguration.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include <iostream>
 
 using namespace ghost;
 
@@ -28,12 +28,10 @@ class ConfigurationTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-
 	}
 
 	void TearDown() override
 	{
-
 	}
 
 	static const std::string TEST_CONFIGURATION_NAME;
@@ -49,13 +47,13 @@ const std::string ConfigurationTests::TEST_CONFIGURATION_VALUE = "TEST_VALUE";
 const std::string ConfigurationTests::TEST_CONFIGURATION_VALUE2 = "TEST_VALUE2";
 const int ConfigurationTests::TEST_CONFIGURATION_VALUE_INT = 42;
 
-
 TEST_F(ConfigurationTests, test_configuration_addElement)
 {
 	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
 	ASSERT_FALSE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
 
-	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+	bool addResult =
+	    configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
 	ASSERT_TRUE(addResult);
 	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
@@ -67,8 +65,9 @@ TEST_F(ConfigurationTests, test_configuration_addElement_When_alreadyExistsAndNo
 	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
 	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
-	
+	bool addResult =
+	    configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+
 	ASSERT_FALSE(addResult);
 	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
 	ASSERT_TRUE(configuration->getAttributes().size() == 1);
@@ -79,7 +78,8 @@ TEST_F(ConfigurationTests, test_configuration_addElement_When_alreadyExistsAndOv
 	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
 	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE), true);
+	bool addResult = configuration->addAttribute(TEST_CONFIGURATION_FIELD,
+						     ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE), true);
 
 	ASSERT_TRUE(addResult);
 	ASSERT_TRUE(configuration->hasAttribute(TEST_CONFIGURATION_FIELD));
@@ -105,7 +105,7 @@ TEST_F(ConfigurationTests, test_configuration_getElement)
 TEST_F(ConfigurationTests, test_configuration_getElement_When_elementDoesNotExist)
 {
 	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
-	
+
 	ghost::ConfigurationValue value;
 	bool getResult = configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
 
@@ -117,9 +117,10 @@ TEST_F(ConfigurationTests, test_configuration_update)
 	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
 	configuration->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 
-	bool updateResult = configuration->updateAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE2));
+	bool updateResult = configuration->updateAttribute(TEST_CONFIGURATION_FIELD,
+							   ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE2));
 	ASSERT_TRUE(updateResult);
-	
+
 	ghost::ConfigurationValue value;
 	configuration->getAttribute(TEST_CONFIGURATION_FIELD, value);
 
@@ -132,7 +133,8 @@ TEST_F(ConfigurationTests, test_configuration_update_When_elementDoesNotExist)
 {
 	auto configuration = ghost::Configuration::create(TEST_CONFIGURATION_NAME);
 
-	bool updateResult = configuration->updateAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE2));
+	bool updateResult = configuration->updateAttribute(TEST_CONFIGURATION_FIELD,
+							   ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE2));
 	ASSERT_FALSE(updateResult);
 
 	ASSERT_TRUE(configuration->getAttributes().size() == 0);
@@ -227,7 +229,8 @@ TEST_F(ConfigurationTests, test_connectionConfiguration_configurationIsUpdateabl
 {
 	ghost::ConnectionConfiguration configuration;
 	ASSERT_TRUE(configuration.getConfiguration()->getAttributes().size() == 3);
-	configuration.getConfiguration()->addAttribute(TEST_CONFIGURATION_FIELD, ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
+	configuration.getConfiguration()->addAttribute(TEST_CONFIGURATION_FIELD,
+						       ghost::ConfigurationValue(TEST_CONFIGURATION_VALUE));
 	ASSERT_TRUE(configuration.getConfiguration()->hasAttribute(TEST_CONFIGURATION_FIELD));
 }
 

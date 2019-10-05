@@ -17,16 +17,16 @@
 #ifndef GHOST_MODULE_GHOST_LOGGER_HPP
 #define GHOST_MODULE_GHOST_LOGGER_HPP
 
-#include <ghost/module/Logger.hpp>
 #include <ghost/module/Console.hpp>
+#include <ghost/module/Logger.hpp>
 
 namespace ghost
 {
-	class GhostLogger : public Logger
-	{
-	public:
-		static std::shared_ptr<GhostLogger> create(const std::shared_ptr<ghost::Console>& console);
-	};
-}
+class GhostLogger : public Logger
+{
+public:
+	static std::shared_ptr<GhostLogger> create(const std::shared_ptr<ghost::Console>& console);
+};
+} // namespace ghost
 
 #endif // GHOST_MODULE_GHOST_LOGGER_HPP

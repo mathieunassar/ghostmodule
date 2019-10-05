@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "../src/module/UserManager.hpp"
-
 #include <gtest/gtest.h>
+
+#include "../src/module/UserManager.hpp"
 
 class UserManagerTest : public testing::Test
 {
@@ -28,7 +28,6 @@ protected:
 
 	void TearDown() override
 	{
-
 	}
 
 	bool _callbackWasCalled;
@@ -138,7 +137,7 @@ TEST_F(UserManagerTest, Test_UserManager_connect_When_ok)
 TEST_F(UserManagerTest, Test_UserManager_connect_When_userNotFound)
 {
 	auto manager = ghost::UserManager::create();
-	
+
 	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_FALSE(connectSuccess);
 	ASSERT_FALSE(manager->getConnectedUser());
@@ -160,7 +159,8 @@ TEST_F(UserManagerTest, Test_UserManager_connect_When_wrongPassword)
 TEST_F(UserManagerTest, Test_UserManager_connect_When_callbackIsSet)
 {
 	auto manager = ghost::UserManager::create();
-	manager->setConnectedUserCallback(std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1));
+	manager->setConnectedUserCallback(
+	    std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1));
 	std::shared_ptr<ghost::User> newUser = manager->createUser(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(newUser);
 
@@ -194,7 +194,8 @@ TEST_F(UserManagerTest, Test_UserManager_disconnect_When_callbackIsSet)
 	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(connectSuccess);
 
-	manager->setConnectedUserCallback(std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1));
+	manager->setConnectedUserCallback(
+	    std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1));
 
 	manager->disconnect();
 	ASSERT_FALSE(manager->getConnectedUser());

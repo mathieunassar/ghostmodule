@@ -17,10 +17,11 @@
 #ifndef GHOST_INTERNAL_NETWORK_OUTGOINGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_OUTGOINGRPC_HPP
 
-#include <memory>
 #include <grpcpp/client_context.h>
+
 #include <ghost/connection/ReaderSink.hpp>
 #include <ghost/connection/WriterSink.hpp>
+#include <memory>
 
 #include "../CompletionQueueExecutor.hpp"
 #include "RPC.hpp"
@@ -29,46 +30,46 @@
 
 namespace ghost
 {
-	namespace internal
-	{
-		// - give the operations an interface which can be faked
-		// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
-		
-		class OutgoingRPC
-		{
-		public:
-			using ReaderWriter = grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>;
-			using ContextType = grpc::ClientContext;
+namespace internal
+{
+// - give the operations an interface which can be faked
+// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
 
-			OutgoingRPC(const std::string& serverIp, int serverPort, size_t dedicatedThreads);
-			~OutgoingRPC();
+class OutgoingRPC
+{
+public:
+	using ReaderWriter = grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>;
+	using ContextType = grpc::ClientContext;
 
-			bool start();
-			bool stop();
-			bool isRunning() const;
+	OutgoingRPC(const std::string& serverIp, int serverPort, size_t dedicatedThreads);
+	~OutgoingRPC();
 
-			// configuration: set a writer sink or a reader sink to activate the feature
-			void setWriterSink(const std::shared_ptr<ghost::WriterSink>& sink);
-			void setReaderSink(const std::shared_ptr<ghost::ReaderSink>& sink);
+	bool start();
+	bool stop();
+	bool isRunning() const;
 
-		private:
-			void onRPCStateChanged(RPCStateMachine::State newState);
-			void dispose();
+	// configuration: set a writer sink or a reader sink to activate the feature
+	void setWriterSink(const std::shared_ptr<ghost::WriterSink>& sink);
+	void setReaderSink(const std::shared_ptr<ghost::ReaderSink>& sink);
 
-			grpc::CompletionQueue* _completionQueue;
-			std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
+private:
+	void onRPCStateChanged(RPCStateMachine::State newState);
+	void dispose();
 
-			std::string _serverIp;
-			int _serverPort;
-			std::shared_ptr<ghost::ReaderSink> _readerSink;
-			std::shared_ptr<ghost::WriterSink> _writerSink;
+	grpc::CompletionQueue* _completionQueue;
+	std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
 
-			std::shared_ptr<RPC<ReaderWriter, ContextType>> _rpc;
-			std::shared_ptr<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>> _writerOperation;
-			std::shared_ptr<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>> _readerOperation;
-			CompletionQueueExecutor _executor;
-		};
-	}
-}
+	std::string _serverIp;
+	int _serverPort;
+	std::shared_ptr<ghost::ReaderSink> _readerSink;
+	std::shared_ptr<ghost::WriterSink> _writerSink;
+
+	std::shared_ptr<RPC<ReaderWriter, ContextType>> _rpc;
+	std::shared_ptr<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>> _writerOperation;
+	std::shared_ptr<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>> _readerOperation;
+	CompletionQueueExecutor _executor;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_OUTGOINGRPC_HPP

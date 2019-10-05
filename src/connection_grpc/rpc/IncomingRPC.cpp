@@ -15,24 +15,28 @@
  */
 
 #include "IncomingRPC.hpp"
+
 #include "../RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 
 IncomingRPC::IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* service,
-		grpc::ServerCompletionQueue* completionQueue,
-		const std::function<void(std::shared_ptr<RemoteClientGRPC>)>& clientConnectedCallback)
-	: _serverCallback(clientConnectedCallback)
-	, _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
-	, _requestOperation(std::make_shared<RPCRequest<ReaderWriter, ContextType, ServiceType>>(_rpc, service, completionQueue, completionQueue))
-	, _doneOperation(std::make_shared<RPCDone<ReaderWriter, ContextType>>(_rpc))
+			 grpc::ServerCompletionQueue* completionQueue,
+			 const std::function<void(std::shared_ptr<RemoteClientGRPC>)>& clientConnectedCallback)
+    : _serverCallback(clientConnectedCallback)
+    , _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
+    , _requestOperation(std::make_shared<RPCRequest<ReaderWriter, ContextType, ServiceType>>(
+	  _rpc, service, completionQueue, completionQueue))
+    , _doneOperation(std::make_shared<RPCDone<ReaderWriter, ContextType>>(_rpc))
 {
 	auto rpcCallback = std::bind(&IncomingRPC::onRPCConnected, this);
 	_requestOperation->setConnectionCallback(rpcCallback);
 
-	_rpc->setClient(std::make_unique<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>>(_rpc->getContext().get()));
-	_rpc->getStateMachine().setStateChangedCallback(std::bind(&IncomingRPC::onRPCStateChanged, this, std::placeholders::_1));
-	
+	_rpc->setClient(std::make_unique<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>>(
+	    _rpc->getContext().get()));
+	_rpc->getStateMachine().setStateChangedCallback(
+	    std::bind(&IncomingRPC::onRPCStateChanged, this, std::placeholders::_1));
+
 	_doneOperation->start();
 	start();
 }
@@ -44,16 +48,14 @@ IncomingRPC::~IncomingRPC()
 
 bool IncomingRPC::start()
 {
-	if (!_rpc->initialize())
-		return false;
-	
+	if (!_rpc->initialize()) return false;
+
 	return _requestOperation->start();
 }
 
 bool IncomingRPC::stop(const grpc::Status& status)
 {
-	if (!_rpc->dispose())
-		return false;
+	if (!_rpc->dispose()) return false;
 
 	// if the state switched to DISPOSING, start the finish operation
 	if (_rpc->getStateMachine().getState() == RPCStateMachine::DISPOSING)
@@ -72,7 +74,8 @@ void IncomingRPC::startWriter(const std::shared_ptr<ghost::WriterSink>& sink)
 	if (sink)
 	{
 		_writerSink = sink;
-		_writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, true, true, sink);
+		_writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(
+		    _rpc, true, true, sink);
 		_writerOperation->startAsync();
 	}
 }
@@ -82,29 +85,27 @@ void IncomingRPC::startReader(const std::shared_ptr<ghost::ReaderSink>& sink)
 	if (sink)
 	{
 		_readerSink = sink;
-		_readerOperation = std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, sink);
+		_readerOperation =
+		    std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, sink);
 		_readerOperation->start();
 	}
 }
 
 void IncomingRPC::dispose()
 {
-	if (_writerOperation)
-		_writerOperation->stop();
-	if (_readerOperation)
-		_readerOperation->stop();
-	if (_requestOperation)
-		_requestOperation->stop();
-	if (_finishOperation)
-		_finishOperation->stop();
-	if (_doneOperation)
-		_doneOperation->stop();
+	if (_writerOperation) _writerOperation->stop();
+	if (_readerOperation) _readerOperation->stop();
+	if (_requestOperation) _requestOperation->stop();
+	if (_finishOperation) _finishOperation->stop();
+	if (_doneOperation) _doneOperation->stop();
 
 	// only delete this object when the state is finished and no other operations are running
-	// if operations were running after this gets deleted, function pointers to callbacks would be lead to segmentation faults.
+	// if operations were running after this gets deleted, function pointers to callbacks would be lead to
+	// segmentation faults.
 	_rpc->awaitFinished();
 
-	_rpc->disposeGRPC(); // this method exists because it seems that gRPC needs a specific destruction order that the default destructor does not guarantee.
+	_rpc->disposeGRPC(); // this method exists because it seems that gRPC needs a specific destruction order that
+			     // the default destructor does not guarantee.
 }
 
 bool IncomingRPC::isFinished() const
@@ -136,9 +137,7 @@ void IncomingRPC::onRPCStateChanged(RPCStateMachine::State newState)
 {
 	if (newState == RPCStateMachine::INACTIVE || newState == RPCStateMachine::FINISHED)
 	{
-		if (_readerSink)
-			_readerSink->drain();
-		if (_writerSink)
-			_writerSink->drain();
+		if (_readerSink) _readerSink->drain();
+		if (_writerSink) _writerSink->drain();
 	}
 }

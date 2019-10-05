@@ -22,27 +22,28 @@
 
 namespace ghost
 {
-	/**
-	 * @brief Specific type of Connection to send messages to Subscriber connections.
-	 * 
-	 * A Publisher can be created via a ConnectionManager, which will also
-	 * manage its lifetime.
-	 * 
-	 * The configuration provided in the constructor is used to set up the connection
-	 * parameters such as the target IP address, port number or threading or blocking
-	 * parameters.
-	 * 
-	 * Particular implementations of Connection classes may define new connection
-	 * parameters which can be passed through the ConnectionConfiguration.
-	 */
-	class Publisher : public ghost::Connection, public ghost::WritableConnection
+/**
+ * @brief Specific type of Connection to send messages to Subscriber connections.
+ *
+ * A Publisher can be created via a ConnectionManager, which will also
+ * manage its lifetime.
+ *
+ * The configuration provided in the constructor is used to set up the connection
+ * parameters such as the target IP address, port number or threading or blocking
+ * parameters.
+ *
+ * Particular implementations of Connection classes may define new connection
+ * parameters which can be passed through the ConnectionConfiguration.
+ */
+class Publisher : public ghost::Connection, public ghost::WritableConnection
+{
+public:
+	Publisher(const ghost::ConnectionConfiguration& configuration) : ghost::WritableConnection(configuration)
 	{
-	public:
-		Publisher(const ghost::ConnectionConfiguration& configuration)
-			: ghost::WritableConnection(configuration) {}
+	}
 
-		virtual ~Publisher() = default;
-	};
-}
+	virtual ~Publisher() = default;
+};
+} // namespace ghost
 
-#endif //GHOST_PUBLISHER_HPP
+#endif // GHOST_PUBLISHER_HPP

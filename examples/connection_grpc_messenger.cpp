@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <ghost/module/ModuleBuilder.hpp>
-#include <ghost/module/Module.hpp>
-#include <ghost/module/GhostLogger.hpp>
+#include <ghost/connection/ClientHandler.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
-#include <ghost/connection/ClientHandler.hpp>
 #include <ghost/module/Command.hpp>
+#include <ghost/module/GhostLogger.hpp>
+#include <ghost/module/Module.hpp>
+#include <ghost/module/ModuleBuilder.hpp>
+#include <thread>
+
 #include "protobuf/connection_grpc_messenger.pb.h"
 
- /***************************
-	 TRY IT: Run this program parallely with the client and server configurations.
-	 Use the console feature to send text to the other side, and enter "#exit" to
-	 quit the program.
- ***************************/
+/***************************
+	TRY IT: Run this program parallely with the client and server configurations.
+	Use the console feature to send text to the other side, and enter "#exit" to
+	quit the program.
+***************************/
 
 // Handling method to process messages of type "ghost::examples::protobuf::MessengerMessage")
 // This is provided to ghost::MessageHandler objects later in this example
@@ -53,11 +54,7 @@ private:
 	std::shared_ptr<ghost::Client> _client;
 };
 
-
-
 /* Module's logic: MessengerModule */
-
-
 
 // This class contains the logic of the messenger example.
 // It contains an initialization method that will be called by the module once it is started, followed
@@ -81,8 +78,10 @@ public:
 			_configuration.setServerIpAddress("127.0.0.1");
 			_configuration.setServerPortNumber(8562);
 
-			// Set a custom callback for the console in order to process the messages entered by the user in the console.
-			module.getConsole()->setCommandCallback(std::bind(&MessengerModule::consoleCallback, this, std::placeholders::_1, module.getInterpreter()));
+			// Set a custom callback for the console in order to process the messages entered by the user in
+			// the console.
+			module.getConsole()->setCommandCallback(std::bind(
+			    &MessengerModule::consoleCallback, this, std::placeholders::_1, module.getInterpreter()));
 
 			// Initialize the server or the client
 			if (module.getProgramOptions().getParameter<std::string>("__0") == "server")
@@ -96,8 +95,8 @@ public:
 	}
 
 	// Callback for commands entered in the console. If the line starts with '#', we forward the rest of the line
-	// to the interpreter (which is almost the standard behavior). Otherwise, we write it to the connection that registered
-	// a ghost::Writer in _writer.
+	// to the interpreter (which is almost the standard behavior). Otherwise, we write it to the connection that
+	// registered a ghost::Writer in _writer.
 	void consoleCallback(const std::string& cmd, const std::shared_ptr<ghost::CommandLineInterpreter>& interpreter)
 	{
 		if (cmd.length() > 0 && cmd[0] == '#')
@@ -127,13 +126,15 @@ private:
 	{
 		GHOST_INFO(logger) << "Configured as client";
 		_user = "client";
-		// "_configuration" is of type "ghost::ConnectionConfigurationGRPC", which makes sure that the configuration has the required
-		// attributes to be recognized by the connection factory operated by the connect manager.
+		// "_configuration" is of type "ghost::ConnectionConfigurationGRPC", which makes sure that the
+		// configuration has the required attributes to be recognized by the connection factory operated by the
+		// connect manager.
 		auto client = _connectionManager->createClient(_configuration);
-		// Adds a message handler to the ReaderSink of the client connection. After doing this, a ghost::Reader will not be able to
-		// get message since they will be forwarded to the message handler.
+		// Adds a message handler to the ReaderSink of the client connection. After doing this, a ghost::Reader
+		// will not be able to get message since they will be forwarded to the message handler.
 		auto messageHandler = client->addMessageHandler();
-		// Sets the handler of "ghost::examples::protobuf::MessengerMessage" messages (it simply prints the content)
+		// Sets the handler of "ghost::examples::protobuf::MessengerMessage" messages (it simply prints the
+		// content)
 		messageHandler->addHandler<ghost::examples::protobuf::MessengerMessage>(&messengerMessageHandler);
 		// Register a writer from the client connection to be able to send messages to the server.
 		_writer = client->getWriter<ghost::examples::protobuf::MessengerMessage>();
@@ -146,10 +147,11 @@ private:
 	{
 		GHOST_INFO(logger) << "Configured as server";
 		_user = "server";
-		// Similarly to the client's initialization, _configuration contains the minimum set of parameters required by gRPC connection
-		// implementations.
+		// Similarly to the client's initialization, _configuration contains the minimum set of parameters
+		// required by gRPC connection implementations.
 		auto server = _connectionManager->createServer(_configuration);
-		// Provides an instance of the "MessengerClientHandler" to the server. It will call its methods when new clients connect to the server.
+		// Provides an instance of the "MessengerClientHandler" to the server. It will call its methods when new
+		// clients connect to the server.
 		server->setClientHandler(std::make_shared<MessengerClientHandler>(this));
 
 		// The server is now owned by the connection manager, no need to store it anywhere.
@@ -163,14 +165,11 @@ private:
 	std::string _user;
 };
 
-
-
 /* Implementation of the client handler */
 
-
-
-MessengerClientHandler::MessengerClientHandler(MessengerModule* parent)
-	: _parent(parent) {}
+MessengerClientHandler::MessengerClientHandler(MessengerModule* parent) : _parent(parent)
+{
+}
 
 // This method will be called when a new client connects to the server.
 // When this method is called, the read and write operations are not started yet,
@@ -205,11 +204,7 @@ bool MessengerClientHandler::handle(std::shared_ptr<ghost::Client> client, bool&
 	return true;
 }
 
-
-
 /* main function: instantiation of the ghost::Module */
-
-
 
 int main(int argc, char** argv)
 {
@@ -219,19 +214,23 @@ int main(int argc, char** argv)
 	auto builder = ghost::ModuleBuilder::create();
 	// This line will provide the intialization method.
 	builder->setInitializeBehavior(std::bind(&MessengerModule::initialize, &myModule, std::placeholders::_1));
-	// The module will run until the user enters the "#exit" command in the console, hence we return "true" after waiting for a little bit.
-	builder->setRunningBehavior([](const ghost::Module&) {std::this_thread::sleep_for(std::chrono::milliseconds(10));  return true; });
+	// The module will run until the user enters the "#exit" command in the console, hence we return "true" after
+	// waiting for a little bit.
+	builder->setRunningBehavior([](const ghost::Module&) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		return true;
+	});
 	// Since we want to use the console logger, we provide one with a console to the builder.
 	auto console = builder->setConsole();
 	builder->setLogger(ghost::GhostLogger::create(console));
 	// Parse the program options to determine what to do:
 	builder->setProgramOptions(argc, argv);
-	
+
 	// The following line creates the module with all the parameters, and names it "ghostMessengerExample".
 	std::shared_ptr<ghost::Module> module = builder->build("ghostMessengerExample");
-	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr here.
-	if (module)
-		module->start();
+	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr
+	// here.
+	if (module) module->start();
 
 	// Start blocks until the module ends.
 	return 0;

@@ -17,44 +17,43 @@
 #ifndef GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 
+#include <ghost/connection/Client.hpp>
 #include <memory>
 #include <thread>
 
-#include <ghost/connection/Client.hpp>
 #include "rpc/IncomingRPC.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		class ServerGRPC;
+namespace internal
+{
+class ServerGRPC;
 
-		class RemoteClientGRPC : public ghost::Client
-		{
-		public:
-			RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration,
-				const std::shared_ptr<IncomingRPC>& rpc,
-				ServerGRPC* parentServer);
-			~RemoteClientGRPC();
+class RemoteClientGRPC : public ghost::Client
+{
+public:
+	RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration, const std::shared_ptr<IncomingRPC>& rpc,
+			 ServerGRPC* parentServer);
+	~RemoteClientGRPC();
 
-			bool start() override;
-			bool stop() override;
-			bool isRunning() const override;
+	bool start() override;
+	bool stop() override;
+	bool isRunning() const override;
 
-			void execute();
+	void execute();
 
-			std::shared_ptr<ghost::ReaderSink> getReaderSink() const;
-			std::shared_ptr<ghost::WriterSink> getWriterSink() const;
-			const std::shared_ptr<IncomingRPC> getRPC() const;
+	std::shared_ptr<ghost::ReaderSink> getReaderSink() const;
+	std::shared_ptr<ghost::WriterSink> getWriterSink() const;
+	const std::shared_ptr<IncomingRPC> getRPC() const;
 
-		private:
-			std::shared_ptr<IncomingRPC> _rpc;
-			std::atomic_bool _running;
-			std::thread _executor;
+private:
+	std::shared_ptr<IncomingRPC> _rpc;
+	std::atomic_bool _running;
+	std::thread _executor;
 
-			ServerGRPC* _parentServer;
-		};
-	}
-}
+	ServerGRPC* _parentServer;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP

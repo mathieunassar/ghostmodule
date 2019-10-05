@@ -15,6 +15,7 @@
  */
 
 #include "LoginCommand.hpp"
+
 #include <iostream>
 
 using namespace ghost::internal;
@@ -27,10 +28,8 @@ const std::string LoginCommand::_PARAM_PASSWORD = "password";
 const std::string LoginCommand::_PARAM_USERNAME_SHORT = "u";
 const std::string LoginCommand::_PARAM_PASSWORD_SHORT = "p";
 
-LoginCommand::LoginCommand(std::shared_ptr<ghost::UserManager> userManager)
-	: _userManager(userManager)
+LoginCommand::LoginCommand(std::shared_ptr<ghost::UserManager> userManager) : _userManager(userManager)
 {
-
 }
 
 bool LoginCommand::execute(const ghost::CommandLine& commandLine)

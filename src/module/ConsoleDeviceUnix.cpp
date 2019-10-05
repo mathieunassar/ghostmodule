@@ -15,17 +15,16 @@
  */
 
 #include "ConsoleDeviceUnix.hpp"
-#include <thread>
-#include <iostream>
+
 #include <sys/select.h>
+
+#include <iostream>
+#include <thread>
 
 using namespace ghost::internal;
 
-ConsoleDeviceUnix::ConsoleDeviceUnix()
-	: _enable(false)
-	, _mode(DeviceMode::IDLE)
+ConsoleDeviceUnix::ConsoleDeviceUnix() : _enable(false), _mode(DeviceMode::IDLE)
 {
-
 }
 
 bool ConsoleDeviceUnix::start()
@@ -102,7 +101,7 @@ bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate)
 		struct timeval tv;
 		tv.tv_sec = 0;
 		tv.tv_usec = 0;
-		
+
 		int selectResult = select(STDIN_FILENO + 1, &fdr, NULL, NULL, &tv);
 		if (selectResult == -1)
 		{
@@ -110,10 +109,11 @@ bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate)
 		}
 		else if (selectResult == 0) // nothing to read
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1)); // but don't wait too long to stay reactive
+			std::this_thread::sleep_for(
+			    std::chrono::milliseconds(1)); // but don't wait too long to stay reactive
 			continue;
 		}
-		
+
 		return true;
 	}
 

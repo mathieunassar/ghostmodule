@@ -20,20 +20,19 @@ using namespace ghost::internal;
 
 // specialization of ghost::Writer<>::create to introduce the internal implementation
 
-template<>
-std::shared_ptr<ghost::Writer<google::protobuf::Any>> ghost::Writer<google::protobuf::Any>::create(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking)
+template <>
+std::shared_ptr<ghost::Writer<google::protobuf::Any>> ghost::Writer<google::protobuf::Any>::create(
+    const std::shared_ptr<ghost::WriterSink>& sink, bool blocking)
 {
 	return std::make_shared<ghost::internal::Writer>(sink, blocking);
 }
 
 // Implementation of the internal part (ghost::internal::Writer)
 
-Writer::Writer(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking)
-	: _blocking(blocking)
+Writer::Writer(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking) : _blocking(blocking)
 {
 	auto internalSink = std::dynamic_pointer_cast<ghost::internal::WriterSink>(sink);
-	if (!internalSink)
-		throw std::invalid_argument("The provided connection does not have a valid writer sink.");
+	if (!internalSink) throw std::invalid_argument("The provided connection does not have a valid writer sink.");
 
 	_writerSink = internalSink;
 }

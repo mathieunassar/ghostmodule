@@ -15,15 +15,14 @@
  */
 
 #include <ghost/connection/WritableConnection.hpp>
+
 #include "WriterSink.hpp"
 
 using namespace ghost;
 
 WritableConnection::WritableConnection(const ghost::ConnectionConfiguration& configuration)
-	: _writerSink(std::make_shared<ghost::internal::WriterSink>())
-	, _blocking(configuration.isOperationBlocking())
+    : _writerSink(std::make_shared<ghost::internal::WriterSink>()), _blocking(configuration.isOperationBlocking())
 {
-
 }
 
 std::shared_ptr<ghost::WriterSink> WritableConnection::getWriterSink() const

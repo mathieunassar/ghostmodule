@@ -17,48 +17,45 @@
 #ifndef GHOST_INTERNAL_CONNECTION_FACTORY_HPP
 #define GHOST_INTERNAL_CONNECTION_FACTORY_HPP
 
-#include <memory>
-#include <list>
-
-#include <ghost/connection/Server.hpp>
 #include <ghost/connection/Client.hpp>
-#include <ghost/connection/Publisher.hpp>
-#include <ghost/connection/Subscriber.hpp>
 #include <ghost/connection/ConnectionConfiguration.hpp>
-
 #include <ghost/connection/ConnectionFactory.hpp>
-
+#include <ghost/connection/Publisher.hpp>
+#include <ghost/connection/Server.hpp>
+#include <ghost/connection/Subscriber.hpp>
+#include <list>
+#include <memory>
 
 namespace ghost
 {
-	namespace internal
-	{
-		class ConnectionFactory : public ghost::ConnectionFactory
-		{
-		public:
-			ConnectionFactory();
+namespace internal
+{
+class ConnectionFactory : public ghost::ConnectionFactory
+{
+public:
+	ConnectionFactory();
 
-			/* Methods to set up the factory */
+	/* Methods to set up the factory */
 
-			void addServerRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
-			void addClientRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
-			void addPublisherRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
-			void addSubscriberRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+	void addServerRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+	void addClientRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+	void addPublisherRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+	void addSubscriberRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
 
-			/* Methods to create connections */
+	/* Methods to create connections */
 
-			std::shared_ptr<ghost::Server> createServer(const ghost::ConnectionConfiguration& config);
-			std::shared_ptr<ghost::Client> createClient(const ghost::ConnectionConfiguration& config);
-			std::shared_ptr<ghost::Publisher> createPublisher(const ghost::ConnectionConfiguration& config);
-			std::shared_ptr<ghost::Subscriber> createSubscriber(const ghost::ConnectionConfiguration& config);
+	std::shared_ptr<ghost::Server> createServer(const ghost::ConnectionConfiguration& config);
+	std::shared_ptr<ghost::Client> createClient(const ghost::ConnectionConfiguration& config);
+	std::shared_ptr<ghost::Publisher> createPublisher(const ghost::ConnectionConfiguration& config);
+	std::shared_ptr<ghost::Subscriber> createSubscriber(const ghost::ConnectionConfiguration& config);
 
-		private:
-			std::list<std::shared_ptr<ConnectionFactoryRule>> _serverRules;
-			std::list<std::shared_ptr<ConnectionFactoryRule>> _clientRules;
-			std::list<std::shared_ptr<ConnectionFactoryRule>> _publisherRules;
-			std::list<std::shared_ptr<ConnectionFactoryRule>> _subscriberRules;
-		};
-	}
-}
+private:
+	std::list<std::shared_ptr<ConnectionFactoryRule>> _serverRules;
+	std::list<std::shared_ptr<ConnectionFactoryRule>> _clientRules;
+	std::list<std::shared_ptr<ConnectionFactoryRule>> _publisherRules;
+	std::list<std::shared_ptr<ConnectionFactoryRule>> _subscriberRules;
+};
+} // namespace internal
+} // namespace ghost
 
-#endif //GHOST_INTERNAL_CONNECTION_FACTORY_HPP
+#endif // GHOST_INTERNAL_CONNECTION_FACTORY_HPP

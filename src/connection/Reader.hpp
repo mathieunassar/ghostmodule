@@ -18,33 +18,34 @@
 #define GHOST_INTERNAL_READER_HPP
 
 #include <ghost/connection/Reader.hpp>
+
 #include "ReaderSink.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		 *	The internal implementation of the ghost::Reader is a specialized
-		 *	type handling google::protobuf::Any messages in order to get them
-		 *	from the ReaderSink object.
-		 */
-		class Reader : public ghost::Reader<google::protobuf::Any>
-		{
-		public:
-			Reader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking);
+namespace internal
+{
+/**
+ *	The internal implementation of the ghost::Reader is a specialized
+ *	type handling google::protobuf::Any messages in order to get them
+ *	from the ReaderSink object.
+ */
+class Reader : public ghost::Reader<google::protobuf::Any>
+{
+public:
+	Reader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking);
 
-			bool read(google::protobuf::Any& message) override;
-			bool lastRead(google::protobuf::Any& message) override;
+	bool read(google::protobuf::Any& message) override;
+	bool lastRead(google::protobuf::Any& message) override;
 
-		private:
-			std::shared_ptr<ReaderSink> _readerSink;
-			bool _blocking;
-			
-			google::protobuf::Any _last;
-		};
-	}
+private:
+	std::shared_ptr<ReaderSink> _readerSink;
+	bool _blocking;
 
-}
+	google::protobuf::Any _last;
+};
+} // namespace internal
+
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_READER_HPP

@@ -15,16 +15,14 @@
  */
 
 #include "ConsoleDeviceWindows.hpp"
-#include <thread>
+
 #include <iostream>
+#include <thread>
 
 using namespace ghost::internal;
 
-ConsoleDeviceWindows::ConsoleDeviceWindows()
-	: _enable(false)
-	, _mode(DeviceMode::IDLE)
+ConsoleDeviceWindows::ConsoleDeviceWindows() : _enable(false), _mode(DeviceMode::IDLE)
 {
-
 }
 
 bool ConsoleDeviceWindows::start()
@@ -32,15 +30,12 @@ bool ConsoleDeviceWindows::start()
 	_enable = true;
 
 	_hStdin = GetStdHandle(STD_INPUT_HANDLE);
-	if (_hStdin == INVALID_HANDLE_VALUE)
-		return false;
+	if (_hStdin == INVALID_HANDLE_VALUE) return false;
 
-	if (!GetConsoleMode(_hStdin, &_originalConsoleMode))
-		return false;
+	if (!GetConsoleMode(_hStdin, &_originalConsoleMode)) return false;
 
 	DWORD newMode = _originalConsoleMode | ENABLE_WINDOW_INPUT;
-	if (!SetConsoleMode(_hStdin, newMode))
-		return false;
+	if (!SetConsoleMode(_hStdin, newMode)) return false;
 
 	return true;
 }
@@ -56,8 +51,7 @@ bool ConsoleDeviceWindows::setConsoleMode(ConsoleMode mode)
 	DWORD consoleMode = 0;
 	DWORD targetMode = consoleMode;
 
-	if (!GetConsoleMode(_hStdin, &consoleMode))
-		return false;
+	if (!GetConsoleMode(_hStdin, &consoleMode)) return false;
 
 	if (mode == INPUT)
 		targetMode = consoleMode | ENABLE_ECHO_INPUT;
@@ -77,18 +71,17 @@ bool ConsoleDeviceWindows::awaitInputMode()
 	if (!gotInput) // _enable is false
 		return false;
 
-	if (!ReadConsoleInput(
-		_hStdin,      // input buffer handle 
-		irInBuf,     // buffer to read into 
-		128,         // size of read buffer 
-		&cNumRead)) // number of records read 
+	if (!ReadConsoleInput(_hStdin,	  // input buffer handle
+			      irInBuf,	  // buffer to read into
+			      128,	  // size of read buffer
+			      &cNumRead)) // number of records read
 		return false;
 
 	for (i = 0; i < cNumRead; i++)
 	{
-		if (irInBuf[i].EventType == KEY_EVENT							// key event
-			&& irInBuf[i].Event.KeyEvent.wVirtualKeyCode == VK_RETURN	// which is about "enter"/"return"
-			&& !irInBuf[i].Event.KeyEvent.bKeyDown)						// and the key was released
+		if (irInBuf[i].EventType == KEY_EVENT			      // key event
+		    && irInBuf[i].Event.KeyEvent.wVirtualKeyCode == VK_RETURN // which is about "enter"/"return"
+		    && !irInBuf[i].Event.KeyEvent.bKeyDown)		      // and the key was released
 			return true;
 	}
 	return false;
@@ -99,9 +92,11 @@ bool ConsoleDeviceWindows::awaitInput(const std::function<bool()>& untilPredicat
 	while (untilPredicate())
 	{
 		DWORD number;
-		if (GetNumberOfConsoleInputEvents(_hStdin, &number) && number == 0) // don't start to read if there is nothing to read
+		if (GetNumberOfConsoleInputEvents(_hStdin, &number) &&
+		    number == 0) // don't start to read if there is nothing to read
 		{
-			std::this_thread::sleep_for(std::chrono::microseconds(1)); // but don't wait too long to stay reactive
+			std::this_thread::sleep_for(
+			    std::chrono::microseconds(1)); // but don't wait too long to stay reactive
 			continue;
 		}
 

@@ -15,15 +15,15 @@
  */
 
 #include "EnterPressedInputEvent.hpp"
+
 #include "InputController.hpp"
 #include "InputModeInputEvent.hpp"
 
 using namespace ghost::internal;
 
 EnterPressedInputEvent::EnterPressedInputEventHandler::EnterPressedInputEventHandler(InputControllerAccess* controller)
-	: InputEventHandler(controller)
+    : InputEventHandler(controller)
 {
-
 }
 
 bool EnterPressedInputEvent::EnterPressedInputEventHandler::handle(const InputEvent& event)
@@ -36,7 +36,8 @@ bool EnterPressedInputEvent::EnterPressedInputEventHandler::handle(const InputEv
 	return true;
 }
 
-const EnterPressedInputEvent& EnterPressedInputEvent::EnterPressedInputEventHandler::getEvent(const InputEvent& event) const
+const EnterPressedInputEvent& EnterPressedInputEvent::EnterPressedInputEventHandler::getEvent(
+    const InputEvent& event) const
 {
 	return static_cast<const EnterPressedInputEvent&>(event);
 }

@@ -17,57 +17,57 @@
 #ifndef GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP
 
+#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
+#include <ghost/connection_grpc/ServerClientService.pb.h>
+#include <grpcpp/server.h>
+
 #include <atomic>
+#include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include <ghost/connection/Server.hpp>
 #include <memory>
 
-#include <grpcpp/server.h>
-#include <ghost/connection/Server.hpp>
-#include <ghost/connection/NetworkConnectionConfiguration.hpp>
-#include <ghost/connection_grpc/ServerClientService.pb.h>
-#include <ghost/connection_grpc/ServerClientService.grpc.pb.h>
-
-#include "CompletionQueueExecutor.hpp"
 #include "ClientManager.hpp"
+#include "CompletionQueueExecutor.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		class IncomingRPC;
+namespace internal
+{
+class IncomingRPC;
 
-		/**
-		 * Server implementation using the gRPC library. Runs a gRPC server which accepts connections, and create
-		 * a writing/sending interface which is returned to the server object.
-		 * @author	Mathieu Nassar
-		 * @date	25.05.2018
-		 */
-		class ServerGRPC : public ghost::Server
-		{
-		public:
-			ServerGRPC(const ghost::ConnectionConfiguration& config);
-			ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
+/**
+ * Server implementation using the gRPC library. Runs a gRPC server which accepts connections, and create
+ * a writing/sending interface which is returned to the server object.
+ * @author	Mathieu Nassar
+ * @date	25.05.2018
+ */
+class ServerGRPC : public ghost::Server
+{
+public:
+	ServerGRPC(const ghost::ConnectionConfiguration& config);
+	ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
 
-			bool start() override;
-			bool stop() override;
-			bool isRunning() const override;
+	bool start() override;
+	bool stop() override;
+	bool isRunning() const override;
 
-			void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
-			const std::shared_ptr<ClientHandler> getClientHandler() const;
+	void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
+	const std::shared_ptr<ClientHandler> getClientHandler() const;
 
-		private:
-			void onClientConnected(std::shared_ptr<RemoteClientGRPC> client);
+private:
+	void onClientConnected(std::shared_ptr<RemoteClientGRPC> client);
 
-			ghost::NetworkConnectionConfiguration _configuration;
-			std::atomic<bool> _running;
+	ghost::NetworkConnectionConfiguration _configuration;
+	std::atomic<bool> _running;
 
-			ghost::protobuf::connectiongrpc::ServerClientService::AsyncService _service;
-			std::unique_ptr<grpc::Server> _grpcServer;
-			CompletionQueueExecutor _completionQueueExecutor;
-			
-			ClientManager _clientManager;
-			std::shared_ptr<ClientHandler> _clientHandler;
-		};
-	}
-}
+	ghost::protobuf::connectiongrpc::ServerClientService::AsyncService _service;
+	std::unique_ptr<grpc::Server> _grpcServer;
+	CompletionQueueExecutor _completionQueueExecutor;
+
+	ClientManager _clientManager;
+	std::shared_ptr<ClientHandler> _clientHandler;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_SERVERGRPC_HPP

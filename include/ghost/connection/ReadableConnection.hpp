@@ -17,65 +17,65 @@
 #ifndef GHOST_READABLECONNECTION_HPP
 #define GHOST_READABLECONNECTION_HPP
 
-#include <memory>
+#include <ghost/connection/ConnectionConfiguration.hpp>
+#include <ghost/connection/MessageHandler.hpp>
 #include <ghost/connection/Reader.hpp>
 #include <ghost/connection/ReaderSink.hpp>
-#include <ghost/connection/MessageHandler.hpp>
-#include <ghost/connection/ConnectionConfiguration.hpp>
+#include <memory>
 
 namespace ghost
 {
+/**
+ *	A ghost::ReadableConnection is a connection that can receive messages.
+ *	This class provides methods to handles messages, for example by adding
+ *	a ghost::MessageHandler that will process incoming message or by creating
+ *	a ghost::Reader that can read specific message types.
+ *
+ *	A ghost::MessageHandler will immediatly process incoming messages (in the
+ *	connection's thread), while a ghost::Reader is executed by the user when
+ *	calling its read method.
+ */
+class ReadableConnection
+{
+public:
+	ReadableConnection(const ghost::ConnectionConfiguration& configuration);
+	virtual ~ReadableConnection() = default;
+
 	/**
-	 *	A ghost::ReadableConnection is a connection that can receive messages.
-	 *	This class provides methods to handles messages, for example by adding
-	 *	a ghost::MessageHandler that will process incoming message or by creating
-	 *	a ghost::Reader that can read specific message types.
+	 * @brief Adds a message handler to the connection and returns it.
 	 *
-	 *	A ghost::MessageHandler will immediatly process incoming messages (in the
-	 *	connection's thread), while a ghost::Reader is executed by the user when
-	 *	calling its read method.
+	 * See the MessageHandler documentation for more information. If a message
+	 * handler is set to this connection, subsequent calls to "read" will return
+	 * false.
+	 *
+	 * After the message handler was added, handler functions can be added to it.
+	 *
+	 * @return the message handler that was added to the readerSink.
 	 */
-	class ReadableConnection
+	std::shared_ptr<ghost::MessageHandler> addMessageHandler();
+
+	/**
+	 *	Creates a reader for this connection.
+	 *	@return a reader configured for this connection.
+	 */
+	template <typename MessageType>
+	std::shared_ptr<ghost::Reader<MessageType>> getReader() const
 	{
-	public:
-		ReadableConnection(const ghost::ConnectionConfiguration& configuration);
-		virtual ~ReadableConnection() = default;
+		return ghost::Reader<MessageType>::create(_readerSink, _blocking);
+	}
 
-		/**
-		 * @brief Adds a message handler to the connection and returns it.
-		 *
-		 * See the MessageHandler documentation for more information. If a message
-		 * handler is set to this connection, subsequent calls to "read" will return
-		 * false.
-		 *
-		 * After the message handler was added, handler functions can be added to it.
-		 *
-		 * @return the message handler that was added to the readerSink.
-		 */
-		std::shared_ptr<ghost::MessageHandler> addMessageHandler();
+protected:
+	/**
+	 *	Gets the ghost::ReaderSink of this connection.
+	 *	This method shall be used by implementations to push messages to this
+	 *	connection's readers.
+	 */
+	std::shared_ptr<ghost::ReaderSink> getReaderSink() const;
 
-		/**
-		 *	Creates a reader for this connection.
-		 *	@return a reader configured for this connection.
-		 */
-		template<typename MessageType>
-		std::shared_ptr<ghost::Reader<MessageType>> getReader() const
-		{
-			return ghost::Reader<MessageType>::create(_readerSink, _blocking);
-		}
+private:
+	std::shared_ptr<ghost::ReaderSink> _readerSink;
+	bool _blocking;
+};
+} // namespace ghost
 
-	protected:
-		/**
-		 *	Gets the ghost::ReaderSink of this connection.
-		 *	This method shall be used by implementations to push messages to this
-		 *	connection's readers.
-		 */
-		std::shared_ptr<ghost::ReaderSink> getReaderSink() const;
-
-	private:
-		std::shared_ptr<ghost::ReaderSink> _readerSink;
-		bool _blocking;
-	};
-}
-
-#endif //GHOST_READABLECONNECTION_HPP
+#endif // GHOST_READABLECONNECTION_HPP

@@ -22,8 +22,7 @@ CompletionQueueExecutor::CompletionQueueExecutor()
 {
 }
 
-CompletionQueueExecutor::CompletionQueueExecutor(grpc::CompletionQueue* completion)
-	: _completionQueue(completion)
+CompletionQueueExecutor::CompletionQueueExecutor(grpc::CompletionQueue* completion) : _completionQueue(completion)
 {
 }
 
@@ -52,13 +51,11 @@ void CompletionQueueExecutor::start(size_t threadsCount)
 
 void CompletionQueueExecutor::stop()
 {
-	if (_completionQueue)
-		_completionQueue->Shutdown();
-	
+	if (_completionQueue) _completionQueue->Shutdown();
+
 	for (auto& t : _threadPool)
 	{
-		if (t.joinable())
-			t.join();
+		if (t.joinable()) t.join();
 	}
 }
 

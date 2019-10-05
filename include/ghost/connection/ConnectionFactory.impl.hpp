@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-template<typename ConnectionType>
+template <typename ConnectionType>
 void ConnectionFactory::addServerRule(const ghost::ConnectionConfiguration& config)
 {
 	addServerRule(std::make_shared<internal::ConnectionFactoryGenericRule<ConnectionType>>(config));
 }
 
-template<typename ConnectionType>
+template <typename ConnectionType>
 void ConnectionFactory::addClientRule(const ghost::ConnectionConfiguration& config)
 {
 	addClientRule(std::make_shared<internal::ConnectionFactoryGenericRule<ConnectionType>>(config));
 }
 
-template<typename ConnectionType>
+template <typename ConnectionType>
 void ConnectionFactory::addPublisherRule(const ghost::ConnectionConfiguration& config)
 {
 	addPublisherRule(std::make_shared<internal::ConnectionFactoryGenericRule<ConnectionType>>(config));
 }
 
-template<typename ConnectionType>
+template <typename ConnectionType>
 void ConnectionFactory::addSubscriberRule(const ghost::ConnectionConfiguration& config)
 {
 	addSubscriberRule(std::make_shared<internal::ConnectionFactoryGenericRule<ConnectionType>>(config));

@@ -28,7 +28,8 @@ bool GenericMessageConverter::create(google::protobuf::Any& message, const ghost
 	std::string formatName = from.getMessageFormatName();
 	if (formatName == internal::GHOSTMESSAGE_FORMAT_NAME) // this is already a protobuf message
 	{
-		const ghost::internal::ProtobufMessage& fromProtobuf = static_cast<const ghost::internal::ProtobufMessage&>(from);
+		const ghost::internal::ProtobufMessage& fromProtobuf =
+		    static_cast<const ghost::internal::ProtobufMessage&>(from);
 		payload = fromProtobuf.getProtobufMessage();
 
 		if (!payload)
@@ -63,7 +64,8 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 	std::string targetFormatName = to.getMessageFormatName();
 	std::string targetTypeName = to.getMessageTypeName();
 
-	if (getTrueTypeName(message) == protobuf::connection::GenericMessage::descriptor()->full_name()) // payload is of a user defined format
+	if (getTrueTypeName(message) ==
+	    protobuf::connection::GenericMessage::descriptor()->full_name()) // payload is of a user defined format
 	{
 		protobuf::connection::GenericMessage defaultPayload;
 		bool unpackSuccess = message.UnpackTo(&defaultPayload);
@@ -74,7 +76,8 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 
 		if (defaultPayload.format() != targetFormatName)
 		{
-			return false; // source format is different than the format expected by the user, return false as documented
+			return false; // source format is different than the format expected by the user, return false
+				      // as documented
 		}
 
 		if (defaultPayload.name() != targetTypeName)
@@ -89,16 +92,17 @@ bool GenericMessageConverter::parse(const google::protobuf::Any& message, ghost:
 	// else, payload is a protobuf message
 	if (targetFormatName != internal::GHOSTMESSAGE_FORMAT_NAME)
 	{
-		return false; // payload is a protobuf message, but user expected something else, return false as documented
+		return false; // payload is a protobuf message, but user expected something else, return false as
+			      // documented
 	}
-	
+
 	ghost::internal::ProtobufMessage& toProtobuf = static_cast<ghost::internal::ProtobufMessage&>(to);
-	
+
 	if (!toProtobuf.getProtobufMessage())
 	{
 		return false; // to does not contain a protobuf message to be loaded to
 	}
-	
+
 	// deserialize
 	return message.UnpackTo(toProtobuf.getProtobufMessage().get());
 }
@@ -115,7 +119,8 @@ std::string GenericMessageConverter::getFormatName(const google::protobuf::Any& 
 	bool unpackSuccess = message.UnpackTo(&defaultPayload);
 	if (!unpackSuccess)
 	{
-		return "UNKNOWN"; // cannot convert it back to a default payload although it is not a native protobuf message... who sent the message!?
+		return "UNKNOWN"; // cannot convert it back to a default payload although it is not a native protobuf
+				  // message... who sent the message!?
 	}
 
 	return defaultPayload.format(); // return the format stored in the default payload message
@@ -137,7 +142,8 @@ std::pair<std::string, std::string> GenericMessageConverter::getFormatAndName(co
 		bool unpackSuccess = message.UnpackTo(&defaultPayload);
 		if (!unpackSuccess)
 		{
-			format = "UNKNOWN"; // cannot convert it back to a default payload although it is not a native protobuf message... who sent the message!?
+			format = "UNKNOWN"; // cannot convert it back to a default payload although it is not a native
+					    // protobuf message... who sent the message!?
 			name = "UNKNOWN";
 		}
 		else

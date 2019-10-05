@@ -23,10 +23,8 @@ std::shared_ptr<ghost::GhostLogger> ghost::GhostLogger::create(const std::shared
 	return std::make_shared<ghost::internal::GhostLogger>(console);
 }
 
-GhostLogger::GhostLogger(const std::shared_ptr<ghost::Console>& console)
-	: _console(console)
+GhostLogger::GhostLogger(const std::shared_ptr<ghost::Console>& console) : _console(console)
 {
-
 }
 
 /* From ghost::Logger */

@@ -16,16 +16,16 @@
 
 #include "Console.hpp"
 #ifdef _WIN32
-	#include "ConsoleDeviceWindows.hpp"
+#include "ConsoleDeviceWindows.hpp"
 #else
-	#include "ConsoleDeviceUnix.hpp"
+#include "ConsoleDeviceUnix.hpp"
 #endif
+#include <exception>
+#include <functional>
+#include <iostream>
+
 #include "InputController.hpp"
 #include "OutputController.hpp"
-
-#include <iostream>
-#include <functional>
-#include <exception>
 
 using namespace ghost::internal;
 
@@ -42,19 +42,24 @@ Console::Console(bool redirectStdout)
 	_device = std::shared_ptr<internal::ConsoleDevice>(new internal::ConsoleDeviceUnix());
 #endif
 
-	std::function<void(const std::string&)> cmdCallback = std::bind(&Console::onNewInput, this, std::placeholders::_1);
-	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
-	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
+	std::function<void(const std::string&)> cmdCallback =
+	    std::bind(&Console::onNewInput, this, std::placeholders::_1);
+	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback =
+	    std::bind(&Console::onNewMode, this, std::placeholders::_1);
+	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT,
+								       cmdCallback, modeCallback);
 
 	_outputController = std::make_shared<internal::OutputController>(_device, redirectStdout);
 }
 
-Console::Console(const std::shared_ptr<ConsoleDevice>& device, bool redirectStdout)
-	: _device(device)
+Console::Console(const std::shared_ptr<ConsoleDevice>& device, bool redirectStdout) : _device(device)
 {
-	std::function<void(const std::string&)> cmdCallback = std::bind(&Console::onNewInput, this, std::placeholders::_1);
-	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback = std::bind(&Console::onNewMode, this, std::placeholders::_1);
-	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
+	std::function<void(const std::string&)> cmdCallback =
+	    std::bind(&Console::onNewInput, this, std::placeholders::_1);
+	std::function<void(internal::ConsoleDevice::ConsoleMode)> modeCallback =
+	    std::bind(&Console::onNewMode, this, std::placeholders::_1);
+	_inputController = std::make_shared<internal::InputController>(_device, internal::ConsoleDevice::OUTPUT,
+								       cmdCallback, modeCallback);
 
 	_outputController = std::make_shared<internal::OutputController>(_device, redirectStdout);
 }
@@ -113,8 +118,7 @@ std::string Console::getCommand()
 {
 	std::unique_lock<std::mutex> lock(_commandQueueLock);
 
-	if (_commands.size() == 0)
-		throw std::logic_error("No command available");
+	if (_commands.size() == 0) throw std::logic_error("No command available");
 
 	std::string res = std::move(_commands.front());
 	_commands.pop();

@@ -17,36 +17,35 @@
 #ifndef GHOST_SERVER_HPP
 #define GHOST_SERVER_HPP
 
-#include <memory>
-
-#include <ghost/connection/Connection.hpp>
 #include <ghost/connection/ClientHandler.hpp>
+#include <ghost/connection/Connection.hpp>
+#include <memory>
 
 namespace ghost
 {
+/**
+ * @brief Server that awaits Client connections.
+ *
+ * For each incoming connection, the provided implementation of the ClientHandler
+ * will be called. See the ClientHandler documentation for more information.
+ *
+ * A Server can be created via a ConnectionManager, which will also
+ * manage its lifetime.
+ *
+ */
+class Server : public ghost::Connection
+{
+public:
+	virtual ~Server() = default;
+
 	/**
-	 * @brief Server that awaits Client connections.
-	 * 
-	 * For each incoming connection, the provided implementation of the ClientHandler
-	 * will be called. See the ClientHandler documentation for more information.
-	 * 
-	 * A Server can be created via a ConnectionManager, which will also
-	 * manage its lifetime.
-	 * 
+	 * @brief Sets the handler for incoming Client connections. The handler
+	 * will be called for every connection.
+	 *
+	 * @param handler custom implementation of a ClientHandler
 	 */
-	class Server : public ghost::Connection
-	{
-	public:
-		virtual ~Server() = default;
+	virtual void setClientHandler(std::shared_ptr<ghost::ClientHandler> handler) = 0;
+};
+} // namespace ghost
 
-		/**
-		 * @brief Sets the handler for incoming Client connections. The handler
-		 * will be called for every connection.
-		 * 
-		 * @param handler custom implementation of a ClientHandler
-		 */
-		virtual void setClientHandler(std::shared_ptr<ghost::ClientHandler> handler) = 0;
-	};
-}
-
-#endif //GHOST_SERVER_HPP
+#endif // GHOST_SERVER_HPP

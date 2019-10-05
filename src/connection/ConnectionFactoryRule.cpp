@@ -19,9 +19,8 @@
 using namespace ghost::internal;
 
 ConnectionFactoryRule::ConnectionFactoryRule(const ghost::ConnectionConfiguration& minimumConfiguration)
-	: _minimumConfiguration(minimumConfiguration)
+    : _minimumConfiguration(minimumConfiguration)
 {
-
 }
 
 bool ConnectionFactoryRule::matches(const ghost::ConnectionConfiguration& candidate) const
@@ -36,11 +35,11 @@ bool ConnectionFactoryRule::matches(const ghost::ConnectionConfiguration& candid
 		candidate.getConfiguration()->getAttribute(attribute.first, candidateValue);
 		candidateValue.read<std::string>(candidateValueString);
 
-		if (!hasAttribute)
-			return false; // the candidate does not have this attribute
+		if (!hasAttribute) return false; // the candidate does not have this attribute
 
-		if (!isAttributeEmpty // an empty value in the minimum configuration means that any param is allowed, otherwise it must match
-			&& attribute.second.compare(candidateValueString) != 0)
+		if (!isAttributeEmpty // an empty value in the minimum configuration means that any param is allowed,
+				      // otherwise it must match
+		    && attribute.second.compare(candidateValueString) != 0)
 			return false; // the candidate has a different value than the non empty min configuration
 	}
 

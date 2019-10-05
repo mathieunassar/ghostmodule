@@ -15,11 +15,11 @@
  */
 
 #include <gtest/gtest.h>
+
 #include <iostream>
 
 #include "../../src/persistence/SaveFile.hpp"
 #include "../protobuf/tests.pb.h"
-
 #include "PersistenceTestHelpers.hpp"
 
 using namespace ghost::internal;
@@ -29,12 +29,10 @@ class SaveFileTest : public testing::Test
 protected:
 	void SetUp() override
 	{
-
 	}
 
 	void TearDown() override
 	{
-
 	}
 
 	static const std::string TEST_FILE_NAME;
@@ -87,7 +85,7 @@ TEST_F(SaveFileTest, test_SaveFile_writeread_When_ok)
 	bool resultOpen = file.open(SaveFile::WRITE);
 	ASSERT_TRUE(resultOpen);
 
-	std::list<std::shared_ptr<ghost::internal::SaveData>> testData = generateTestdata(50,50);
+	std::list<std::shared_ptr<ghost::internal::SaveData>> testData = generateTestdata(50, 50);
 
 	bool writeSuccess = file.write(testData);
 	ASSERT_TRUE(writeSuccess);

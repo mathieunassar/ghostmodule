@@ -21,33 +21,38 @@
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+class InputControllerAccess;
+
+class InputEvent
+{
+public:
+	virtual ~InputEvent() = default;
+
+	class InputEventHandler
 	{
-		class InputControllerAccess;
-
-		class InputEvent
+	public:
+		InputEventHandler(InputControllerAccess* controller) : _controller(controller)
 		{
-		public:
-			virtual ~InputEvent() = default;
+		}
+		virtual ~InputEventHandler() = default;
 
-			class InputEventHandler
-			{
-			public:
-				InputEventHandler(InputControllerAccess* controller) : _controller(controller) {}
-				virtual ~InputEventHandler() = default;
+		virtual bool handle(const InputEvent& event) = 0;
 
-				virtual bool handle(const InputEvent& event) = 0;
+	protected:
+		InputControllerAccess& getController() const
+		{
+			return *_controller;
+		}
 
-			protected:
-				InputControllerAccess & getController() const { return *_controller; }
+	private:
+		InputControllerAccess* _controller;
+	};
 
-			private:
-				InputControllerAccess * _controller;
-			};
+	virtual std::string getEventName() const = 0;
+};
+} // namespace internal
+} // namespace ghost
 
-			virtual std::string getEventName() const = 0;
-		};
-	}
-}
-
-#endif //GHOST_INTERNAL_INPUTEVENT_HPP
+#endif // GHOST_INTERNAL_INPUTEVENT_HPP

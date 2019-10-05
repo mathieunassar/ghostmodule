@@ -15,11 +15,11 @@
  */
 
 #include <gtest/gtest.h>
+
 #include <iostream>
 
 #include "../../src/persistence/SaveData.hpp"
 #include "../protobuf/tests.pb.h"
-
 #include "PersistenceTestHelpers.hpp"
 
 class SaveDataTest : public testing::Test
@@ -27,12 +27,10 @@ class SaveDataTest : public testing::Test
 protected:
 	void SetUp() override
 	{
-
 	}
 
 	void TearDown() override
 	{
-
 	}
 
 	static const std::string TEST_DATA_NAME;

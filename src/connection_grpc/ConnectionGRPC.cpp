@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-#include <ghost/connection_grpc/ConnectionGRPC.hpp>
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
-#include "ServerGRPC.hpp"
-#include "PublisherGRPC.hpp"
+#include <ghost/connection_grpc/ConnectionGRPC.hpp>
+
 #include "ClientGRPC.hpp"
+#include "PublisherGRPC.hpp"
+#include "ServerGRPC.hpp"
 #include "SubscriberGRPC.hpp"
 
 using namespace ghost;
 
-void blackholeLogger(gpr_log_func_args* args) {}
+void blackholeLogger(gpr_log_func_args* args)
+{
+}
 
 void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
-	const ghost::NetworkConnectionConfiguration& minimumConfiguration)
+				const ghost::NetworkConnectionConfiguration& minimumConfiguration)
 {
 	gpr_set_log_function(blackholeLogger);
 

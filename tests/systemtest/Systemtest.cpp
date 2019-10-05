@@ -26,11 +26,8 @@ void Systemtest::Parameters::print() const
 	}
 }
 
-Systemtest::Systemtest(const std::shared_ptr<ghost::Logger>& logger)
-	: _logger(logger)
-	, _state(Systemtest::State::READY)
+Systemtest::Systemtest(const std::shared_ptr<ghost::Logger>& logger) : _logger(logger), _state(Systemtest::State::READY)
 {
-
 }
 
 bool Systemtest::execute(const Systemtest::Parameters& params)
@@ -117,7 +114,9 @@ void Systemtest::require(bool condition, bool fatal)
 void Systemtest::printSummary() const
 {
 	GHOST_INFO(_logger) << "======================= Test completed =======================";
-	GHOST_INFO(_logger) << "Total duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(_endTime - _startTime).count() << " ms.";
+	GHOST_INFO(_logger) << "Total duration: "
+			    << std::chrono::duration_cast<std::chrono::milliseconds>(_endTime - _startTime).count()
+			    << " ms.";
 	onPrintSummary();
 	GHOST_INFO(_logger) << "==============================================================";
 }
@@ -140,8 +139,7 @@ const Systemtest::Parameters& Systemtest::getParameter() const
 
 bool Systemtest::checkTestDuration() const
 {
-	if (_parameters.duration.count() == 0)
-		return true;
+	if (_parameters.duration.count() == 0) return true;
 
 	return std::chrono::steady_clock::now() < _startTime + _parameters.duration;
 }
@@ -151,9 +149,7 @@ void Systemtest::setState(const Systemtest::State& state)
 	std::lock_guard<std::mutex> lock(_mutex);
 	_state = state;
 
-	if (state == State::EXECUTING)
-		_startTime = std::chrono::steady_clock::now();
+	if (state == State::EXECUTING) _startTime = std::chrono::steady_clock::now();
 
-	if (state == State::DISPOSING || state == State::TEARING_DOWN)
-		_endTime = std::chrono::steady_clock::now();
+	if (state == State::DISPOSING || state == State::TEARING_DOWN) _endTime = std::chrono::steady_clock::now();
 }

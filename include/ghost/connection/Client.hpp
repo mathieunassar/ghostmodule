@@ -23,30 +23,31 @@
 
 namespace ghost
 {
-	/**
-	 * @brief Client that connects to a Server.
-	 * 
-	 * A Client can be created via a ConnectionManager, which will also
-	 * manage its lifetime.
-	 * 
-	 * The configuration provided in the constructor is used to set up the connection
-	 * parameters such as the target IP address, port number or threading or blocking
-	 * parameters.
-	 * 
-	 * Particular implementations of Connection classes may define new connection
-	 * parameters which can be passed through the ConnectionConfiguration.
-	 *
-	 * It is possible to read and write through client connections.
-	 */
-	class Client : public ghost::Connection, public ghost::ReadableConnection, public ghost::WritableConnection
+/**
+ * @brief Client that connects to a Server.
+ *
+ * A Client can be created via a ConnectionManager, which will also
+ * manage its lifetime.
+ *
+ * The configuration provided in the constructor is used to set up the connection
+ * parameters such as the target IP address, port number or threading or blocking
+ * parameters.
+ *
+ * Particular implementations of Connection classes may define new connection
+ * parameters which can be passed through the ConnectionConfiguration.
+ *
+ * It is possible to read and write through client connections.
+ */
+class Client : public ghost::Connection, public ghost::ReadableConnection, public ghost::WritableConnection
+{
+public:
+	Client(const ghost::ConnectionConfiguration& configuration)
+	    : ghost::ReadableConnection(configuration), ghost::WritableConnection(configuration)
 	{
-	public:
-		Client(const ghost::ConnectionConfiguration& configuration)
-			: ghost::ReadableConnection(configuration)
-			, ghost::WritableConnection(configuration) {}
+	}
 
-		virtual ~Client() = default;
-	};
-}
+	virtual ~Client() = default;
+};
+} // namespace ghost
 
-#endif //GHOST_CLIENT_HPP
+#endif // GHOST_CLIENT_HPP
