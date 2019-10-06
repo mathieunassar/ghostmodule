@@ -82,7 +82,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_simpleModule)
 	ASSERT_TRUE(module->getUserManager());
 }
 
-TEST_F(ModuleTest, Test_ModuleBuilder_intializeBehaviorIsCalled)
+TEST_F(ModuleTest, Test_ModuleBuilder_intializeBehavior_isCalled)
 {
 	auto builder = ghost::ModuleBuilder::create();
 	builder->setInitializeBehavior(std::bind(&ModuleTest::init, this, std::placeholders::_1));
@@ -94,7 +94,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_intializeBehaviorIsCalled)
 	ASSERT_TRUE(_initIsCalled);
 }
 
-TEST_F(ModuleTest, Test_ModuleBuilder_runningBehaviorIsCalled)
+TEST_F(ModuleTest, Test_ModuleBuilder_runningBehavior_isCalled)
 {
 	auto builder = ghost::ModuleBuilder::create();
 	builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
@@ -106,7 +106,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_runningBehaviorIsCalled)
 	ASSERT_TRUE(_runIsCalled);
 }
 
-TEST_F(ModuleTest, Test_ModuleBuilder_disposeBehaviorIsCalled)
+TEST_F(ModuleTest, Test_ModuleBuilder_disposeBehavior_isCalled)
 {
 	auto builder = ghost::ModuleBuilder::create();
 	builder->setDisposeBehavior(std::bind(&ModuleTest::dispose, this, std::placeholders::_1));
@@ -118,7 +118,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_disposeBehaviorIsCalled)
 	ASSERT_TRUE(_disposeIsCalled);
 }
 
-TEST_F(ModuleTest, Test_ModuleBuilder_logger)
+TEST_F(ModuleTest, Test_ModuleBuilder_logger_isAccessible)
 {
 	auto builder = ghost::ModuleBuilder::create();
 	auto logger = ghost::StdoutLogger::create();
@@ -130,7 +130,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_logger)
 	ASSERT_TRUE(module->getLogger().get() == logger.get());
 }
 
-TEST_F(ModuleTest, Test_ModuleBuilder_programOptions)
+TEST_F(ModuleTest, Test_ModuleBuilder_programOptions_isAccessible)
 {
 	auto builder = ghost::ModuleBuilder::create();
 	int argc = 1;
@@ -140,6 +140,14 @@ TEST_F(ModuleTest, Test_ModuleBuilder_programOptions)
 	ASSERT_TRUE(module);
 
 	ASSERT_TRUE(module->getProgramOptions().getCommandName() == TEST_MODULE_NAME);
+}
+
+TEST_F(ModuleTest, Test_ModuleBuilder_component_isAccessible)
+{
+}
+
+TEST_F(ModuleTest, Test_ModuleBuilder_componentBuilderFails)
+{
 }
 
 TEST_F(ModuleTest, Test_Module_intializeBehaviorFails)

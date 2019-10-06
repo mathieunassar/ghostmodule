@@ -43,6 +43,7 @@ public:
 
 	Module(const std::string& name, const std::shared_ptr<Console>& console,
 	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+	       const std::vector<std::shared_ptr<ghost::ModuleComponent>>& components,
 	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
 	       const std::function<bool(const ghost::Module&)>& runningBehavior,
 	       const std::function<void(const ghost::Module&)>& disposeBehavior);
@@ -63,6 +64,9 @@ public:
 	const std::string& getModuleName() const override;
 	void printGhostASCII(const std::string& suffix = "") const override;
 
+protected:
+	std::shared_ptr<ghost::ModuleComponent> getComponent(const std::string& typeName) const override;
+
 private:
 	bool init();
 	bool run();
@@ -75,6 +79,7 @@ private:
 	std::shared_ptr<ghost::Logger> _logger;
 	std::shared_ptr<UserManager> _userManager;
 	std::shared_ptr<CommandLineInterpreter> _interpreter;
+	std::vector<std::shared_ptr<ghost::ModuleComponent>> _components;
 
 	std::function<bool(const ghost::Module&)> _initializationBehavior;
 	std::function<bool(const ghost::Module&)> _runningBehavior;

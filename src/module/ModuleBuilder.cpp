@@ -29,25 +29,29 @@ ModuleBuilder::ModuleBuilder() : _options("undefined")
 {
 }
 
-void ModuleBuilder::setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior)
+ModuleBuilder& ModuleBuilder::setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior)
 {
 	_initializationBehavior = behavior;
+	return *this;
 }
 
-void ModuleBuilder::setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior)
+ModuleBuilder& ModuleBuilder::setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior)
 {
 	_runningBehavior = behavior;
+	return *this;
 }
 
-void ModuleBuilder::setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior)
+ModuleBuilder& ModuleBuilder::setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior)
 {
 	_disposeBehavior = behavior;
+	return *this;
 }
 
-void ModuleBuilder::setProgramOptions(int argc, char* argv[])
+ModuleBuilder& ModuleBuilder::setProgramOptions(int argc, char* argv[])
 {
 	CommandLineParser parser;
 	_options = parser.parseCommandLine(argc, argv);
+	return *this;
 }
 
 std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
@@ -56,13 +60,29 @@ std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
 	return _console;
 }
 
-void ModuleBuilder::setLogger(const std::shared_ptr<ghost::Logger>& logger)
+ModuleBuilder& ModuleBuilder::setLogger(const std::shared_ptr<ghost::Logger>& logger)
 {
 	_logger = logger;
+	return *this;
+}
+
+ModuleBuilder& ModuleBuilder::addComponentBuilder(const std::shared_ptr<ghost::ModuleComponentBuilder>& builder)
+{
+	_componentBuilders.push_back(builder);
+	return *this;
 }
 
 std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleName)
 {
-	return std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options,
+	std::vector<std::shared_ptr<ghost::ModuleComponent>> components;
+
+	for (const auto& builder : _componentBuilders)
+	{
+		auto component = builder->build();
+		if (!component) return nullptr;
+		components.push_back(component);
+	}
+
+	return std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options, components,
 							 _initializationBehavior, _runningBehavior, _disposeBehavior);
 }

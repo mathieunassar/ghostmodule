@@ -17,6 +17,8 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Logger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/LoggerLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/GhostLogger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/StdoutLogger.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleComponent.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleComponentBuilder.hpp
 )
 
 file(GLOB header_module_lib_internal_windows

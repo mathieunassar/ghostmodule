@@ -24,6 +24,7 @@ using namespace ghost::internal;
 
 Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
 	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+	       const std::vector<std::shared_ptr<ghost::ModuleComponent>>& components,
 	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
 	       const std::function<bool(const ghost::Module&)>& runningBehavior,
 	       const std::function<void(const ghost::Module&)>& disposeBehavior)
@@ -32,6 +33,7 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
     , _state(Module::STOPPED)
     , _console(console)
     , _logger(logger)
+    , _components(components)
     , _initializationBehavior(initializationBehavior)
     , _runningBehavior(runningBehavior)
     , _disposeBehavior(disposeBehavior)
@@ -94,6 +96,15 @@ void Module::start()
 		return;
 
 	if (_console) _console->start();
+
+	// Start the components
+	bool componentsStarted = true;
+	for (const auto& component : _components) componentsStarted = componentsStarted && component->start();
+	if (!componentsStarted)
+	{
+		stop();
+		return;
+	}
 
 	setState(ghost::internal::Module::INITIALIZING);
 	bool initSuccess = init(); // initialize the module
@@ -187,6 +198,15 @@ void Module::printGhostASCII(const std::string& suffix) const
 
 	auto console = getConsole();
 	if (console) console->flush();
+}
+
+std::shared_ptr<ghost::ModuleComponent> Module::getComponent(const std::string& typeName) const
+{
+	for (const auto& c : _components)
+	{
+		if (c->getName() == typeName) return c;
+	}
+	return nullptr;
 }
 
 bool Module::init()
