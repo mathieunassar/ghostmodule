@@ -36,8 +36,7 @@ void UserManager::addUserToGroup(const ghost::User& user, ghost::UserGroup& grou
 		{
 			for (auto g : _groups)
 			{
-				if (g.get() == &group)
-					g->addUser(u);
+				if (g.get() == &group) g->addUser(u);
 			}
 		}
 	}
@@ -47,8 +46,7 @@ std::shared_ptr<ghost::User> UserManager::createUser(const std::string& name, co
 {
 	for (auto& user : _users)
 	{
-		if (user->getName() == name)
-			return nullptr;
+		if (user->getName() == name) return nullptr;
 	}
 
 	auto newUser = std::make_shared<ghost::internal::User>(name, password);
@@ -60,8 +58,7 @@ std::shared_ptr<ghost::UserGroup> UserManager::createUserGroup(const std::string
 {
 	for (auto& group : _groups)
 	{
-		if (group->getName() == name)
-			return nullptr;
+		if (group->getName() == name) return nullptr;
 	}
 
 	auto newGroup = std::make_shared<ghost::internal::UserGroup>(name);
@@ -77,8 +74,7 @@ bool UserManager::connect(const std::string& username, const std::string& passwo
 		{
 			_connectedUser = user;
 
-			if (_connectedUserCallback)
-				_connectedUserCallback(user);
+			if (_connectedUserCallback) _connectedUserCallback(user);
 
 			return true;
 		}
@@ -90,8 +86,7 @@ void UserManager::disconnect()
 {
 	_connectedUser = nullptr;
 
-	if (_connectedUserCallback)
-		_connectedUserCallback(_connectedUser);
+	if (_connectedUserCallback) _connectedUserCallback(_connectedUser);
 }
 
 bool UserManager::isUserConnected() const

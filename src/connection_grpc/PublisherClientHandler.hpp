@@ -17,37 +17,36 @@
 #ifndef GHOST_INTERNAL_NETWORK_PUBLISHERCLIENTHANDLER_HPP
 #define GHOST_INTERNAL_NETWORK_PUBLISHERCLIENTHANDLER_HPP
 
-#include <mutex>
 #include <deque>
-
-#include <ghost/connection/ClientHandler.hpp>
 #include <ghost/connection/Client.hpp>
+#include <ghost/connection/ClientHandler.hpp>
 #include <ghost/connection/Writer.hpp>
+#include <mutex>
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		 *	This handler keeps the clients which connect to the server, and sends them the published data.
-		 */
-		class PublisherClientHandler : public ghost::ClientHandler
-		{
-		public:
-			~PublisherClientHandler();
+namespace internal
+{
+/**
+ *	This handler keeps the clients which connect to the server, and sends them the published data.
+ */
+class PublisherClientHandler : public ghost::ClientHandler
+{
+public:
+	~PublisherClientHandler();
 
-			bool handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive) override;
-			
-			bool send(const google::protobuf::Any& message);
-			void releaseClients();
-			size_t countSubscribers() const;
+	bool handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive) override;
 
-		private:
-			mutable std::mutex _subscribersMutex;
-			std::deque<	std::pair<	std::shared_ptr<ghost::Client>,
-									std::shared_ptr<ghost::Writer<google::protobuf::Any>>>> _subscribers;
-		};
-	}
-}
+	bool send(const google::protobuf::Any& message);
+	void releaseClients();
+	size_t countSubscribers() const;
+
+private:
+	mutable std::mutex _subscribersMutex;
+	std::deque<std::pair<std::shared_ptr<ghost::Client>, std::shared_ptr<ghost::Writer<google::protobuf::Any>>>>
+	    _subscribers;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_PUBLISHERCLIENTHANDLER_HPP

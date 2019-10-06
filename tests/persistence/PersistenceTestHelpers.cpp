@@ -37,14 +37,14 @@ std::list<std::shared_ptr<ghost::internal::SaveData>> generateTestdata(size_t sa
 		auto savedata = ghost::SaveData::create(saveDataName);
 		auto saveDataInt = std::dynamic_pointer_cast<ghost::internal::SaveData>(savedata);
 		saveDataInt->setData(data);
-		
+
 		testData.push_back(saveDataInt);
 	}
 	return testData;
 }
 
 void compareTestData(const std::list<std::shared_ptr<ghost::internal::SaveData>>& data1,
-	const std::list<std::shared_ptr<ghost::internal::SaveData>>& data2)
+		     const std::list<std::shared_ptr<ghost::internal::SaveData>>& data2)
 {
 	auto it = data1.begin();
 	auto it2 = data2.begin();
@@ -52,7 +52,7 @@ void compareTestData(const std::list<std::shared_ptr<ghost::internal::SaveData>>
 	{
 		ASSERT_TRUE(it2 != data2.end());
 		ASSERT_TRUE((*it)->getName() == (*it2)->getName());
-		
+
 		auto testData = std::dynamic_pointer_cast<ghost::internal::SaveData>(*it);
 		auto testData2 = std::dynamic_pointer_cast<ghost::internal::SaveData>(*it2);
 		ASSERT_TRUE(testData && testData2);
@@ -78,6 +78,6 @@ void compareTestData(const std::list<std::shared_ptr<ghost::internal::SaveData>>
 		it++;
 		it2++;
 	}
-	
+
 	ASSERT_TRUE(it2 == data2.end());
 }

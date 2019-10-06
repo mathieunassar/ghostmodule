@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-#include <iostream>
-#include <gtest/gtest.h>
 #include <google/protobuf/wrappers.pb.h>
+#include <gtest/gtest.h>
 
-#include "ConnectionTestUtils.hpp"
 #include <ghost/connection/ReadableConnection.hpp>
+#include <iostream>
+
 #include "../src/connection/ReaderSink.hpp"
 #include "../src/connection/WriterSink.hpp"
+#include "ConnectionTestUtils.hpp"
 
- /**
-  *	This test class groups the following test categories:
-  *	- MessageHandler
-  *	- Reader, ReaderSink and ReadableConnection
-  *	- Writer, WriterSink and WritableConnection
-  */
+/**
+ *	This test class groups the following test categories:
+ *	- MessageHandler
+ *	- Reader, ReaderSink and ReadableConnection
+ *	- Writer, WriterSink and WritableConnection
+ */
 
 class ReaderWriterTests : public testing::Test, public GhostMessageTester
 {
@@ -44,7 +45,6 @@ protected:
 
 	void TearDown() override
 	{
-
 	}
 
 	void setupReader()
@@ -90,7 +90,7 @@ protected:
 		ASSERT_TRUE(putResult == expected);
 	}
 
-	template<typename MessageType>
+	template <typename MessageType>
 	std::shared_ptr<ghost::Reader<MessageType>> makeReader()
 	{
 		std::shared_ptr<ghost::Reader<MessageType>> res = _readable->getReader<MessageType>();
@@ -185,7 +185,7 @@ TEST_F(ReaderWriterTests, test_Reader_readFails_When_connectionWasNonBlockingAnd
 
 TEST_F(ReaderWriterTests, test_ReaderSink_readFails_When_messageHandlerWasAdded)
 {
-	(void) _readable->addMessageHandler();
+	(void)_readable->addMessageHandler();
 
 	putToReadersink(_doubleValue);
 	auto reader = makeReader<google::protobuf::DoubleValue>();
@@ -213,25 +213,24 @@ TEST_F(ReaderWriterTests, test_ReaderSink_putToSinkFails_When_sinkWasDrained)
 	putToReadersink(*_ghostMessage, false);
 }
 
-TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerHandlesGhostMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
+TEST_F(ReaderWriterTests,
+       test_ReaderSink_messageHandlerHandlesGhostMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
 {
 	auto messageHandler = _readable->addMessageHandler();
 	int handlerCount = 0;
-	messageHandler->addHandler<MessageMock>([&](const MessageMock& value) {
-		handlerCount++;
-		});
+	messageHandler->addHandler<MessageMock>([&](const MessageMock& value) { handlerCount++; });
 
 	putToReadersink(*_ghostMessage);
 	ASSERT_TRUE(handlerCount == 1);
 }
 
-TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerHandlesProtobufMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
+TEST_F(ReaderWriterTests,
+       test_ReaderSink_messageHandlerHandlesProtobufMessage_When_messageHandlerWasAddedAndHandlesMessageTypeIsSent)
 {
 	auto messageHandler = _readable->addMessageHandler();
 	int handlerCount = 0;
-	messageHandler->addHandler<google::protobuf::DoubleValue>([&](const google::protobuf::DoubleValue& value) {
-		handlerCount++;
-		});
+	messageHandler->addHandler<google::protobuf::DoubleValue>(
+	    [&](const google::protobuf::DoubleValue& value) { handlerCount++; });
 
 	putToReadersink(_doubleValue);
 	ASSERT_TRUE(handlerCount == 1);
@@ -241,9 +240,8 @@ TEST_F(ReaderWriterTests, test_ReaderSink_messageHandlerDoesNotHandleMessage_Whe
 {
 	auto messageHandler = _readable->addMessageHandler();
 	int handlerCount = 0;
-	messageHandler->addHandler<google::protobuf::Int32Value>([&](const google::protobuf::Int32Value& value) {
-		handlerCount++;
-		});
+	messageHandler->addHandler<google::protobuf::Int32Value>(
+	    [&](const google::protobuf::Int32Value& value) { handlerCount++; });
 
 	putToReadersink(_doubleValue);
 	ASSERT_TRUE(handlerCount == 0);
@@ -255,9 +253,7 @@ TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_protobu
 {
 	auto writer = _writable->getWriter<google::protobuf::DoubleValue>();
 	std::atomic_bool writeResult(false);
-	std::thread t([&](){
-		writeResult = writer->write(_doubleValue);
-		});
+	std::thread t([&]() { writeResult = writer->write(_doubleValue); });
 
 	getFromWriterSink();
 	t.join();
@@ -270,9 +266,7 @@ TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_message
 	google::protobuf::Any any;
 	any.PackFrom(_doubleValue);
 	std::atomic_bool writeResult(false);
-	std::thread t([&]() {
-		writeResult = writer->write(any);
-		});
+	std::thread t([&]() { writeResult = writer->write(any); });
 
 	getFromWriterSink();
 	t.join();
@@ -283,9 +277,7 @@ TEST_F(ReaderWriterTests, test_WritableConnection_messageGoesToSink_When_ghostMe
 {
 	auto writer = _writable->getWriter<MessageMock>();
 	std::atomic_bool writeResult(false);
-	std::thread t([&]() {
-		writeResult = writer->write(*_ghostMessage);
-		});
+	std::thread t([&]() { writeResult = writer->write(*_ghostMessage); });
 
 	getFromWriterSink();
 	t.join();
@@ -299,7 +291,7 @@ TEST_F(ReaderWriterTests, test_WriterSink_writeBlocks_When_connectionWasBlocking
 	std::thread t([&]() {
 		writer->write(_doubleValue);
 		writeCompleted = true;
-		});
+	});
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	ASSERT_FALSE(writeCompleted);

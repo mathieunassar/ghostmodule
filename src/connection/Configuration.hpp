@@ -23,33 +23,35 @@
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		 *	Implementation of the public API configuration class.
-		 */
-		class Configuration : public ghost::Configuration
-		{
-		public:
-			Configuration(const std::string& name = "");
+namespace internal
+{
+/**
+ *	Implementation of the public API configuration class.
+ */
+class Configuration : public ghost::Configuration
+{
+public:
+	Configuration(const std::string& name = "");
 
-			void copy(ghost::Configuration& to) const override;
-			const std::string& getConfigurationName() const override;
-			bool hasAttribute(const std::string& name) const override;
-			bool isAttributeEmpty(const std::string& name) const override;
-			bool getAttribute(const std::string& name, ghost::ConfigurationValue& value) const override;
-			bool getAttribute(const std::string& name, ghost::ConfigurationValue& value, const ghost::ConfigurationValue& defaultValue) const override;
-			std::map<std::string, std::string> getAttributes() const override;
-			bool removeAttribute(const std::string& name) override;
-			bool addAttribute(const std::string& name, const ghost::ConfigurationValue& value, bool overwrite = false) override;
-			bool updateAttribute(const std::string& name, const ghost::ConfigurationValue& value) override;
+	void copy(ghost::Configuration& to) const override;
+	const std::string& getConfigurationName() const override;
+	bool hasAttribute(const std::string& name) const override;
+	bool isAttributeEmpty(const std::string& name) const override;
+	bool getAttribute(const std::string& name, ghost::ConfigurationValue& value) const override;
+	bool getAttribute(const std::string& name, ghost::ConfigurationValue& value,
+			  const ghost::ConfigurationValue& defaultValue) const override;
+	std::map<std::string, std::string> getAttributes() const override;
+	bool removeAttribute(const std::string& name) override;
+	bool addAttribute(const std::string& name, const ghost::ConfigurationValue& value,
+			  bool overwrite = false) override;
+	bool updateAttribute(const std::string& name, const ghost::ConfigurationValue& value) override;
 
-		private:
-			std::string getAttribute(const std::string& name) const;
+private:
+	std::string getAttribute(const std::string& name) const;
 
-			ghost::protobuf::connection::ConnectionConfiguration _configuration;
-		};
-	}
-}
+	ghost::protobuf::connection::ConnectionConfiguration _configuration;
+};
+} // namespace internal
+} // namespace ghost
 
-#endif //GHOST_INTERNAL_CONFIGURATION_HPP
+#endif // GHOST_INTERNAL_CONFIGURATION_HPP

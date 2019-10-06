@@ -17,10 +17,11 @@
 #include "SystemtestExecutorModule.hpp"
 
 #include <gtest/gtest.h>
-#include "SystemtestCommand.hpp"
-#include "StopSystemtestCommand.hpp"
-#include "ConnectionStressTest.hpp"
+
 #include "ConnectionMonkeyTest.hpp"
+#include "ConnectionStressTest.hpp"
+#include "StopSystemtestCommand.hpp"
+#include "SystemtestCommand.hpp"
 
 bool SystemtestExecutorModule::initialize(const ghost::Module& module)
 {
@@ -47,8 +48,7 @@ bool SystemtestExecutorModule::run(const ghost::Module& module)
 void SystemtestExecutorModule::dispose(const ghost::Module& module)
 {
 	stopSystemtest();
-	if (_testThread.joinable())
-		_testThread.join();
+	if (_testThread.joinable()) _testThread.join();
 }
 
 void SystemtestExecutorModule::registerSystemtest(const std::shared_ptr<Systemtest>& test)
@@ -73,11 +73,10 @@ void SystemtestExecutorModule::executeSystemtest(const std::string& testName, co
 	GHOST_INFO(_logger) << "Executing system test '" << testName << "' with the following parameters:";
 	testParams.print();
 
-	if (_testThread.joinable())
-		_testThread.join();
+	if (_testThread.joinable()) _testThread.join();
 
 	_activeTest = _tests[testName];
-	_testThread = std::thread([testParams, this](){ _activeTest->execute(testParams); });
+	_testThread = std::thread([testParams, this]() { _activeTest->execute(testParams); });
 }
 
 void SystemtestExecutorModule::stopSystemtest()
@@ -87,8 +86,7 @@ void SystemtestExecutorModule::stopSystemtest()
 		GHOST_INFO(_logger) << "Stopping system test '" << _activeTest->getName() << "'.";
 		_activeTest->stop();
 
-		if (_testThread.joinable())
-			_testThread.join();
+		if (_testThread.joinable()) _testThread.join();
 
 		_activeTest.reset();
 	}

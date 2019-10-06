@@ -16,36 +16,32 @@
 
 #include "ServerGRPC.hpp"
 
+#include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
-#include <grpcpp/security/server_credentials.h>
 
-#include "rpc/IncomingRPC.hpp"
 #include "RemoteClientGRPC.hpp"
+#include "rpc/IncomingRPC.hpp"
 
 using namespace ghost::internal;
 
 ServerGRPC::ServerGRPC(const ghost::ConnectionConfiguration& config)
-	:ServerGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+    : ServerGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
 {
-
 }
 
-ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config)
-	:  _configuration(config)
-	, _running(false)
+ServerGRPC::ServerGRPC(const ghost::NetworkConnectionConfiguration& config) : _configuration(config), _running(false)
 {
-
 }
 
 bool ServerGRPC::start()
 {
-	if (_running)
-		return false;
+	if (_running) return false;
 
 	_running = true;
 
-	std::string serverAddress = _configuration.getServerIpAddress() + ":" + std::to_string(_configuration.getServerPortNumber());
+	std::string serverAddress =
+	    _configuration.getServerIpAddress() + ":" + std::to_string(_configuration.getServerPortNumber());
 
 	grpc::ServerBuilder builder;
 
@@ -76,10 +72,12 @@ bool ServerGRPC::start()
 	auto callback = std::bind(&ServerGRPC::onClientConnected, this, std::placeholders::_1);
 
 	auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
-	for (size_t i = 0; i < _configuration.getThreadPoolSize(); i++) // start as many calls as there can be concurrent rpcs
+	for (size_t i = 0; i < _configuration.getThreadPoolSize();
+	     i++) // start as many calls as there can be concurrent rpcs
 	{
 		// Spawn a new CallData instance to serve new clients
-		auto client = std::make_shared<RemoteClientGRPC>(_configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
+		auto client = std::make_shared<RemoteClientGRPC>(
+		    _configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
 		client->getRPC()->setParent(client);
 		_clientManager.addClient(client);
 	}
@@ -90,16 +88,14 @@ bool ServerGRPC::start()
 
 bool ServerGRPC::stop()
 {
-	if (!_running)
-		return false;
+	if (!_running) return false;
 
 	_running = false;
 
 	// Stop currently active clients so that shutting down the grpc server does not hang
 	_clientManager.stopClients();
 	// Shut down the grpc server - this will wait until current RPCs are processed
-	if (_grpcServer)
-		_grpcServer->Shutdown();
+	if (_grpcServer) _grpcServer->Shutdown();
 	// Stop the completion queue, finishing the remaining open operations
 	_completionQueueExecutor.stop();
 	// Stops not stopped clients and delete all objects.
@@ -136,7 +132,8 @@ void ServerGRPC::onClientConnected(std::shared_ptr<RemoteClientGRPC> client)
 		// restart the process of creating the request for the next client
 		auto cq = static_cast<grpc::ServerCompletionQueue*>(_completionQueueExecutor.getCompletionQueue());
 		auto callback = std::bind(&ServerGRPC::onClientConnected, this, std::placeholders::_1);
-		auto newClient = std::make_shared<RemoteClientGRPC>(_configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
+		auto newClient = std::make_shared<RemoteClientGRPC>(
+		    _configuration, std::make_shared<IncomingRPC>(&_service, cq, callback), this);
 		newClient->getRPC()->setParent(newClient);
 		_clientManager.addClient(newClient);
 	}

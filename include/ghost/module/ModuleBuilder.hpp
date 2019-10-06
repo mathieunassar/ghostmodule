@@ -17,79 +17,78 @@
 #ifndef GHOST_MODULE_BUILDER_HPP
 #define GHOST_MODULE_BUILDER_HPP
 
-#include <memory>
 #include <functional>
-#include <string>
-
-#include <ghost/module/Module.hpp>
-#include <ghost/module/Logger.hpp>
 #include <ghost/module/Console.hpp>
+#include <ghost/module/Logger.hpp>
+#include <ghost/module/Module.hpp>
+#include <memory>
+#include <string>
 
 namespace ghost
 {
-	/**
-	 *	The module builder allows the developer to set up the different components
-	 *	of the module before it is started.
-	 */
-	class ModuleBuilder
-	{
-	public:
-		static std::unique_ptr<ghost::ModuleBuilder> create();
-		
-		virtual ~ModuleBuilder() = default;
+/**
+ *	The module builder allows the developer to set up the different components
+ *	of the module before it is started.
+ */
+class ModuleBuilder
+{
+public:
+	static std::unique_ptr<ghost::ModuleBuilder> create();
 
-		/**
-		 *	Sets the function that will be called to initialize the module.
-		 *	The function must return true if the initialization was successful, false
-		 *	otherwise.
-		 *	If this method is not called, the initialization will not perform any
-		 *	action and will be considered successful.
-		 *	@param behavior	function to be called when the module initializes.
-		 */
-		virtual void setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
-		/**
-		 *	Sets the function that will be called cyclically during the module's
-		 *	runtime. The function must return true if another cycle is necessary (if
-		 *	it must be called again), and false if the module can dispose.
-		 *	If this method is not called, nothing will happen and the module will
-		 *	immediately dispose.
-		 *	@param behavior	function to be called cyclically during the module's runtime.
-		 */
-		virtual void setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
-		/**
-		 *	Sets the function that will be called to dispose the module.
-		 *	If an error happened during the runtime of the module, this function
-		 *	will still be called.
-		 *	If this method is not called, nothing will happen at the disposition of 
-		 *	the module and the program will immediatly exit.
-		 *	@param behavior	function to be called when the module disposes.
-		 */
-		virtual void setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) = 0;
-		/**
-		 *	Passes the program options to the builder. The options will be parsed and
-		 *	made available to the built ghost::Module instance.
-		 *	@param argc	number of arguments present in "argv"
-		 *	@param argv	array of C-style string containing the program options.
-		 */
-		virtual void setProgramOptions(int argc, char* argv[]) = 0;
-		/**
-		 *	Activates the console management. A handle to the created ghost::Console
-		 *	is returned for further configuration possibilities.
-		 *	@return a handle to a ghost::Console.
-		 */
-		virtual std::shared_ptr<ghost::Console> setConsole() = 0;
-		/**
-		 *	Sets the logger of this module.
-		 *	@param logger	logger to set.
-		 */
-		virtual void setLogger(const std::shared_ptr<ghost::Logger>& logger) = 0;
-		/**
-		 *	Builds the module based on the parameters provided to this builder.
-		 *	@param moduleName	name of the module to build.
-		 *	@return the built module if the process was successful, nullptr otherwise.
-		 */
-		virtual std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") = 0;
-	};
-}
+	virtual ~ModuleBuilder() = default;
+
+	/**
+	 *	Sets the function that will be called to initialize the module.
+	 *	The function must return true if the initialization was successful, false
+	 *	otherwise.
+	 *	If this method is not called, the initialization will not perform any
+	 *	action and will be considered successful.
+	 *	@param behavior	function to be called when the module initializes.
+	 */
+	virtual void setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
+	/**
+	 *	Sets the function that will be called cyclically during the module's
+	 *	runtime. The function must return true if another cycle is necessary (if
+	 *	it must be called again), and false if the module can dispose.
+	 *	If this method is not called, nothing will happen and the module will
+	 *	immediately dispose.
+	 *	@param behavior	function to be called cyclically during the module's runtime.
+	 */
+	virtual void setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
+	/**
+	 *	Sets the function that will be called to dispose the module.
+	 *	If an error happened during the runtime of the module, this function
+	 *	will still be called.
+	 *	If this method is not called, nothing will happen at the disposition of
+	 *	the module and the program will immediatly exit.
+	 *	@param behavior	function to be called when the module disposes.
+	 */
+	virtual void setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) = 0;
+	/**
+	 *	Passes the program options to the builder. The options will be parsed and
+	 *	made available to the built ghost::Module instance.
+	 *	@param argc	number of arguments present in "argv"
+	 *	@param argv	array of C-style string containing the program options.
+	 */
+	virtual void setProgramOptions(int argc, char* argv[]) = 0;
+	/**
+	 *	Activates the console management. A handle to the created ghost::Console
+	 *	is returned for further configuration possibilities.
+	 *	@return a handle to a ghost::Console.
+	 */
+	virtual std::shared_ptr<ghost::Console> setConsole() = 0;
+	/**
+	 *	Sets the logger of this module.
+	 *	@param logger	logger to set.
+	 */
+	virtual void setLogger(const std::shared_ptr<ghost::Logger>& logger) = 0;
+	/**
+	 *	Builds the module based on the parameters provided to this builder.
+	 *	@param moduleName	name of the module to build.
+	 *	@return the built module if the process was successful, nullptr otherwise.
+	 */
+	virtual std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") = 0;
+};
+} // namespace ghost
 
 #endif // GHOST_MODULE_BUILDER_HPP

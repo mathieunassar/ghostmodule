@@ -17,13 +17,14 @@
 #ifndef GHOST_TESTS_SYSTEMTEST_HPP
 #define GHOST_TESTS_SYSTEMTEST_HPP
 
-#include <string>
-#include <chrono>
-#include <mutex>
-#include <memory>
-#include <ghost/module/Logger.hpp>
-#include <ghost/module/CommandLine.hpp>
 #include <gtest/gtest.h>
+
+#include <chrono>
+#include <ghost/module/CommandLine.hpp>
+#include <ghost/module/Logger.hpp>
+#include <memory>
+#include <mutex>
+#include <string>
 
 /**
  *	Base class for system tests.
@@ -65,15 +66,22 @@ protected:
 	bool checkTestDuration() const;
 
 	/// Configures the test with the input provided in the console
-	virtual bool setUp() { return true; }
+	virtual bool setUp()
+	{
+		return true;
+	}
 	/// Deinitializes the test if necessary
-	virtual void tearDown() {}
+	virtual void tearDown()
+	{
+	}
 	/// Executes the test prrogram.
 	virtual bool run() = 0;
 
 	void require(bool condition, bool fatal = true);
 	void printSummary() const;
-	virtual void onPrintSummary() const {}
+	virtual void onPrintSummary() const
+	{
+	}
 
 	std::shared_ptr<ghost::Logger> _logger;
 

@@ -17,24 +17,23 @@
 #ifndef GHOST_USER_HPP
 #define GHOST_USER_HPP
 
-#include <string>
-
 #include <ghost/module/PermissionEntity.hpp>
+#include <string>
 
 namespace ghost
 {
+/**
+ *	Represents a user of the program.
+ *	Possesses a name and is associated to permissions.
+ */
+class User : public PermissionEntity
+{
+public:
 	/**
-	 *	Represents a user of the program.
-	 *	Possesses a name and is associated to permissions.
+	 *	@return the name of this user.
 	 */
-	class User : public PermissionEntity
-	{
-	public:
-		/**
-		 *	@return the name of this user.
-		 */
-		virtual const std::string& getName() const = 0;
-	};
-}
+	virtual const std::string& getName() const = 0;
+};
+} // namespace ghost
 
 #endif // GHOST_USER_HPP

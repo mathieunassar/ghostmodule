@@ -17,80 +17,84 @@
 #ifndef GHOST_INTERNAL_GENERICREADER_HPP
 #define GHOST_INTERNAL_GENERICREADER_HPP
 
-#include <memory>
-#include <type_traits>
 #include <google/protobuf/any.pb.h>
+
 #include <ghost/connection/Reader.hpp>
 #include <ghost/connection/ReaderSink.hpp>
+#include <memory>
+#include <type_traits>
+
 #include "GenericMessageConverter.hpp"
 #include "ProtobufMessage.hpp"
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+/**
+ *	Implementation of a reader, that can read messages of the given templated type.
+ *	The reader gets the message from the ReaderSink interface, which is controlled
+ *	by a connection.
+ *	Its implementation of the Reader interface provides the API functionality.
+ */
+template <typename MessageType>
+class GenericReader : public ghost::Reader<MessageType>
+{
+public:
+	// Constructor. Initializes the internal implementation, which is bound to the internal sink.
+	GenericReader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
+	    : _internal(ghost::Reader<google::protobuf::Any>::create(sink, blocking))
 	{
-		/**
-		 *	Implementation of a reader, that can read messages of the given templated type.
-		 *	The reader gets the message from the ReaderSink interface, which is controlled
-		 *	by a connection.
-		 *	Its implementation of the Reader interface provides the API functionality.
-		 */
-		template<typename MessageType>
-		class GenericReader : public ghost::Reader<MessageType>
-		{
-		public:
-			// Constructor. Initializes the internal implementation, which is bound to the internal sink.
-			GenericReader(const std::shared_ptr<ghost::ReaderSink>& sink, bool blocking)
-				: _internal(ghost::Reader<google::protobuf::Any>::create(sink, blocking)) {}
-
-			// From ghost::Reader<MessageType>
-			bool read(MessageType& message) override;
-			bool lastRead(MessageType& message) override;
-
-		private:
-			template<class Q = MessageType>
-			typename std::enable_if<!std::is_base_of<ghost::Message, Q>::value, bool>::type makeMessage(const google::protobuf::Any& any, MessageType& message)
-			{
-				auto proto = std::make_shared<MessageType>();
-				ghost::internal::ProtobufMessage container(proto);
-				bool parseResult = GenericMessageConverter::parse(any, container);
-				message = *proto;
-				return parseResult;
-			}
-
-			template<class Q = MessageType>
-			typename std::enable_if<std::is_base_of<ghost::Message, Q>::value, bool>::type makeMessage(const google::protobuf::Any& any, MessageType& message)
-			{
-				return GenericMessageConverter::parse(any, message);
-			}
-
-			std::shared_ptr<ghost::Reader<google::protobuf::Any>> _internal;
-		};
-
-		// TEMPLATE DEFINITION //
-
-		template<typename MessageType>
-		bool GenericReader<MessageType>::read(MessageType& message)
-		{
-			google::protobuf::Any tmp;
-			bool readResult = _internal->read(tmp);
-			if (!readResult)
-				return false;
-
-			return makeMessage(tmp, message);
-		}
-
-		template<typename MessageType>
-		bool GenericReader<MessageType>::lastRead(MessageType& message)
-		{
-			google::protobuf::Any tmp;
-			bool readResult = _internal->lastRead(tmp);
-			if (!readResult)
-				return false;
-
-			return makeMessage(tmp, message);
-		}
 	}
+
+	// From ghost::Reader<MessageType>
+	bool read(MessageType& message) override;
+	bool lastRead(MessageType& message) override;
+
+private:
+	template <class Q = MessageType>
+	typename std::enable_if<!std::is_base_of<ghost::Message, Q>::value, bool>::type makeMessage(
+	    const google::protobuf::Any& any, MessageType& message)
+	{
+		auto proto = std::make_shared<MessageType>();
+		ghost::internal::ProtobufMessage container(proto);
+		bool parseResult = GenericMessageConverter::parse(any, container);
+		message = *proto;
+		return parseResult;
+	}
+
+	template <class Q = MessageType>
+	typename std::enable_if<std::is_base_of<ghost::Message, Q>::value, bool>::type makeMessage(
+	    const google::protobuf::Any& any, MessageType& message)
+	{
+		return GenericMessageConverter::parse(any, message);
+	}
+
+	std::shared_ptr<ghost::Reader<google::protobuf::Any>> _internal;
+};
+
+// TEMPLATE DEFINITION //
+
+template <typename MessageType>
+bool GenericReader<MessageType>::read(MessageType& message)
+{
+	google::protobuf::Any tmp;
+	bool readResult = _internal->read(tmp);
+	if (!readResult) return false;
+
+	return makeMessage(tmp, message);
 }
 
-#endif //GHOST_INTERNAL_GENERICREADER_HPP
+template <typename MessageType>
+bool GenericReader<MessageType>::lastRead(MessageType& message)
+{
+	google::protobuf::Any tmp;
+	bool readResult = _internal->lastRead(tmp);
+	if (!readResult) return false;
+
+	return makeMessage(tmp, message);
+}
+} // namespace internal
+} // namespace ghost
+
+#endif // GHOST_INTERNAL_GENERICREADER_HPP

@@ -15,26 +15,23 @@
  */
 
 #include <gtest/gtest.h>
+
+#include <ghost/persistence/SaveManager.hpp>
 #include <iostream>
 
 #include "../../src/persistence/SaveFile.hpp"
 #include "../protobuf/tests.pb.h"
-
 #include "PersistenceTestHelpers.hpp"
-
-#include <ghost/persistence/SaveManager.hpp>
 
 class SaveManagerTest : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
-
 	}
 
 	void TearDown() override
 	{
-
 	}
 
 	static const std::string TEST_DATA_NAME;
@@ -48,7 +45,7 @@ const std::string SaveManagerTest::TEST_DATA_NAME = "Test";
 const std::string SaveManagerTest::TEST_FILE_NAME = "file1.dat";
 const std::string SaveManagerTest::TEST_FILE2_NAME = "file2.dat";
 const std::string SaveManagerTest::TEST_FILE3_NAME = "file3.dat";
-const std::list<std::string> SaveManagerTest::TEST_FILES_LIST{ {TEST_FILE_NAME, TEST_FILE2_NAME, TEST_FILE3_NAME} };
+const std::list<std::string> SaveManagerTest::TEST_FILES_LIST{{TEST_FILE_NAME, TEST_FILE2_NAME, TEST_FILE3_NAME}};
 
 TEST_F(SaveManagerTest, test_SaveManager_addget_When_ok)
 {
@@ -158,27 +155,27 @@ TEST_F(SaveManagerTest, test_SaveManager_saveload_When_ok)
 	ASSERT_TRUE(result1.size() == 1);
 	ASSERT_TRUE(result1.count(TEST_FILE_NAME) == 1);
 	std::list<std::shared_ptr<ghost::SaveData>> tmp = result1.at(TEST_FILE_NAME);
-	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
-	for (auto e : tmp)
-		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
+	// the save manager always returns instances of the internal version in this test, so it's okay to not check the
+	// return value of the cast
+	for (auto e : tmp) resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
 
 	++it;
 	auto result2 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result2.size() == 1);
 	ASSERT_TRUE(result2.count(TEST_FILE2_NAME) == 1);
 	tmp = result2.at(TEST_FILE2_NAME);
-	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
-	for (auto e : tmp)
-		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
+	// the save manager always returns instances of the internal version in this test, so it's okay to not check the
+	// return value of the cast
+	for (auto e : tmp) resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
 
 	++it;
 	auto result3 = manager->getData((*it)->getName());
 	ASSERT_TRUE(result3.size() == 1);
 	ASSERT_TRUE(result3.count(TEST_FILE3_NAME) == 1);
 	tmp = result3.at(TEST_FILE3_NAME);
-	// the save manager always returns instances of the internal version in this test, so it's okay to not check the return value of the cast
-	for (auto e : tmp)
-		resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
+	// the save manager always returns instances of the internal version in this test, so it's okay to not check the
+	// return value of the cast
+	for (auto e : tmp) resultData.push_back(std::dynamic_pointer_cast<ghost::internal::SaveData>(e));
 
 	compareTestData(data, resultData);
 }

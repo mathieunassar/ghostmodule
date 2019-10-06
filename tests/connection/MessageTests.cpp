@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#include <iostream>
-#include <gtest/gtest.h>
 #include <google/protobuf/wrappers.pb.h>
+#include <gtest/gtest.h>
 
-#include <ghost/connection/internal/ProtobufMessage.hpp>
 #include <ghost/connection/internal/GenericMessageConverter.hpp>
+#include <ghost/connection/internal/ProtobufMessage.hpp>
+#include <iostream>
+
 #include "ConnectionTestUtils.hpp"
 
 using testing::_;
@@ -36,10 +37,9 @@ protected:
 		setupProtobufMessages();
 		setupGhostMessages();
 	}
-	
+
 	void TearDown() override
 	{
-	
 	}
 
 	void setupProtobufMessages()
@@ -48,7 +48,8 @@ protected:
 		_doubleValue->set_value(TEST_DOUBLE_VALUE);
 		_message = std::make_shared<ghost::internal::ProtobufMessage>(_doubleValue);
 		_message2 = std::make_shared<ghost::internal::ProtobufMessage>(_doubleValue);
-		_otherTypeMessage = std::make_shared<ghost::internal::ProtobufMessage>(std::make_shared<google::protobuf::Int32Value>());
+		_otherTypeMessage = std::make_shared<ghost::internal::ProtobufMessage>(
+		    std::make_shared<google::protobuf::Int32Value>());
 		_emptyMessage = std::make_shared<ghost::internal::ProtobufMessage>(nullptr);
 	}
 
@@ -79,7 +80,7 @@ TEST_F(MessageTests, test_ProtobufMessage_serializationSucceeds_When_defaultCons
 {
 	std::string serialized;
 	bool serializationResult = _message->serialize(serialized);
-	
+
 	ASSERT_TRUE(serializationResult);
 	ASSERT_TRUE(serialized == _doubleValue->SerializeAsString());
 }
@@ -156,9 +157,12 @@ TEST_F(MessageTests, test_GenericMessageConverter_createFromGhostMessageSucceeds
 	bool creationSuccess = ghost::internal::GenericMessageConverter::create(_any, *_ghostMessage);
 
 	ASSERT_TRUE(creationSuccess);
-	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatName(_any) == _ghostMessage->getMessageFormatName());
-	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatAndName(_any).first == _ghostMessage->getMessageFormatName());
-	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatAndName(_any).second == _ghostMessage->getMessageTypeName());
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatName(_any) ==
+		    _ghostMessage->getMessageFormatName());
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatAndName(_any).first ==
+		    _ghostMessage->getMessageFormatName());
+	ASSERT_TRUE(ghost::internal::GenericMessageConverter::getFormatAndName(_any).second ==
+		    _ghostMessage->getMessageTypeName());
 }
 
 TEST_F(MessageTests, test_GenericMessageConverter_parseToGhostMessageSucceeds_When_validAnyMessageIsGiven)

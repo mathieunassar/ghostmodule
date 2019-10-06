@@ -18,17 +18,14 @@
 
 using namespace ghost::internal;
 
-ReaderSink::ReaderSink()
-	: _drained(false)
+ReaderSink::ReaderSink() : _drained(false)
 {
-
 }
 
 bool ReaderSink::put(const google::protobuf::Any& message)
 {
-	if (_drained)
-		return false;
-	
+	if (_drained) return false;
+
 	if (_messageHandler) // if there is a message handler, don't use the read queue
 		_messageHandler->handle(message);
 	else
@@ -50,16 +47,13 @@ void ReaderSink::drain()
 
 bool ReaderSink::get(google::protobuf::Any& message, bool blocking)
 {
-	if (_drained)
-		return false;
+	if (_drained) return false;
 
-	if (_messageHandler)
-		return false;
+	if (_messageHandler) return false;
 
 	// call is non blocking and there is nothing to read, return false.
 	// User can find out that there is no issue by calling "isRunnung()" on the connection
-	if (!blocking && getMessageQueue()->size() == 0)
-		return false;
+	if (!blocking && getMessageQueue()->size() == 0) return false;
 
 	// else, connection is blocking or there is something to read
 	message = getMessageQueue()->get(); // copy is called here

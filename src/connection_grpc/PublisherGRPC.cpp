@@ -19,15 +19,12 @@
 using namespace ghost::internal;
 
 PublisherGRPC::PublisherGRPC(const ghost::ConnectionConfiguration& config)
-	:PublisherGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+    : PublisherGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
 {
-
 }
 
 PublisherGRPC::PublisherGRPC(const ghost::NetworkConnectionConfiguration& config)
-	: ghost::Publisher(config)
-	, _server(config)
-	, _writerThreadEnable(false)
+    : ghost::Publisher(config), _server(config), _writerThreadEnable(false)
 {
 	_handler = std::make_shared<PublisherClientHandler>();
 	_server.setClientHandler(_handler);
@@ -46,8 +43,7 @@ bool PublisherGRPC::stop()
 	getWriterSink()->drain();
 
 	_writerThreadEnable = false;
-	if (_writerThread.joinable())
-		_writerThread.join();
+	if (_writerThread.joinable()) _writerThread.join();
 
 	_handler->releaseClients();
 	return _server.stop();

@@ -18,29 +18,31 @@
 #define GHOST_INTERNAL_QUEUEDSINK_HPP
 
 #include <google/protobuf/any.pb.h>
+
 #include <BlockingQueue.hpp>
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+class QueuedSink
+{
+public:
+	QueuedSink() : _messageQueue(new BlockingQueue<google::protobuf::Any>())
 	{
-		class QueuedSink
-		{
-		public:
-			QueuedSink()
-				: _messageQueue(new BlockingQueue<google::protobuf::Any>()) {}
-			virtual ~QueuedSink() = default;
-
-		protected:
-			std::shared_ptr<BlockingQueue<google::protobuf::Any>> getMessageQueue()
-			{
-				return _messageQueue;
-			}
-
-		private:
-			std::shared_ptr<BlockingQueue<google::protobuf::Any>> _messageQueue;
-		};
 	}
-}
+	virtual ~QueuedSink() = default;
 
-#endif //GHOST_INTERNAL_QUEUEDSINK_HPP
+protected:
+	std::shared_ptr<BlockingQueue<google::protobuf::Any>> getMessageQueue()
+	{
+		return _messageQueue;
+	}
+
+private:
+	std::shared_ptr<BlockingQueue<google::protobuf::Any>> _messageQueue;
+};
+} // namespace internal
+} // namespace ghost
+
+#endif // GHOST_INTERNAL_QUEUEDSINK_HPP

@@ -17,76 +17,77 @@
 #ifndef GHOST_INTERNAL_COMMANDLINEPARSER_HPP
 #define GHOST_INTERNAL_COMMANDLINEPARSER_HPP
 
+#include <ghost/module/CommandLine.hpp>
 #include <string>
 #include <vector>
 
-#include <ghost/module/CommandLine.hpp>
-
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+/**
+ *	Parses a line and extracts a command name and a list of parameters.
+ *	Outputs the result as an object of type {@ref CommandLine}
+ */
+class CommandLineParser
+{
+public:
+	CommandLine parseCommandLine(const std::string& commandLine);
+	CommandLine parseCommandLine(int argc, char* argv[]);
+
+private:
+	template <typename ContainerType>
+	CommandLine parseFromContainer(int size, ContainerType container);
+	void addParameter(std::map<std::string, std::string>& params, const std::string& name,
+			  const std::string& value);
+
+	static void split(std::vector<std::string>& tokens, const std::string& str, const std::string& del);
+	static bool isParameterName(const std::string& str, std::string& name);
+
+	int _unknownParametersCount;
+};
+
+// template definition //
+
+template <typename ContainerType>
+CommandLine CommandLineParser::parseFromContainer(int size, ContainerType container)
+{
+	_unknownParametersCount = 0;
+
+	std::map<std::string, std::string> params;
+	std::string commandName = container[0]; // since commandLine is not empty, this is guaranteed to exist
+
+	std::string lastParameterName;
+	for (size_t i = 1; i < size; ++i)
 	{
-		/**
-		 *	Parses a line and extracts a command name and a list of parameters.
-		 *	Outputs the result as an object of type {@ref CommandLine}
-		 */
-		class CommandLineParser
+		std::string parameterName;
+		bool isNameOfAParameter = isParameterName(container[i], parameterName);
+		if (isNameOfAParameter) // we are dealing with a new parameter
 		{
-		public:
-			CommandLine parseCommandLine(const std::string& commandLine);
-			CommandLine parseCommandLine(int argc, char* argv[]);
-
-		private:
-			template<typename ContainerType>
-			CommandLine parseFromContainer(int size, ContainerType container);
-			void addParameter(std::map<std::string, std::string>& params, const std::string& name, const std::string& value);
-
-			static void split(std::vector<std::string>& tokens, const std::string& str, const std::string& del);
-			static bool isParameterName(const std::string& str, std::string& name);
-
-			int _unknownParametersCount;
-		};
-
-		// template definition //
-
-		template<typename ContainerType>
-		CommandLine CommandLineParser::parseFromContainer(int size, ContainerType container)
-		{
-			_unknownParametersCount = 0;
-
-			std::map<std::string, std::string> params;
-			std::string commandName = container[0]; // since commandLine is not empty, this is guaranteed to exist
-
-			std::string lastParameterName;
-			for (size_t i = 1; i < size; ++i)
+			if (!lastParameterName.empty()) // save the previous if there is one, this can only occur if
+							// previous had no value
 			{
-				std::string parameterName;
-				bool isNameOfAParameter = isParameterName(container[i], parameterName);
-				if (isNameOfAParameter) // we are dealing with a new parameter
-				{
-					if (!lastParameterName.empty()) // save the previous if there is one, this can only occur if previous had no value
-					{
-						addParameter(params, lastParameterName, "");
-					}
-
-					// reset values
-					lastParameterName = parameterName;
-				}
-				else // we are dealing with a value, enter it and reset the values
-				{
-					addParameter(params, lastParameterName, container[i]);
-
-					// reset the values
-					lastParameterName.clear();
-				}
+				addParameter(params, lastParameterName, "");
 			}
 
-			if (!lastParameterName.empty()) // the last split element was a parameter
-				addParameter(params, lastParameterName, "");
+			// reset values
+			lastParameterName = parameterName;
+		}
+		else // we are dealing with a value, enter it and reset the values
+		{
+			addParameter(params, lastParameterName, container[i]);
 
-			return ghost::CommandLine(commandName, params);
+			// reset the values
+			lastParameterName.clear();
 		}
 	}
+
+	if (!lastParameterName.empty()) // the last split element was a parameter
+		addParameter(params, lastParameterName, "");
+
+	return ghost::CommandLine(commandName, params);
 }
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_COMMANDLINEPARSER_HPP

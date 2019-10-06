@@ -18,77 +18,74 @@
 #define GHOST_INTERNAL_NETWORK_RPCSERVERFINISH_HPP
 
 #include <memory>
+
 #include "RPCOperation.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		template<typename ReaderWriter, typename ContextType>
-		class RPCServerFinish : public RPCOperation<ReaderWriter, ContextType>
-		{
-		public:
-			RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status);
-			~RPCServerFinish();
+namespace internal
+{
+template <typename ReaderWriter, typename ContextType>
+class RPCServerFinish : public RPCOperation<ReaderWriter, ContextType>
+{
+public:
+	RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status);
+	~RPCServerFinish();
 
-		protected:
-			bool initiateOperation() override;
-			void onOperationSucceeded(bool rpcFinished) override;
-			void onOperationFailed(bool rpcFinished) override;
+protected:
+	bool initiateOperation() override;
+	void onOperationSucceeded(bool rpcFinished) override;
+	void onOperationFailed(bool rpcFinished) override;
 
-		private:
-			const grpc::Status& _status;
-		};
+private:
+	const grpc::Status& _status;
+};
 
-		/////////////////////////// Template definition ///////////////////////////
+/////////////////////////// Template definition ///////////////////////////
 
-		template<typename ReaderWriter, typename ContextType>
-		RPCServerFinish<ReaderWriter, ContextType>::RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
-			const grpc::Status& status)
-			: RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
-			, _status(status)
-		{
-
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		RPCServerFinish<ReaderWriter, ContextType>::~RPCServerFinish()
-		{
-			RPCOperation<ReaderWriter, ContextType>::stop();
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		bool RPCServerFinish<ReaderWriter, ContextType>::initiateOperation()
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return false;
-
-			rpc->getClient()->Finish(_status, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
-			return true;
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		void RPCServerFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return;
-
-			rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		void RPCServerFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return;
-
-			rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
-		}
-
-	}
+template <typename ReaderWriter, typename ContextType>
+RPCServerFinish<ReaderWriter, ContextType>::RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
+							    const grpc::Status& status)
+    : RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
+    , _status(status)
+{
 }
+
+template <typename ReaderWriter, typename ContextType>
+RPCServerFinish<ReaderWriter, ContextType>::~RPCServerFinish()
+{
+	RPCOperation<ReaderWriter, ContextType>::stop();
+}
+
+template <typename ReaderWriter, typename ContextType>
+bool RPCServerFinish<ReaderWriter, ContextType>::initiateOperation()
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return false;
+
+	rpc->getClient()->Finish(_status, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
+	return true;
+}
+
+template <typename ReaderWriter, typename ContextType>
+void RPCServerFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+
+	rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
+}
+
+template <typename ReaderWriter, typename ContextType>
+void RPCServerFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+
+	rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
+}
+
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_RPCSERVERFINISH_HPP

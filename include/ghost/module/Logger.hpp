@@ -27,58 +27,58 @@
 #define GHOST_WARN(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_WARN)
 #define GHOST_ERROR(LOGGER) LOGGER->operator()(ghost::LogLevel::LEVEL_ERROR)
 
-#include <string>
 #include <ghost/module/LoggerLine.hpp>
+#include <string>
 
 namespace ghost
 {
+/**
+ * @brief Interface for a logger used in the system.
+ *
+ * An implementation must be provided to the modules using it.
+ */
+class Logger
+{
+public:
+	virtual ~Logger() = default;
+
+	LoggerLine operator()(const LogLevel& level);
+
 	/**
-	 * @brief Interface for a logger used in the system.
-	 * 
-	 * An implementation must be provided to the modules using it.
+	 * @brief Writes a trace log line to the underlying support.
+	 *
+	 * @param line line to write.
 	 */
-	class Logger
-	{
-	public:
-		virtual ~Logger() = default;
+	virtual void trace(const std::string& line) = 0;
 
-		LoggerLine operator()(const LogLevel& level);
-		
-		/**
-		 * @brief Writes a trace log line to the underlying support.
-		 *
-		 * @param line line to write.
-		 */
-		virtual void trace(const std::string& line) = 0;
+	/**
+	 * @brief Writes a debug log line to the underlying support.
+	 *
+	 * @param line line to write.
+	 */
+	virtual void debug(const std::string& line) = 0;
 
-		/**
-		 * @brief Writes a debug log line to the underlying support.
-		 *
-		 * @param line line to write.
-		 */
-		virtual void debug(const std::string& line) = 0;
+	/**
+	 * @brief Writes an info log line to the underlying support.
+	 *
+	 * @param line line to write.
+	 */
+	virtual void info(const std::string& line) = 0;
 
-		/**
-		 * @brief Writes an info log line to the underlying support.
-		 *
-		 * @param line line to write.
-		 */
-		virtual void info(const std::string& line) = 0;
-		
-		/**
-		 * @brief Writes a warning log line to the underlying support.
-		 * 
-		 * @param line line to write.
-		 */
-		virtual void warn(const std::string& line) = 0;
-		
-		/**
-		 * @brief Writes an error log line to the underlying support.
-		 * 
-		 * @param line line to write.
-		 */
-		virtual void error(const std::string& line) = 0;
-	};
-}
+	/**
+	 * @brief Writes a warning log line to the underlying support.
+	 *
+	 * @param line line to write.
+	 */
+	virtual void warn(const std::string& line) = 0;
+
+	/**
+	 * @brief Writes an error log line to the underlying support.
+	 *
+	 * @param line line to write.
+	 */
+	virtual void error(const std::string& line) = 0;
+};
+} // namespace ghost
 
 #endif // GHOST_MODULE_LOGGER_HPP

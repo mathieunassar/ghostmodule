@@ -15,6 +15,7 @@
  */
 
 #include "StopSystemtestCommand.hpp"
+
 #include "SystemtestExecutorModule.hpp"
 
 bool StopSystemtestCommand::execute(const ghost::CommandLine& commandLine)

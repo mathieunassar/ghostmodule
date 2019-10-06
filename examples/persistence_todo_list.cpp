@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-#include <ghost/module/ModuleBuilder.hpp>
-#include <ghost/module/Module.hpp>
 #include <ghost/module/GhostLogger.hpp>
+#include <ghost/module/Module.hpp>
+#include <ghost/module/ModuleBuilder.hpp>
 #include <ghost/persistence/SaveManager.hpp>
+
 #include "protobuf/persistency_todo_list.pb.h"
 
- /***************************
-	 TRY IT: Run this program and add or remove your own TODOs.
- ***************************/
+/***************************
+	TRY IT: Run this program and add or remove your own TODOs.
+***************************/
 
 class TodoListModule
 {
@@ -40,9 +41,10 @@ public:
 		std::string filename = TODO_LIST_NAME + ".dat";
 
 		// Try to load existing data. It should return true if the program was already executed once.
-		if (_saveManager->load({ filename }))
+		if (_saveManager->load({filename}))
 		{
-			// If data was loaded, we will work on the first data set (ghost::SaveData) available in the save.
+			// If data was loaded, we will work on the first data set (ghost::SaveData) available in the
+			// save.
 			auto existingData = _saveManager->getData(TODO_LIST_NAME);
 			if (existingData.find(filename) != existingData.end() && existingData.at(filename).size() > 0)
 			{
@@ -53,7 +55,8 @@ public:
 		if (!_todoList)
 		{
 			// If no data was loaded, let's create a first data set with the name "TodoList".
-			// When "save" is called on the save manager, this data set will be saved in a file called "TodoList.dat".
+			// When "save" is called on the save manager, this data set will be saved in a file called
+			// "TodoList.dat".
 			_todoList = ghost::SaveData::create(TODO_LIST_NAME);
 			_saveManager->addData(_todoList);
 		}
@@ -95,8 +98,7 @@ public:
 				// The following lines loads the content of the save file into a Todo Protobuf message.
 				ghost::examples::protobuf::Todo todo;
 				bool getResult = _todoList->get(todo, i);
-				if (getResult)
-					GHOST_INFO(module.getLogger()) << "TODO #" << i << ": " << todo.title();
+				if (getResult) GHOST_INFO(module.getLogger()) << "TODO #" << i << ": " << todo.title();
 			}
 		}
 	}
@@ -152,10 +154,10 @@ int main(int argc, char** argv)
 	builder->setProgramOptions(argc, argv);
 	// The following line creates the module with all the parameters, and names it "myModuleInstance0".
 	std::shared_ptr<ghost::Module> module = builder->build();
-	
-	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr here.
-	if (module)
-		module->start();
+
+	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr
+	// here.
+	if (module) module->start();
 
 	// Start blocks until the module ends.
 	return 0;

@@ -27,13 +27,14 @@
 using namespace ghost::internal;
 
 OutgoingRPC::OutgoingRPC(const std::string& serverIp, int serverPort, size_t dedicatedThreads)
-	: _completionQueue(new grpc::CompletionQueue())// Will be owned by the executor
-	, _serverIp(serverIp)
-	, _serverPort(serverPort)
-	, _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
-	, _executor(_completionQueue) // now owns the completion queue
+    : _completionQueue(new grpc::CompletionQueue()) // Will be owned by the executor
+    , _serverIp(serverIp)
+    , _serverPort(serverPort)
+    , _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
+    , _executor(_completionQueue) // now owns the completion queue
 {
-	_rpc->getStateMachine().setStateChangedCallback(std::bind(&OutgoingRPC::onRPCStateChanged, this, std::placeholders::_1));
+	_rpc->getStateMachine().setStateChangedCallback(
+	    std::bind(&OutgoingRPC::onRPCStateChanged, this, std::placeholders::_1));
 	_executor.start(dedicatedThreads);
 }
 
@@ -47,8 +48,7 @@ OutgoingRPC::~OutgoingRPC()
  */
 bool OutgoingRPC::start()
 {
-	if (!_rpc->initialize())
-		return false;
+	if (!_rpc->initialize()) return false;
 
 	std::string serverAddress = _serverIp + ":" + std::to_string(_serverPort);
 
@@ -59,19 +59,20 @@ bool OutgoingRPC::start()
 	connectOperation.start();
 	// At this point (this call is blocking), start writer and reader async
 
-	if (_rpc->getStateMachine().getState() != RPCStateMachine::EXECUTING)
-		return false;
+	if (_rpc->getStateMachine().getState() != RPCStateMachine::EXECUTING) return false;
 
 	if (_readerSink)
 	{
-		_readerOperation = std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, _readerSink);
+		_readerOperation =
+		    std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, _readerSink);
 		_readerOperation->start();
 	}
 
 	if (_writerSink)
 	{
-		 _writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, true, true, _writerSink);
-		 _writerOperation->startAsync();
+		_writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(
+		    _rpc, true, true, _writerSink);
+		_writerOperation->startAsync();
 	}
 
 	return true;
@@ -79,8 +80,7 @@ bool OutgoingRPC::start()
 
 bool OutgoingRPC::stop()
 {
-	if (!_rpc->dispose())
-		return false;
+	if (!_rpc->dispose()) return false;
 
 	std::shared_ptr<RPCFinish<ReaderWriter, ContextType>> finishOperation;
 	if (_rpc->getStateMachine().getState() == RPCStateMachine::DISPOSING)
@@ -92,14 +92,15 @@ bool OutgoingRPC::stop()
 	dispose();
 
 	// finishOperation completed since _rpc->awaitFinished() returned, it is therefore okay to be deleted.
-	return finishOperation->getStatus().ok() || finishOperation->getStatus().error_code() == grpc::StatusCode::CANCELLED;
+	return finishOperation->getStatus().ok() ||
+	       finishOperation->getStatus().error_code() == grpc::StatusCode::CANCELLED;
 }
 
 bool OutgoingRPC::isRunning() const
 {
 	return _rpc->getStateMachine().getState() == RPCStateMachine::INITIALIZING ||
-		_rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING ||
-		_rpc->getStateMachine().getState() == RPCStateMachine::INACTIVE;
+	       _rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING ||
+	       _rpc->getStateMachine().getState() == RPCStateMachine::INACTIVE;
 }
 
 void OutgoingRPC::setWriterSink(const std::shared_ptr<ghost::WriterSink>& sink)
@@ -116,19 +117,15 @@ void OutgoingRPC::onRPCStateChanged(RPCStateMachine::State newState)
 {
 	if (newState == RPCStateMachine::INACTIVE || newState == RPCStateMachine::FINISHED)
 	{
-		if (_readerSink)
-			_readerSink->drain();
-		if (_writerSink)
-			_writerSink->drain();
+		if (_readerSink) _readerSink->drain();
+		if (_writerSink) _writerSink->drain();
 	}
 }
 
 void OutgoingRPC::dispose()
 {
-	if (_writerOperation)
-		_writerOperation->stop();
-	if (_readerOperation)
-		_readerOperation->stop();
+	if (_writerOperation) _writerOperation->stop();
+	if (_readerOperation) _readerOperation->stop();
 
 	_rpc->awaitFinished();
 	_executor.stop();

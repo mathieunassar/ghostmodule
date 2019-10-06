@@ -17,30 +17,30 @@
 #ifndef GHOST_MODULE_INTERNAL_GHOST_LOGGER_HPP
 #define GHOST_MODULE_INTERNAL_GHOST_LOGGER_HPP
 
-#include <ghost/module/GhostLogger.hpp>
 #include <ghost/module/Console.hpp>
+#include <ghost/module/GhostLogger.hpp>
 
 namespace ghost
 {
-	namespace internal
-	{
-		class GhostLogger : public ghost::GhostLogger
-		{
-		public:
-			GhostLogger(const std::shared_ptr<ghost::Console>& console);
+namespace internal
+{
+class GhostLogger : public ghost::GhostLogger
+{
+public:
+	GhostLogger(const std::shared_ptr<ghost::Console>& console);
 
-			/* From ghost::Logger */
-			void trace(const std::string& line) override;
-			void debug(const std::string& line) override;
-			void info(const std::string& line) override;
-			void warn(const std::string& line) override;
-			void error(const std::string& line) override;
+	/* From ghost::Logger */
+	void trace(const std::string& line) override;
+	void debug(const std::string& line) override;
+	void info(const std::string& line) override;
+	void warn(const std::string& line) override;
+	void error(const std::string& line) override;
 
-		private:
-			std::shared_ptr<Console> _console;
-		};
-	}
-	
-}
+private:
+	std::shared_ptr<Console> _console;
+};
+} // namespace internal
+
+} // namespace ghost
 
 #endif // GHOST_MODULE_INTERNAL_GHOST_LOGGER_HPP

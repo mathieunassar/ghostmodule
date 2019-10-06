@@ -20,10 +20,8 @@ using namespace ghost::internal;
 
 // Implementation of Configuration API
 
-ghost::ConfigurationValue::ConfigurationValue(const std::string& stringValue)
-	: _value(stringValue)
+ghost::ConfigurationValue::ConfigurationValue(const std::string& stringValue) : _value(stringValue)
 {
-
 }
 
 const std::string& ghost::ConfigurationValue::getValue() const
@@ -60,8 +58,7 @@ bool Configuration::hasAttribute(const std::string& name) const
 {
 	for (int i = 0; i < _configuration.fields_size(); i++)
 	{
-		if (_configuration.fields(i).name() == name)
-			return true;
+		if (_configuration.fields(i).name() == name) return true;
 	}
 	return false;
 }
@@ -70,22 +67,21 @@ bool Configuration::isAttributeEmpty(const std::string& name) const
 {
 	for (int i = 0; i < _configuration.fields_size(); i++)
 	{
-		if (_configuration.fields(i).name() == name)
-			return _configuration.fields(i).value().empty();
+		if (_configuration.fields(i).name() == name) return _configuration.fields(i).value().empty();
 	}
 	return true;
 }
 
 bool Configuration::getAttribute(const std::string& name, ghost::ConfigurationValue& value) const
 {
-	if (!hasAttribute(name))
-		return false;
+	if (!hasAttribute(name)) return false;
 
 	value = ghost::ConfigurationValue(getAttribute(name));
 	return true;
 }
 
-bool Configuration::getAttribute(const std::string& name, ghost::ConfigurationValue& value, const ghost::ConfigurationValue& defaultValue) const
+bool Configuration::getAttribute(const std::string& name, ghost::ConfigurationValue& value,
+				 const ghost::ConfigurationValue& defaultValue) const
 {
 	if (!hasAttribute(name))
 	{
@@ -125,8 +121,7 @@ bool Configuration::addAttribute(const std::string& name, const ghost::Configura
 {
 	if (hasAttribute(name))
 	{
-		if (!overwrite)
-			return false;
+		if (!overwrite) return false;
 
 		return updateAttribute(name, value);
 	}
@@ -155,8 +150,7 @@ std::string Configuration::getAttribute(const std::string& name) const
 {
 	for (const ghost::protobuf::connection::ConnectionConfigurationField& str : _configuration.fields())
 	{
-		if (str.name() == name)
-			return str.value();
+		if (str.name() == name) return str.value();
 	}
 	return "";
 }

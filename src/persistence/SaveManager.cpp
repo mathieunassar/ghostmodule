@@ -15,6 +15,7 @@
  */
 
 #include "SaveManager.hpp"
+
 #include "SaveFile.hpp"
 
 using namespace ghost::internal;
@@ -25,24 +26,19 @@ std::shared_ptr<ghost::SaveManager> ghost::SaveManager::create(const std::string
 }
 
 // constructor, root is the path where the save manager will read/write the saves
-SaveManager::SaveManager(const std::string& root)
-	: _saveRoot(root)
+SaveManager::SaveManager(const std::string& root) : _saveRoot(root)
 {
-
 }
 
 // adds data to the map under the key with title "file", creates the entry if it does not exist
 void SaveManager::addData(std::shared_ptr<ghost::SaveData> data, std::string file)
 {
-	if (file.empty())
-		file = data->getName() + ".dat";
-		
-	if (_saveData.count(file) == 0)
-		_saveData[file] = std::list<std::shared_ptr<ghost::internal::SaveData>>();
+	if (file.empty()) file = data->getName() + ".dat";
+
+	if (_saveData.count(file) == 0) _saveData[file] = std::list<std::shared_ptr<ghost::internal::SaveData>>();
 
 	auto cast = std::dynamic_pointer_cast<ghost::internal::SaveData>(data);
-	if (!cast)
-		throw std::logic_error("ghost::SaveManager: the provided data was not properly instantiated.");
+	if (!cast) throw std::logic_error("ghost::SaveManager: the provided data was not properly instantiated.");
 
 	_saveData[file].push_back(cast);
 }
@@ -83,7 +79,8 @@ bool SaveManager::removeData(const std::string& dataName, const std::string& fil
 }
 
 // searches the map for all the data sets of the given name and returns them as a list
-std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> SaveManager::getData(const std::string& dataName) const
+std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> SaveManager::getData(
+    const std::string& dataName) const
 {
 	std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> res;
 	for (const auto& entry : _saveData)
@@ -91,11 +88,9 @@ std::map<std::string, std::list<std::shared_ptr<ghost::SaveData>>> SaveManager::
 		std::list<std::shared_ptr<ghost::SaveData>> found;
 		for (const auto& data : entry.second)
 		{
-			if (data->getName() == dataName)
-				found.push_back(data);
+			if (data->getName() == dataName) found.push_back(data);
 		}
-		if (!found.empty())
-			res[entry.first] = found;
+		if (!found.empty()) res[entry.first] = found;
 	}
 
 	return res;

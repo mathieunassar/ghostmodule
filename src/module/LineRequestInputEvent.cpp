@@ -15,14 +15,14 @@
  */
 
 #include "LineRequestInputEvent.hpp"
+
 #include "InputController.hpp"
 
 using namespace ghost::internal;
 
 LineRequestInputEvent::LineRequestInputEventHandler::LineRequestInputEventHandler(InputControllerAccess* controller)
-	: InputEventHandler(controller)
+    : InputEventHandler(controller)
 {
-
 }
 
 bool LineRequestInputEvent::LineRequestInputEventHandler::handle(const InputEvent& event)
@@ -34,13 +34,14 @@ bool LineRequestInputEvent::LineRequestInputEventHandler::handle(const InputEven
 
 	std::string line = controller.readLine();
 	controller.setLineRequestResult(line);
-	
+
 	controller.switchConsoleMode(oldState);
 
 	return true;
 }
 
-const LineRequestInputEvent& LineRequestInputEvent::LineRequestInputEventHandler::getEvent(const InputEvent& event) const
+const LineRequestInputEvent& LineRequestInputEvent::LineRequestInputEventHandler::getEvent(
+    const InputEvent& event) const
 {
 	return static_cast<const LineRequestInputEvent&>(event);
 }

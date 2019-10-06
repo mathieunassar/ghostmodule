@@ -15,13 +15,13 @@
  */
 
 #include "ConnectionStressTest.hpp"
+
 #include <thread>
 
 const std::string ConnectionStressTest::TEST_NAME = "ConnectionStress";
 
 ConnectionStressTest::ConnectionStressTest(const std::shared_ptr<ghost::Logger>& logger)
-	: Systemtest(logger)
-	, _messageSentIndex(0)
+    : Systemtest(logger), _messageSentIndex(0)
 {
 }
 
@@ -40,14 +40,12 @@ bool ConnectionStressTest::setUp()
 	// create a publisher to send test messages
 	auto publisher = _connectionManager->createPublisher(configuration);
 	require(publisher.operator bool());
-	if (!publisher)
-		return false;
+	if (!publisher) return false;
 
 	// store the writer of the publisher to be able to send the test messages.
 	_publisherWriter = publisher->getWriter<google::protobuf::StringValue>();
 	require(_publisherWriter.operator bool());
-	if (!_publisherWriter)
-		return false;
+	if (!_publisherWriter) return false;
 
 	bool publisherStartResult = publisher->start();
 	require(publisherStartResult);
@@ -60,12 +58,12 @@ bool ConnectionStressTest::setUp()
 
 		auto subscriber = _connectionManager->createSubscriber(configuration);
 		require(subscriber.operator bool());
-		if (!subscriber)
-			return false;
+		if (!subscriber) return false;
 
 		// register the handler
 		auto messageHandler = subscriber->addMessageHandler();
-		messageHandler->addHandler<google::protobuf::StringValue>(std::bind(&ConnectionStressTest::messageHandler, this, std::placeholders::_1, i));
+		messageHandler->addHandler<google::protobuf::StringValue>(
+		    std::bind(&ConnectionStressTest::messageHandler, this, std::placeholders::_1, i));
 
 		subscriberStartResult = subscriberStartResult && subscriber->start();
 		require(subscriberStartResult);
@@ -107,11 +105,14 @@ bool ConnectionStressTest::run()
 		}
 		else if (nextLog < std::chrono::steady_clock::now())
 		{
-			GHOST_INFO(_logger) << "Waiting for the subscribers to receive the messages: " << _messageReceivedIndex[0] << " of " << _messageSentIndex;
+			GHOST_INFO(_logger)
+			    << "Waiting for the subscribers to receive the messages: " << _messageReceivedIndex[0]
+			    << " of " << _messageSentIndex;
 			nextLog = std::chrono::steady_clock::now() + std::chrono::seconds(1);
 		}
 
-		// create an assert method that can fail the test? throw an exception that is caught be Systemtest::execute
+		// create an assert method that can fail the test? throw an exception that is caught be
+		// Systemtest::execute
 
 		state = getState();
 	}
@@ -121,7 +122,8 @@ bool ConnectionStressTest::run()
 
 void ConnectionStressTest::onPrintSummary() const
 {
-	GHOST_INFO(_logger) << "Sent " << _messageSentIndex << " and received " << _messageReceivedIndex[0] << " messages.";
+	GHOST_INFO(_logger) << "Sent " << _messageSentIndex << " and received " << _messageReceivedIndex[0]
+			    << " messages.";
 }
 
 bool ConnectionStressTest::messageHandler(const google::protobuf::StringValue& message, size_t subscriberId)

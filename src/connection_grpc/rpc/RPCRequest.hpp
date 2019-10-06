@@ -17,106 +17,100 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCREQUEST_HPP
 #define GHOST_INTERNAL_NETWORK_RPCREQUEST_HPP
 
-#include <memory>
-#include <functional>
-
 #include <grpcpp/completion_queue.h>
+
+#include <functional>
+#include <memory>
+
 #include "RPCOperation.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		class RPCRequest : public RPCOperation<ReaderWriter, ContextType>
-		{
-		public:
-			RPCRequest(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
-				ServiceType* service,
-				grpc::CompletionQueue* rpcCompletionQueue,
-				grpc::ServerCompletionQueue* completionQueue);
-			~RPCRequest();
+namespace internal
+{
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+class RPCRequest : public RPCOperation<ReaderWriter, ContextType>
+{
+public:
+	RPCRequest(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, ServiceType* service,
+		   grpc::CompletionQueue* rpcCompletionQueue, grpc::ServerCompletionQueue* completionQueue);
+	~RPCRequest();
 
-			void setConnectionCallback(const std::function<void()>& callback);
+	void setConnectionCallback(const std::function<void()>& callback);
 
-		protected:
-			bool initiateOperation() override;
-			void onOperationSucceeded(bool rpcFinished) override;
-			void onOperationFailed(bool rpcFinished) override;
+protected:
+	bool initiateOperation() override;
+	void onOperationSucceeded(bool rpcFinished) override;
+	void onOperationFailed(bool rpcFinished) override;
 
-		private:
-			ServiceType* _service;
-			grpc::CompletionQueue* _rpcCompletionQueue;
-			grpc::ServerCompletionQueue* _completionQueue;
-			std::function<void()> _connectionCallback;
-		};
+private:
+	ServiceType* _service;
+	grpc::CompletionQueue* _rpcCompletionQueue;
+	grpc::ServerCompletionQueue* _completionQueue;
+	std::function<void()> _connectionCallback;
+};
 
-		/////////////////////////// Template definition ///////////////////////////
+/////////////////////////// Template definition ///////////////////////////
 
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		RPCRequest<ReaderWriter, ContextType, ServiceType>::RPCRequest(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
-			ServiceType* service,
-			grpc::CompletionQueue* rpcCompletionQueue,
-			grpc::ServerCompletionQueue* completionQueue)
-			: RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
-			, _service(service)
-			, _rpcCompletionQueue(rpcCompletionQueue)
-			, _completionQueue(completionQueue)
-		{
-		}
-
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
-		{
-			RPCOperation<ReaderWriter, ContextType>::stop();
-		}
-
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		void RPCRequest<ReaderWriter, ContextType, ServiceType>::setConnectionCallback(const std::function<void()>& callback)
-		{
-			_connectionCallback = callback;
-		}
-
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		bool RPCRequest<ReaderWriter, ContextType, ServiceType>::initiateOperation()
-		{
-			if (!_connectionCallback)
-				return false;
-
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return false;
-
-			_service->Requestconnect(rpc->getContext().get(), rpc->getClient().get(), _rpcCompletionQueue, _completionQueue, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
-			return true;
-		}
-
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationSucceeded(bool rpcFinished)
-		{
-			if (rpcFinished)
-				return; // nothing to do here
-
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return;
-
-			rpc->getStateMachine().setState(RPCStateMachine::EXECUTING);
-			if (_connectionCallback)
-				_connectionCallback();
-		}
-
-		template<typename ReaderWriter, typename ContextType, typename ServiceType>
-		void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed(bool rpcFinished)
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return;
-
-			rpc->getStateMachine().setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
-		}
-
-	}
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+RPCRequest<ReaderWriter, ContextType, ServiceType>::RPCRequest(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
+							       ServiceType* service,
+							       grpc::CompletionQueue* rpcCompletionQueue,
+							       grpc::ServerCompletionQueue* completionQueue)
+    : RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
+    , _service(service)
+    , _rpcCompletionQueue(rpcCompletionQueue)
+    , _completionQueue(completionQueue)
+{
 }
+
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
+{
+	RPCOperation<ReaderWriter, ContextType>::stop();
+}
+
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+void RPCRequest<ReaderWriter, ContextType, ServiceType>::setConnectionCallback(const std::function<void()>& callback)
+{
+	_connectionCallback = callback;
+}
+
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+bool RPCRequest<ReaderWriter, ContextType, ServiceType>::initiateOperation()
+{
+	if (!_connectionCallback) return false;
+
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return false;
+
+	_service->Requestconnect(rpc->getContext().get(), rpc->getClient().get(), _rpcCompletionQueue, _completionQueue,
+				 &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
+	return true;
+}
+
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationSucceeded(bool rpcFinished)
+{
+	if (rpcFinished) return; // nothing to do here
+
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+
+	rpc->getStateMachine().setState(RPCStateMachine::EXECUTING);
+	if (_connectionCallback) _connectionCallback();
+}
+
+template <typename ReaderWriter, typename ContextType, typename ServiceType>
+void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed(bool rpcFinished)
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+
+	rpc->getStateMachine().setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
+}
+
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_RPCREQUEST_HPP

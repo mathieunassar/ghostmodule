@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include <iostream>
 #include <gtest/gtest.h>
 
 #include <ghost/connection/ConnectionManager.hpp>
+#include <iostream>
+
 #include "ConnectionTestUtils.hpp"
 
 /**
@@ -35,7 +36,6 @@ protected:
 
 	void TearDown() override
 	{
-
 	}
 
 	void registerMockFactories(const ghost::ConnectionConfiguration minimumConfiguration)

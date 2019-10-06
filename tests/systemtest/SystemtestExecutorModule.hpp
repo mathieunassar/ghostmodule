@@ -17,21 +17,21 @@
 #ifndef GHOST_TESTS_SYSTEMTESTEXECUTORMODULE_HPP
 #define GHOST_TESTS_SYSTEMTESTEXECUTORMODULE_HPP
 
-#include <string>
-#include <map>
-#include <thread>
 #include <ghost/module/Module.hpp>
+#include <map>
+#include <string>
+#include <thread>
 
 #include "Systemtest.hpp"
 
- /*
- SYSTEMTEST:
- - module that can be parameterized with different tests:
-	 - stress connection gRPC -> starting a lot of clients and getting messages
-	 - stress/endurance connection gRPC -> pub sub with random sub disconnect + send a lot of messages!!
-		 store messages in data files?
-	 -> configurable for duration of test
- */
+/*
+SYSTEMTEST:
+- module that can be parameterized with different tests:
+	- stress connection gRPC -> starting a lot of clients and getting messages
+	- stress/endurance connection gRPC -> pub sub with random sub disconnect + send a lot of messages!!
+		store messages in data files?
+	-> configurable for duration of test
+*/
 class SystemtestExecutorModule
 {
 public:

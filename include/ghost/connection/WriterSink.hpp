@@ -17,45 +17,46 @@
 #ifndef GHOST_WRITERSINK_HPP
 #define GHOST_WRITERSINK_HPP
 
-#include <chrono>
 #include <google/protobuf/any.pb.h>
+
+#include <chrono>
 
 namespace ghost
 {
+/**
+ *	A ghost::WriterSink is the interface between a connection and a
+ *	ghost::Writer object that can write messages to the connection.
+ *	The sink must be used by implementations of connection types.
+ */
+class WriterSink
+{
+public:
+	virtual ~WriterSink() = default;
+
 	/**
-	 *	A ghost::WriterSink is the interface between a connection and a
-	 *	ghost::Writer object that can write messages to the connection.
-	 *	The sink must be used by implementations of connection types.
+	 *	Gets a message from the writing object. The call is blocking
+	 *	for the duration specified in the parameter "timeout". If this duration
+	 *	is set to zero, the call is not blocking.
+	 *	This call does not remove the message from the writer. To do this, call
+	 *	ghost::WriterSink::pop().
+	 *	@param messsage	Message gotten by the writer.
+	 *	@param timeout	this call will be blocking for this duration.
+	 *	@return true if a message was gotten from the writer.
 	 */
-	class WriterSink
-	{
-	public:
-		virtual ~WriterSink() = default;
+	virtual bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) = 0;
 
-		/**
-		 *	Gets a message from the writing object. The call is blocking
-		 *	for the duration specified in the parameter "timeout". If this duration
-		 *	is set to zero, the call is not blocking.
-		 *	This call does not remove the message from the writer. To do this, call
-		 *	ghost::WriterSink::pop().
-		 *	@param messsage	Message gotten by the writer.
-		 *	@param timeout	this call will be blocking for this duration.
-		 *	@return true if a message was gotten from the writer.
-		 */
-		virtual bool get(google::protobuf::Any& message, std::chrono::milliseconds timeout) = 0;
+	/**
+	 *	Remove the last message from the queue. This method must be called after the message
+	 *	is effectively sent.
+	 */
+	virtual void pop() = 0;
 
-		/**
-		 *	Remove the last message from the queue. This method must be called after the message
-		 *	is effectively sent.
-		 */
-		virtual void pop() = 0;
+	/**
+	 *	Shuts down the sink - future calls to put or get will fail.
+	 *	Call this function when the connection stopped.
+	 */
+	virtual void drain() = 0;
+};
+} // namespace ghost
 
-		/**
-		 *	Shuts down the sink - future calls to put or get will fail.
-		 *	Call this function when the connection stopped.
-		 */
-		virtual void drain() = 0;
-	};
-}
-
-#endif //GHOST_WRITERSINK_HPP
+#endif // GHOST_WRITERSINK_HPP

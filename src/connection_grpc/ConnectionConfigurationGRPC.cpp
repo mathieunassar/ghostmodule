@@ -20,14 +20,13 @@ using namespace ghost;
 
 namespace ghost
 {
-	namespace internal
-	{
-		static std::string CONNECTIONCONFIGURATIONGRPC_TECHNOLOGY = "CONNECTIONCONFIGURATIONGRPC_TECHNOLOGY";
-	}
+namespace internal
+{
+static std::string CONNECTIONCONFIGURATIONGRPC_TECHNOLOGY = "CONNECTIONCONFIGURATIONGRPC_TECHNOLOGY";
 }
+} // namespace ghost
 
-ConnectionConfigurationGRPC::ConnectionConfigurationGRPC(const std::string& name)
-	: NetworkConnectionConfiguration(name)
+ConnectionConfigurationGRPC::ConnectionConfigurationGRPC(const std::string& name) : NetworkConnectionConfiguration(name)
 {
 	ghost::ConfigurationValue techonologyAttribute;
 	_configuration->addAttribute(internal::CONNECTIONCONFIGURATIONGRPC_TECHNOLOGY, techonologyAttribute);

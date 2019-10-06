@@ -22,12 +22,11 @@ using namespace ghost::internal;
 
 ghost::CommandLine CommandLineParser::parseCommandLine(const std::string& commandLine)
 {
-	if (commandLine.empty())
-		return ghost::CommandLine("", {});
+	if (commandLine.empty()) return ghost::CommandLine("", {});
 
 	std::vector<std::string> nameAndParams;
 	CommandLineParser::split(nameAndParams, commandLine, " ");
-	
+
 	return parseFromContainer(nameAndParams.size(), nameAndParams);
 }
 
@@ -55,8 +54,7 @@ bool CommandLineParser::isParameterName(const std::string& str, std::string& nam
 	if (str.length() > 1 && str[0] == '-')
 	{
 		startDashCount++;
-		if (str.length() > 2 && str[1] == '-')
-			startDashCount++;
+		if (str.length() > 2 && str[1] == '-') startDashCount++;
 	}
 
 	if (startDashCount > 0)
@@ -68,7 +66,8 @@ bool CommandLineParser::isParameterName(const std::string& str, std::string& nam
 	return false;
 }
 
-void CommandLineParser::addParameter(std::map<std::string, std::string>& params, const std::string& name, const std::string& value)
+void CommandLineParser::addParameter(std::map<std::string, std::string>& params, const std::string& name,
+				     const std::string& value)
 {
 	std::string finalName = name;
 
@@ -77,15 +76,14 @@ void CommandLineParser::addParameter(std::map<std::string, std::string>& params,
 		finalName = "__" + std::to_string(_unknownParametersCount);
 		_unknownParametersCount++;
 	}
-	
+
 	size_t count = params.count(finalName);
 	size_t newcount = count;
 	while (newcount != 0)
 	{
 		finalName = name + "_" + std::to_string(count);
 		newcount = params.count(finalName);
-		if (newcount > 0)
-			count++;
+		if (newcount > 0) count++;
 	}
 
 	params[finalName] = value;

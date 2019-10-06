@@ -17,13 +17,15 @@
 #ifndef GHOST_TESTS_CONNECTIONMONKEYTEST_HPP
 #define GHOST_TESTS_CONNECTIONMONKEYTEST_HPP
 
-#include <vector>
-#include <functional>
-#include <random>
-#include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/connection/Writer.hpp>
-#include <ghost/connection/Reader.hpp>
 #include <google/protobuf/wrappers.pb.h>
+
+#include <functional>
+#include <ghost/connection/ConnectionManager.hpp>
+#include <ghost/connection/Reader.hpp>
+#include <ghost/connection/Writer.hpp>
+#include <random>
+#include <vector>
+
 #include "Systemtest.hpp"
 
 class ConnectionMonkeyTest : public Systemtest
@@ -59,7 +61,7 @@ private:
 	long long _lastSentId;
 
 	std::vector<std::function<bool()>> _actions;
-	
+
 	// port range configuration
 	int _minPort;
 	int _maxPort;

@@ -20,17 +20,17 @@ using namespace ghost;
 
 namespace ghost
 {
-	namespace internal
-	{
-		static std::string NETWORKCONNECTIONCONFIGURATION_SERVERIP = "NETWORKCONNECTIONCONFIGURATION_SERVERIP";
-		static std::string NETWORKCONNECTIONCONFIGURATION_SERVERPORT = "NETWORKCONNECTIONCONFIGURATION_SERVERPORT";
-	}
-}
-
-NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string& name)
-	: ConnectionConfiguration(name)
+namespace internal
 {
-	// Default values are provided in the getters. A default construction creates empty values (For minimal configurations)
+static std::string NETWORKCONNECTIONCONFIGURATION_SERVERIP = "NETWORKCONNECTIONCONFIGURATION_SERVERIP";
+static std::string NETWORKCONNECTIONCONFIGURATION_SERVERPORT = "NETWORKCONNECTIONCONFIGURATION_SERVERPORT";
+} // namespace internal
+} // namespace ghost
+
+NetworkConnectionConfiguration::NetworkConnectionConfiguration(const std::string& name) : ConnectionConfiguration(name)
+{
+	// Default values are provided in the getters. A default construction creates empty values (For minimal
+	// configurations)
 	ghost::ConfigurationValue defaultIp;
 	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, defaultIp);
 
@@ -45,9 +45,9 @@ std::string NetworkConnectionConfiguration::getServerIpAddress() const
 	ConfigurationValue value;
 	ConfigurationValue defaultValue("127.0.0.1");
 
-	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, defaultValue); // if the field was removed, returns ""
-	if (!value.read<std::string>(res))
-		defaultValue.read<std::string>(res);
+	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value,
+				     defaultValue); // if the field was removed, returns ""
+	if (!value.read<std::string>(res)) defaultValue.read<std::string>(res);
 
 	return res;
 }
@@ -59,7 +59,8 @@ int NetworkConnectionConfiguration::getServerPortNumber() const
 	ConfigurationValue defaultValue;
 	defaultValue.write<int>(-1);
 
-	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, defaultValue); // if the field was removed, returns -1
+	_configuration->getAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value,
+				     defaultValue); // if the field was removed, returns -1
 	value.read<int>(res);
 
 	return res;
@@ -70,14 +71,16 @@ void NetworkConnectionConfiguration::setServerIpAddress(const std::string& ip)
 {
 	ghost::ConfigurationValue value;
 	value.write<std::string>(ip);
-	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value, true); // checks if the attribute is there as well
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERIP, value,
+				     true); // checks if the attribute is there as well
 }
 
 void NetworkConnectionConfiguration::setServerPortNumber(int port)
 {
 	ghost::ConfigurationValue value;
 	value.write<int>(port);
-	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value, true); // checks if the attribute is there as well
+	_configuration->addAttribute(internal::NETWORKCONNECTIONCONFIGURATION_SERVERPORT, value,
+				     true); // checks if the attribute is there as well
 }
 
 NetworkConnectionConfiguration NetworkConnectionConfiguration::initializeFrom(const ConnectionConfiguration& from)

@@ -17,11 +17,13 @@
 #ifndef GHOST_TESTS_CONNECTIONSTRESSTEST_HPP
 #define GHOST_TESTS_CONNECTIONSTRESSTEST_HPP
 
-#include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/connection_grpc/ConnectionGRPC.hpp>
-#include <ghost/connection/Writer.hpp>
-#include <ghost/connection/Reader.hpp>
 #include <google/protobuf/wrappers.pb.h>
+
+#include <ghost/connection/ConnectionManager.hpp>
+#include <ghost/connection/Reader.hpp>
+#include <ghost/connection/Writer.hpp>
+#include <ghost/connection_grpc/ConnectionGRPC.hpp>
+
 #include "Systemtest.hpp"
 
 class ConnectionStressTest : public Systemtest
