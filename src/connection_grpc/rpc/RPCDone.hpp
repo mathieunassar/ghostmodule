@@ -23,67 +23,65 @@
 
 namespace ghost
 {
-	namespace internal
-	{
-		template<typename ReaderWriter, typename ContextType>
-		class RPCDone : public RPCOperation<ReaderWriter, ContextType>
-		{
-		public:
-			RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
-			~RPCDone();
+namespace internal
+{
+template <typename ReaderWriter, typename ContextType>
+class RPCDone : public RPCOperation<ReaderWriter, ContextType>
+{
+public:
+	RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
+	~RPCDone();
 
-		protected:
-			bool initiateOperation() override;
-			void onOperationSucceeded(bool rpcFinished) override;
-			void onOperationFailed(bool rpcFinished) override;
-		};
+protected:
+	bool initiateOperation() override;
+	void onOperationSucceeded(bool rpcFinished) override;
+	void onOperationFailed(bool rpcFinished) override;
+};
 
-		/////////////////////////// Template definition ///////////////////////////
+/////////////////////////// Template definition ///////////////////////////
 
-		template<typename ReaderWriter, typename ContextType>
-		RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
-			: RPCOperation<ReaderWriter, ContextType>(parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
-		{
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		RPCDone<ReaderWriter, ContextType>::~RPCDone()
-		{
-			RPCOperation<ReaderWriter, ContextType>::stop();
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		bool RPCDone<ReaderWriter, ContextType>::initiateOperation()
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return false;
-
-			rpc->getContext()->AsyncNotifyWhenDone(&(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
-			return true;
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return;
-
-			rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
-		}
-
-		template<typename ReaderWriter, typename ContextType>
-		void RPCDone<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
-		{
-			auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
-			if (!rpc)
-				return;
-
-			rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
-		}
-
-	}
+template <typename ReaderWriter, typename ContextType>
+RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
+    : RPCOperation<ReaderWriter, ContextType>(
+	  parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
+{
 }
+
+template <typename ReaderWriter, typename ContextType>
+RPCDone<ReaderWriter, ContextType>::~RPCDone()
+{
+	RPCOperation<ReaderWriter, ContextType>::stop();
+}
+
+template <typename ReaderWriter, typename ContextType>
+bool RPCDone<ReaderWriter, ContextType>::initiateOperation()
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return false;
+
+	rpc->getContext()->AsyncNotifyWhenDone(&(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
+	return true;
+}
+
+template <typename ReaderWriter, typename ContextType>
+void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+
+	rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
+}
+
+template <typename ReaderWriter, typename ContextType>
+void RPCDone<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
+{
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+
+	rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
+}
+
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_RPCDONE_HPP

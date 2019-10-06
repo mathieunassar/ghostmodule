@@ -20,17 +20,18 @@ using namespace ghost;
 
 namespace ghost
 {
-	namespace internal
-	{
-		static std::string CONNECTIONCONFIGURATION_ID = "CONNECTIONCONFIGURATION_ID";
-		static std::string CONNECTIONCONFIGURATION_THREADPOOLSIZE = "CONNECTIONCONFIGURATION_THREADPOOLSIZE";
-		static std::string CONNECTIONCONFIGURATION_BLOCKING = "CONNECTIONCONFIGURATION_BLOCKING";
-	}
-}
+namespace internal
+{
+static std::string CONNECTIONCONFIGURATION_ID = "CONNECTIONCONFIGURATION_ID";
+static std::string CONNECTIONCONFIGURATION_THREADPOOLSIZE = "CONNECTIONCONFIGURATION_THREADPOOLSIZE";
+static std::string CONNECTIONCONFIGURATION_BLOCKING = "CONNECTIONCONFIGURATION_BLOCKING";
+} // namespace internal
+} // namespace ghost
 
 ConnectionConfiguration::ConnectionConfiguration(const std::string& name)
 {
-	// Default values are provided in the getters. A default construction creates empty values (For minimal configurations)
+	// Default values are provided in the getters. A default construction creates empty values (For minimal
+	// configurations)
 	_configuration = ghost::Configuration::create(name);
 
 	ghost::ConfigurationValue defaultId;
@@ -49,10 +50,11 @@ int ConnectionConfiguration::getConnectionId() const
 	ConfigurationValue value;
 	ConfigurationValue defaultValue;
 	defaultValue.write<int>(-1);
-	
-	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_ID, value, defaultValue); // if the field was removed, returns -1
+
+	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_ID, value,
+				     defaultValue); // if the field was removed, returns -1
 	value.read<int>(res);
-	
+
 	return res;
 }
 
@@ -63,7 +65,8 @@ size_t ConnectionConfiguration::getThreadPoolSize() const
 	ConfigurationValue defaultValue;
 	defaultValue.write<size_t>(2);
 
-	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value, defaultValue); // if the field was removed, returns 2
+	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value,
+				     defaultValue); // if the field was removed, returns 2
 	value.read<size_t>(res);
 
 	return res;
@@ -76,7 +79,8 @@ bool ConnectionConfiguration::isOperationBlocking() const
 	ConfigurationValue defaultValue;
 	defaultValue.write<size_t>(true);
 
-	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, defaultValue); // if the field was removed, returns true
+	_configuration->getAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value,
+				     defaultValue); // if the field was removed, returns true
 	value.read<bool>(res);
 
 	return res;
@@ -87,21 +91,24 @@ void ConnectionConfiguration::setConnectionId(int id)
 {
 	ghost::ConfigurationValue value;
 	value.write<int>(id);
-	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_ID, value, true); // checks if the attribute is there as well
+	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_ID, value,
+				     true); // checks if the attribute is there as well
 }
 
 void ConnectionConfiguration::setThreadPoolSize(size_t size)
 {
 	ghost::ConfigurationValue value;
 	value.write<size_t>(size);
-	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value, true); // checks if the attribute is there as well
+	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_THREADPOOLSIZE, value,
+				     true); // checks if the attribute is there as well
 }
 
 void ConnectionConfiguration::setOperationBlocking(bool blocking)
 {
 	ghost::ConfigurationValue value;
 	value.write<bool>(blocking);
-	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value, true); // checks if the attribute is there as well
+	_configuration->addAttribute(internal::CONNECTIONCONFIGURATION_BLOCKING, value,
+				     true); // checks if the attribute is there as well
 }
 
 std::shared_ptr<ghost::Configuration> ConnectionConfiguration::getConfiguration() const

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-#include <ghost/persistence/SaveData.hpp>
 #include "SaveData.hpp"
+
+#include <ghost/persistence/SaveData.hpp>
 
 std::shared_ptr<ghost::SaveData> ghost::SaveData::create(const std::string& name)
 {
@@ -24,15 +25,13 @@ std::shared_ptr<ghost::SaveData> ghost::SaveData::create(const std::string& name
 
 // Implementation of the internal class
 
-ghost::internal::SaveData::SaveData(const std::string& name)
-	: _name(name)
+ghost::internal::SaveData::SaveData(const std::string& name) : _name(name)
 {
 }
 
 bool ghost::internal::SaveData::remove(size_t index)
 {
-	if (index >= _data.size())
-		return false;
+	if (index >= _data.size()) return false;
 
 	_data.erase(_data.begin() + index);
 	return true;

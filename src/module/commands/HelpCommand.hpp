@@ -21,31 +21,31 @@
 
 namespace ghost
 {
-	namespace internal
-	{
-		class CommandLineInterpreter;
+namespace internal
+{
+class CommandLineInterpreter;
 
-		class HelpCommand : public ghost::Command
-		{
-		public:
-			static const std::string NAME;
+class HelpCommand : public ghost::Command
+{
+public:
+	static const std::string NAME;
 
-			HelpCommand(CommandLineInterpreter* interpreter);
+	HelpCommand(CommandLineInterpreter* interpreter);
 
-			bool execute(const CommandLine& commandLine) override;
-			
-			std::string getName() const override;
-			std::string getShortcut() const override;
-			std::string getDescription() const override;
+	bool execute(const CommandLine& commandLine) override;
 
-		private:
-			static const std::string _SHORTCUT;
-			static const std::string _DESCRIPTION;
+	std::string getName() const override;
+	std::string getShortcut() const override;
+	std::string getDescription() const override;
 
-			CommandLineInterpreter* _interpreter;
-		};
-	}
-	
-}
+private:
+	static const std::string _SHORTCUT;
+	static const std::string _DESCRIPTION;
+
+	CommandLineInterpreter* _interpreter;
+};
+} // namespace internal
+
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_COMMANDS_HELPCOMMAND_HPP

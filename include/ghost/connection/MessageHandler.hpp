@@ -17,66 +17,74 @@
 #ifndef GHOST_MESSAGEHANDLER_HPP
 #define GHOST_MESSAGEHANDLER_HPP
 
-#include <memory>
 #include <functional>
 #include <ghost/connection/internal/MessageHandlerCallback.hpp>
+#include <memory>
 
 namespace ghost
 {
+/**
+ * @brief Collection of handlers for incoming messages.
+ *
+ * The method "addHandler" can be used to set up handlers for specific types
+ * of messages. The type of message is passed as a template parameter to this
+ * call.
+ *
+ * The ghost::MessageHandler is compatible with messages of type ghost::Message
+ * and for protobuf message types.
+ */
+class MessageHandler
+{
+public:
+	virtual ~MessageHandler() = default;
+
 	/**
-	 * @brief Collection of handlers for incoming messages.
-	 * 
-	 * The method "addHandler" can be used to set up handlers for specific types
-	 * of messages. The type of message is passed as a template parameter to this
-	 * call.
+	 * @brief Adds a handler that processes messages of the templated type.
 	 *
-	 * The ghost::MessageHandler is compatible with messages of type ghost::Message
-	 * and for protobuf message types.
+	 * If a handler already exists for the given message type, it will be replaced.
+	 *
+	 * @tparam MessageType the type of messages handled by this handler
+	 * @param handler the handler that can handle the messages of this type
 	 */
-	class MessageHandler
-	{
-	public:
-		virtual ~MessageHandler() = default;
+	template <typename MessageType,
+		  typename std::enable_if<!std::is_base_of<ghost::Message, MessageType>::value, void>::type* = nullptr>
+	void addHandler(std::function<void(const MessageType& message)> handler);
+	template <typename MessageType, typename std::enable_if<std::is_base_of<ghost::Message, MessageType>::value,
+								ghost::Message>::type* = nullptr>
+	void addHandler(std::function<void(const MessageType& message)> handler);
 
-		/**
-		 * @brief Adds a handler that processes messages of the templated type.
-		 *
-		 * If a handler already exists for the given message type, it will be replaced.
-		 *
-		 * @tparam MessageType the type of messages handled by this handler
-		 * @param handler the handler that can handle the messages of this type
-		 */
-		template<typename MessageType, typename std::enable_if<!std::is_base_of<ghost::Message, MessageType>::value, void>::type* = nullptr>
-		void addHandler(std::function<void(const MessageType & message)> handler);
-		template<typename MessageType, typename std::enable_if<std::is_base_of<ghost::Message, MessageType>::value, ghost::Message>::type* = nullptr>
-		void addHandler(std::function<void(const MessageType & message)> handler);
+protected:
+	// the following contains internal implementation detail. Please do not rely on this in your code.
 
-	protected:
-		// the following contains internal implementation detail. Please do not rely on this in your code.
+	virtual void addHandler(const std::string& format, const std::string& name,
+				std::unique_ptr<ghost::internal::BaseMessageHandlerCallback>&& handler) = 0;
+};
 
-		virtual void addHandler(const std::string& format, const std::string& name,
-			std::unique_ptr<ghost::internal::BaseMessageHandlerCallback>&& handler) = 0;
-	};
+// TEMPLATE DEFINITION //
 
-	// TEMPLATE DEFINITION //
-
-	template<typename MessageType, typename std::enable_if<!std::is_base_of<ghost::Message, MessageType>::value, void>::type*>
-	void ghost::MessageHandler::addHandler(std::function<void(const MessageType & message)> handler)
-	{
-		std::string format = ghost::internal::GHOSTMESSAGE_FORMAT_NAME;
-		std::string name = MessageType::descriptor()->full_name();
-		addHandler(format, name, std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
-	}
-
-	/// Implementation for ghost::Message
-	template<typename MessageType, typename std::enable_if<std::is_base_of<ghost::Message, MessageType>::value, ghost::Message>::type*>
-	void ghost::MessageHandler::addHandler(std::function<void(const MessageType & message)> handler)
-	{
-		auto msg = MessageType();
-		std::string format = msg.getMessageFormatName();
-		std::string name = msg.getMessageTypeName();
-		addHandler(format, name, std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
-	}
+template <typename MessageType,
+	  typename std::enable_if<!std::is_base_of<ghost::Message, MessageType>::value, void>::type*>
+void ghost::MessageHandler::addHandler(std::function<void(const MessageType& message)> handler)
+{
+	std::string format = ghost::internal::GHOSTMESSAGE_FORMAT_NAME;
+	std::string name = MessageType::descriptor()->full_name();
+	addHandler(format, name,
+		   std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(
+		       new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
 }
 
-#endif //GHOST_MESSAGEHANDLER_HPP
+/// Implementation for ghost::Message
+template <typename MessageType,
+	  typename std::enable_if<std::is_base_of<ghost::Message, MessageType>::value, ghost::Message>::type*>
+void ghost::MessageHandler::addHandler(std::function<void(const MessageType& message)> handler)
+{
+	auto msg = MessageType();
+	std::string format = msg.getMessageFormatName();
+	std::string name = msg.getMessageTypeName();
+	addHandler(format, name,
+		   std::unique_ptr<ghost::internal::MessageHandlerCallback<MessageType>>(
+		       new ghost::internal::MessageHandlerCallback<MessageType>(handler)));
+}
+} // namespace ghost
+
+#endif // GHOST_MESSAGEHANDLER_HPP

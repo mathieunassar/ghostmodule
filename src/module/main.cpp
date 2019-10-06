@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+#include <ghost/module/Module.hpp>
 #include <iostream>
 #include <sstream>
-
-#include <ghost/module/Module.hpp>
 
 class TestModule : public ghost::Module
 {

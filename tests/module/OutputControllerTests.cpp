@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-#include "../src/module/OutputController.hpp"
-
 #include <gtest/gtest.h>
 
+#include "../src/module/OutputController.hpp"
 #include "ConsoleDeviceMock.hpp"
 
 using ::testing::_;
@@ -34,9 +33,8 @@ protected:
 
 	void TearDown() override
 	{
-		if (_outputController)
-			_outputController.reset();
-		
+		if (_outputController) _outputController.reset();
+
 		_consoleDeviceMock.reset();
 	}
 
@@ -47,14 +45,12 @@ protected:
 
 	void startController()
 	{
-		if (_outputController)
-			_outputController->start();
+		if (_outputController) _outputController->start();
 	}
 
 	void stopController()
 	{
-		if (_outputController)
-			_outputController->stop();
+		if (_outputController) _outputController->stop();
 	}
 
 	void runController()
@@ -79,17 +75,21 @@ protected:
 	void setupWriteCallExpectation(const std::string& writeCallParameter)
 	{
 		_expectedWriteCallsCount++;
-		EXPECT_CALL(*_consoleDeviceMock, write(writeCallParameter)).Times(1).WillRepeatedly([this](const std::string&) {
-			_writeCallsCounter++; return true;
-			});
+		EXPECT_CALL(*_consoleDeviceMock, write(writeCallParameter))
+		    .Times(1)
+		    .WillRepeatedly([this](const std::string&) {
+			    _writeCallsCounter++;
+			    return true;
+		    });
 	}
 
 	void setupWriteCallExpectation()
 	{
 		_expectedWriteCallsCount++;
 		EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1).WillRepeatedly([this](const std::string&) {
-			_writeCallsCounter++; return true;
-			});
+			_writeCallsCounter++;
+			return true;
+		});
 	}
 
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
@@ -158,7 +158,7 @@ TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsNotCalled_When_
 
 	_outputController->disable();
 	ASSERT_FALSE(_outputController->isEnabled());
-	
+
 	_outputController->write(TEST_WRITE_LINE);
 	std::this_thread::sleep_for(std::chrono::milliseconds(200)); // wait to see that write is never called
 }

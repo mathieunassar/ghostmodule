@@ -15,24 +15,24 @@
  */
 
 #include "SaveFile.hpp"
-#include <iostream>
+
 #include <fcntl.h>
+
+#include <iostream>
 #ifdef _WIN32
-	#include <io.h>
+#include <io.h>
 #else
-	#include <sys/types.h>
-	#include <sys/stat.h>
-	#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 #include "SaveData.hpp"
 
 using namespace ghost::internal;
 
-SaveFile::SaveFile(const std::string& filename)
-	: _filename(filename)
+SaveFile::SaveFile(const std::string& filename) : _filename(filename)
 {
-
 }
 
 SaveFile::~SaveFile()
@@ -55,7 +55,8 @@ bool SaveFile::open(Mode mode, bool overwrite)
 		{
 			return false;
 		}
-		_fileInputStream = std::make_shared<google::protobuf::io::FileInputStream>(handle); // this will manage the handle
+		_fileInputStream =
+		    std::make_shared<google::protobuf::io::FileInputStream>(handle); // this will manage the handle
 		_codedInputStream = std::make_shared<google::protobuf::io::CodedInputStream>(_fileInputStream.get());
 	}
 	else
@@ -66,21 +67,22 @@ bool SaveFile::open(Mode mode, bool overwrite)
 		int fileExists = ::open(_filename.c_str(), O_WRONLY); // try to open it to know if the file exists
 #endif
 		int handle = -1;
-		
+
 		if (fileExists != -1)
 		{
 #if _WIN32
 			_close(fileExists); // close the test handle
 #else
-			::close(fileExists); // close the test handle
+			::close(fileExists);			      // close the test handle
 #endif
 		}
 
-
-		if (fileExists == -1 || overwrite) // if the file does not exist or the user wants to override it, reopen it with the truncate flags
+		if (fileExists == -1 || overwrite) // if the file does not exist or the user wants to override it,
+						   // reopen it with the truncate flags
 		{
 #ifdef _WIN32
-			handle = _open(_filename.c_str(), _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE);
+			handle =
+			    _open(_filename.c_str(), _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE);
 #else
 			handle = ::open(_filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE);
 #endif
@@ -90,7 +92,8 @@ bool SaveFile::open(Mode mode, bool overwrite)
 		{
 			return false;
 		}
-		_fileOutputStream = std::make_shared<google::protobuf::io::FileOutputStream>(handle); // this will manage the handle
+		_fileOutputStream =
+		    std::make_shared<google::protobuf::io::FileOutputStream>(handle); // this will manage the handle
 		_codedOutputStream = std::make_shared<google::protobuf::io::CodedOutputStream>(_fileOutputStream.get());
 	}
 	return true;
@@ -109,8 +112,7 @@ bool SaveFile::close()
 	{
 		_codedOutputStream.reset();
 		success = success && _fileOutputStream->Close();
-		if (!success)
-			std::cout << _fileOutputStream->GetErrno() << std::endl;
+		if (!success) std::cout << _fileOutputStream->GetErrno() << std::endl;
 		_fileOutputStream.reset();
 	}
 	return success;
@@ -119,8 +121,7 @@ bool SaveFile::close()
 // writes the list of data in a row in the file
 bool SaveFile::write(const std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 {
-	if (!_codedOutputStream)
-		return false; // the file is not open for writing
+	if (!_codedOutputStream) return false; // the file is not open for writing
 
 	for (auto& d : data)
 	{
@@ -134,8 +135,7 @@ bool SaveFile::write(const std::list<std::shared_ptr<ghost::internal::SaveData>>
 			_codedOutputStream->WriteLittleEndian32(message->ByteSize());
 			bool serializationSuccess = message->SerializeToCodedStream(_codedOutputStream.get());
 
-			if (!serializationSuccess)
-				return false; // failed!!!
+			if (!serializationSuccess) return false; // failed!!!
 		}
 
 		// this means the end of a data set!
@@ -148,9 +148,8 @@ bool SaveFile::write(const std::list<std::shared_ptr<ghost::internal::SaveData>>
 // parses the file and returns the list of data
 bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 {
-	if (!_codedInputStream)
-		return false; // the file was not open for reading
-	
+	if (!_codedInputStream) return false; // the file was not open for reading
+
 	bool hasNext = true;
 	std::string nextDataSetName = "";
 	std::vector<std::shared_ptr<google::protobuf::Any>> set;
@@ -158,14 +157,12 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 	{
 		google::protobuf::uint32 size;
 		hasNext = _codedInputStream->ReadLittleEndian32(&size); // read the size of the next message
-		if (!hasNext)
-			break; // there are no more messages to read
+		if (!hasNext) break;					// there are no more messages to read
 
 		if (nextDataSetName.empty())
 		{
 			bool readSuccess = _codedInputStream->ReadString(&nextDataSetName, size);
-			if (!readSuccess)
-				return false; // failed!!!
+			if (!readSuccess) return false; // failed!!!
 			continue;
 		}
 
@@ -183,8 +180,7 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 
 		google::protobuf::io::CodedInputStream::Limit msgLimit = _codedInputStream->PushLimit(size);
 		bool readSuccess = message->ParseFromCodedStream(_codedInputStream.get());
-		if (!readSuccess)
-			return false; // failed!!!
+		if (!readSuccess) return false; // failed!!!
 
 		set.push_back(message);
 		_codedInputStream->PopLimit(msgLimit);
@@ -196,6 +192,6 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 		newData->setData(set);
 		data.push_back(newData);
 	}
-	
+
 	return true;
 }

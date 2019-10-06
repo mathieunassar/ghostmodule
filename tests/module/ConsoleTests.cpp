@@ -16,8 +16,8 @@
 
 #include <gtest/gtest.h>
 
-#include "ConsoleDeviceMock.hpp"
 #include "../src/module/Console.hpp"
+#include "ConsoleDeviceMock.hpp"
 
 using ::testing::_;
 
@@ -30,7 +30,9 @@ protected:
 		_callbackCount = 0;
 		_lastCommandReceived.clear();
 
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		    .Times(testing::AnyNumber())
+		    .WillRepeatedly(testing::Return(false));
 		EXPECT_CALL(*_consoleDeviceMock, start()).Times(testing::AnyNumber());
 		EXPECT_CALL(*_consoleDeviceMock, stop()).Times(testing::AnyNumber());
 		EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(testing::AnyNumber());
@@ -41,8 +43,7 @@ protected:
 
 	void TearDown() override
 	{
-		if (_console)
-			_console->stop();
+		if (_console) _console->stop();
 
 		_console.reset();
 		_consoleDeviceMock.reset();
@@ -51,13 +52,14 @@ protected:
 	void gotoInputIsProvided()
 	{
 		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
-			.Times(testing::AnyNumber())
-			.WillOnce(testing::Return(true))
-			.WillRepeatedly(testing::Return(false));
+		    .Times(testing::AnyNumber())
+		    .WillOnce(testing::Return(true))
+		    .WillRepeatedly(testing::Return(false));
 
-		EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1).WillRepeatedly(testing::DoAll(
-			testing::SetArgReferee<0>(TEST_COMMAND_LINE),
-			testing::Return(true)));
+		EXPECT_CALL(*_consoleDeviceMock, read(_))
+		    .Times(1)
+		    .WillRepeatedly(
+			testing::DoAll(testing::SetArgReferee<0>(TEST_COMMAND_LINE), testing::Return(true)));
 
 		runConsole();
 	}
@@ -134,10 +136,15 @@ TEST_F(ConsoleTests, Test_Console_getLineFlushesBeforeReading)
 
 	{
 		testing::InSequence seq;
-		// the first call to write will take 100ms so that "_console->getLine()" reaches flush before all write lines are processed
-		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE)).Times(1).WillOnce(testing::InvokeWithoutArgs([&] {
-			ready4GetLine = true;
-			std::this_thread::sleep_for(std::chrono::milliseconds(100)); return true; }));
+		// the first call to write will take 100ms so that "_console->getLine()" reaches flush before all write
+		// lines are processed
+		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE))
+		    .Times(1)
+		    .WillOnce(testing::InvokeWithoutArgs([&] {
+			    ready4GetLine = true;
+			    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			    return true;
+		    }));
 		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE2)).Times(1);
 
 		EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1);
@@ -145,11 +152,10 @@ TEST_F(ConsoleTests, Test_Console_getLineFlushesBeforeReading)
 
 	_console->start(); // necessary to be before getLine, otherwise flush won't flush
 
-	std::thread t([this, &ready4GetLine]{
-		while (!ready4GetLine)
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		(void) _console->getLine();
-		});
+	std::thread t([this, &ready4GetLine] {
+		while (!ready4GetLine) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		(void)_console->getLine();
+	});
 
 	t.join();
 }

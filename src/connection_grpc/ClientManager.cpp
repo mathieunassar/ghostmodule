@@ -17,13 +17,13 @@
 #include "ClientManager.hpp"
 
 #include <list>
+
 #include "RemoteClientGRPC.hpp"
 
 using namespace ghost::internal;
 
 ClientManager::ClientManager()
 {
-
 }
 
 ClientManager::~ClientManager()
@@ -42,10 +42,10 @@ void ClientManager::stop()
 	stopClients();
 
 	_clientManagerThreadEnable = false;
-	if (_clientManagerThread.joinable())
-		_clientManagerThread.join();
+	if (_clientManagerThread.joinable()) _clientManagerThread.join();
 
-	// do not delete the clients -> this might be called by a client's thread shutting down the server. In that case, its executor thread would try to join itself
+	// do not delete the clients -> this might be called by a client's thread shutting down the server. In that
+	// case, its executor thread would try to join itself
 }
 
 void ClientManager::addClient(std::shared_ptr<RemoteClientGRPC> client)
@@ -55,15 +55,14 @@ void ClientManager::addClient(std::shared_ptr<RemoteClientGRPC> client)
 }
 
 void ClientManager::stopClients()
-{	
+{
 	std::deque<std::shared_ptr<RemoteClientGRPC>> allClients;
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
 		allClients = _allClients;
 	}
 
-	for (auto it = allClients.begin(); it != allClients.end(); ++it)
-		(*it)->stop();
+	for (auto it = allClients.begin(); it != allClients.end(); ++it) (*it)->stop();
 }
 
 void ClientManager::deleteDisposableClients()
@@ -86,8 +85,7 @@ void ClientManager::deleteDisposableClients()
 	}
 
 	// stop the clients marked above
-	for (auto& clientToStop : clientsToStop)
-		clientToStop->getRPC()->dispose();
+	for (auto& clientToStop : clientsToStop) clientToStop->getRPC()->dispose();
 }
 
 void ClientManager::deleteAllClients()
@@ -103,7 +101,8 @@ void ClientManager::manageClients()
 {
 	while (_clientManagerThreadEnable)
 	{
-		deleteDisposableClients(); // stop, dispose grpc and delete all clients whose shared_ptr has a counter of 1
+		deleteDisposableClients(); // stop, dispose grpc and delete all clients whose shared_ptr has a counter
+					   // of 1
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }

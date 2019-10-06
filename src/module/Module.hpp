@@ -17,76 +17,75 @@
 #ifndef GHOST_INTERNAL_MODULE_HPP
 #define GHOST_INTERNAL_MODULE_HPP
 
-#include <thread>
-#include <mutex>
 #include <condition_variable>
 #include <ghost/module/Module.hpp>
-#include "UserManager.hpp"
+#include <mutex>
+#include <thread>
+
 #include "CommandLineInterpreter.hpp"
 #include "Console.hpp"
+#include "UserManager.hpp"
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+class Module : public ghost::Module
+{
+public:
+	enum State
 	{
-		class Module : public ghost::Module
-		{
-		public:
-			enum State
-			{
-				STOPPED,		// deinitialized
-				INITIALIZING,	// init method is being called
-				RUNNING,		// run method is being called
-				DISPOSING		// dispose method is being called
-			};
+		STOPPED,      // deinitialized
+		INITIALIZING, // init method is being called
+		RUNNING,      // run method is being called
+		DISPOSING     // dispose method is being called
+	};
 
-			Module(const std::string& name,
-				const std::shared_ptr<Console>& console,
-				const std::shared_ptr<ghost::Logger>& logger,
-				const ghost::CommandLine& options,
-				const std::function<bool(const ghost::Module&)>& initializationBehavior,
-				const std::function<bool(const ghost::Module&)>& runningBehavior,
-				const std::function<void(const ghost::Module&)>& disposeBehavior);
-			~Module();
+	Module(const std::string& name, const std::shared_ptr<Console>& console,
+	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
+	       const std::function<bool(const ghost::Module&)>& runningBehavior,
+	       const std::function<void(const ghost::Module&)>& disposeBehavior);
+	~Module();
 
-			bool setState(State state);
-			State getState() const;
+	bool setState(State state);
+	State getState() const;
 
-			// From ghost::Module
-			void start() override;
-			void stop() override;
+	// From ghost::Module
+	void start() override;
+	void stop() override;
 
-			std::shared_ptr<ghost::Console> getConsole() const override;
-			std::shared_ptr<ghost::Logger> getLogger() const override;
-			std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter() const override;
-			std::shared_ptr<ghost::UserManager> getUserManager() const override;
-			const ghost::CommandLine& getProgramOptions() const override;
-			const std::string& getModuleName() const override;
-			void printGhostASCII(const std::string& suffix = "") const override;
+	std::shared_ptr<ghost::Console> getConsole() const override;
+	std::shared_ptr<ghost::Logger> getLogger() const override;
+	std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter() const override;
+	std::shared_ptr<ghost::UserManager> getUserManager() const override;
+	const ghost::CommandLine& getProgramOptions() const override;
+	const std::string& getModuleName() const override;
+	void printGhostASCII(const std::string& suffix = "") const override;
 
-		private:
-			bool init();
-			bool run();
-			void dispose();
+private:
+	bool init();
+	bool run();
+	void dispose();
 
-			std::string _name;
-			ghost::CommandLine _options;
-			State _state;
-			std::shared_ptr<Console> _console;
-			std::shared_ptr<ghost::Logger> _logger;
-			std::shared_ptr<UserManager> _userManager;
-			std::shared_ptr<CommandLineInterpreter> _interpreter;
+	std::string _name;
+	ghost::CommandLine _options;
+	State _state;
+	std::shared_ptr<Console> _console;
+	std::shared_ptr<ghost::Logger> _logger;
+	std::shared_ptr<UserManager> _userManager;
+	std::shared_ptr<CommandLineInterpreter> _interpreter;
 
-			std::function<bool(const ghost::Module&)> _initializationBehavior;
-			std::function<bool(const ghost::Module&)> _runningBehavior;
-			std::function<void(const ghost::Module&)> _disposeBehavior;
+	std::function<bool(const ghost::Module&)> _initializationBehavior;
+	std::function<bool(const ghost::Module&)> _runningBehavior;
+	std::function<void(const ghost::Module&)> _disposeBehavior;
 
-			std::thread _commandExecutor;
-			std::mutex _commandExecutorMutex;
-			std::condition_variable _commandExecutorCV;
-			void commandExecutor();
-		};
-	}
-}
+	std::thread _commandExecutor;
+	std::mutex _commandExecutorMutex;
+	std::condition_variable _commandExecutorCV;
+	void commandExecutor();
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_MODULE_HPP

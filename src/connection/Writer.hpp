@@ -18,30 +18,31 @@
 #define GHOST_INTERNAL_WRITER_HPP
 
 #include <ghost/connection/Writer.hpp>
+
 #include "WriterSink.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-		 *	The internal implementation of the ghost::Writer is a specialized
-		 *	type handling google::protobuf::Any messages in order to push them
-		 *	to the WriterSink object.
-		 */
-		class Writer : public ghost::Writer<google::protobuf::Any>
-		{
-		public:
-			Writer(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking);
+namespace internal
+{
+/**
+ *	The internal implementation of the ghost::Writer is a specialized
+ *	type handling google::protobuf::Any messages in order to push them
+ *	to the WriterSink object.
+ */
+class Writer : public ghost::Writer<google::protobuf::Any>
+{
+public:
+	Writer(const std::shared_ptr<ghost::WriterSink>& sink, bool blocking);
 
-			bool write(const google::protobuf::Any& message) override;
+	bool write(const google::protobuf::Any& message) override;
 
-		private:
-			std::shared_ptr<WriterSink> _writerSink;
-			bool _blocking;
-		};
-	}
-	
-}
+private:
+	std::shared_ptr<WriterSink> _writerSink;
+	bool _blocking;
+};
+} // namespace internal
+
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_WRITER_HPP

@@ -15,6 +15,7 @@
  */
 
 #include "SystemtestCommand.hpp"
+
 #include "SystemtestExecutorModule.hpp"
 
 bool SystemtestCommand::execute(const ghost::CommandLine& commandLine)

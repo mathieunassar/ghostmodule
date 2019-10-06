@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#include <iostream>
-#include <thread>
+#include <google/protobuf/wrappers.pb.h>
 #include <gtest/gtest.h>
 
-#include <google/protobuf/wrappers.pb.h>
 #include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/connection_grpc/ConnectionGRPC.hpp>
-#include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection/Writer.hpp>
+#include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
+#include <ghost/connection_grpc/ConnectionGRPC.hpp>
+#include <iostream>
+#include <thread>
 
-#include "../connection/ConnectionTestUtils.hpp"
 #include "../../src/connection_grpc/PublisherGRPC.hpp"
+#include "../connection/ConnectionTestUtils.hpp"
 
 using namespace ghost;
 
@@ -52,7 +52,7 @@ protected:
 
 		_doubleValueMessageWasHandledCounter = 0;
 		_doubleValueMessageWasHandledMap.clear();
-		
+
 		_clientsHandledCount = 0;
 		_clientsHandledExpected = 0;
 	}
@@ -81,15 +81,20 @@ protected:
 		}
 	}
 
-	void startClients(const ghost::NetworkConnectionConfiguration config, size_t count, bool standardExpectations = true)
+	void startClients(const ghost::NetworkConnectionConfiguration config, size_t count,
+			  bool standardExpectations = true)
 	{
 		_clientsHandledExpected = count;
 
 		if (standardExpectations)
 		{
 			EXPECT_CALL(*_clientHandlerMock, configureClient(_)).Times(count);
-			EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(count)
-				.WillRepeatedly([&](std::shared_ptr<ghost::Client>, bool&) { _clientsHandledCount++; return true; });
+			EXPECT_CALL(*_clientHandlerMock, handle(_, _))
+			    .Times(count)
+			    .WillRepeatedly([&](std::shared_ptr<ghost::Client>, bool&) {
+				    _clientsHandledCount++;
+				    return true;
+			    });
 		}
 
 		for (size_t i = 0; i < count; ++i)
@@ -146,14 +151,12 @@ protected:
 
 	size_t getSubscribersCount()
 	{
-		if (!_publisher)
-			return 0;
-		
+		if (!_publisher) return 0;
+
 		auto internalPublisher = std::dynamic_pointer_cast<ghost::internal::PublisherGRPC>(_publisher);
-		
-		if (!internalPublisher)
-			return 0;
-		
+
+		if (!internalPublisher) return 0;
+
 		return internalPublisher->countSubscribers();
 	}
 
@@ -163,7 +166,7 @@ protected:
 		{
 			auto handler = _subscribers[i]->addMessageHandler();
 			handler->addHandler<google::protobuf::DoubleValue>(
-				std::bind(&ConnectionGRPCTests::doubleMessageMassHandler, this, i, std::placeholders::_1));
+			    std::bind(&ConnectionGRPCTests::doubleMessageMassHandler, this, i, std::placeholders::_1));
 		}
 	}
 
@@ -185,7 +188,8 @@ protected:
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto deadline = now + std::chrono::seconds(1);
-			while (now < deadline && _doubleValueMessageWasHandledMap.find(i) == _doubleValueMessageWasHandledMap.end())
+			while (now < deadline &&
+			       _doubleValueMessageWasHandledMap.find(i) == _doubleValueMessageWasHandledMap.end())
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				now = std::chrono::steady_clock::now();
@@ -209,7 +213,7 @@ protected:
 
 	int _doubleValueMessageWasHandledCounter;
 	std::map<int, int> _doubleValueMessageWasHandledMap;
-	
+
 	static const int TEST_PORT;
 
 public:
@@ -320,17 +324,23 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsConfigurationBeforeClientHandl
 	createServer(_config);
 	startServer();
 
-	EXPECT_CALL(*_clientHandlerMock, configureClient(_)).Times(1).WillRepeatedly([&](const std::shared_ptr<ghost::Client>& client) {
-		auto handler = client->addMessageHandler();
-		handler->addHandler<google::protobuf::DoubleValue>(std::bind(&ConnectionGRPCTests::doubleMessageHandler, this, std::placeholders::_1));
-		});
-	EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(1).WillRepeatedly([&](std::shared_ptr<ghost::Client> client, bool& keepClientAlive) {
-		keepClientAlive = true;
-		return true;
-		});
+	EXPECT_CALL(*_clientHandlerMock, configureClient(_))
+	    .Times(1)
+	    .WillRepeatedly([&](const std::shared_ptr<ghost::Client>& client) {
+		    auto handler = client->addMessageHandler();
+		    handler->addHandler<google::protobuf::DoubleValue>(
+			std::bind(&ConnectionGRPCTests::doubleMessageHandler, this, std::placeholders::_1));
+	    });
+	EXPECT_CALL(*_clientHandlerMock, handle(_, _))
+	    .Times(1)
+	    .WillRepeatedly([&](std::shared_ptr<ghost::Client> client, bool& keepClientAlive) {
+		    keepClientAlive = true;
+		    return true;
+	    });
 
 	startClients(_config, 1, false);
-	_clients[0]->getWriter<google::protobuf::DoubleValue>()->write(google::protobuf::DoubleValue::default_instance());
+	_clients[0]->getWriter<google::protobuf::DoubleValue>()->write(
+	    google::protobuf::DoubleValue::default_instance());
 	waitForClientsHandled();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	ASSERT_TRUE(_doubleValueMessageWasHandledCounter == 1);
@@ -344,14 +354,15 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_allowsClientsToBeStoredSomewhere)
 	std::shared_ptr<ghost::Client> remote;
 
 	EXPECT_CALL(*_clientHandlerMock, configureClient(_)).Times(1);
-	EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(1).WillRepeatedly(testing::DoAll(
-		testing::SetArgReferee<1>(true), // keep client = true
-		testing::SaveArg<0>(&remote),
-		testing::Return(true)));
+	EXPECT_CALL(*_clientHandlerMock, handle(_, _))
+	    .Times(1)
+	    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<1>(true), // keep client = true
+					   testing::SaveArg<0>(&remote), testing::Return(true)));
 
 	startClients(_config, 1, false);
 	waitForClientsHandled();
-	std::this_thread::sleep_for(std::chrono::milliseconds(10)); // after the client is handled, wait a bit to check that the server didn't close it
+	std::this_thread::sleep_for(std::chrono::milliseconds(
+	    10)); // after the client is handled, wait a bit to check that the server didn't close it
 	ASSERT_TRUE(remote);
 	ASSERT_TRUE(remote->isRunning());
 }
@@ -450,8 +461,12 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_doesNotHang_When_remoteClientIsAdded
 	startClients(_config, 1, false);
 
 	EXPECT_CALL(*_clientHandlerMock, configureClient(_)).Times(testing::AnyNumber());
-	EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(testing::AnyNumber())
-		.WillRepeatedly([&](std::shared_ptr<ghost::Client>, bool&) { _clientsHandledCount++; return true; });
+	EXPECT_CALL(*_clientHandlerMock, handle(_, _))
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly([&](std::shared_ptr<ghost::Client>, bool&) {
+		    _clientsHandledCount++;
+		    return true;
+	    });
 
 	bool stopResult = _server->stop();
 	ASSERT_TRUE(stopResult);

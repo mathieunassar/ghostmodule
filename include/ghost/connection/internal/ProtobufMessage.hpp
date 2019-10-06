@@ -17,53 +17,54 @@
 #ifndef GHOST_PROTOBUFMESSAGE_HPP
 #define GHOST_PROTOBUFMESSAGE_HPP
 
-#include <string>
-#include <memory>
 #include <google/protobuf/message.h>
+
 #include <ghost/connection/Message.hpp>
+#include <memory>
+#include <string>
 
 namespace ghost
 {
-	namespace internal
-	{
-		/**
-	 * Message based on the Google Protobuf library. Wraps a protobuf message and can be sent
-	 * through the connection library.
-	 * @author	Mathieu Nassar
-	 * @date	12.06.2018
-	 */
-		class ProtobufMessage : public Message
-		{
-		public:
-			ProtobufMessage(std::shared_ptr<google::protobuf::Message> message);
-			virtual ~ProtobufMessage() = default;
+namespace internal
+{
+/**
+ * Message based on the Google Protobuf library. Wraps a protobuf message and can be sent
+ * through the connection library.
+ * @author	Mathieu Nassar
+ * @date	12.06.2018
+ */
+class ProtobufMessage : public Message
+{
+public:
+	ProtobufMessage(std::shared_ptr<google::protobuf::Message> message);
+	virtual ~ProtobufMessage() = default;
 
-			// convenience method to default initialize with protobuf message
-			template<typename MessageType>
-			static ProtobufMessage create();
+	// convenience method to default initialize with protobuf message
+	template <typename MessageType>
+	static ProtobufMessage create();
 
-			std::string getMessageFormatName() const override;
-			std::string getMessageTypeName() const override;
+	std::string getMessageFormatName() const override;
+	std::string getMessageTypeName() const override;
 
-			std::shared_ptr<google::protobuf::Message> getProtobufMessage() const;
+	std::shared_ptr<google::protobuf::Message> getProtobufMessage() const;
 
-			bool serialize(std::string& result) const override;
-			bool deserialize(const std::string& payload) override;
+	bool serialize(std::string& result) const override;
+	bool deserialize(const std::string& payload) override;
 
-		private:
-			std::shared_ptr<google::protobuf::Message> _payload;
-		};
+private:
+	std::shared_ptr<google::protobuf::Message> _payload;
+};
 
-		// TEMPLATE DEFINITION //
+// TEMPLATE DEFINITION //
 
-		template<typename MessageType>
-		ProtobufMessage ProtobufMessage::create()
-		{
-			return ProtobufMessage(std::make_shared<MessageType>());
-		}
-
-		static const std::string GHOSTMESSAGE_FORMAT_NAME = "PROTOBUF";
-	}
+template <typename MessageType>
+ProtobufMessage ProtobufMessage::create()
+{
+	return ProtobufMessage(std::make_shared<MessageType>());
 }
+
+static const std::string GHOSTMESSAGE_FORMAT_NAME = "PROTOBUF";
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_PROTOBUFMESSAGE_HPP

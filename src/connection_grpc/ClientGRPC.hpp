@@ -19,30 +19,31 @@
 
 #include <ghost/connection/Client.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
+
 #include "rpc/OutgoingRPC.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		// RemoteGRPCClient vs GRPCClient (find better names) use RPC + operations for ghost workflow
-		// - give the operations an interface which can be faked
-		// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
+namespace internal
+{
+// RemoteGRPCClient vs GRPCClient (find better names) use RPC + operations for ghost workflow
+// - give the operations an interface which can be faked
+// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
 
-		class ClientGRPC : public ghost::Client
-		{
-		public:
-			ClientGRPC(const ghost::ConnectionConfiguration& config);
-			ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
+class ClientGRPC : public ghost::Client
+{
+public:
+	ClientGRPC(const ghost::ConnectionConfiguration& config);
+	ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
 
-			bool start() override;
-			bool stop() override;
-			bool isRunning() const override;
+	bool start() override;
+	bool stop() override;
+	bool isRunning() const override;
 
-		private:
-			OutgoingRPC _client;
-		};
-	}
-}
+private:
+	OutgoingRPC _client;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_CLIENTGRPC_HPP

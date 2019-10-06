@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+#include <gtest/gtest.h>
+
+#include <chrono>
 #include <ghost/module/Module.hpp>
 #include <ghost/module/ModuleBuilder.hpp>
 #include <ghost/module/StdoutLogger.hpp>
-#include "../src/module/Module.hpp"
-
-#include <chrono>
 #include <thread>
-#include <gtest/gtest.h>
+
+#include "../src/module/Module.hpp"
 
 class ModuleTest : public testing::Test
 {
@@ -38,7 +39,6 @@ protected:
 
 	void TearDown() override
 	{
-
 	}
 
 	bool _initIsCalled;
@@ -60,8 +60,7 @@ public:
 	bool run(const ghost::Module& module)
 	{
 		_runIsCalled = true;
-		if (_runWaits)
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		if (_runWaits) std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		return _runReturn;
 	}
 
@@ -139,7 +138,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_programOptions)
 	builder->setProgramOptions(argc, argv);
 	auto module = builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
-	
+
 	ASSERT_TRUE(module->getProgramOptions().getCommandName() == TEST_MODULE_NAME);
 }
 
@@ -172,13 +171,13 @@ TEST_F(ModuleTest, Test_Module_startsTwice)
 
 	_runWaits = true;
 
-	std::thread t([&] {module->start(); });
+	std::thread t([&] { module->start(); });
 	std::this_thread::sleep_for(std::chrono::milliseconds(10)); // wait that the thread reaches init
 	ASSERT_TRUE(_initIsCalled);
 	_initIsCalled = false;
 
-	std::thread t2([&] {module->start(); }); // call it a second time, should not go through init again
-	
+	std::thread t2([&] { module->start(); }); // call it a second time, should not go through init again
+
 	t.join();
 	t2.join();
 	ASSERT_FALSE(_initIsCalled);
@@ -195,7 +194,7 @@ TEST_F(ModuleTest, Test_Module_stops)
 
 	_runWaits = true;
 	_runReturn = true;
-	std::thread t([&] {module->start(); });
+	std::thread t([&] { module->start(); });
 	std::this_thread::sleep_for(std::chrono::milliseconds(10)); // wait that the thread reaches init
 	ASSERT_TRUE(_initIsCalled);
 

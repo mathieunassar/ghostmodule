@@ -3,11 +3,16 @@ matrix:
     - os: linux
       language: python
       python: 3.7
-      dist: xenial
+      dist: bionic
       compiler: gcc
       cache:
         directories:
           - $HOME/.conan/data
+      addons:
+        apt:
+          packages:
+            - cmake
+            - clang-format
     - os: osx
       compiler: clang
       cache:
@@ -18,6 +23,7 @@ matrix:
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install conan; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install clang-format; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then pip install conan; fi
 
 install:
@@ -31,5 +37,6 @@ script:
 # Call the build system
   - cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
   - cmake --build .
+  - cmake --build . --target format-check
 # Run the tests
   - ctest . -C Release

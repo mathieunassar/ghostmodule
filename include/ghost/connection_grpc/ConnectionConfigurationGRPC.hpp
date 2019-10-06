@@ -21,22 +21,22 @@
 
 namespace ghost
 {
+/**
+ * @brief Extended connection configuration for network connections using gRPC.
+ * This configuration possesses an additional attribute that allows the ghost::ConnectionFactory
+ * to differentiate gRPC network connections from other network connection technologies.
+ */
+class ConnectionConfigurationGRPC : public ghost::NetworkConnectionConfiguration
+{
+public:
 	/**
-	 * @brief Extended connection configuration for network connections using gRPC.
-	 * This configuration possesses an additional attribute that allows the ghost::ConnectionFactory
-	 * to differentiate gRPC network connections from other network connection technologies.
+	 * @brief Constructs a new NetworkConnectionConfiguration object with
+	 * default parameters, i.e. any IP address and any remote port number.
+	 *
+	 * @param name the name of the configuration
 	 */
-	class ConnectionConfigurationGRPC : public ghost::NetworkConnectionConfiguration
-	{
-	public:
-		/**
-		 * @brief Constructs a new NetworkConnectionConfiguration object with
-		 * default parameters, i.e. any IP address and any remote port number.
-		 *
-		 * @param name the name of the configuration
-		 */
-		ConnectionConfigurationGRPC(const std::string& name = "");
-	};
-}
+	ConnectionConfigurationGRPC(const std::string& name = "");
+};
+} // namespace ghost
 
-#endif //GHOST_CONNECTIONCONFIGURATIONGRPC_HPP
+#endif // GHOST_CONNECTIONCONFIGURATIONGRPC_HPP

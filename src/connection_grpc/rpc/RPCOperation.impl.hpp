@@ -14,44 +14,43 @@
  * limitations under the License.
  */
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
-	bool autoRestart, bool blocking, bool accountAsRunningOperation)
-	: _rpc(parent)
-	, _autoRestart(autoRestart)
-	, _blocking(blocking)
-	, _accountAsRunningOperation(accountAsRunningOperation)
-	, _state(OperationProgress::IDLE)
+						      bool autoRestart, bool blocking, bool accountAsRunningOperation)
+    : _rpc(parent)
+    , _autoRestart(autoRestart)
+    , _blocking(blocking)
+    , _accountAsRunningOperation(accountAsRunningOperation)
+    , _state(OperationProgress::IDLE)
 {
-	_operationCompletedCallback = std::bind(&RPCOperation<ReaderWriter, ContextType>::onOperationCompleted, this, std::placeholders::_1);
+	_operationCompletedCallback =
+	    std::bind(&RPCOperation<ReaderWriter, ContextType>::onOperationCompleted, this, std::placeholders::_1);
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 RPCOperation<ReaderWriter, ContextType>::~RPCOperation()
 {
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 bool RPCOperation<ReaderWriter, ContextType>::startAsync()
 {
 	_executor = std::thread([this] { start(); });
 	return true;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 bool RPCOperation<ReaderWriter, ContextType>::start()
 {
 	auto rpc = _rpc.lock();
-	if (!rpc)
-		return false;
+	if (!rpc) return false;
 
 	while (rpc->getStateMachine().getState() != RPCStateMachine::FINISHED)
 	{
 		std::unique_lock<std::mutex> lock(_operationMutex);
 
 		// Do not start operations parallely.
-		if (_state == OperationProgress::IN_PROGRESS)
-			return false;
+		if (_state == OperationProgress::IN_PROGRESS) return false;
 
 		// Tell the implementation to do the call. It should return true if it actually made one.
 		bool initiated = initiateOperation();
@@ -59,22 +58,21 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 		{
 			// Switch states to prevent parallel executions and tell the RPC that something is ongoing.
 			_state = OperationProgress::IN_PROGRESS;
-			if (_accountAsRunningOperation)
-				rpc->startOperation();
+			if (_accountAsRunningOperation) rpc->startOperation();
 
 			// If this call is blocking, wait until it finishes
 			if (_blocking)
-				_operationCompletedConditionVariable.wait(lock, [this] { return _state == OperationProgress::IDLE; });
+				_operationCompletedConditionVariable.wait(
+				    lock, [this] { return _state == OperationProgress::IDLE; });
 		}
 
 		// If this call is not blocking, potential restarts will happen when the operation completes
-		if (!_blocking || !_autoRestart)
-			return true;
+		if (!_blocking || !_autoRestart) return true;
 	}
 	return false;
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 void RPCOperation<ReaderWriter, ContextType>::stop()
 {
 	{
@@ -82,19 +80,18 @@ void RPCOperation<ReaderWriter, ContextType>::stop()
 
 		_blocking = false;
 		if (_accountAsRunningOperation)
-			_operationCompletedConditionVariable.wait(lock, [this] { return _state == OperationProgress::IDLE; });
+			_operationCompletedConditionVariable.wait(lock,
+								  [this] { return _state == OperationProgress::IDLE; });
 	}
 
-	if (_executor.joinable())
-		_executor.join();
+	if (_executor.joinable()) _executor.join();
 }
 
-template<typename ReaderWriter, typename ContextType>
+template <typename ReaderWriter, typename ContextType>
 void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 {
 	auto rpc = _rpc.lock();
-	if (!rpc)
-		return;
+	if (!rpc) return;
 
 	bool willRestart = false;
 	{
@@ -105,9 +102,8 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 
 		// finishOperation returns true if the RPC is still operating
 		bool rpcFinished = false;
-		if (_accountAsRunningOperation)
-			rpcFinished = !rpc->finishOperation();
-		
+		if (_accountAsRunningOperation) rpcFinished = !rpc->finishOperation();
+
 		// Let the implementation do something with the result.
 		if (ok)
 			onOperationSucceeded(rpcFinished);
@@ -115,13 +111,13 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 			onOperationFailed(rpcFinished);
 
 		// Collect information about the current state before releasing waiting threads.
-		willRestart = _autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING;
+		willRestart =
+		    _autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING;
 	}
 
 	// Free "start" threads that are potentially waiting for this.
 	_operationCompletedConditionVariable.notify_all();
 
 	// If autorestart is configured and the call is not blocking, do it here
-	if (willRestart)
-		start();
+	if (willRestart) start();
 }

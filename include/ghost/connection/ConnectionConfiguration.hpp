@@ -17,60 +17,60 @@
 #ifndef GHOST_CONNECTIONCONFIGURATION_HPP
 #define GHOST_CONNECTIONCONFIGURATION_HPP
 
+#include <ghost/connection/Configuration.hpp>
 #include <memory>
 #include <string>
-#include <ghost/connection/Configuration.hpp>
 
 namespace ghost
 {
+/**
+ * @brief A Configuration with specific entries for Connection objects.
+ */
+class ConnectionConfiguration
+{
+public:
+	ConnectionConfiguration(const std::string& name = "");
+	virtual ~ConnectionConfiguration() = default;
+
 	/**
-	 * @brief A Configuration with specific entries for Connection objects.
+	 * @return the ID of the connection.
 	 */
-	class ConnectionConfiguration
-	{
-	public:
-		ConnectionConfiguration(const std::string& name = "");
-		virtual ~ConnectionConfiguration() = default;
+	int getConnectionId() const;
 
-		/**
-		 * @return the ID of the connection. 
-		 */
-		int getConnectionId() const;
-		
-		/**
-		 * @return the desized size of the thread pool used by a connection.
-		 */
-		size_t getThreadPoolSize() const;
-		
-		/**
-		 * @return true if i/o operations should be blocking
-		 * @return false uf i/o operations should be non-blocking
-		 */
-		bool isOperationBlocking() const;
+	/**
+	 * @return the desized size of the thread pool used by a connection.
+	 */
+	size_t getThreadPoolSize() const;
 
-		/**
-		 * @param id the ID of the connection
-		 */
-		void setConnectionId(int id);
+	/**
+	 * @return true if i/o operations should be blocking
+	 * @return false uf i/o operations should be non-blocking
+	 */
+	bool isOperationBlocking() const;
 
-		/**
-		 * @param size the size of the thread pool used by a connection.
-		 */
-		void setThreadPoolSize(size_t size);
+	/**
+	 * @param id the ID of the connection
+	 */
+	void setConnectionId(int id);
 
-		/**
-		 * @param value true if the i/o operations should be blocking, false otherwise.
-		 */
-		void setOperationBlocking(bool value);
+	/**
+	 * @param size the size of the thread pool used by a connection.
+	 */
+	void setThreadPoolSize(size_t size);
 
-		/**
-		 *	@return the configuration used by this object.
-		 */
-		std::shared_ptr<ghost::Configuration> getConfiguration() const;
+	/**
+	 * @param value true if the i/o operations should be blocking, false otherwise.
+	 */
+	void setOperationBlocking(bool value);
 
-	protected:
-		std::shared_ptr<ghost::Configuration> _configuration;
-	};
-}
+	/**
+	 *	@return the configuration used by this object.
+	 */
+	std::shared_ptr<ghost::Configuration> getConfiguration() const;
 
-#endif //GHOST_CONNECTIONCONFIGURATION_HPP
+protected:
+	std::shared_ptr<ghost::Configuration> _configuration;
+};
+} // namespace ghost
+
+#endif // GHOST_CONNECTIONCONFIGURATION_HPP

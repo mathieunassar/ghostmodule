@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-#include "../src/module/CommandLineParser.hpp"
-
 #include <gtest/gtest.h>
-#include <ghost/module/StdoutLogger.hpp>
+
 #include <ghost/module/Command.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
+#include <ghost/module/StdoutLogger.hpp>
 #include <ghost/module/UserManager.hpp>
+
+#include "../src/module/CommandLineParser.hpp"
 #include "../src/module/User.hpp"
 
 class CommandLineInterpreterTest : public testing::Test
@@ -28,12 +29,10 @@ class CommandLineInterpreterTest : public testing::Test
 protected:
 	void SetUp() override
 	{
-		
 	}
 
 	void TearDown() override
 	{
-
 	}
 
 	static const std::string TEST_COMMAND_LINE_CMDNAME;
@@ -56,11 +55,8 @@ protected:
 class CustomCommand : public ghost::Command
 {
 public:
-	CustomCommand(bool returnResult)
-		: _returnResult(returnResult)
-		, _executeWasCalled(false)
+	CustomCommand(bool returnResult) : _returnResult(returnResult), _executeWasCalled(false)
 	{
-
 	}
 
 	bool execute(const ghost::CommandLine& commandLine) override
@@ -93,22 +89,28 @@ const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_CMDNAME = "testC
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMA = "paramA";
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMB = "paramB";
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMC = "paramC";
-const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING = TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMA + " " + TEST_COMMAND_LINE_PARAMB + " " + TEST_COMMAND_LINE_PARAMC;
-
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING =
+    TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMA + " " + TEST_COMMAND_LINE_PARAMB + " " +
+    TEST_COMMAND_LINE_PARAMC;
 
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEA = "nameA";
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEB = "nameB";
-const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_PARAMNAME = TEST_COMMAND_LINE_CMDNAME + " --" + TEST_COMMAND_LINE_NAMEA + " " + TEST_COMMAND_LINE_PARAMA + " --" + TEST_COMMAND_LINE_NAMEB + " " + TEST_COMMAND_LINE_PARAMB;
-const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_MIXED = TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEA + " " + TEST_COMMAND_LINE_PARAMA + " " + TEST_COMMAND_LINE_PARAMB;
-
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_PARAMNAME =
+    TEST_COMMAND_LINE_CMDNAME + " --" + TEST_COMMAND_LINE_NAMEA + " " + TEST_COMMAND_LINE_PARAMA + " --" +
+    TEST_COMMAND_LINE_NAMEB + " " + TEST_COMMAND_LINE_PARAMB;
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_MIXED =
+    TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEA + " " +
+    TEST_COMMAND_LINE_PARAMA + " " + TEST_COMMAND_LINE_PARAMB;
 
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEILLEGAL = "__0";
-const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_ILLEGAL = TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEILLEGAL + " " + TEST_COMMAND_LINE_PARAMA;
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_ILLEGAL =
+    TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEILLEGAL + " " +
+    TEST_COMMAND_LINE_PARAMA;
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_emptyLine)
 {
 	ghost::internal::CommandLineParser parser;
-	
+
 	auto commandLine = parser.parseCommandLine("");
 	ASSERT_TRUE(commandLine.getCommandName().empty());
 	ASSERT_TRUE(commandLine.getParametersMap().empty());

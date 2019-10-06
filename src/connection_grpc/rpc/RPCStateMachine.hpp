@@ -17,39 +17,40 @@
 #ifndef GHOST_INTERNAL_NETWORK_RPCSTATEMACHINE_HPP
 #define GHOST_INTERNAL_NETWORK_RPCSTATEMACHINE_HPP
 
-#include <mutex>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <mutex>
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+class RPCStateMachine
+{
+public:
+	enum State
 	{
-		class RPCStateMachine
-		{
-		public:
-			enum State
-			{
-				CREATED,
-				INITIALIZING,
-				EXECUTING, INACTIVE,
-				DISPOSING,
-				FINISHED
-			};
+		CREATED,
+		INITIALIZING,
+		EXECUTING,
+		INACTIVE,
+		DISPOSING,
+		FINISHED
+	};
 
-			RPCStateMachine();
-			State getState(bool lock = true) const;
-			void setState(State state, bool lock = true);
-			void setStateChangedCallback(const std::function<void(State)>& callback);
+	RPCStateMachine();
+	State getState(bool lock = true) const;
+	void setState(State state, bool lock = true);
+	void setStateChangedCallback(const std::function<void(State)>& callback);
 
-			std::unique_lock<std::mutex> lock();
+	std::unique_lock<std::mutex> lock();
 
-		private:
-			State _state;
-			std::function<void(State)> _stateChangedCallback;
-			mutable std::mutex _mutex;
-		};
-	}
-}
+private:
+	State _state;
+	std::function<void(State)> _stateChangedCallback;
+	mutable std::mutex _mutex;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_RPCSTATEMACHINE_HPP

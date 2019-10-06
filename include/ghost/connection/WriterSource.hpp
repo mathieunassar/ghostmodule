@@ -21,23 +21,23 @@
 
 namespace ghost
 {
+/**
+ *	A ghost::WriterSource is the interface between a connection and a
+ *	ghost::Writer object that can write messages to the connection.
+ *	The sink is used by the ghost::Writer object to receive message from the
+ *	matching sink.
+ */
+class WriterSource
+{
+public:
+	virtual ~WriterSource() = default;
+
 	/**
-	 *	A ghost::WriterSource is the interface between a connection and a
-	 *	ghost::Writer object that can write messages to the connection.
-	 *	The sink is used by the ghost::Writer object to receive message from the
-	 *	matching sink.
+	 *	Forwards a message to the sink.
+	 *	@param message	Message to push.
 	 */
-	class WriterSource
-	{
-	public:
-		virtual ~WriterSource() = default;
+	virtual void push(const google::protobuf::Any& message, bool blocking) = 0;
+};
+} // namespace ghost
 
-		/**
-		 *	Forwards a message to the sink.
-		 *	@param message	Message to push.
-		 */
-		virtual void push(const google::protobuf::Any& message, bool blocking) = 0;
-	};
-}
-
-#endif //GHOST_WRITERSOURCE_HPP
+#endif // GHOST_WRITERSOURCE_HPP

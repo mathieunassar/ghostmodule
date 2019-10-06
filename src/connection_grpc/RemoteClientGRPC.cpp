@@ -15,24 +15,20 @@
  */
 
 #include "RemoteClientGRPC.hpp"
+
 #include "ServerGRPC.hpp"
 
 using namespace ghost::internal;
 
 RemoteClientGRPC::RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration,
-	const std::shared_ptr<IncomingRPC>& rpc,
-	ServerGRPC* parentServer)
-	: ghost::Client(configuration)
-	, _rpc(rpc)
-	, _running(false)
-	, _parentServer(parentServer)
+				   const std::shared_ptr<IncomingRPC>& rpc, ServerGRPC* parentServer)
+    : ghost::Client(configuration), _rpc(rpc), _running(false), _parentServer(parentServer)
 {
 }
 
 RemoteClientGRPC::~RemoteClientGRPC()
 {
-	if (_executor.joinable())
-		_executor.join();
+	if (_executor.joinable()) _executor.join();
 }
 
 bool RemoteClientGRPC::start()
@@ -52,33 +48,31 @@ bool RemoteClientGRPC::isRunning() const
 
 void RemoteClientGRPC::execute()
 {
-	_executor = std::thread([this]
-		{
-			_running = true;
+	_executor = std::thread([this] {
+		_running = true;
 
-			if (_parentServer->getClientHandler())
-				_parentServer->getClientHandler()->configureClient(_rpc->getParent());
+		if (_parentServer->getClientHandler())
+			_parentServer->getClientHandler()->configureClient(_rpc->getParent());
 
-			_rpc->startReader(getReaderSink());
-			_rpc->startWriter(getWriterSink());
+		_rpc->startReader(getReaderSink());
+		_rpc->startWriter(getWriterSink());
 
-			// call the application code
-			bool continueExecution = true;
-			bool keepClientAlive = false;
+		// call the application code
+		bool continueExecution = true;
+		bool keepClientAlive = false;
 
-			if (_parentServer->getClientHandler())
-				continueExecution = _parentServer->getClientHandler()->handle(_rpc->getParent(), keepClientAlive);
+		if (_parentServer->getClientHandler())
+			continueExecution =
+			    _parentServer->getClientHandler()->handle(_rpc->getParent(), keepClientAlive);
 
-			// only stop the client if the user left "keepClientAlive" to false
-			if (!keepClientAlive)
-				stop();
+		// only stop the client if the user left "keepClientAlive" to false
+		if (!keepClientAlive) stop();
 
-			// if continueExecution is false, stop the server
-			if (!continueExecution)
-				_parentServer->stop();
+		// if continueExecution is false, stop the server
+		if (!continueExecution) _parentServer->stop();
 
-			_running = false;
-		});
+		_running = false;
+	});
 }
 
 std::shared_ptr<ghost::ReaderSink> RemoteClientGRPC::getReaderSink() const

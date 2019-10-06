@@ -19,14 +19,13 @@
 using namespace ghost::internal;
 
 ClientGRPC::ClientGRPC(const ghost::ConnectionConfiguration& config)
-	:ClientGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+    : ClientGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
 {
-
 }
 
 ClientGRPC::ClientGRPC(const ghost::NetworkConnectionConfiguration& config)
-	: ghost::Client(config)
-	, _client(config.getServerIpAddress(), config.getServerPortNumber(), config.getThreadPoolSize())
+    : ghost::Client(config)
+    , _client(config.getServerIpAddress(), config.getServerPortNumber(), config.getThreadPoolSize())
 {
 	_client.setReaderSink(getReaderSink());
 	_client.setWriterSink(getWriterSink());

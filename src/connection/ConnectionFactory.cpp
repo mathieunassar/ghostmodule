@@ -15,6 +15,7 @@
  */
 
 #include "ConnectionFactory.hpp"
+
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 
 using namespace ghost::internal;

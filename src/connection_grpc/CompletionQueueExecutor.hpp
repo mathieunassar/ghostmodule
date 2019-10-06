@@ -17,49 +17,48 @@
 #ifndef GHOST_INTERNAL_NETWORK_COMPLETIONQUEUEEXECUTOR_HPP
 #define GHOST_INTERNAL_NETWORK_COMPLETIONQUEUEEXECUTOR_HPP
 
-#include <functional>
-#include <thread>
-#include <list>
-
 #include <grpcpp/completion_queue.h>
+
+#include <functional>
+#include <list>
+#include <thread>
 
 namespace ghost
 {
-	namespace internal
-	{
-		class CompletionQueueExecutor
-		{
-		public:
-			CompletionQueueExecutor();
-			CompletionQueueExecutor(grpc::CompletionQueue* completion);
-			~CompletionQueueExecutor();
+namespace internal
+{
+class CompletionQueueExecutor
+{
+public:
+	CompletionQueueExecutor();
+	CompletionQueueExecutor(grpc::CompletionQueue* completion);
+	~CompletionQueueExecutor();
 
-			void setCompletionQueue(std::unique_ptr<grpc::CompletionQueue> completion);
-			grpc::CompletionQueue* getCompletionQueue();
+	void setCompletionQueue(std::unique_ptr<grpc::CompletionQueue> completion);
+	grpc::CompletionQueue* getCompletionQueue();
 
-			void start(size_t threadsCount);
-			void stop();
+	void start(size_t threadsCount);
+	void stop();
 
-		private:
-			void handleRpcs();
+private:
+	void handleRpcs();
 
-			std::unique_ptr<grpc::CompletionQueue> _completionQueue;
+	std::unique_ptr<grpc::CompletionQueue> _completionQueue;
 
-			std::list<std::thread> _threadPool;
-		};
+	std::list<std::thread> _threadPool;
+};
 
-
-		/**
-		 * Tag information for the gRPC completion queue.
-		 * @author	Mathieu Nassar
-		 * @date	17.06.2018
-		 */
-		struct TagInfo
-		{
-			std::function<void(bool)>* processor;
-			bool ok;
-		};
-	}
-}
+/**
+ * Tag information for the gRPC completion queue.
+ * @author	Mathieu Nassar
+ * @date	17.06.2018
+ */
+struct TagInfo
+{
+	std::function<void(bool)>* processor;
+	bool ok;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_COMPLETIONQUEUEEXECUTOR_HPP

@@ -18,7 +18,7 @@
 
 using namespace ghost::internal;
 
-//const std::string internal::GHOSTMESSAGE_FORMAT_NAME = "PROTOBUF";
+// const std::string internal::GHOSTMESSAGE_FORMAT_NAME = "PROTOBUF";
 
 /**
  * Constructor of the message. The argument must not be nullptr or default initialized.
@@ -26,10 +26,8 @@ using namespace ghost::internal;
  * @date	12.06.2018
  * @param	message	The protobuf message which is managed by this object.
  */
-ProtobufMessage::ProtobufMessage(std::shared_ptr<google::protobuf::Message> message)
-	: _payload(message)
+ProtobufMessage::ProtobufMessage(std::shared_ptr<google::protobuf::Message> message) : _payload(message)
 {
-
 }
 
 /**
@@ -52,8 +50,7 @@ std::string ProtobufMessage::getMessageFormatName() const
  */
 std::string ProtobufMessage::getMessageTypeName() const
 {
-	if (!_payload)
-		return "";
+	if (!_payload) return "";
 
 	return _payload->GetDescriptor()->full_name();
 }
@@ -79,8 +76,7 @@ std::shared_ptr<google::protobuf::Message> ProtobufMessage::getProtobufMessage()
  */
 bool ProtobufMessage::serialize(std::string& result) const
 {
-	if (!_payload)
-		return false;
+	if (!_payload) return false;
 
 	return _payload->SerializeToString(&result);
 }
@@ -96,8 +92,7 @@ bool ProtobufMessage::serialize(std::string& result) const
  */
 bool ProtobufMessage::deserialize(const std::string& payload)
 {
-	if (!_payload)
-		return false;
-	
+	if (!_payload) return false;
+
 	return _payload->ParseFromString(payload);
 }

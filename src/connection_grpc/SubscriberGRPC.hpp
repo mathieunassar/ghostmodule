@@ -17,28 +17,29 @@
 #ifndef GHOST_INTERNAL_NETWORK_SUBSCRIBERGRPC_HPP
 #define GHOST_INTERNAL_NETWORK_SUBSCRIBERGRPC_HPP
 
-#include <ghost/connection/Subscriber.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include <ghost/connection/Subscriber.hpp>
+
 #include "rpc/OutgoingRPC.hpp"
 
 namespace ghost
 {
-	namespace internal
-	{
-		class SubscriberGRPC : public ghost::Subscriber
-		{
-		public:
-			SubscriberGRPC(const ghost::ConnectionConfiguration& config);
-			SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config);
+namespace internal
+{
+class SubscriberGRPC : public ghost::Subscriber
+{
+public:
+	SubscriberGRPC(const ghost::ConnectionConfiguration& config);
+	SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config);
 
-			bool start() override;
-			bool stop() override;
-			bool isRunning() const override;
+	bool start() override;
+	bool stop() override;
+	bool isRunning() const override;
 
-		private:
-			OutgoingRPC _client;
-		};
-	}
-}
+private:
+	OutgoingRPC _client;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_NETWORK_SUBSCRIBERCOREGRPC_HPP

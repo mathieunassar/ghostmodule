@@ -1,0 +1,12 @@
+Language:        Cpp
+BasedOnStyle:  Google
+IndentWidth: 8
+UseTab: Always
+ColumnLimit: 120
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+BreakBeforeBraces: Allman
+SpacesBeforeTrailingComments: 1
+BreakConstructorInitializersBeforeComma: true
+AccessModifierOffset: -8
+...

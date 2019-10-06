@@ -17,46 +17,47 @@
 #ifndef GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP
 #define GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP
 
-#include <memory>
-
 #include <ghost/connection/Connection.hpp>
 #include <ghost/connection/ConnectionConfiguration.hpp>
+#include <memory>
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+/* base class */
+class ConnectionFactoryRule
+{
+public:
+	ConnectionFactoryRule(const ghost::ConnectionConfiguration& minimumConfiguration);
+	virtual ~ConnectionFactoryRule() = default;
+
+	/// returns true if the candidate configuration fulfills the minimum configuration requirements
+	/// Note: empty values in the minimum configuration mean that any value is allowed for this parameter
+	bool matches(const ghost::ConnectionConfiguration& candidate) const;
+	/// creates an instance of the corresponding connection, with the given configuration in parameters.
+	virtual std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const = 0;
+
+protected:
+	ghost::ConnectionConfiguration _minimumConfiguration;
+};
+
+/* Generic class */
+template <typename ConnectionType>
+class ConnectionFactoryGenericRule : public ConnectionFactoryRule
+{
+public:
+	ConnectionFactoryGenericRule(const ghost::ConnectionConfiguration& minimumConfiguration)
+	    : ConnectionFactoryRule(minimumConfiguration)
 	{
-		/* base class */
-		class ConnectionFactoryRule
-		{
-		public:
-			ConnectionFactoryRule(const ghost::ConnectionConfiguration& minimumConfiguration);
-			virtual ~ConnectionFactoryRule() = default;
-
-			/// returns true if the candidate configuration fulfills the minimum configuration requirements
-			/// Note: empty values in the minimum configuration mean that any value is allowed for this parameter
-			bool matches(const ghost::ConnectionConfiguration& candidate) const;
-			/// creates an instance of the corresponding connection, with the given configuration in parameters.
-			virtual std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const = 0;
-
-		protected:
-			ghost::ConnectionConfiguration _minimumConfiguration;
-		};
-
-		/* Generic class */
-		template<typename ConnectionType>
-		class ConnectionFactoryGenericRule : public ConnectionFactoryRule
-		{
-		public:
-			ConnectionFactoryGenericRule(const ghost::ConnectionConfiguration& minimumConfiguration)
-				: ConnectionFactoryRule(minimumConfiguration) {}
-
-			std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const override
-			{
-				return std::make_shared<ConnectionType>(config);
-			}
-		};
 	}
-}
 
-#endif //GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP
+	std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const override
+	{
+		return std::make_shared<ConnectionType>(config);
+	}
+};
+} // namespace internal
+} // namespace ghost
+
+#endif // GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP

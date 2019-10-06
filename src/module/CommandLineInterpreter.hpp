@@ -17,45 +17,46 @@
 #ifndef GHOST_INTERNAL_COMMANDLINEINTERPRETER_HPP
 #define GHOST_INTERNAL_COMMANDLINEINTERPRETER_HPP
 
+#include <ghost/module/CommandLineInterpreter.hpp>
 #include <list>
 #include <map>
 #include <memory>
 
-#include <ghost/module/CommandLineInterpreter.hpp>
 #include "UserManager.hpp"
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+/**
+ *	Implementation of {@ref ghost::CommandLineInterpreter}.
+ */
+class CommandLineInterpreter : public ghost::CommandLineInterpreter
+{
+public:
+	CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager);
+
+	bool execute(const std::string& commandLine) override;
+	bool execute(const ghost::CommandLine& commandLine) override;
+
+	void registerCommand(std::shared_ptr<Command> command,
+			     const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) override;
+
+	void printHelp(std::ostream& stream) const override;
+
+private:
+	struct CommandEntry
 	{
-		/**
-		 *	Implementation of {@ref ghost::CommandLineInterpreter}.
-		 */
-		class CommandLineInterpreter : public ghost::CommandLineInterpreter
-		{
-		public:
-			CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager);
+		std::shared_ptr<Command> command;
+		std::list<std::shared_ptr<PermissionEntity>> permissions;
+	};
 
-			bool execute(const std::string& commandLine) override;
-			bool execute(const ghost::CommandLine& commandLine) override;
+	bool executionPermitted(const CommandEntry& entry) const;
 
-			void registerCommand(std::shared_ptr<Command> command, const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) override;
-
-			void printHelp(std::ostream& stream) const override;
-
-		private:
-			struct CommandEntry
-			{
-				std::shared_ptr<Command> command;
-				std::list<std::shared_ptr<PermissionEntity>> permissions;
-			};
-
-			bool executionPermitted(const CommandEntry& entry) const;
-
-			std::map<std::string, CommandEntry> _commands;
-			std::shared_ptr<ghost::UserManager> _userManager;
-		};
-	}
-}
+	std::map<std::string, CommandEntry> _commands;
+	std::shared_ptr<ghost::UserManager> _userManager;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_COMMANDLINEINTERPRETER_HPP

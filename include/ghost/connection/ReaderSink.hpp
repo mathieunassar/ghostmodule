@@ -17,38 +17,39 @@
 #ifndef GHOST_READERSINK_HPP
 #define GHOST_READERSINK_HPP
 
-#include <memory>
 #include <google/protobuf/any.pb.h>
+
 #include <ghost/connection/MessageHandler.hpp>
+#include <memory>
 
 namespace ghost
 {
+/**
+ *	A ghost::ReaderSink is the interface between a connection and a
+ *	ghost::Reader object that can read messages coming from the connection.
+ *	The sink must be used by implementations of connection types to forward
+ *	messages to the user of the connection reader.
+ */
+class ReaderSink
+{
+public:
+	virtual ~ReaderSink() = default;
+
 	/**
-	 *	A ghost::ReaderSink is the interface between a connection and a
-	 *	ghost::Reader object that can read messages coming from the connection.
-	 *	The sink must be used by implementations of connection types to forward
-	 *	messages to the user of the connection reader.
+	 *	Pushes a message into the readers connected to this sink.
+	 *	@param message	the new message to pass to the readers.
+	 *	@return true if the message was successfully passed.
 	 */
-	class ReaderSink
-	{
-	public:
-		virtual ~ReaderSink() = default;
+	virtual bool put(const google::protobuf::Any& message) = 0;
 
-		/**
-		 *	Pushes a message into the readers connected to this sink.
-		 *	@param message	the new message to pass to the readers.
-		 *	@return true if the message was successfully passed.
-		 */
-		virtual bool put(const google::protobuf::Any& message) = 0;
+	virtual std::shared_ptr<ghost::MessageHandler> addMessageHandler() = 0;
 
-		virtual std::shared_ptr<ghost::MessageHandler> addMessageHandler() = 0;
+	/**
+	 *	Shuts down the sink - future calls to put or get will fail.
+	 *	Call this function when the connection stopped.
+	 */
+	virtual void drain() = 0;
+};
+} // namespace ghost
 
-		/**
-		 *	Shuts down the sink - future calls to put or get will fail.
-		 *	Call this function when the connection stopped.
-		 */
-		virtual void drain() = 0;
-	};
-}
-
-#endif //GHOST_READERSINK_HPP
+#endif // GHOST_READERSINK_HPP

@@ -15,15 +15,14 @@
  */
 
 #include <ghost/connection/ReadableConnection.hpp>
+
 #include "ReaderSink.hpp"
 
 using namespace ghost;
 
 ReadableConnection::ReadableConnection(const ghost::ConnectionConfiguration& configuration)
-	: _readerSink(std::make_shared<ghost::internal::ReaderSink>())
-	, _blocking(configuration.isOperationBlocking())
+    : _readerSink(std::make_shared<ghost::internal::ReaderSink>()), _blocking(configuration.isOperationBlocking())
 {
-
 }
 
 std::shared_ptr<ghost::MessageHandler> ReadableConnection::addMessageHandler()

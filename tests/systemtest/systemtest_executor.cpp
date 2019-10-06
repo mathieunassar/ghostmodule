@@ -15,9 +15,10 @@
  */
 
 #include <gtest/gtest.h>
-#include <ghost/module/ModuleBuilder.hpp>
-#include <ghost/module/Module.hpp>
+
 #include <ghost/module/GhostLogger.hpp>
+#include <ghost/module/Module.hpp>
+#include <ghost/module/ModuleBuilder.hpp>
 
 #include "SystemtestExecutorModule.hpp"
 
@@ -26,12 +27,10 @@ class SystemTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-
 	}
 
 	void TearDown() override
 	{
-		
 	}
 
 	std::shared_ptr<SystemtestExecutorModule> _executor;
@@ -42,7 +41,8 @@ TEST_F(SystemTests, test_system_works)
 	_executor = std::make_shared<SystemtestExecutorModule>();
 
 	auto builder = ghost::ModuleBuilder::create();
-	builder->setInitializeBehavior(std::bind(&SystemtestExecutorModule::initialize, _executor, std::placeholders::_1));
+	builder->setInitializeBehavior(
+	    std::bind(&SystemtestExecutorModule::initialize, _executor, std::placeholders::_1));
 	builder->setRunningBehavior(std::bind(&SystemtestExecutorModule::run, _executor, std::placeholders::_1));
 	builder->setDisposeBehavior(std::bind(&SystemtestExecutorModule::dispose, _executor, std::placeholders::_1));
 	std::shared_ptr<ghost::Console> console = builder->setConsole();

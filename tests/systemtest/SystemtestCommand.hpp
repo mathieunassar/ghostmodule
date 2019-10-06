@@ -26,15 +26,17 @@ class SystemtestCommand : public ghost::Command
 {
 public:
 	SystemtestCommand(SystemtestExecutorModule* parent, std::shared_ptr<ghost::Console> console)
-		: _parent(parent), _console(console) {}
-	
+	    : _parent(parent), _console(console)
+	{
+	}
+
 	bool execute(const ghost::CommandLine& commandLine) override;
 
 	std::string getName() const override;
 	std::string getShortcut() const override;
 	std::string getDescription() const override;
 
-private:	
+private:
 	SystemtestExecutorModule* _parent;
 	std::shared_ptr<ghost::Console> _console;
 };
