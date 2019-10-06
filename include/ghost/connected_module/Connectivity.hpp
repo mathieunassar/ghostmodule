@@ -17,8 +17,8 @@
 #ifndef GHOST_CONNECTIVITY_HPP
 #define GHOST_CONNECTIVITY_HPP
 
-#include <ghost/module/ModuleComponent.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
+#include <ghost/module/ModuleComponent.hpp>
 #include <string>
 
 namespace ghost

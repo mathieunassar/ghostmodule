@@ -15,6 +15,7 @@
  */
 
 #include "ConnectivityComponentBuilder.hpp"
+
 #include "Connectivity.hpp"
 
 using namespace ghost::internal;
