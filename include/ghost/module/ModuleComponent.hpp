@@ -21,6 +21,8 @@
 
 namespace ghost
 {
+class Module;
+class ModuleBuilder;
 /**
  *	A module component is an extension of the module that is managed by the module
  *	workflow.
@@ -47,6 +49,18 @@ public:
 	 *	@return the name of this component.
 	 */
 	virtual std::string getName() const = 0;
+
+protected:
+	/**
+	 *	Retrieves the parent module. This method can be used to access core components
+	 *	such as the ghost::CommandLineInterpreter.
+	 *	@return this component's parent module.
+	 */
+	std::shared_ptr<ghost::Module> getModule() const;
+
+private:
+	std::weak_ptr<ghost::Module> _module;
+	friend ghost::ModuleBuilder;
 };
 
 } // namespace ghost

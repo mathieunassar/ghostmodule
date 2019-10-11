@@ -88,6 +88,7 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/UserGroup.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserManager.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Module.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleBuilder.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ModuleComponent.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/GhostLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/StdoutLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/LoggerLine.cpp

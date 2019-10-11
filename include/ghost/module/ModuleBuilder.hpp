@@ -101,6 +101,10 @@ public:
 	 *	@return the built module if the process was successful, nullptr otherwise.
 	 */
 	virtual std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") = 0;
+
+protected:
+	static void setModuleToComponent(const std::shared_ptr<ghost::Module>& module,
+					 const std::shared_ptr<ghost::ModuleComponent>& component);
 };
 } // namespace ghost
 

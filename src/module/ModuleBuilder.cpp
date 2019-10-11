@@ -25,6 +25,12 @@ std::unique_ptr<ghost::ModuleBuilder> ghost::ModuleBuilder::create()
 	return std::make_unique<ghost::internal::ModuleBuilder>();
 }
 
+void ghost::ModuleBuilder::setModuleToComponent(const std::shared_ptr<ghost::Module>& module,
+						const std::shared_ptr<ghost::ModuleComponent>& component)
+{
+	component->_module = module;
+}
+
 ModuleBuilder::ModuleBuilder() : _options("undefined")
 {
 }
@@ -76,6 +82,7 @@ std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleNam
 {
 	std::vector<std::shared_ptr<ghost::ModuleComponent>> components;
 
+	// Create the module components
 	for (const auto& builder : _componentBuilders)
 	{
 		auto component = builder->build();
@@ -83,6 +90,21 @@ std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleNam
 		components.push_back(component);
 	}
 
-	return std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options, components,
-							 _initializationBehavior, _runningBehavior, _disposeBehavior);
+	// Create the module and give it the components
+	auto module =
+	    std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options, components,
+						      _initializationBehavior, _runningBehavior, _disposeBehavior);
+
+	// Give a weak_ptr of the parent module to its components
+	for (const auto& component : components)
+	{
+		// This can only be achieved because ghost::ModuleBuilder (base class of this)
+		// is friend of ghost::ModuleComponent
+		// This allows the public API to not expose a setter of the parent module
+		// For that reason "setModuleToComponent is a protected static method of ghost::ModuleBuilder
+		// and not of this internal class.
+		setModuleToComponent(module, component);
+	}
+
+	return module;
 }
