@@ -36,6 +36,7 @@ public:
 	 * @param name the name of the configuration
 	 */
 	ConnectionConfigurationGRPC(const std::string& name = "");
+	ConnectionConfigurationGRPC(const std::string& ip, int port);
 };
 } // namespace ghost
 

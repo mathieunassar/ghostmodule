@@ -31,3 +31,9 @@ ConnectionConfigurationGRPC::ConnectionConfigurationGRPC(const std::string& name
 	ghost::ConfigurationValue techonologyAttribute;
 	_configuration->addAttribute(internal::CONNECTIONCONFIGURATIONGRPC_TECHNOLOGY, techonologyAttribute);
 }
+
+ConnectionConfigurationGRPC::ConnectionConfigurationGRPC(const std::string& ip, int port)
+{
+	setServerIpAddress(ip);
+	setServerPortNumber(port);
+}

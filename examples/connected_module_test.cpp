@@ -78,10 +78,7 @@ int main()
 	// Put some GRPC definitions in the connection builder
 	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager());
 	// Configure a remote access server on the localhost on port 8001
-	ghost::ConnectionConfigurationGRPC remoteAccessConfiguration;
-	remoteAccessConfiguration.setServerIpAddress("127.0.0.1");
-	remoteAccessConfiguration.setServerPortNumber(8001);
-	connectedModuleBuilder->addRemoteAccess(remoteAccessConfiguration);
+	connectedModuleBuilder->addRemoteAccess(ghost::ConnectionConfigurationGRPC("127.0.0.1", 8001));
 	//connectedModuleBuilder->setRemoteControl(remoteAccessConfiguration);
 	// Add the component builder to the module builder
 	builder->addComponentBuilder(connectedModuleBuilder);
