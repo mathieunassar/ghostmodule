@@ -97,7 +97,7 @@ bool ConnectedModule::initializeRemoteAccess(
 bool ConnectedModule::initializeRemoteControl()
 {
 	// The user didn't configure a remote module
-	if (!_remoteConfiguration) return false;
+	if (!_remoteConfiguration) return true;
 
 	// Create the client corresponding to the configured remote
 	_remote = _connectionManager->createClient(*_remoteConfiguration);

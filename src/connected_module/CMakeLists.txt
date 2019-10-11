@@ -66,19 +66,11 @@ target_link_libraries(ghost_connected_module ghost_module ghost_connection)
 
 ##### Examples #####
 
-#if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
-#	set(PROTOC_SOURCE_CUSTOM ${GHOST_MODULE_ROOT_DIR}/examples/protobuf/)
-#	set(PROTOC_SOURCE_FILE ${GHOST_MODULE_ROOT_DIR}/examples/protobuf/persistency_todo_list.proto)
-#	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/examples/protobuf/)
-#
-#	generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
-#
-#	# minimum code to create a module
-#	add_executable(persistence_todo_list
-#		${GHOST_MODULE_ROOT_DIR}/examples/persistence_todo_list.cpp
-#		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/persistency_todo_list.pb.h
-#		${GHOST_MODULE_ROOT_DIR}/examples/protobuf/persistency_todo_list.pb.cc)
-#	target_link_libraries(persistence_todo_list ghost_module ghost_persistence)
-#
-#	set_property(TARGET persistence_todo_list PROPERTY FOLDER "examples")
-#endif()
+if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
+	# minimum code to create a remote module
+	add_executable(connected_module_test
+		${GHOST_MODULE_ROOT_DIR}/examples/connected_module_test.cpp)
+	target_link_libraries(connected_module_test ghost_module ghost_connection ghost_connection_grpc ghost_connected_module)
+
+	set_property(TARGET connected_module_test PROPERTY FOLDER "examples")
+endif()

@@ -20,9 +20,9 @@
 
 using namespace ghost::internal;
 
-std::unique_ptr<ghost::ConnectedModuleComponentBuilder> ghost::ConnectedModuleComponentBuilder::create()
+std::shared_ptr<ghost::ConnectedModuleComponentBuilder> ghost::ConnectedModuleComponentBuilder::create()
 {
-	return std::make_unique<ghost::internal::ConnectedModuleComponentBuilder>();
+	return std::make_shared<ghost::internal::ConnectedModuleComponentBuilder>();
 }
 
 ConnectedModuleComponentBuilder::ConnectedModuleComponentBuilder()
@@ -31,9 +31,9 @@ ConnectedModuleComponentBuilder::ConnectedModuleComponentBuilder()
 }
 
 // From ghost::ConnectivityComponentBuilder
-std::shared_ptr<ghost::ConnectionFactory> ConnectedModuleComponentBuilder::configureConnectionFactory()
+std::shared_ptr<ghost::ConnectionManager> ConnectedModuleComponentBuilder::configureConnectionManager()
 {
-	return _connectionManager->getConnectionFactory();
+	return _connectionManager;
 }
 
 ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::addRemoteAccess(

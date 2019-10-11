@@ -19,7 +19,7 @@
 
 #include <ghost/connection/ConnectionConfiguration.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/module/ModuleComponent.hpp>
+#include <ghost/module/ModuleComponentBuilder.hpp>
 #include <string>
 
 namespace ghost
@@ -34,20 +34,20 @@ namespace ghost
  *	Add this ghost::ConnectivityComponentBuilder to an instance of ghost::ModuleBuilder
  *	in order to build the corresponding module.
  */
-class ConnectedModuleComponentBuilder
+class ConnectedModuleComponentBuilder : public ghost::ModuleComponentBuilder
 {
 public:
-	static std::unique_ptr<ghost::ConnectedModuleComponentBuilder> create();
+	static std::shared_ptr<ghost::ConnectedModuleComponentBuilder> create();
 
 	virtual ~ConnectedModuleComponentBuilder() = default;
 	/**
-	 *	Gets the ghost::ConnectionFactory used by the module.
-	 *	The factory is used to create connections, in particular in combination
+	 *	Gets the ghost::ConnectionManager used by the module.
+	 *	Its factory is used to create connections, in particular in combination
 	 *	with the module's settings set by "addRemoteAccess" and "setRemoteControl".
-	 *	When using this builder, the ghost::ConnectionFactory must be configured
+	 *	When using this builder, the ghost::ConnectionManager must be configured
 	 *	before calling "build" on the owning ghost::ModuleBuilder.
 	 */
-	virtual std::shared_ptr<ghost::ConnectionFactory> configureConnectionFactory() = 0;
+	virtual std::shared_ptr<ghost::ConnectionManager> configureConnectionManager() = 0;
 	/**
 	 *	Adds a configuration for a server accepting clients that can control this module.
 	 *	@param configuration	connection configuration of the local server accepting clients.

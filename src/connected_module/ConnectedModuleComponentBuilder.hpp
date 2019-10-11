@@ -25,14 +25,13 @@ namespace ghost
 {
 namespace internal
 {
-class ConnectedModuleComponentBuilder : public ghost::ConnectedModuleComponentBuilder,
-					public ghost::ModuleComponentBuilder
+class ConnectedModuleComponentBuilder : public ghost::ConnectedModuleComponentBuilder
 {
 public:
 	ConnectedModuleComponentBuilder();
 
 	// From ghost::ConnectivityComponentBuilder
-	std::shared_ptr<ghost::ConnectionFactory> configureConnectionFactory() override;
+	std::shared_ptr<ghost::ConnectionManager> configureConnectionManager() override;
 	ConnectedModuleComponentBuilder& addRemoteAccess(const ghost::ConnectionConfiguration& configuration) override;
 	ConnectedModuleComponentBuilder& setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
 
