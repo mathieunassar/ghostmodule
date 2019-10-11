@@ -3,18 +3,24 @@
 ##########################################################################################################################################
 
 file(GLOB header_connectedmodule_lib
-	${GHOST_MODULE_ROOT_DIR}/include/ghost/connected_module/ConnectivityComponentBuilder.hpp
-	${GHOST_MODULE_ROOT_DIR}/include/ghost/connected_module/Connectivity.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/connected_module/ConnectedModuleComponentBuilder.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/connected_module/ConnectedModule.hpp
 )
 
 file(GLOB header_connectedmodule_internal_lib
-	${GHOST_MODULE_ROOT_DIR}/src/connected_module/ConnectivityComponentBuilder.hpp
-	${GHOST_MODULE_ROOT_DIR}/src/connected_module/Connectivity.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/ConnectedModuleComponentBuilder.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/ConnectedModule.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteControllersHandler.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteConsole.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteController.hpp
 )
 
 file(GLOB source_connectedmodule_lib
-	${GHOST_MODULE_ROOT_DIR}/src/connected_module/ConnectivityComponentBuilder.cpp
-	${GHOST_MODULE_ROOT_DIR}/src/connected_module/Connectivity.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/ConnectedModuleComponentBuilder.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/ConnectedModule.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteControllersHandler.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteConsole.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteController.cpp
 )
 
 source_group("API" FILES ${header_connectedmodule_lib})

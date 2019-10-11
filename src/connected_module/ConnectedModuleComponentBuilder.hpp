@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_CONNECTIVITY_COMPONENT_BUILDER_HPP
-#define GHOST_INTERNAL_CONNECTIVITY_COMPONENT_BUILDER_HPP
+#ifndef GHOST_INTERNAL_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
+#define GHOST_INTERNAL_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
 
-#include <ghost/connected_module/ConnectivityComponentBuilder.hpp>
+#include <ghost/connected_module/ConnectedModuleComponentBuilder.hpp>
 #include <ghost/module/ModuleComponentBuilder.hpp>
+#include <optional>
 
 namespace ghost
 {
 namespace internal
 {
-class ConnectivityComponentBuilder : public ghost::ConnectivityComponentBuilder, public ghost::ModuleComponentBuilder
+class ConnectedModuleComponentBuilder : public ghost::ConnectedModuleComponentBuilder,
+					public ghost::ModuleComponentBuilder
 {
 public:
-	ConnectivityComponentBuilder();
+	ConnectedModuleComponentBuilder();
 
 	// From ghost::ConnectivityComponentBuilder
 	std::shared_ptr<ghost::ConnectionFactory> configureConnectionFactory() override;
-	ConnectivityComponentBuilder& addRemoteAccess(const ghost::ConnectionConfiguration& configuration) override;
-	ConnectivityComponentBuilder& setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
+	ConnectedModuleComponentBuilder& addRemoteAccess(const ghost::ConnectionConfiguration& configuration) override;
+	ConnectedModuleComponentBuilder& setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
 
 	// From ghost::ModuleComponentBuilder
 	std::shared_ptr<ghost::ModuleComponent> build() override;
@@ -40,10 +42,9 @@ public:
 private:
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 	std::vector<ghost::ConnectionConfiguration> _remoteAccessConfigurations;
-	bool _remoteController;
-	ghost::ConnectionConfiguration _remoteControlConfiguration;
+	std::optional<ghost::ConnectionConfiguration> _remoteControlConfiguration;
 };
 } // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_CONNECTIVITY_COMPONENT_BUILDER_HPP
+#endif // GHOST_INTERNAL_CONNECTED_MODULE_COMPONENT_BUILDER_HPP

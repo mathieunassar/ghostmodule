@@ -14,45 +14,45 @@
  * limitations under the License.
  */
 
-#include "ConnectivityComponentBuilder.hpp"
+#include "ConnectedModuleComponentBuilder.hpp"
 
-#include "Connectivity.hpp"
+#include "ConnectedModule.hpp"
 
 using namespace ghost::internal;
 
-std::unique_ptr<ghost::ConnectivityComponentBuilder> ghost::ConnectivityComponentBuilder::create()
+std::unique_ptr<ghost::ConnectedModuleComponentBuilder> ghost::ConnectedModuleComponentBuilder::create()
 {
-	return std::make_unique<ghost::internal::ConnectivityComponentBuilder>();
+	return std::make_unique<ghost::internal::ConnectedModuleComponentBuilder>();
 }
 
-ConnectivityComponentBuilder::ConnectivityComponentBuilder()
-    : _connectionManager(ghost::ConnectionManager::create()), _remoteController(false)
+ConnectedModuleComponentBuilder::ConnectedModuleComponentBuilder()
+    : _connectionManager(ghost::ConnectionManager::create())
 {
 }
 
 // From ghost::ConnectivityComponentBuilder
-std::shared_ptr<ghost::ConnectionFactory> ConnectivityComponentBuilder::configureConnectionFactory()
+std::shared_ptr<ghost::ConnectionFactory> ConnectedModuleComponentBuilder::configureConnectionFactory()
 {
 	return _connectionManager->getConnectionFactory();
 }
 
-ConnectivityComponentBuilder& ConnectivityComponentBuilder::addRemoteAccess(
+ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::addRemoteAccess(
     const ghost::ConnectionConfiguration& configuration)
 {
 	_remoteAccessConfigurations.push_back(configuration);
 	return *this;
 }
 
-ConnectivityComponentBuilder& ConnectivityComponentBuilder::setRemoteControl(
+ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::setRemoteControl(
     const ghost::ConnectionConfiguration& configuration)
 {
-	_remoteController = true;
 	_remoteControlConfiguration = configuration;
 	return *this;
 }
 
 // From ghost::ModuleComponentBuilder
-std::shared_ptr<ghost::ModuleComponent> ConnectivityComponentBuilder::build()
+std::shared_ptr<ghost::ModuleComponent> ConnectedModuleComponentBuilder::build()
 {
-	return std::make_shared<ghost::internal::Connectivity>(_connectionManager);
+	return std::make_shared<ghost::internal::ConnectedModule>(_connectionManager, _remoteAccessConfigurations,
+								  _remoteControlConfiguration);
 }

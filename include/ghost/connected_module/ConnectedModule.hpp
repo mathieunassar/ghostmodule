@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_CONNECTIVITY_HPP
-#define GHOST_CONNECTIVITY_HPP
+#ifndef GHOST_CONNECTEDMODULE_HPP
+#define GHOST_CONNECTEDMODULE_HPP
 
 #include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/module/ModuleComponent.hpp>
 #include <string>
 
 namespace ghost
 {
-class Connectivity
+class ConnectedModule
 {
 public:
 	static const std::string NAME;
 
-	virtual ~Connectivity() = default;
+	virtual ~ConnectedModule() = default;
 
 	virtual std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const = 0;
 };
 } // namespace ghost
 
-#endif // GHOST_CONNECTIVITY_HPP
+#endif // GHOST_CONNECTEDMODULE_HPP
