@@ -67,7 +67,7 @@ void RemoteControlClient::consoleCommandCallback(const std::string& command)
 	if (command.find(PREFIX_LOCAL_EXECUTION) == 0)
 	{
 		std::string realCommand = command.substr(PREFIX_LOCAL_EXECUTION.size());
-		_interpreter->execute(realCommand);
+		_interpreter->execute(realCommand, ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	}
 	else
 	{

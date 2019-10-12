@@ -30,7 +30,7 @@ HelpCommand::HelpCommand(CommandLineInterpreter* interpreter) : _interpreter(int
 {
 }
 
-bool HelpCommand::execute(const ghost::CommandLine& commandLine)
+bool HelpCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
 	_interpreter->printHelp(std::cout);
 	return true;

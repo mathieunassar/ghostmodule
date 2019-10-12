@@ -59,7 +59,7 @@ public:
 	{
 	}
 
-	bool execute(const ghost::CommandLine& commandLine) override
+	bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) override
 	{
 		_executeWasCalled = true;
 		return _returnResult;
@@ -186,7 +186,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_ok)
 
 	auto command = std::make_shared<CustomCommand>(true);
 	interpreter->registerCommand(command);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	bool executeSuccess =
+	    interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
@@ -202,7 +203,7 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_Comm
 	ghost::internal::CommandLineParser parser;
 	ghost::CommandLine line = parser.parseCommandLine(command->getShortcut() + " -super parameter");
 
-	bool executeSuccess = interpreter->execute(line);
+	bool executeSuccess = interpreter->execute(line, ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
@@ -212,7 +213,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_comm
 	auto interpreter = ghost::CommandLineInterpreter::create();
 	ASSERT_TRUE(interpreter);
 
-	bool executeSuccess = interpreter->execute(CustomCommand(true).getShortcut());
+	bool executeSuccess = interpreter->execute(CustomCommand(true).getShortcut(),
+						   ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_FALSE(executeSuccess);
 }
 
@@ -223,7 +225,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_comm
 
 	auto command = std::make_shared<CustomCommand>(false);
 	interpreter->registerCommand(command);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	bool executeSuccess =
+	    interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_FALSE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
@@ -272,7 +275,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_perm
 
 	auto command = std::make_shared<CustomCommand>(true);
 	interpreter->registerCommand(command);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	bool executeSuccess =
+	    interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
@@ -288,7 +292,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_noUs
 
 	auto command = std::make_shared<CustomCommand>(true);
 	interpreter->registerCommand(command, permissionsList);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	bool executeSuccess =
+	    interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
@@ -308,7 +313,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_user
 
 	auto command = std::make_shared<CustomCommand>(true);
 	interpreter->registerCommand(command, permissionsList);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	bool executeSuccess =
+	    interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_FALSE(executeSuccess);
 	ASSERT_FALSE(command->_executeWasCalled);
 }

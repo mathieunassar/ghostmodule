@@ -36,8 +36,8 @@ class CommandLineInterpreter : public ghost::CommandLineInterpreter
 public:
 	CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager);
 
-	bool execute(const std::string& commandLine) override;
-	bool execute(const ghost::CommandLine& commandLine) override;
+	bool execute(const std::string& commandLine, const ghost::CommandExecutionContext& context) override;
+	bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) override;
 
 	void registerCommand(std::shared_ptr<Command> command,
 			     const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) override;

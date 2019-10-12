@@ -50,7 +50,7 @@ void RemoteHandler::commandCallback(const std::string& command)
 	_executor = std::thread([&]() {
 		ghost::CommandExecutionContext context(_session);
 		context.setConsole(_console);
-		_interpreter->execute(cmd);
+		_interpreter->execute(cmd, context);
 		_state = State::IDLE;
 	});
 }

@@ -32,7 +32,7 @@ LoginCommand::LoginCommand(std::shared_ptr<ghost::UserManager> userManager) : _u
 {
 }
 
-bool LoginCommand::execute(const ghost::CommandLine& commandLine)
+bool LoginCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
 	std::string username, password;
 	if (commandLine.hasParameter(_PARAM_USERNAME))

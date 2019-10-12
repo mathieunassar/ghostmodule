@@ -42,21 +42,22 @@ CommandLineInterpreter::CommandLineInterpreter(std::shared_ptr<ghost::UserManage
 	registerCommand(std::shared_ptr<ghost::Command>(new LoginCommand(userManager)), {});
 }
 
-bool CommandLineInterpreter::execute(const std::string& commandLine)
+bool CommandLineInterpreter::execute(const std::string& commandLine, const ghost::CommandExecutionContext& context)
 {
 	CommandLineParser parser;
 	CommandLine cmd = parser.parseCommandLine(commandLine);
 
-	return execute(cmd);
+	return execute(cmd, context);
 }
 
-bool CommandLineInterpreter::execute(const ghost::CommandLine& commandLine)
+bool CommandLineInterpreter::execute(const ghost::CommandLine& commandLine,
+				     const ghost::CommandExecutionContext& context)
 {
 	if (_commands.count(commandLine.getCommandName()) > 0)
 	{
 		if (executionPermitted(_commands[commandLine.getCommandName()]))
 		{
-			return _commands[commandLine.getCommandName()].command->execute(commandLine);
+			return _commands[commandLine.getCommandName()].command->execute(commandLine, context);
 		}
 	}
 

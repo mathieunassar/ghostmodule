@@ -23,6 +23,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <ghost/module/CommandExecutionContext.hpp>
 
 namespace ghost
 {
@@ -62,16 +63,20 @@ public:
 	 *	whose shortcut matches the command's name. If such a command is found, executes it and returns its
 	 *	execution result. Otherwise, returns false.
 	 *	@param commandLine	String containing a command's shortcut and parameters separated by spaces.
+	 *	@param context		Container of a ghost::Session and optionally a ghost::Console, representing
+	 *		the user who commanded the execution.
 	 *	@return true if a matching command was found and successfully executed, false otherwise.
 	 */
-	virtual bool execute(const std::string& commandLine) = 0;
+	virtual bool execute(const std::string& commandLine, const ghost::CommandExecutionContext& context) = 0;
 	/**
 	 *	Searches for a registered ghost::Command whose shortcut matches the command's name. If such a
 	 *	command is found, executes it and returns its execution result. Otherwise, returns false.
 	 *	@param commandLine	parsed command line containing a command's shortcut and parameters.
+	 *	@param context		Container of a ghost::Session and optionally a ghost::Console, representing
+	 *		the user who commanded the execution.
 	 *	@return true if a matching command was found and successfully executed, false otherwise.
 	 */
-	virtual bool execute(const ghost::CommandLine& commandLine) = 0;
+	virtual bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) = 0;
 	/**
 	 *	Adds a command to the list of known executable commands. If a command is already registered with
 	 *	the same name, the older command will be replaced with the new one.
