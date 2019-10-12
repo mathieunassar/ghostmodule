@@ -15,12 +15,15 @@
  */
 
 #include "Session.hpp"
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 using namespace ghost::internal;
 
 std::shared_ptr<ghost::Session> ghost::Session::create()
 {
-	return std::make_shared<ghost::internal::Session>("NOOOOOOOOOOOOOO");
+	boost::uuids::uuid u;
+	return std::make_shared<ghost::internal::Session>(boost::uuids::to_string(u));
 }
 
 std::shared_ptr<ghost::Session> ghost::Session::createLocal()
