@@ -26,7 +26,7 @@ RemoteControllersHandler::RemoteControllersHandler(
 
 void RemoteControllersHandler::configureClient(const std::shared_ptr<ghost::Client>& client)
 {
-	auto controller = std::make_shared<RemoteController>(client, _interpreter);
+	auto controller = std::make_shared<RemoteHandler>(client, _interpreter);
 	_controllers.push_back(controller);
 }
 

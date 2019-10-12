@@ -14,7 +14,7 @@ file(GLOB header_connectedmodule_internal_lib
 	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteAccessServer.hpp
 	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteControllersHandler.hpp
 	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteConsole.hpp
-	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteController.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteHandler.hpp
 )
 
 file(GLOB source_connectedmodule_lib
@@ -24,7 +24,7 @@ file(GLOB source_connectedmodule_lib
 	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteAccessServer.cpp
 	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteControllersHandler.cpp
 	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteConsole.cpp
-	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteController.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/connected_module/RemoteHandler.cpp
 )
 
 source_group("API" FILES ${header_connectedmodule_lib})

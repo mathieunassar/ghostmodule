@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-#include "RemoteController.hpp"
+#include "RemoteHandler.hpp"
 
 using namespace ghost::internal;
 
-RemoteController::RemoteController(const std::shared_ptr<ghost::Client>& client,
+RemoteHandler::RemoteHandler(const std::shared_ptr<ghost::Client>& client,
 				   const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter)
     : _console(std::make_shared<RemoteConsole>(client)), _state(State::IDLE), _interpreter(commandLineInterpreter)
 {
 	_console->start();
-	_console->setCommandCallback(std::bind(&RemoteController::commandCallback, this, std::placeholders::_1));
+	_console->setCommandCallback(std::bind(&RemoteHandler::commandCallback, this, std::placeholders::_1));
 }
 
-RemoteController::~RemoteController()
+RemoteHandler::~RemoteHandler()
 {
 	if (_executor.joinable()) _executor.join();
 }
 
-void RemoteController::commandCallback(const std::string& command)
+void RemoteHandler::commandCallback(const std::string& command)
 {
 	{ // Only enter this function if the state is IDLE once
 		std::lock_guard<std::mutex> lock(_mutex);

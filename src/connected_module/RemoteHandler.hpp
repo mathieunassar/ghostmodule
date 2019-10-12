@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_REMOTECONTROLLER_HPP
-#define GHOST_INTERNAL_REMOTECONTROLLER_HPP
+#ifndef GHOST_INTERNAL_REMOTEHANDLER_HPP
+#define GHOST_INTERNAL_REMOTEHANDLER_HPP
 
 #include <ghost/connection/Client.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
@@ -29,12 +29,12 @@ namespace ghost
 {
 namespace internal
 {
-class RemoteController
+class RemoteHandler
 {
 public:
-	RemoteController(const std::shared_ptr<ghost::Client>& client,
+	RemoteHandler(const std::shared_ptr<ghost::Client>& client,
 			 const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
-	~RemoteController();
+	~RemoteHandler();
 
 	void commandCallback(const std::string& command);
 
@@ -54,4 +54,4 @@ private:
 } // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_REMOTECONTROLLER_HPP
+#endif // GHOST_INTERNAL_REMOTEHANDLER_HPP

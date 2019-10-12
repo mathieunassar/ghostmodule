@@ -19,7 +19,7 @@
 
 #include <ghost/connection/ClientHandler.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
-#include "RemoteController.hpp"
+#include "RemoteHandler.hpp"
 
 namespace ghost
 {
@@ -42,7 +42,7 @@ public:
 
 private:
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
-	std::vector<std::shared_ptr<RemoteController>> _controllers;
+	std::vector<std::shared_ptr<RemoteHandler>> _controllers;
 };
 } // namespace internal
 } // namespace ghost

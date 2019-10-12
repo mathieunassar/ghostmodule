@@ -29,6 +29,7 @@ namespace ghost
 class User : public PermissionEntity
 {
 public:
+	virtual ~User() = default;
 	/**
 	 *	@return the name of this user.
 	 */
