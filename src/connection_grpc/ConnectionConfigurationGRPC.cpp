@@ -33,6 +33,7 @@ ConnectionConfigurationGRPC::ConnectionConfigurationGRPC(const std::string& name
 }
 
 ConnectionConfigurationGRPC::ConnectionConfigurationGRPC(const std::string& ip, int port)
+    : ConnectionConfigurationGRPC("")
 {
 	setServerIpAddress(ip);
 	setServerPortNumber(port);
