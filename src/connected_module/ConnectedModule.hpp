@@ -19,8 +19,9 @@
 
 #include <ghost/connected_module/ConnectedModule.hpp>
 #include <ghost/module/ModuleComponent.hpp>
+#include "RemoteControlClient.hpp"
+#include "RemoteAccessServer.hpp"
 #include <optional>
-#include "RemoteControllersHandler.hpp"
 
 namespace ghost
 {
@@ -42,18 +43,16 @@ public:
 	std::string getName() const override;
 
 private:
-	bool initializeRemoteAccess(const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations);
+	bool initializeRemoteAccess();
 	bool initializeRemoteControl();
 
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 	// Remote Access
 	std::vector<ghost::ConnectionConfiguration> _remoteAccessConfigurations;
-	std::vector<std::shared_ptr<ghost::Server>> _remoteControllersServers;
-	std::shared_ptr<RemoteControllersHandler> _remoteControllersHandler;
+	std::unique_ptr<RemoteAccessServer> _remoteAccess;
 	// Remote Control
 	std::optional<ghost::ConnectionConfiguration> _remoteConfiguration;
-	std::shared_ptr<ghost::Client> _remote;
-	std::shared_ptr<ghost::Writer<google::protobuf::StringValue>> _remoteWriter;
+	std::unique_ptr<RemoteControlClient> _remoteControl;
 };
 } // namespace internal
 } // namespace ghost

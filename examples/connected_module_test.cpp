@@ -41,12 +41,6 @@ public:
 		// Among other things, the logger and the name of this module are reachable from these methods
 		GHOST_INFO(module.getLogger()) << "This is module " << module.getModuleName();
 
-		/*if (module.getProgramOptions().hasParameter("__0") &&
-		    module.getProgramOptions().getParameter<std::string>("__0") == "server")
-		{
-			
-		}*/
-
 		return true; // The initialization was successful, we can return true.
 	}
 
@@ -78,8 +72,9 @@ int main()
 	// Put some GRPC definitions in the connection builder
 	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager());
 	// Configure a remote access server on the localhost on port 8001
-	connectedModuleBuilder->addRemoteAccess(ghost::ConnectionConfigurationGRPC("127.0.0.1", 8001));
-	//connectedModuleBuilder->setRemoteControl(remoteAccessConfiguration);
+	ghost::ConnectionConfigurationGRPC config("127.0.0.1", 8001);
+	//connectedModuleBuilder->addRemoteAccess(config);
+	connectedModuleBuilder->setRemoteControl(ghost::ConnectionConfigurationGRPC("127.0.0.1", 8001));
 	// Add the component builder to the module builder
 	builder->addComponentBuilder(connectedModuleBuilder);
 

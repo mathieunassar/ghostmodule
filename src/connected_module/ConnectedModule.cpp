@@ -42,7 +42,7 @@ bool ConnectedModule::start()
 	if (!getModule()) return false;
 
 	// Initialize the remote controllers
-	bool remoteAccessInitialized = initializeRemoteAccess(_remoteAccessConfigurations);
+	bool remoteAccessInitialized = initializeRemoteAccess();
 	// Initialize the controlled remote module
 	bool remoteControlInitialized = initializeRemoteControl();
 
@@ -52,14 +52,10 @@ bool ConnectedModule::start()
 void ConnectedModule::stop()
 {
 	// Stop the remote for the controlled remote module
-	if (_remote) _remote->stop();
-	_remote.reset();
-	_remoteWriter.reset();
+	if (_remoteControl) _remoteControl->stop();
 
 	// Stop the servers that handle remote controllers.
-	for (const auto& server : _remoteControllersServers) server->stop();
-	_remoteControllersServers.clear();
-	_remoteControllersHandler.reset();
+	if (_remoteAccess) _remoteAccess->stop();
 
 	// Destroys the connection manager, this closes all open connections.
 	_connectionManager.reset();
@@ -70,28 +66,13 @@ std::string ConnectedModule::getName() const
 	return ghost::ConnectedModule::NAME;
 }
 
-bool ConnectedModule::initializeRemoteAccess(
-    const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations)
+bool ConnectedModule::initializeRemoteAccess()
 {
-	_remoteControllersHandler = std::make_shared<RemoteControllersHandler>(getModule()->getInterpreter());
+	_remoteAccess = std::make_unique<RemoteAccessServer>(_remoteAccessConfigurations, _connectionManager,
+							     getModule()->getInterpreter());
 
-	for (const auto& configuration : remoteAccessConfigurations)
-	{
-		// Create the remote access server for this configuration and check that it worked
-		auto server = _connectionManager->createServer(configuration);
-		if (!server) return false;
-
-		// Sets the remote controller handler to process clients of this server
-		server->setClientHandler(_remoteControllersHandler);
-
-		// Start the server, it may now receive clients
-		if (!server->start()) return false;
-
-		// Add the server to the list of remote controller servers.
-		_remoteControllersServers.push_back(server);
-	}
-
-	return true;
+	// Start the remote
+	return _remoteAccess->start();
 }
 
 bool ConnectedModule::initializeRemoteControl()
@@ -99,27 +80,9 @@ bool ConnectedModule::initializeRemoteControl()
 	// The user didn't configure a remote module
 	if (!_remoteConfiguration) return true;
 
-	// Create the client corresponding to the configured remote
-	_remote = _connectionManager->createClient(*_remoteConfiguration);
-	if (!_remote) return false;
-	_remoteWriter = _remote->getWriter<google::protobuf::StringValue>();
-
-	// Get the console from the parent module, fail if not configured
-	auto console = getModule()->getConsole();
-	if (!console) return false;
-
-	// Configure the console command callback to send messages to the remote
-	console->setCommandCallback([&](const std::string& command) {
-		auto msg = google::protobuf::StringValue::default_instance();
-		msg.set_value(command);
-		_remoteWriter->write(msg);
-	});
-
-	// Configure a message handler from the remote to write in the console
-	auto messageHandler = _remote->addMessageHandler();
-	messageHandler->addHandler<google::protobuf::StringValue>(
-	    [&](const google::protobuf::StringValue& msg) { console->write(msg.value()); });
-
+	_remoteControl = std::make_unique<RemoteControlClient>(
+	    *_remoteConfiguration, _connectionManager, getModule()->getInterpreter(), getModule()->getConsole());
+	
 	// Start the remote
-	return _remote->start();
+	return _remoteControl->start();
 }
