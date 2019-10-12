@@ -23,10 +23,18 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	A ghost::Session is an object that can be used to determine which user is issuing a
+ *	command or is being logged in. It contains a UUID that can be used to store data for
+ *	specific control sessions.
+ *	For example, a remote controller (using the ghost_connected_module library) commands
+ *	the ghost::CommandLineInterpreter from different clients, and provides a different
+ *	session (with a different UUID) for each remote control.
+ */
 class Session : public ghost::Session
 {
 public:
-	Session();
+	Session(const std::string& uuid);
 
 	const std::string& getUUID() const override;
 

@@ -18,7 +18,17 @@
 
 using namespace ghost::internal;
 
-Session::Session() : _uuid("NOOOOOOOOOOOOOO")
+std::shared_ptr<ghost::Session> ghost::Session::create()
+{
+	return std::make_shared<ghost::internal::Session>("NOOOOOOOOOOOOOO");
+}
+
+std::shared_ptr<ghost::Session> ghost::Session::createLocal()
+{
+	return std::make_shared<ghost::internal::Session>("");
+}
+
+Session::Session(const std::string& uuid) : _uuid(uuid)
 {
 }
 

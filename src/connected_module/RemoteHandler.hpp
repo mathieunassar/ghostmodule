@@ -19,6 +19,7 @@
 
 #include <ghost/connection/Client.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
+#include <ghost/module/Session.hpp>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -47,6 +48,7 @@ private:
 
 	std::shared_ptr<RemoteConsole> _console;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
+	std::shared_ptr<ghost::Session> _session;
 	std::thread _executor;
 	State _state;
 	std::mutex _mutex;

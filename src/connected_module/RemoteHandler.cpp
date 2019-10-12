@@ -15,12 +15,16 @@
  */
 
 #include "RemoteHandler.hpp"
+#include <ghost/module/CommandExecutionContext.hpp>
 
 using namespace ghost::internal;
 
 RemoteHandler::RemoteHandler(const std::shared_ptr<ghost::Client>& client,
-				   const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter)
-    : _console(std::make_shared<RemoteConsole>(client)), _state(State::IDLE), _interpreter(commandLineInterpreter)
+			     const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter)
+    : _console(std::make_shared<RemoteConsole>(client))
+    , _state(State::IDLE)
+    , _interpreter(commandLineInterpreter)
+    , _session(ghost::Session::create())
 {
 	_console->start();
 	_console->setCommandCallback(std::bind(&RemoteHandler::commandCallback, this, std::placeholders::_1));
@@ -44,6 +48,8 @@ void RemoteHandler::commandCallback(const std::string& command)
 	// Get the command from the console and execute it in the executor thread
 	auto cmd = _console->getCommand();
 	_executor = std::thread([&]() {
+		ghost::CommandExecutionContext context(_session);
+		context.setConsole(_console);
 		_interpreter->execute(cmd);
 		_state = State::IDLE;
 	});

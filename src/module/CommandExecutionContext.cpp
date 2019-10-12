@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-#include "CommandExecutionContext.hpp"
+#include <ghost/module/CommandExecutionContext.hpp>
 
-using namespace ghost::internal;
+using namespace ghost;
 
-CommandExecutionContext::CommandExecutionContext()
+CommandExecutionContext::CommandExecutionContext(const std::shared_ptr<ghost::Session>& session) : _session(session)
 {
-
-}
-
-void CommandExecutionContext::setSession(const std::shared_ptr<ghost::Session>& session)
-{
-	_session = session;
 }
 
 void CommandExecutionContext::setConsole(const std::shared_ptr<ghost::Console>& console)

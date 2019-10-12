@@ -31,17 +31,29 @@ namespace ghost
 class CommandExecutionContext
 {
 public:
-	virtual ~CommandExecutionContext() = default;
-
+	/**
+	 *	Constructor of the ghost::CommandExecutionContext.
+	 *	@param session	the minimum amount of informatio required by the context.
+	 */
+	CommandExecutionContext(const std::shared_ptr<ghost::Session>& session);
+	/**
+	 *	Sets the ghost::Console available through this command execution context.
+	 *	@param console a ghost::Console implementation.
+	 */
+	void setConsole(const std::shared_ptr<ghost::Console>& console);
 	/**
 	 *	@return the session to which the execution of the command is bound.
 	 */
-	virtual const std::shared_ptr<ghost::Session>& getSession() const = 0;
+	const std::shared_ptr<ghost::Session>& getSession() const;
 	/**
 	 *	@return a shared_ptr to a ghost::Console, or nullptr if none was configured in the
 	 *	module.
 	 */
-	virtual std::shared_ptr<ghost::Console> getConsole() const = 0;
+	std::shared_ptr<ghost::Console> getConsole() const;
+
+private:
+	std::shared_ptr<ghost::Session> _session;
+	std::shared_ptr<ghost::Console> _console;
 };
 } // namespace ghost
 

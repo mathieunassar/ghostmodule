@@ -45,7 +45,6 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/LineRequestInputEvent.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/OutputController.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineInterpreter.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineParser.hpp
-${GHOST_MODULE_ROOT_DIR}/src/module/CommandExecutionContext.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/User.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserGroup.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserManager.hpp

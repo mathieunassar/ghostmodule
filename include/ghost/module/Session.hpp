@@ -32,8 +32,16 @@ namespace ghost
 class Session
 {
 public:
+	/**
+	 *	Creates a session with a new UUID.
+	 */
+	static std::shared_ptr<ghost::Session> create();
+	/**
+	 *	Creates a session corresponding to the default local session.
+	 */
+	static std::shared_ptr<ghost::Session> createLocal();
+
 	virtual ~Session() = default;
-	
 	/**
 	 *	@return the UUID used by this session.
 	 */
