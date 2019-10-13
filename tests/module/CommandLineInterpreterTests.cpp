@@ -240,7 +240,7 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsInfo
 	interpreter->registerCommand(command);
 
 	std::ostringstream oss;
-	interpreter->printHelp(oss);
+	interpreter->printHelp(oss, ghost::Session::createLocal());
 
 	size_t nameFound = oss.str().find(command->getName());
 	ASSERT_TRUE(nameFound != std::string::npos);
@@ -258,7 +258,7 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsHelp
 	ASSERT_TRUE(interpreter);
 
 	std::ostringstream oss;
-	interpreter->printHelp(oss);
+	interpreter->printHelp(oss, ghost::Session::createLocal());
 
 	size_t nameFound = oss.str().find("HelpCommand");
 	ASSERT_TRUE(nameFound != std::string::npos);
@@ -309,7 +309,7 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_user
 	permissionsList.push_back(user);
 
 	userManager->createUser("mathieu2", "super2");
-	userManager->connect("mathieu2", "super2");
+	userManager->connect("mathieu2", "super2", ghost::Session::createLocal());
 
 	auto command = std::make_shared<CustomCommand>(true);
 	interpreter->registerCommand(command, permissionsList);

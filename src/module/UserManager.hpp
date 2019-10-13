@@ -18,8 +18,8 @@
 #define GHOST_INTERNAL_USERMANAGER_HPP
 
 #include <ghost/module/UserManager.hpp>
+#include <map>
 #include <vector>
-
 #include "User.hpp"
 #include "UserGroup.hpp"
 
@@ -36,19 +36,22 @@ public:
 	std::shared_ptr<ghost::UserGroup> createUserGroup(const std::string& name) override;
 	void addUserToGroup(const ghost::User& user, ghost::UserGroup& group) override;
 
-	bool connect(const std::string& username, const std::string& password) override;
-	void disconnect() override;
-	bool isUserConnected() const override;
-	std::shared_ptr<ghost::User> getConnectedUser() const override;
-	void setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback) override;
+	bool connect(const std::string& username, const std::string& password,
+		     const std::shared_ptr<ghost::Session>& session) override;
+	void disconnect(const std::shared_ptr<ghost::Session>& session) override;
+	bool isUserConnected(const std::shared_ptr<ghost::Session>& session) const override;
+	std::shared_ptr<ghost::User> getConnectedUser(const std::shared_ptr<ghost::Session>& session) const override;
+	void setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback,
+				      const std::shared_ptr<ghost::Session>& session) override;
 
 	std::vector<std::shared_ptr<ghost::UserGroup>> getUserGroups() const override;
 
 private:
+	bool isUserAlreadyConnected(const std::shared_ptr<User>& user) const;
 	std::vector<std::shared_ptr<User>> _users;
 	std::vector<std::shared_ptr<UserGroup>> _groups;
-	std::shared_ptr<User> _connectedUser;
-	std::function<void(std::shared_ptr<ghost::User>)> _connectedUserCallback;
+	std::map<std::string, std::shared_ptr<User>> _connectedUsers;
+	std::map<std::string, std::function<void(std::shared_ptr<ghost::User>)>> _connectedUserCallbacks;
 };
 } // namespace internal
 } // namespace ghost

@@ -17,13 +17,13 @@
 #ifndef GHOST_COMMANDLINEINTERPRETER_HPP
 #define GHOST_COMMANDLINEINTERPRETER_HPP
 
+#include <ghost/module/CommandExecutionContext.hpp>
 #include <ghost/module/CommandLine.hpp>
 #include <ghost/module/PermissionEntity.hpp>
 #include <iostream>
 #include <list>
 #include <memory>
 #include <string>
-#include <ghost/module/CommandExecutionContext.hpp>
 
 namespace ghost
 {
@@ -92,8 +92,10 @@ public:
 	/**
 	 *	Prints the name, shortcut and description of all the registered commands into the provided stream.
 	 *	@param stream	stream in which the help will be printed.
+	 *	@param session	the session of the current execution used to determine are available to the current
+	 *		operator.
 	 */
-	virtual void printHelp(std::ostream& stream) const = 0;
+	virtual void printHelp(std::ostream& stream, const std::shared_ptr<ghost::Session>& session) const = 0;
 };
 
 inline CommandLineInterpreter::~CommandLineInterpreter()

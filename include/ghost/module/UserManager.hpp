@@ -18,6 +18,7 @@
 #define GHOST_USERMANAGER_HPP
 
 #include <functional>
+#include <ghost/module/Session.hpp>
 #include <ghost/module/User.hpp>
 #include <ghost/module/UserGroup.hpp>
 #include <memory>
@@ -72,28 +73,30 @@ public:
 	 *	@param password	password of the user to connect.
 	 *	@return true if the connection is successful, false otherwise.
 	 */
-	virtual bool connect(const std::string& username, const std::string& password) = 0;
+	virtual bool connect(const std::string& username, const std::string& password,
+			     const std::shared_ptr<ghost::Session>& session) = 0;
 	/**
 	 *	If a ghost::User was connected previously, resets this parameters.
 	 *	After this call, ghost::UserManager::isUserConnected returns false.
 	 */
-	virtual void disconnect() = 0;
+	virtual void disconnect(const std::shared_ptr<ghost::Session>& session) = 0;
 	/**
 	 *	@return true if ghost::UserManager::connect was successfully called and if
 	 *		ghost::UserManager::disconnect was not called afterward.
 	 */
-	virtual bool isUserConnected() const = 0;
+	virtual bool isUserConnected(const std::shared_ptr<ghost::Session>& session) const = 0;
 	/**
 	 *	@return the connected user if ghost::UserManager::isUserConnected would return true,
 	 *		returns nullptr otherwise.
 	 */
-	virtual std::shared_ptr<ghost::User> getConnectedUser() const = 0;
+	virtual std::shared_ptr<ghost::User> getConnectedUser(const std::shared_ptr<ghost::Session>& session) const = 0;
 	/**
 	 *	Sets a callback to be notified if a new user connects or if a disconnection happens.
 	 *	In case of a user disconnection, the callback is called with nullptr.
 	 *	@param callback	callback that will be called after connections or disconnections.
 	 */
-	virtual void setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback) = 0;
+	virtual void setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback,
+					      const std::shared_ptr<ghost::Session>& session) = 0;
 
 	/**
 	 *	@returns the list of user groups existing in this user manager.

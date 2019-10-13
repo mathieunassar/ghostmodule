@@ -126,22 +126,22 @@ TEST_F(UserManagerTest, Test_UserManager_connect_When_ok)
 	std::shared_ptr<ghost::User> newUser = manager->createUser(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(newUser);
 
-	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
+	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD, ghost::Session::createLocal());
 	ASSERT_TRUE(connectSuccess);
-	ASSERT_TRUE(manager->getConnectedUser());
-	ASSERT_TRUE(manager->getConnectedUser()->getName() == TEST_USERNAME);
-	ASSERT_TRUE(manager->getConnectedUser().get() == newUser.get());
-	ASSERT_TRUE(manager->isUserConnected());
+	ASSERT_TRUE(manager->getConnectedUser(ghost::Session::createLocal()));
+	ASSERT_TRUE(manager->getConnectedUser(ghost::Session::createLocal())->getName() == TEST_USERNAME);
+	ASSERT_TRUE(manager->getConnectedUser(ghost::Session::createLocal()).get() == newUser.get());
+	ASSERT_TRUE(manager->isUserConnected(ghost::Session::createLocal()));
 }
 
 TEST_F(UserManagerTest, Test_UserManager_connect_When_userNotFound)
 {
 	auto manager = ghost::UserManager::create();
 
-	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
+	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD, ghost::Session::createLocal());
 	ASSERT_FALSE(connectSuccess);
-	ASSERT_FALSE(manager->getConnectedUser());
-	ASSERT_FALSE(manager->isUserConnected());
+	ASSERT_FALSE(manager->getConnectedUser(ghost::Session::createLocal()));
+	ASSERT_FALSE(manager->isUserConnected(ghost::Session::createLocal()));
 }
 
 TEST_F(UserManagerTest, Test_UserManager_connect_When_wrongPassword)
@@ -150,22 +150,23 @@ TEST_F(UserManagerTest, Test_UserManager_connect_When_wrongPassword)
 	std::shared_ptr<ghost::User> newUser = manager->createUser(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(newUser);
 
-	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD2);
+	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD2, ghost::Session::createLocal());
 	ASSERT_FALSE(connectSuccess);
-	ASSERT_FALSE(manager->getConnectedUser());
-	ASSERT_FALSE(manager->isUserConnected());
+	ASSERT_FALSE(manager->getConnectedUser(ghost::Session::createLocal()));
+	ASSERT_FALSE(manager->isUserConnected(ghost::Session::createLocal()));
 }
 
 TEST_F(UserManagerTest, Test_UserManager_connect_When_callbackIsSet)
 {
 	auto manager = ghost::UserManager::create();
 	manager->setConnectedUserCallback(
-	    std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1));
+	    std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1),
+	    ghost::Session::createLocal());
 	std::shared_ptr<ghost::User> newUser = manager->createUser(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(newUser);
 
 	ASSERT_FALSE(_callbackWasCalled);
-	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
+	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD, ghost::Session::createLocal());
 	ASSERT_TRUE(connectSuccess);
 	ASSERT_TRUE(_callbackWasCalled);
 	ASSERT_TRUE(_callbackUser.get() == newUser.get());
@@ -177,12 +178,12 @@ TEST_F(UserManagerTest, Test_UserManager_disconnect_When_ok)
 	std::shared_ptr<ghost::User> newUser = manager->createUser(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(newUser);
 
-	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
+	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD, ghost::Session::createLocal());
 	ASSERT_TRUE(connectSuccess);
 
-	manager->disconnect();
-	ASSERT_FALSE(manager->getConnectedUser());
-	ASSERT_FALSE(manager->isUserConnected());
+	manager->disconnect(ghost::Session::createLocal());
+	ASSERT_FALSE(manager->getConnectedUser(ghost::Session::createLocal()));
+	ASSERT_FALSE(manager->isUserConnected(ghost::Session::createLocal()));
 }
 
 TEST_F(UserManagerTest, Test_UserManager_disconnect_When_callbackIsSet)
@@ -191,15 +192,16 @@ TEST_F(UserManagerTest, Test_UserManager_disconnect_When_callbackIsSet)
 	std::shared_ptr<ghost::User> newUser = manager->createUser(TEST_USERNAME, TEST_PASSWORD);
 	ASSERT_TRUE(newUser);
 
-	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD);
+	bool connectSuccess = manager->connect(TEST_USERNAME, TEST_PASSWORD, ghost::Session::createLocal());
 	ASSERT_TRUE(connectSuccess);
 
 	manager->setConnectedUserCallback(
-	    std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1));
+	    std::bind(&UserManagerTest::userConnectedCallback, this, std::placeholders::_1),
+	    ghost::Session::createLocal());
 
-	manager->disconnect();
-	ASSERT_FALSE(manager->getConnectedUser());
-	ASSERT_FALSE(manager->isUserConnected());
+	manager->disconnect(ghost::Session::createLocal());
+	ASSERT_FALSE(manager->getConnectedUser(ghost::Session::createLocal()));
+	ASSERT_FALSE(manager->isUserConnected(ghost::Session::createLocal()));
 
 	ASSERT_TRUE(_callbackWasCalled);
 	ASSERT_FALSE(_callbackUser);

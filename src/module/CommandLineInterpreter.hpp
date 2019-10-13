@@ -42,7 +42,7 @@ public:
 	void registerCommand(std::shared_ptr<Command> command,
 			     const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) override;
 
-	void printHelp(std::ostream& stream) const override;
+	void printHelp(std::ostream& stream, const std::shared_ptr<ghost::Session>& session) const override;
 
 private:
 	struct CommandEntry
@@ -51,7 +51,7 @@ private:
 		std::list<std::shared_ptr<PermissionEntity>> permissions;
 	};
 
-	bool executionPermitted(const CommandEntry& entry) const;
+	bool executionPermitted(const CommandEntry& entry, const std::shared_ptr<ghost::Session>& session) const;
 
 	std::map<std::string, CommandEntry> _commands;
 	std::shared_ptr<ghost::UserManager> _userManager;
