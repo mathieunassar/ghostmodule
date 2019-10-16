@@ -30,6 +30,7 @@ install:
 # Automatic detection of your arch, compiler, etc.
   - conan user
   - conan remote add inexorgame "https://api.bintray.com/conan/inexorgame/inexor-conan"
+  - conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
 script:
   - mkdir build
