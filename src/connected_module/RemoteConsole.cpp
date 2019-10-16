@@ -15,6 +15,7 @@
  */
 
 #include "RemoteConsole.hpp"
+#include <thread>
 
 using namespace ghost::internal;
 
