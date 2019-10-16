@@ -82,7 +82,7 @@ bool ConnectedModule::initializeRemoteControl()
 
 	_remoteControl = std::make_unique<RemoteControlClient>(
 	    *_remoteConfiguration, _connectionManager, getModule()->getInterpreter(), getModule()->getConsole());
-	
+
 	// Start the remote
 	return _remoteControl->start();
 }

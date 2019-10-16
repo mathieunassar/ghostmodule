@@ -52,7 +52,8 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
 		});
 
 		_userManager->setConnectedUserCallback(
-		    [this](std::shared_ptr<ghost::User> user) { _console->getPrompt().setUser(user->getName()); }, ghost::Session::createLocal());
+		    [this](std::shared_ptr<ghost::User> user) { _console->getPrompt().setUser(user->getName()); },
+		    ghost::Session::createLocal());
 	}
 }
 

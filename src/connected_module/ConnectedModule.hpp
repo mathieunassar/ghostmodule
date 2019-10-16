@@ -19,9 +19,9 @@
 
 #include <ghost/connected_module/ConnectedModule.hpp>
 #include <ghost/module/ModuleComponent.hpp>
-#include "RemoteControlClient.hpp"
-#include "RemoteAccessServer.hpp"
 #include <optional>
+#include "RemoteAccessServer.hpp"
+#include "RemoteControlClient.hpp"
 
 namespace ghost
 {

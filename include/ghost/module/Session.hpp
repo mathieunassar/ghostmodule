@@ -17,8 +17,8 @@
 #ifndef GHOST_SESSION_HPP
 #define GHOST_SESSION_HPP
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace ghost
 {

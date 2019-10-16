@@ -34,7 +34,7 @@ class RemoteHandler
 {
 public:
 	RemoteHandler(const std::shared_ptr<ghost::Client>& client,
-			 const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
+		      const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
 	~RemoteHandler();
 
 	bool isActive() const;

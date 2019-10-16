@@ -75,7 +75,7 @@ bool UserManager::connect(const std::string& username, const std::string& passwo
 		{
 			// The connection fails if the user is already connected in any session
 			if (isUserAlreadyConnected(user)) return false;
-			
+
 			_connectedUsers[session->getUUID()] = user;
 
 			if (_connectedUserCallbacks.find(session->getUUID()) != _connectedUserCallbacks.end())

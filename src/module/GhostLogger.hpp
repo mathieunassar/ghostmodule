@@ -38,7 +38,7 @@ public:
 
 private:
 	void printLine(const std::string& line) const;
-	
+
 	std::shared_ptr<Console> _console;
 };
 } // namespace internal

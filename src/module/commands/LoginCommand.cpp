@@ -16,8 +16,8 @@
 
 #include "LoginCommand.hpp"
 
-#include <iostream>
 #include <ghost/module/GhostLogger.hpp>
+#include <iostream>
 
 using namespace ghost::internal;
 

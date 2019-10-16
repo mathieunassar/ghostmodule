@@ -17,8 +17,8 @@
 #ifndef GHOST_MODULE_COMPONENT_HPP
 #define GHOST_MODULE_COMPONENT_HPP
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace ghost
 {

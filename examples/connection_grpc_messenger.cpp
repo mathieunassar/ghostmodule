@@ -100,7 +100,8 @@ public:
 	void consoleCallback(const std::string& cmd, const std::shared_ptr<ghost::CommandLineInterpreter>& interpreter)
 	{
 		if (cmd.length() > 0 && cmd[0] == '#')
-			interpreter->execute(cmd.substr(1), ghost::CommandExecutionContext(ghost::Session::createLocal()));
+			interpreter->execute(cmd.substr(1),
+					     ghost::CommandExecutionContext(ghost::Session::createLocal()));
 		else if (_writer)
 		{
 			auto msg = ghost::examples::protobuf::MessengerMessage::default_instance();
