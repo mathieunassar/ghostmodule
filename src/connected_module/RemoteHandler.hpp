@@ -37,6 +37,7 @@ public:
 			 const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
 	~RemoteHandler();
 
+	bool isActive() const;
 	void commandCallback(const std::string& command);
 
 private:
@@ -46,12 +47,13 @@ private:
 		EXECUTING
 	};
 
+	std::shared_ptr<ghost::Client> _client;
 	std::shared_ptr<RemoteConsole> _console;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 	std::shared_ptr<ghost::Session> _session;
 	std::thread _executor;
 	State _state;
-	std::mutex _mutex;
+	mutable std::mutex _mutex;
 };
 } // namespace internal
 } // namespace ghost

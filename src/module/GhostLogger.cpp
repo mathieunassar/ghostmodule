@@ -32,31 +32,31 @@ GhostLogger::GhostLogger(const std::shared_ptr<ghost::Console>& console) : _cons
 void GhostLogger::trace(const std::string& line)
 {
 	std::string toWrite = "[TRACE] " + line + "\n";
-	printLine(line);
+	printLine(toWrite);
 }
 
 void GhostLogger::debug(const std::string& line)
 {
 	std::string toWrite = "[DEBUG] " + line + "\n";
-	printLine(line);
+	printLine(toWrite);
 }
 
 void GhostLogger::info(const std::string& line)
 {
 	std::string toWrite = "[INFO ] " + line + "\n";
-	printLine(line);
+	printLine(toWrite);
 }
 
 void GhostLogger::warn(const std::string& line)
 {
 	std::string toWrite = "[WARN ] " + line + "\n";
-	printLine(line);
+	printLine(toWrite);
 }
 
 void GhostLogger::error(const std::string& line)
 {
 	std::string toWrite = "[ERROR] " + line + "\n";
-	printLine(line);
+	printLine(toWrite);
 }
 
 void GhostLogger::printLine(const std::string& line) const

@@ -26,6 +26,7 @@ RemoteControllersHandler::RemoteControllersHandler(
 
 void RemoteControllersHandler::configureClient(const std::shared_ptr<ghost::Client>& client)
 {
+	purgeInactiveClients();
 	auto controller = std::make_shared<RemoteHandler>(client, _interpreter);
 	_controllers.push_back(controller);
 }
@@ -34,4 +35,16 @@ bool RemoteControllersHandler::handle(std::shared_ptr<ghost::Client> client, boo
 {
 	keepClientAlive = true;
 	return true;
+}
+
+void RemoteControllersHandler::purgeInactiveClients()
+{
+	auto it = _controllers.begin();
+	while (it != _controllers.end())
+	{
+		if (!(*it)->isActive())
+			it = _controllers.erase(it);
+		else
+			++it;
+	}
 }

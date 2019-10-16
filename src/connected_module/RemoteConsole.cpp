@@ -69,7 +69,13 @@ std::string RemoteConsole::getLine()
 	if (hasCommands()) return getCommand();
 
 	// Otherwise wait that one arrives and return it
-	while (!hasCommands()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	while (!hasCommands())
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+		// If the client died, this method returns an empty string
+		if (!_client->isRunning()) return "";
+	}
 	return getCommand();
 }
 
@@ -81,7 +87,7 @@ void RemoteConsole::flush()
 bool RemoteConsole::hasCommands() const
 {
 	std::unique_lock<std::mutex> lock(_commandQueueLock);
-	return _messages.size() != 0;
+	return _messages.size() != 0 && _client->isRunning();
 }
 
 std::string RemoteConsole::getCommand()

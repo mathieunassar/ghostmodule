@@ -21,7 +21,8 @@ using namespace ghost::internal;
 
 RemoteHandler::RemoteHandler(const std::shared_ptr<ghost::Client>& client,
 			     const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter)
-    : _console(std::make_shared<RemoteConsole>(client))
+    : _client(client)
+    , _console(std::make_shared<RemoteConsole>(client))
     , _state(State::IDLE)
     , _interpreter(commandLineInterpreter)
     , _session(ghost::Session::create())
@@ -35,6 +36,12 @@ RemoteHandler::~RemoteHandler()
 	if (_executor.joinable()) _executor.join();
 }
 
+bool RemoteHandler::isActive() const
+{
+	std::lock_guard<std::mutex> lock(_mutex);
+	return _client->isRunning() || _state == State::EXECUTING;
+}
+
 void RemoteHandler::commandCallback(const std::string& command)
 {
 	{ // Only enter this function if the state is IDLE once
@@ -45,12 +52,20 @@ void RemoteHandler::commandCallback(const std::string& command)
 	// Wait for the end of the previous command's execution
 	if (_executor.joinable()) _executor.join();
 
-	// Get the command from the console and execute it in the executor thread
-	auto cmd = _console->getCommand();
+	// Start an executor thread that will loop until there are no more commands
 	_executor = std::thread([&]() {
-		ghost::CommandExecutionContext context(_session);
-		context.setConsole(_console);
-		_interpreter->execute(cmd, context);
-		_state = State::IDLE;
+		bool enable = _console->hasCommands();
+		while (enable)
+		{
+			ghost::CommandExecutionContext context(_session);
+			context.setConsole(_console);
+			_interpreter->execute(_console->getCommand(), context);
+
+			{ // Check if there are other commands to execute
+				std::lock_guard<std::mutex> lock(_mutex);
+				enable = _console->hasCommands();
+				if (!enable) _state = State::IDLE;
+			}
+		}
 	});
 }

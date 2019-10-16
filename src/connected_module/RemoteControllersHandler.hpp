@@ -41,6 +41,8 @@ public:
 	bool handle(std::shared_ptr<ghost::Client> client, bool& keepClientAlive) override;
 
 private:
+	void purgeInactiveClients();
+
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 	std::vector<std::shared_ptr<RemoteHandler>> _controllers;
 };
