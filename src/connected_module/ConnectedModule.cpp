@@ -23,11 +23,14 @@ const std::string ghost::ConnectedModule::NAME = "ConnectedModule";
 
 ConnectedModule::ConnectedModule(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 				 const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
-				 const std::optional<ghost::ConnectionConfiguration>& remoteControlConfiguration)
+				 const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration)
     : _connectionManager(connectionManager)
     , _remoteAccessConfigurations(remoteAccessConfigurations)
-    , _remoteConfiguration(remoteControlConfiguration)
 {
+	if (remoteControlConfiguration)
+	{
+		_remoteConfiguration = std::make_unique<ghost::ConnectionConfiguration>(*remoteControlConfiguration);
+	}
 }
 
 std::shared_ptr<ghost::ConnectionManager> ConnectedModule::getConnectionManager() const

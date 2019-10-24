@@ -19,7 +19,7 @@
 
 #include <ghost/connected_module/ConnectedModule.hpp>
 #include <ghost/module/ModuleComponent.hpp>
-#include <optional>
+#include <memory>
 #include "RemoteAccessServer.hpp"
 #include "RemoteControlClient.hpp"
 
@@ -32,7 +32,7 @@ class ConnectedModule : public ghost::ConnectedModule, public ghost::ModuleCompo
 public:
 	ConnectedModule(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 			const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
-			const std::optional<ghost::ConnectionConfiguration>& remoteControlConfiguration);
+			const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration);
 
 	// From ghost::Connectivity
 	std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const override;
@@ -51,7 +51,7 @@ private:
 	std::vector<ghost::ConnectionConfiguration> _remoteAccessConfigurations;
 	std::unique_ptr<RemoteAccessServer> _remoteAccess;
 	// Remote Control
-	std::optional<ghost::ConnectionConfiguration> _remoteConfiguration;
+	std::unique_ptr<ghost::ConnectionConfiguration> _remoteConfiguration;
 	std::unique_ptr<RemoteControlClient> _remoteControl;
 };
 } // namespace internal

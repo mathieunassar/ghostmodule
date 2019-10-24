@@ -19,7 +19,7 @@
 
 #include <ghost/connected_module/ConnectedModuleComponentBuilder.hpp>
 #include <ghost/module/ModuleComponentBuilder.hpp>
-#include <optional>
+#include <memory>
 
 namespace ghost
 {
@@ -41,7 +41,7 @@ public:
 private:
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 	std::vector<ghost::ConnectionConfiguration> _remoteAccessConfigurations;
-	std::optional<ghost::ConnectionConfiguration> _remoteControlConfiguration;
+	std::unique_ptr<ghost::ConnectionConfiguration> _remoteControlConfiguration;
 };
 } // namespace internal
 } // namespace ghost

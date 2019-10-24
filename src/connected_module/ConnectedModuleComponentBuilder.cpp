@@ -46,7 +46,7 @@ ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::addRemoteAcces
 ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::setRemoteControl(
     const ghost::ConnectionConfiguration& configuration)
 {
-	_remoteControlConfiguration = configuration;
+	_remoteControlConfiguration = std::make_unique<ghost::ConnectionConfiguration>(configuration);
 	return *this;
 }
 
