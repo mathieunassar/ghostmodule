@@ -98,6 +98,15 @@ void Module::start()
 
 	if (_console) _console->start();
 
+	// Call the initialization routine
+	setState(ghost::internal::Module::INITIALIZING);
+	bool initSuccess = init(); // initialize the module
+	if (!initSuccess)
+	{
+		stop();
+		return;
+	}
+	
 	// Start the components
 	bool componentsStarted = true;
 	for (const auto& component : _components) componentsStarted = componentsStarted && component->start();
@@ -107,34 +116,28 @@ void Module::start()
 		return;
 	}
 
-	setState(ghost::internal::Module::INITIALIZING);
-	bool initSuccess = init(); // initialize the module
-	if (!initSuccess)
+	// Set the module to running
+	setState(ghost::internal::Module::RUNNING);
+	if (_console) _commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
+
+	// Call the running routine as long as the module is running and it returns true
+	bool runFinshed = false;
+	ghost::internal::Module::State currentState = getState();
+	while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
 	{
-		stop();
+		runFinshed = !run(); // run as long as the return value is true and the module state is running
+		currentState = getState();
 	}
-	else
+
+	// Dipose the module
+	if (currentState == ghost::internal::Module::RUNNING ||
+		currentState == ghost::internal::Module::DISPOSING)
+		stop();
+
+	if (_console)
 	{
-		setState(ghost::internal::Module::RUNNING);
-		if (_console) _commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
-
-		bool runFinshed = false;
-		ghost::internal::Module::State currentState = getState();
-		while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
-		{
-			runFinshed = !run(); // run as long as the return value is true and the module state is running
-			currentState = getState();
-		}
-
-		if (currentState == ghost::internal::Module::RUNNING ||
-		    currentState == ghost::internal::Module::DISPOSING)
-			stop();
-
-		if (_console)
-		{
-			_commandExecutorCV.notify_one();
-			_commandExecutor.join();
-		}
+		_commandExecutorCV.notify_one();
+		_commandExecutor.join();
 	}
 }
 
