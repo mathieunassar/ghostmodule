@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <ghost/connected_module/ConnectedModule.hpp>
 #include <ghost/connected_module/ConnectedModuleComponentBuilder.hpp>
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
@@ -40,6 +41,26 @@ public:
 	{
 		// Among other things, the logger and the name of this module are reachable from these methods
 		GHOST_INFO(module.getLogger()) << "This is module " << module.getModuleName();
+
+		auto console = module.getConsole();
+		console->write("Enter the IP address of the remote server to control: ");
+		std::string ip = console->getLine();
+		while (true)
+		{
+			try
+			{
+				console->write("Enter the port number of the remote server to control: ");
+				std::string port = console->getLine();
+				int portNumber = std::stoi(port);
+				module.getComponent<ghost::ConnectedModule>()->setRemoteControl(
+				    ghost::ConnectionConfigurationGRPC(ip, portNumber));
+				break;
+			}
+			catch (const std::exception& e)
+			{
+				console->write("Invalid entry for the port number (it must be an integer).\n");
+			}
+		}
 
 		return true; // The initialization was successful, we can return true.
 	}
@@ -73,8 +94,7 @@ int main()
 	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager());
 	// Configure a remote access server on the localhost on port 8001
 	ghost::ConnectionConfigurationGRPC config("127.0.0.1", 8001);
-	// connectedModuleBuilder->addRemoteAccess(config);
-	connectedModuleBuilder->setRemoteControl(ghost::ConnectionConfigurationGRPC("127.0.0.1", 8001));
+	//connectedModuleBuilder->addRemoteAccess(config);
 	// Add the component builder to the module builder
 	builder->addComponentBuilder(connectedModuleBuilder);
 

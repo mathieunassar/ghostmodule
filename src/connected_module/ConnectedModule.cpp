@@ -37,6 +37,11 @@ std::shared_ptr<ghost::ConnectionManager> ConnectedModule::getConnectionManager(
 	return _connectionManager;
 }
 
+void ConnectedModule::setRemoteControl(const ghost::ConnectionConfiguration& configuration)
+{
+	_remoteConfiguration = std::make_unique<ghost::ConnectionConfiguration>(configuration);
+}
+
 // From ghost::ModuleComponent
 bool ConnectedModule::start()
 {

@@ -30,6 +30,8 @@ public:
 	virtual ~ConnectedModule() = default;
 
 	virtual std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const = 0;
+	// Call only in initialization
+	virtual void setRemoteControl(const ghost::ConnectionConfiguration& configuration) = 0;
 };
 } // namespace ghost
 

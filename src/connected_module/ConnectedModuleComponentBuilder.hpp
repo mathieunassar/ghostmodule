@@ -20,6 +20,7 @@
 #include <ghost/connected_module/ConnectedModuleComponentBuilder.hpp>
 #include <ghost/module/ModuleComponentBuilder.hpp>
 #include <memory>
+#include <vector>
 
 namespace ghost
 {

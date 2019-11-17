@@ -34,8 +34,9 @@ public:
 			const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
 			const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration);
 
-	// From ghost::Connectivity
+	// From ghost::ConnectedModule
 	std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const override;
+	void setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
 
 	// From ghost::ModuleComponent
 	bool start() override;

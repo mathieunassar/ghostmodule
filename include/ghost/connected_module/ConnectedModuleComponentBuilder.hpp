@@ -20,7 +20,7 @@
 #include <ghost/connection/ConnectionConfiguration.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/module/ModuleComponentBuilder.hpp>
-#include <string>
+#include <memory>
 
 namespace ghost
 {
@@ -56,8 +56,10 @@ public:
 	virtual ConnectedModuleComponentBuilder& addRemoteAccess(
 	    const ghost::ConnectionConfiguration& configuration) = 0;
 	/**
-	 *	Set the configuration of the remote server to control.
-	 *	This configured the module to forward user input to the remote server.
+	 *	Sets the configuration of the remote server to control.
+	 *	This configures the module to forward user input to the remote server.
+	 *	If the configuration information is not known at the time the module is built (with the builder),
+	 *	the ghost::ConnectionModule also possesses a similar method to set up this connection.
 	 *	@param configuration	configuration of a remote server to control.
 	 *	@return an instance of this.
 	 */
