@@ -22,15 +22,46 @@
 
 namespace ghost
 {
+/**
+ *	The ghost::ConnectedModule extension integrates the features of the
+ *	ghost_connection library into a ghost::Module.
+ *
+ *	In order to use this class, use the ghost::ConnectedModuleComponentBuilder to configure
+ *	this component and pass the builder to an instance of ghost::ModuleBuilder.
+ *	This component provides a ghost::ConnectionManger that can be configured and used to
+ *	create ghost::Connection objects.
+ *
+ *	During the build phase or the initialization phase, it is possible to configure a remote
+ *	control, i.e. to use this module as a proxy for another module. The controlled module must
+ *	have integrated this component as well and configured the builder with a remote access.
+ */
 class ConnectedModule
 {
 public:
+	/// Name of this component. Used by ghost::Module to identify this component.
 	static const std::string NAME;
 
 	virtual ~ConnectedModule() = default;
 
+	/**
+	 *	@return the instance of ghost::ConnectionManager used by the component. This instance
+	 *		may be used to create ghost::Connections to communicate with other modules.
+	 */
 	virtual std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const = 0;
-	// Call only in initialization
+	
+	/**
+	 *	During the module's initialization phase, this method configures the module to be a remote
+	 *	control for the module listening to the connection referenced by the "configuration" parameter.
+	 *	Once this method is called, user input from the configured ghost::Console is forwarded to the
+	 *	controlled module.
+	 *
+	 *	The intialization of this component fails if no ghost::Console was configured in the ghost::ModuleBuilder.
+	 *	The intialization of this component also fails if the module to control is not listening to connection
+	 *	referenced by the "configuration" parameter.
+	 *
+	 *	This method has no effect if called after the module's initialization phase.
+	 *	@param configuration	connection information pointing to the module to control.
+	 */
 	virtual void setRemoteControl(const ghost::ConnectionConfiguration& configuration) = 0;
 };
 } // namespace ghost

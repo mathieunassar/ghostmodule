@@ -23,11 +23,13 @@ const std::string RemoteControlClient::PREFIX_LOCAL_EXECUTION = "local:";
 RemoteControlClient::RemoteControlClient(const ghost::ConnectionConfiguration& configuration,
 					 const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 					 const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
-					 const std::shared_ptr<ghost::Console>& console)
+					 const std::shared_ptr<ghost::Console>& console,
+					 const std::shared_ptr<ghost::Logger>& logger)
     : _configuration(configuration)
     , _connectionManager(connectionManager)
     , _interpreter(commandLineInterpreter)
     , _console(console)
+    , _logger(logger)
 {
 }
 
@@ -35,11 +37,22 @@ bool RemoteControlClient::start()
 {
 	// Create the client corresponding to the configured remote
 	_remote = _connectionManager->createClient(_configuration);
-	if (!_remote) return false;
+	if (!_remote)
+	{
+		GHOST_ERROR(_logger) << "Failed to register a client for the remote control.";
+		stop();
+		return false;
+	}
 	_remoteWriter = _remote->getWriter<google::protobuf::StringValue>();
 
 	// Get the console from the parent module, fail if not configured
-	if (!_console) return false;
+	if (!_console)
+	{
+		GHOST_ERROR(_logger)
+		    << "No console was configured with this module, although it is configured to be a remote control.";
+		stop();
+		return false;
+	}
 
 	// Configure the console command callback to send messages to the remote
 	_console->setCommandCallback(
@@ -51,7 +64,13 @@ bool RemoteControlClient::start()
 	    std::bind(&RemoteControlClient::remoteMessageCallback, this, std::placeholders::_1));
 
 	// Start the remote
-	return _remote->start();
+	bool startResult = _remote->start();
+	if (!startResult)
+	{
+		GHOST_ERROR(_logger) << "Failed to start the remote control client.";
+		stop();
+	}
+	return startResult;
 }
 
 void RemoteControlClient::stop()

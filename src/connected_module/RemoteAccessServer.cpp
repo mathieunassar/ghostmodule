@@ -20,28 +20,40 @@ using namespace ghost::internal;
 
 RemoteAccessServer::RemoteAccessServer(const std::vector<ghost::ConnectionConfiguration>& configurations,
 				       const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
-				       const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter)
+				       const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
+				       const std::shared_ptr<ghost::Logger>& logger)
     : _connectionManager(connectionManager)
     , _remoteAccessConfigurations(configurations)
     , _interpreter(commandLineInterpreter)
+    , _logger(logger)
 {
 }
 
 bool RemoteAccessServer::start()
 {
-	_remoteControllersHandler = std::make_shared<RemoteControllersHandler>(_interpreter);
+	_remoteControllersHandler = std::make_shared<RemoteControllersHandler>(_interpreter, _logger);
 
 	for (const auto& configuration : _remoteAccessConfigurations)
 	{
 		// Create the remote access server for this configuration and check that it worked
 		auto server = _connectionManager->createServer(configuration);
-		if (!server) return false;
+		if (!server)
+		{
+			GHOST_ERROR(_logger) << "Failed registering a remote access server.";
+			stop();
+			return false;
+		}
 
 		// Sets the remote controller handler to process clients of this server
 		server->setClientHandler(_remoteControllersHandler);
 
 		// Start the server, it may now receive clients
-		if (!server->start()) return false;
+		if (!server->start())
+		{
+			GHOST_ERROR(_logger) << "Failed starting a remote access server.";
+			stop();
+			return false;
+		}
 
 		// Add the server to the list of remote controller servers.
 		_remoteAccessServers.push_back(server);

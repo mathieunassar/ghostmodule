@@ -19,6 +19,7 @@
 
 #include <ghost/connection/ClientHandler.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
+#include <ghost/module/Logger.hpp>
 #include "RemoteHandler.hpp"
 
 namespace ghost
@@ -34,7 +35,8 @@ namespace internal
 class RemoteControllersHandler : public ghost::ClientHandler
 {
 public:
-	RemoteControllersHandler(const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
+	RemoteControllersHandler(const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
+				 const std::shared_ptr<ghost::Logger>& logger);
 
 	// From ghost::ClientHandler
 	void configureClient(const std::shared_ptr<ghost::Client>& client) override;
@@ -45,6 +47,7 @@ private:
 
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 	std::vector<std::shared_ptr<RemoteHandler>> _controllers;
+	std::shared_ptr<ghost::Logger> _logger;
 };
 } // namespace internal
 } // namespace ghost

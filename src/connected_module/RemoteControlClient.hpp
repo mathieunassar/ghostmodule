@@ -22,6 +22,7 @@
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Console.hpp>
+#include <ghost/module/Logger.hpp>
 #include <memory>
 #include <string>
 
@@ -51,7 +52,8 @@ public:
 	RemoteControlClient(const ghost::ConnectionConfiguration& configuration,
 			    const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 			    const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
-			    const std::shared_ptr<ghost::Console>& console);
+			    const std::shared_ptr<ghost::Console>& console,
+			    const std::shared_ptr<ghost::Logger>& logger);
 
 	bool start();
 	void stop();
@@ -66,6 +68,7 @@ private:
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 	std::shared_ptr<ghost::Console> _console;
+	std::shared_ptr<ghost::Logger> _logger;
 };
 } // namespace internal
 } // namespace ghost

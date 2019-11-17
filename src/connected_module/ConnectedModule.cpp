@@ -58,6 +58,8 @@ bool ConnectedModule::start()
 
 void ConnectedModule::stop()
 {
+	GHOST_INFO(getModule()->getLogger()) << "Stopping remote access...";
+
 	// Stop the remote for the controlled remote module
 	if (_remoteControl) _remoteControl->stop();
 
@@ -75,11 +77,14 @@ std::string ConnectedModule::getName() const
 
 bool ConnectedModule::initializeRemoteAccess()
 {
+	GHOST_INFO(getModule()->getLogger()) << "Starting remote access...";
 	_remoteAccess = std::make_unique<RemoteAccessServer>(_remoteAccessConfigurations, _connectionManager,
-							     getModule()->getInterpreter());
+							     getModule()->getInterpreter(), getModule()->getLogger());
 
 	// Start the remote
-	return _remoteAccess->start();
+	bool startResult = _remoteAccess->start();
+	GHOST_INFO(getModule()->getLogger()) << "Starting remote access... " << (startResult ? "success" : "failed");
+	return startResult;
 }
 
 bool ConnectedModule::initializeRemoteControl()
@@ -87,9 +92,13 @@ bool ConnectedModule::initializeRemoteControl()
 	// The user didn't configure a remote module
 	if (!_remoteConfiguration) return true;
 
-	_remoteControl = std::make_unique<RemoteControlClient>(
-	    *_remoteConfiguration, _connectionManager, getModule()->getInterpreter(), getModule()->getConsole());
+	GHOST_INFO(getModule()->getLogger()) << "Starting remote control...";
+	_remoteControl = std::make_unique<RemoteControlClient>(*_remoteConfiguration, _connectionManager,
+							       getModule()->getInterpreter(), getModule()->getConsole(),
+							       getModule()->getLogger());
 
 	// Start the remote
-	return _remoteControl->start();
+	bool startResult = _remoteControl->start();
+	GHOST_INFO(getModule()->getLogger()) << "Starting remote control... " << (startResult ? "success" : "failed");
+	return startResult;
 }
