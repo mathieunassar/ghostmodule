@@ -106,7 +106,7 @@ void Module::start()
 		stop();
 		return;
 	}
-	
+
 	// Start the components
 	bool componentsStarted = true;
 	for (const auto& component : _components) componentsStarted = componentsStarted && component->start();
@@ -130,8 +130,7 @@ void Module::start()
 	}
 
 	// Dipose the module
-	if (currentState == ghost::internal::Module::RUNNING ||
-		currentState == ghost::internal::Module::DISPOSING)
+	if (currentState == ghost::internal::Module::RUNNING || currentState == ghost::internal::Module::DISPOSING)
 		stop();
 
 	if (_console)
