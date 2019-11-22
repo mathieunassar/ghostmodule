@@ -40,33 +40,20 @@ target_link_libraries(ghost_connected_module ghost_module ghost_connection)
 
 ##### Unit tests #####
 
-#if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
-#	set(PROTOC_SOURCE_CUSTOM ${GHOST_MODULE_ROOT_DIR}/tests/protobuf/)
-#	set(PROTOC_SOURCE_FILE ${GHOST_MODULE_ROOT_DIR}/tests/protobuf/tests.proto)
-#	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/tests/protobuf/)
-#
-#	generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
-#
-#	file(GLOB source_persistence_tests
-#		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveFileTests.cpp
-#		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveDataTests.cpp
-#		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveManagerTests.cpp
-#		${GHOST_MODULE_ROOT_DIR}/tests/persistence/PersistenceTestHelpers.cpp
-#		${GHOST_MODULE_ROOT_DIR}/tests/persistence/PersistenceTestHelpers.hpp
-#	)
-#
-#	file(GLOB protobuf_persistence_tests
-#		${GHOST_MODULE_ROOT_DIR}/tests/protobuf/tests.pb.h
-#		${GHOST_MODULE_ROOT_DIR}/tests/protobuf/tests.pb.cc
-#	)
-#
-#	add_executable(persistence_tests ${source_persistence_tests} ${protobuf_persistence_tests})
-#	target_link_libraries(persistence_tests ghost_persistence ${CONAN_LIBS_GTEST})
-#
-#	gtest_add_tests(TARGET persistence_tests)
-#
-#	set_property(TARGET persistence_tests PROPERTY FOLDER "tests")
-#endif()
+if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
+	file(GLOB source_connected_module_tests
+		${GHOST_MODULE_ROOT_DIR}/tests/connected_module/ConnectedModuleTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/connection/ConnectionTestUtils.hpp
+		${GHOST_MODULE_ROOT_DIR}/tests/connection/ConnectionTestUtils.cpp
+	)
+
+	add_executable(connected_module_tests ${source_connected_module_tests})
+	target_link_libraries(connected_module_tests ghost_connected_module ${CONAN_LIBS_GTEST})
+
+	gtest_add_tests(TARGET connected_module_tests)
+
+	set_property(TARGET connected_module_tests PROPERTY FOLDER "tests")
+endif()
 
 ##### Examples #####
 

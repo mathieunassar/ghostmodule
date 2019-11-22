@@ -87,8 +87,8 @@ public:
 	 *	@param command	the command to register.
 	 *	@param permissions	list of users or group of users allowed to use this command.
 	 */
-	virtual void registerCommand(std::shared_ptr<Command> command,
-				     const std::list<std::shared_ptr<PermissionEntity>>& permissions = {}) = 0;
+	virtual void registerCommand(std::shared_ptr<ghost::Command> command,
+				     const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) = 0;
 	/**
 	 *	Prints the name, shortcut and description of all the registered commands into the provided stream.
 	 *	@param stream	stream in which the help will be printed.

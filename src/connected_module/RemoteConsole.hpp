@@ -28,11 +28,6 @@ namespace ghost
 {
 namespace internal
 {
-// NEXT: create an executor that sets a command callback and executes command lines
-// - the callback will just notify but still store the messages in the console
-// - the executor then gets a command and execute it
-// - the executor does not execute commands that came while a command was being executed
-// -
 class RemoteConsole : public ghost::Console
 {
 public:
