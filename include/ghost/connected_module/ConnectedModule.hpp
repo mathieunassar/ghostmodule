@@ -48,16 +48,16 @@ public:
 	 *		may be used to create ghost::Connections to communicate with other modules.
 	 */
 	virtual std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const = 0;
-	
+
 	/**
 	 *	During the module's initialization phase, this method configures the module to be a remote
 	 *	control for the module listening to the connection referenced by the "configuration" parameter.
 	 *	Once this method is called, user input from the configured ghost::Console is forwarded to the
 	 *	controlled module.
 	 *
-	 *	The intialization of this component fails if no ghost::Console was configured in the ghost::ModuleBuilder.
-	 *	The intialization of this component also fails if the module to control is not listening to connection
-	 *	referenced by the "configuration" parameter.
+	 *	The intialization of this component fails if no ghost::Console was configured in the
+	 *	ghost::ModuleBuilder. The intialization of this component also fails if the module to control is not
+	 *	listening to connection referenced by the "configuration" parameter.
 	 *
 	 *	This method has no effect if called after the module's initialization phase.
 	 *	@param configuration	connection information pointing to the module to control.

@@ -94,7 +94,11 @@ void RemoteControlClient::consoleCommandCallback(const std::string& command)
 	{
 		auto msg = google::protobuf::StringValue::default_instance();
 		msg.set_value(command);
-		_remoteWriter->write(msg);
+		bool writeResult = _remoteWriter->write(msg);
+		if (!writeResult)
+		{
+			GHOST_ERROR(_logger) << "Connection to the controlled module lost.";
+		}
 	}
 }
 
