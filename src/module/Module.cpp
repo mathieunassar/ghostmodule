@@ -142,6 +142,10 @@ void Module::start()
 
 void Module::stop()
 {
+	if (getState() == ghost::internal::Module::STOPPED ||
+	    getState() == ghost::internal::Module::DISPOSING) // only stop if module is running or intializing
+		return;
+
 	setState(ghost::internal::Module::DISPOSING);
 	dispose();
 	setState(ghost::internal::Module::STOPPED);

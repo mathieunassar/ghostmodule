@@ -226,9 +226,9 @@ TEST_F(ModuleTest, Test_ModuleBuilder_moduleFails_When_componentStartFails)
 	ASSERT_FALSE(_runIsCalled);
 }
 
-TEST_F(ModuleTest, Test_ModuleBuilder_componentIsStopped_When_moduleIsStopped)
+TEST_F(ModuleTest, Test_ModuleBuilder_componentIsNotStopped_When_moduleIsAlreadyStopped)
 {
-	EXPECT_CALL(*_componentMock, stop).Times(1);
+	EXPECT_CALL(*_componentMock, stop).Times(0);
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
 
 	_builder->addComponentBuilder(_builderMock);
