@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <chrono>
@@ -24,11 +25,31 @@
 
 #include "../src/module/Module.hpp"
 
+class ModuleComponentMock : public ghost::ModuleComponent
+{
+public:
+	static const std::string NAME;
+
+	MOCK_METHOD0(start, bool());
+	MOCK_METHOD0(stop, void());
+	MOCK_CONST_METHOD0(getName, std::string());
+};
+
+class ModuleComponentBuilderMock : public ghost::ModuleComponentBuilder
+{
+public:
+	MOCK_METHOD0(build, std::shared_ptr<ghost::ModuleComponent>());
+};
+
 class ModuleTest : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
+		_builder = ghost::ModuleBuilder::create();
+		_builderMock = std::make_shared<ModuleComponentBuilderMock>();
+		_componentMock = std::make_shared<ModuleComponentMock>();
+
 		_initReturn = true;
 		_initIsCalled = false;
 		_runReturn = false;
@@ -41,14 +62,15 @@ protected:
 	{
 	}
 
+	std::unique_ptr<ghost::ModuleBuilder> _builder;
+	std::shared_ptr<ModuleComponentBuilderMock> _builderMock;
+	std::shared_ptr<ModuleComponentMock> _componentMock;
 	bool _initIsCalled;
 	bool _initReturn;
 	bool _runIsCalled;
 	bool _runWaits;
 	bool _runReturn;
 	bool _disposeIsCalled;
-
-	static const std::string TEST_MODULE_NAME;
 
 public:
 	bool init(const ghost::Module& module)
@@ -68,14 +90,16 @@ public:
 	{
 		_disposeIsCalled = true;
 	}
+
+	static const std::string TEST_MODULE_NAME;
 };
 
 const std::string ModuleTest::TEST_MODULE_NAME = "TestModule";
+const std::string ModuleComponentMock::NAME = ModuleTest::TEST_MODULE_NAME;
 
 TEST_F(ModuleTest, Test_ModuleBuilder_simpleModule)
 {
-	auto builder = ghost::ModuleBuilder::create();
-	auto module = builder->build(TEST_MODULE_NAME);
+	auto module = _builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
 	ASSERT_TRUE(module->getModuleName() == TEST_MODULE_NAME);
 	ASSERT_TRUE(module->getInterpreter());
@@ -84,9 +108,8 @@ TEST_F(ModuleTest, Test_ModuleBuilder_simpleModule)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_intializeBehavior_isCalled)
 {
-	auto builder = ghost::ModuleBuilder::create();
-	builder->setInitializeBehavior(std::bind(&ModuleTest::init, this, std::placeholders::_1));
-	auto module = builder->build(TEST_MODULE_NAME);
+	_builder->setInitializeBehavior(std::bind(&ModuleTest::init, this, std::placeholders::_1));
+	auto module = _builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
 
 	ASSERT_FALSE(_initIsCalled);
@@ -96,9 +119,8 @@ TEST_F(ModuleTest, Test_ModuleBuilder_intializeBehavior_isCalled)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_runningBehavior_isCalled)
 {
-	auto builder = ghost::ModuleBuilder::create();
-	builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
-	auto module = builder->build(TEST_MODULE_NAME);
+	_builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
+	auto module = _builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
 
 	ASSERT_FALSE(_runIsCalled);
@@ -108,9 +130,8 @@ TEST_F(ModuleTest, Test_ModuleBuilder_runningBehavior_isCalled)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_disposeBehavior_isCalled)
 {
-	auto builder = ghost::ModuleBuilder::create();
-	builder->setDisposeBehavior(std::bind(&ModuleTest::dispose, this, std::placeholders::_1));
-	auto module = builder->build(TEST_MODULE_NAME);
+	_builder->setDisposeBehavior(std::bind(&ModuleTest::dispose, this, std::placeholders::_1));
+	auto module = _builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
 
 	ASSERT_FALSE(_disposeIsCalled);
@@ -120,10 +141,9 @@ TEST_F(ModuleTest, Test_ModuleBuilder_disposeBehavior_isCalled)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_logger_isAccessible)
 {
-	auto builder = ghost::ModuleBuilder::create();
 	auto logger = ghost::StdoutLogger::create();
-	builder->setLogger(logger);
-	auto module = builder->build(TEST_MODULE_NAME);
+	_builder->setLogger(logger);
+	auto module = _builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
 
 	ASSERT_TRUE(module->getLogger());
@@ -132,11 +152,10 @@ TEST_F(ModuleTest, Test_ModuleBuilder_logger_isAccessible)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_programOptions_isAccessible)
 {
-	auto builder = ghost::ModuleBuilder::create();
 	int argc = 1;
 	char* argv[1] = {(char*)TEST_MODULE_NAME.c_str()};
-	builder->setProgramOptions(argc, argv);
-	auto module = builder->build(TEST_MODULE_NAME);
+	_builder->setProgramOptions(argc, argv);
+	auto module = _builder->build(TEST_MODULE_NAME);
 	ASSERT_TRUE(module);
 
 	ASSERT_TRUE(module->getProgramOptions().getCommandName() == TEST_MODULE_NAME);
@@ -144,22 +163,78 @@ TEST_F(ModuleTest, Test_ModuleBuilder_programOptions_isAccessible)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_component_isAccessible)
 {
-	ASSERT_TRUE(false);
+	// expected two calls: one from the "getComponent" call, one from this test
+	EXPECT_CALL(*_componentMock, getName).Times(2).WillRepeatedly(testing::Return(TEST_MODULE_NAME));
+	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
+
+	_builder->addComponentBuilder(_builderMock);
+	auto module = _builder->build();
+	ASSERT_TRUE(module);
+
+	auto retrievedComponent = module->getComponent<ModuleComponentMock>();
+	ASSERT_TRUE(retrievedComponent);
+	ASSERT_TRUE(retrievedComponent->getName() == TEST_MODULE_NAME);
 }
 
 TEST_F(ModuleTest, Test_ModuleBuilder_componentBuilderFails)
 {
-	ASSERT_TRUE(false);
+	// build fails, returns nullptr
+	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(nullptr));
+
+	_builder->addComponentBuilder(_builderMock);
+	auto module = _builder->build();
+	ASSERT_FALSE(module);
 }
 
 TEST_F(ModuleTest, Test_ModuleBuilder_componentIsStarted_When_moduleIsStarted)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_componentMock, start).Times(1).WillRepeatedly(testing::Return(true));
+	EXPECT_CALL(*_componentMock, stop).Times(1);
+	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
+
+	_builder->addComponentBuilder(_builderMock);
+	auto module = _builder->build();
+	ASSERT_TRUE(module);
+	module->start();
+}
+
+TEST_F(ModuleTest, Test_ModuleBuilder_moduleRuns_When_componentStartSucceeds)
+{
+	EXPECT_CALL(*_componentMock, start).Times(1).WillRepeatedly(testing::Return(true));
+	EXPECT_CALL(*_componentMock, stop).Times(1);
+	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
+	_builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
+
+	_builder->addComponentBuilder(_builderMock);
+	auto module = _builder->build();
+	ASSERT_TRUE(module);
+	module->start();
+	ASSERT_TRUE(_runIsCalled);
+}
+
+TEST_F(ModuleTest, Test_ModuleBuilder_moduleFails_When_componentStartFails)
+{
+	EXPECT_CALL(*_componentMock, start).Times(1).WillRepeatedly(testing::Return(false));
+	EXPECT_CALL(*_componentMock, stop).Times(1);
+	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
+	_builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
+
+	_builder->addComponentBuilder(_builderMock);
+	auto module = _builder->build();
+	ASSERT_TRUE(module);
+	module->start();
+	ASSERT_FALSE(_runIsCalled);
 }
 
 TEST_F(ModuleTest, Test_ModuleBuilder_componentIsStopped_When_moduleIsStopped)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_componentMock, stop).Times(1);
+	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
+
+	_builder->addComponentBuilder(_builderMock);
+	auto module = _builder->build();
+	ASSERT_TRUE(module);
+	module->stop();
 }
 
 TEST_F(ModuleTest, Test_Module_intializeBehaviorFails)

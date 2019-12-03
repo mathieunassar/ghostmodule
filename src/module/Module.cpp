@@ -146,6 +146,9 @@ void Module::stop()
 	dispose();
 	setState(ghost::internal::Module::STOPPED);
 
+	// Stop the components
+	for (const auto& component : _components) component->stop();
+
 	if (_console) _console->stop();
 }
 
