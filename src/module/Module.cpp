@@ -64,6 +64,7 @@ Module::~Module()
 
 bool Module::setState(State state)
 {
+	std::unique_lock<std::mutex> lock(_moduleMutex);
 	switch (state)
 	{
 		case INITIALIZING:
@@ -87,6 +88,7 @@ bool Module::setState(State state)
 
 Module::State Module::getState() const
 {
+	std::unique_lock<std::mutex> lock(_moduleMutex);
 	return _state;
 }
 

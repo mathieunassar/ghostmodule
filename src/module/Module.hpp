@@ -72,6 +72,7 @@ private:
 	bool run();
 	void dispose();
 
+	mutable std::mutex _moduleMutex;
 	std::string _name;
 	ghost::CommandLine _options;
 	State _state;
