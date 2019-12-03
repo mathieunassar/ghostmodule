@@ -156,6 +156,11 @@ TEST_F(UserManagerTest, Test_UserManager_connect_When_wrongPassword)
 	ASSERT_FALSE(manager->isUserConnected(ghost::Session::createLocal()));
 }
 
+TEST_F(UserManagerTest, Test_UserManager_isConnectedInSession_When_sessionIsProvided)
+{
+	ASSERT_TRUE(false);
+}
+
 TEST_F(UserManagerTest, Test_UserManager_connect_When_callbackIsSet)
 {
 	auto manager = ghost::UserManager::create();
@@ -170,6 +175,21 @@ TEST_F(UserManagerTest, Test_UserManager_connect_When_callbackIsSet)
 	ASSERT_TRUE(connectSuccess);
 	ASSERT_TRUE(_callbackWasCalled);
 	ASSERT_TRUE(_callbackUser.get() == newUser.get());
+}
+
+TEST_F(UserManagerTest, Test_UserManager_twoUsersAreConnected)
+{
+	ASSERT_TRUE(false);
+}
+
+TEST_F(UserManagerTest, Test_UserManager_sessionCallbackIsCalled_When_userConnects)
+{
+	ASSERT_TRUE(false);
+}
+
+TEST_F(UserManagerTest, Test_UserManager_sessionCallbackIsNotCalled_When_userConnectsWithOtherSession)
+{
+	ASSERT_TRUE(false);
 }
 
 TEST_F(UserManagerTest, Test_UserManager_disconnect_When_ok)
@@ -205,6 +225,16 @@ TEST_F(UserManagerTest, Test_UserManager_disconnect_When_callbackIsSet)
 
 	ASSERT_TRUE(_callbackWasCalled);
 	ASSERT_FALSE(_callbackUser);
+}
+
+TEST_F(UserManagerTest, Test_UserManager_sessionCallbackIsCalled_When_userDisconnects)
+{
+	ASSERT_TRUE(false);
+}
+
+TEST_F(UserManagerTest, Test_UserManager_sessionCallbackIsNotCalled_When_userDisonnectsWithOtherSession)
+{
+	ASSERT_TRUE(false);
 }
 
 TEST_F(UserManagerTest, Test_UserManager_getGroups_When_ok)

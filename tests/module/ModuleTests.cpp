@@ -144,10 +144,22 @@ TEST_F(ModuleTest, Test_ModuleBuilder_programOptions_isAccessible)
 
 TEST_F(ModuleTest, Test_ModuleBuilder_component_isAccessible)
 {
+	ASSERT_TRUE(false);
 }
 
 TEST_F(ModuleTest, Test_ModuleBuilder_componentBuilderFails)
 {
+	ASSERT_TRUE(false);
+}
+
+TEST_F(ModuleTest, Test_ModuleBuilder_componentIsStarted_When_moduleIsStarted)
+{
+	ASSERT_TRUE(false);
+}
+
+TEST_F(ModuleTest, Test_ModuleBuilder_componentIsStopped_When_moduleIsStopped)
+{
+	ASSERT_TRUE(false);
 }
 
 TEST_F(ModuleTest, Test_Module_intializeBehaviorFails)

@@ -318,3 +318,13 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_user
 	ASSERT_FALSE(executeSuccess);
 	ASSERT_FALSE(command->_executeWasCalled);
 }
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_executeCanAccessContextConsole)
+{
+	ASSERT_TRUE(false);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_executeCanAccessContextSession)
+{
+	ASSERT_TRUE(false);
+}
