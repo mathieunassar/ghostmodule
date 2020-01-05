@@ -46,6 +46,9 @@ public:
 	MOCK_METHOD0(start, bool());
 	MOCK_METHOD0(stop, bool());
 	MOCK_CONST_METHOD0(isRunning, bool());
+
+	void pushMessage(const google::protobuf::Any& message);
+	bool getMessage(google::protobuf::Any& message, const std::chrono::milliseconds& timeout);
 };
 
 class PublisherMock : public ghost::Publisher

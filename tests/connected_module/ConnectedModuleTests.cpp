@@ -18,6 +18,7 @@
 #include "../connection/ConnectionTestUtils.hpp"
 #include "../src/connected_module/RemoteConsole.hpp"
 #include "../src/connected_module/RemoteHandler.hpp"
+#include <future>
 
 class CommandLineInterpreterMock : public ghost::CommandLineInterpreter
 {
@@ -35,7 +36,9 @@ class ConnectedModuleTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-		_client = std::make_shared<ClientMock>(ghost::ConnectionConfiguration());
+		auto config = ghost::ConnectionConfiguration();
+		config.setOperationBlocking(false); // otherwise the writer will wait until the sink is empty
+		_client = std::make_shared<ClientMock>(config);
 		_console = std::make_shared<ghost::internal::RemoteConsole>(_client);
 		_interpreter = std::make_shared<CommandLineInterpreterMock>();
 	}
@@ -44,57 +47,110 @@ protected:
 	{
 	}
 
+	void feedClient(const std::string& text)
+	{
+		auto msg = google::protobuf::StringValue::default_instance();
+		msg.set_value(text);
+		google::protobuf::Any anyMsg;
+		anyMsg.PackFrom(msg);
+		_client->pushMessage(anyMsg);
+	}
+
 	std::shared_ptr<ghost::internal::RemoteConsole> _console;
-	std::shared_ptr<ghost::Client> _client;
+	std::shared_ptr<ClientMock> _client;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 	std::shared_ptr<ghost::internal::RemoteHandler> _remoteHandler;
+
+	static const std::string TEST_CONSOLE_ENTRY;
 };
+
+const std::string ConnectedModuleTests::TEST_CONSOLE_ENTRY = "TEST_NAME";
 
 // RemoteConsole
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_getLineReadsFromClient_When_messageNotReceivedYet)
 {
-	ASSERT_TRUE(false);
+	std::future<std::string> getLineFuture = std::async(std::launch::async,
+														[&]{ return _console->getLine(); });
+
+	// check that getline did not return already
+	auto futureStatus = getLineFuture.wait_for(std::chrono::milliseconds(50));
+	ASSERT_TRUE(futureStatus != std::future_status::ready);
+
+	// feed the client
+	feedClient(TEST_CONSOLE_ENTRY);
+
+	futureStatus = getLineFuture.wait_for(std::chrono::milliseconds(100));
+	ASSERT_TRUE(futureStatus == std::future_status::ready);
+	std::string res = getLineFuture.get();
+	ASSERT_TRUE(res == TEST_CONSOLE_ENTRY);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_getLineReadsFromClient_When_messageAlreadyReceived)
 {
-	ASSERT_TRUE(false);
+	feedClient(TEST_CONSOLE_ENTRY);
+	std::future<std::string> getLineFuture = std::async(std::launch::async,
+														[&]{ return _console->getLine(); });
+	auto futureStatus = getLineFuture.wait_for(std::chrono::milliseconds(50));
+	ASSERT_TRUE(futureStatus == std::future_status::ready);
+	std::string res = getLineFuture.get();
+	ASSERT_TRUE(res == TEST_CONSOLE_ENTRY);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_writeSendsToClient)
 {
-	ASSERT_TRUE(false);
+	_console->write(TEST_CONSOLE_ENTRY);
+	google::protobuf::Any anyMsg;
+	bool messageSent = _client->getMessage(anyMsg, std::chrono::milliseconds(50));
+	ASSERT_TRUE(messageSent);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_hasCommandsReturnsTrue_When_clientReceivedMessage)
 {
-	ASSERT_TRUE(false);
+	feedClient(TEST_CONSOLE_ENTRY);
+	ASSERT_TRUE(_console->hasCommands());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_hasCommandsReturnsFalse_When_nothingWasSent)
 {
-	ASSERT_TRUE(false);
+	ASSERT_FALSE(_console->hasCommands());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_getCommandReturnsACommand_When_commandWasAvailable)
 {
-	ASSERT_TRUE(false);
+	feedClient(TEST_CONSOLE_ENTRY);
+	auto command = _console->getCommand();
+	ASSERT_TRUE(command == TEST_CONSOLE_ENTRY);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_getCommandThrows_When_noCommandWasAvailable)
 {
-	ASSERT_TRUE(false);
+	bool threw = false;
+	try
+	{
+		auto command = _console->getCommand();
+	}
+	catch (std::exception e)
+	{
+		threw = true;
+	}
+	ASSERT_TRUE(threw);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_callbackIsCalled_When_callbackWasSetAndCommandIsSent)
 {
-	ASSERT_TRUE(false);
+	bool callbackWasCalled = false;
+	std::string result;
+	_console->setCommandCallback([&](const std::string& s){ callbackWasCalled = true; result = s; });
+	feedClient(TEST_CONSOLE_ENTRY);
+	ASSERT_TRUE(callbackWasCalled);
+	ASSERT_TRUE(result == TEST_CONSOLE_ENTRY);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteConsole_stopCallsClientStop)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_client, stop()).Times(1);
+	_console->stop();
 }
 
 // RemoteHandler

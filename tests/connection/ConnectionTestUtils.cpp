@@ -36,6 +36,16 @@ ClientMock::ClientMock(const ghost::ConnectionConfiguration& config) : ghost::Cl
 	EXPECT_CALL(*this, stop()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 }
 
+void ClientMock::pushMessage(const google::protobuf::Any& message)
+{
+	getReaderSink()->put(message);
+}
+
+bool ClientMock::getMessage(google::protobuf::Any& message, const std::chrono::milliseconds& timeout)
+{
+	return getWriterSink()->get(message, timeout);
+}
+
 PublisherMock::PublisherMock(const ghost::ConnectionConfiguration& config) : ghost::Publisher(config)
 {
 	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
