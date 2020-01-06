@@ -18,7 +18,12 @@
 #include "../connection/ConnectionTestUtils.hpp"
 #include "../src/connected_module/RemoteConsole.hpp"
 #include "../src/connected_module/RemoteHandler.hpp"
+#include "../src/connected_module/RemoteControlClient.hpp"
+#include <ghost/connection/ConnectionManager.hpp>
+#include <ghost/module/StdoutLogger.hpp>
 #include <future>
+
+using testing::_;
 
 class CommandLineInterpreterMock : public ghost::CommandLineInterpreter
 {
@@ -36,15 +41,19 @@ class ConnectedModuleTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-		auto config = ghost::ConnectionConfiguration();
-		config.setOperationBlocking(false); // otherwise the writer will wait until the sink is empty
-		_client = std::make_shared<ClientMock>(config);
+		_configuration = ghost::ConnectionConfiguration();
+		_configuration.setOperationBlocking(false); // otherwise the writer will wait until the sink is empty
+		_client = std::make_shared<ClientMock>(_configuration);
 		_console = std::make_shared<ghost::internal::RemoteConsole>(_client);
 		_interpreter = std::make_shared<CommandLineInterpreterMock>();
+		
+		_connectionManager = ghost::ConnectionManager::create();
+		_connectionManager->getConnectionFactory()->addClientRule<ClientMock>(_configuration);
 	}
 
 	void TearDown() override
 	{
+
 	}
 
 	void feedClient(const std::string& text)
@@ -56,15 +65,29 @@ protected:
 		_client->pushMessage(anyMsg);
 	}
 
+	void makeRemoteControlClient()
+	{
+		_remoteControlClient = std::make_shared<ghost::internal::RemoteControlClient>(_configuration,
+																					  _connectionManager,
+																					  _interpreter,
+																					  _console,
+																					  ghost::StdoutLogger::create());
+	}
+
+	ghost::ConnectionConfiguration _configuration;
+	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 	std::shared_ptr<ghost::internal::RemoteConsole> _console;
 	std::shared_ptr<ClientMock> _client;
-	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
+	std::shared_ptr<CommandLineInterpreterMock> _interpreter;
 	std::shared_ptr<ghost::internal::RemoteHandler> _remoteHandler;
+	std::shared_ptr<ghost::internal::RemoteControlClient> _remoteControlClient;
 
 	static const std::string TEST_CONSOLE_ENTRY;
+	static const std::string PREFIX_LOCAL_EXECUTION;
 };
 
 const std::string ConnectedModuleTests::TEST_CONSOLE_ENTRY = "TEST_NAME";
+const std::string ConnectedModuleTests::PREFIX_LOCAL_EXECUTION = "local:";
 
 // RemoteConsole
 
@@ -157,59 +180,106 @@ TEST_F(ConnectedModuleTests, test_RemoteConsole_stopCallsClientStop)
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_isActive_When_clientIsRunning)
 {
-	ASSERT_TRUE(false);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	ASSERT_TRUE(_remoteHandler->isActive());
+	_client->stop();
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_isActive_When_clientIsNotRunningButStateIsExecuting)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(testing::AnyNumber()).WillOnce([](const std::string&, const ghost::CommandExecutionContext&) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); return true; });
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	
+	_remoteHandler->commandCallback(TEST_CONSOLE_ENTRY);
+	_client->stop();
+
+	ASSERT_TRUE(_remoteHandler->isActive());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_isNotActive_When_clientIsNotRunningAndStateIsNotExecuting)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_client, isRunning).WillRepeatedly(testing::Return(false));
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	ASSERT_FALSE(_remoteHandler->isActive());
+	_client->stop();
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_executes_When_oneCommandIsProvided)
 {
-	ASSERT_TRUE(false);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(1).WillRepeatedly(testing::Return(true));
+	feedClient(TEST_CONSOLE_ENTRY);
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	_client->stop();
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_executesTwoCommands_WhenTwoCommandsAreProvided)
 {
-	ASSERT_TRUE(false);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(2).WillRepeatedly(testing::Return(true));
+	feedClient(TEST_CONSOLE_ENTRY);
+	feedClient(TEST_CONSOLE_ENTRY);
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	_client->stop();
 }
 
 // RemoteControlClient
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_doesNotStart_When_connectionManagerDoesNotCreate)
 {
-	ASSERT_TRUE(false);
+	_remoteControlClient = std::make_shared<ghost::internal::RemoteControlClient>(_configuration,
+																				  ghost::ConnectionManager::create(),
+																				  _interpreter,
+																				  _console,
+																				  ghost::StdoutLogger::create());
+	ASSERT_FALSE(_remoteControlClient->start());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_doesNotStart_When_consoleIsNotSet)
 {
-	ASSERT_TRUE(false);
+	_remoteControlClient = std::make_shared<ghost::internal::RemoteControlClient>(_configuration,
+																				  _connectionManager,
+																				  _interpreter,
+																				  nullptr,
+																				  ghost::StdoutLogger::create());
+	ASSERT_FALSE(_remoteControlClient->start());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_doesNotStart_When_clientDoesNotStart)
 {
-	ASSERT_TRUE(false);
+	auto connectionManager = ghost::ConnectionManager::create();
+	connectionManager->getConnectionFactory()->addClientRule<NotRunningClientMock>(_configuration);
+
+	_remoteControlClient = std::make_shared<ghost::internal::RemoteControlClient>(_configuration,
+																				  connectionManager,
+																				  _interpreter,
+																				  _console,
+																				  ghost::StdoutLogger::create());
+	ASSERT_FALSE(_remoteControlClient->start());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_starts_When_ok)
 {
-	ASSERT_TRUE(false);
+	makeRemoteControlClient();
+	ASSERT_TRUE(_remoteControlClient->start());
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_callsInterpreter_When_localConsoleCommandIsSent)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(1);
+	makeRemoteControlClient();
+	_remoteControlClient->start();
+	feedClient(PREFIX_LOCAL_EXECUTION + TEST_CONSOLE_ENTRY);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_callsClientWriter_When_remoteConsoleCommandIsSent)
 {
-	ASSERT_TRUE(false);
+	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(1);
+	makeRemoteControlClient();
+	_remoteControlClient->start();
+	feedClient(TEST_CONSOLE_ENTRY);
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteControlClient_writesToConsole_When_clientReceivesMessage)

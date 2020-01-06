@@ -51,6 +51,12 @@ public:
 	bool getMessage(google::protobuf::Any& message, const std::chrono::milliseconds& timeout);
 };
 
+class NotRunningClientMock : public ClientMock
+{
+	public:
+	NotRunningClientMock(const ghost::ConnectionConfiguration& config);
+};
+
 class PublisherMock : public ghost::Publisher
 {
 public:

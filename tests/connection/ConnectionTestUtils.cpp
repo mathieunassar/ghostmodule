@@ -32,6 +32,7 @@ ServerMock::ServerMock(const ghost::ConnectionConfiguration& config)
 
 ClientMock::ClientMock(const ghost::ConnectionConfiguration& config) : ghost::Client(config)
 {
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, stop()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 }
@@ -39,6 +40,12 @@ ClientMock::ClientMock(const ghost::ConnectionConfiguration& config) : ghost::Cl
 void ClientMock::pushMessage(const google::protobuf::Any& message)
 {
 	getReaderSink()->put(message);
+}
+
+NotRunningClientMock::NotRunningClientMock(const ghost::ConnectionConfiguration& config) : ClientMock(config)
+{
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
 }
 
 bool ClientMock::getMessage(google::protobuf::Any& message, const std::chrono::milliseconds& timeout)
