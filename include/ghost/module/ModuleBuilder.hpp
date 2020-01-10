@@ -89,12 +89,12 @@ public:
 	 */
 	virtual ModuleBuilder& setLogger(const std::shared_ptr<ghost::Logger>& logger) = 0;
 	/**
-	 *	Adds a module component builder to this builder. Its "build" method will be called
+	 *	Adds a module extension builder to this builder. Its "build" method will be called
 	 *	when building this module.
-	 *	@param builder	Builder for a module component.
+	 *	@param builder	Builder for a module extension.
 	 *	@return an instance of this.
 	 */
-	virtual ModuleBuilder& addComponentBuilder(const std::shared_ptr<ghost::ModuleComponentBuilder>& builder) = 0;
+	virtual ModuleBuilder& addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder) = 0;
 	/**
 	 *	Builds the module based on the parameters provided to this builder.
 	 *	@param moduleName	name of the module to build.
@@ -103,8 +103,8 @@ public:
 	virtual std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") = 0;
 
 protected:
-	static void setModuleToComponent(const std::shared_ptr<ghost::Module>& module,
-					 const std::shared_ptr<ghost::ModuleComponent>& component);
+	static void setModuleToExtension(const std::shared_ptr<ghost::Module>& module,
+					 const std::shared_ptr<ghost::ModuleExtension>& component);
 };
 } // namespace ghost
 

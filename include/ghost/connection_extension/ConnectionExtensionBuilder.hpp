@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
-#define GHOST_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
+#ifndef GHOST_CONNECTIONEXTENSIONBUILDER_HPP
+#define GHOST_CONNECTIONEXTENSIONBUILDER_HPP
 
 #include <ghost/connection/ConnectionConfiguration.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
@@ -25,21 +25,21 @@
 namespace ghost
 {
 /**
- *	Builder for the ghost::ConnectedModule component.
- *	The ghost::ConnectedModule component allows a module to be configured to control
+ *	Builder for the ghost::ConnectionExtension component.
+ *	The ghost::ConnectionExtension component allows a module to be configured to control
  *	a distant server and to be controlled by a remote client.
- *	The ghost::ConnectedModule also provides a ghost::ConnectionManager which can be
+ *	The ghost::ConnectionExtension also provides a ghost::ConnectionManager which can be
  *	used to manage the module's ghost::Connection objects.
  *
  *	Add this ghost::ConnectivityComponentBuilder to an instance of ghost::ModuleBuilder
  *	in order to build the corresponding module.
  */
-class ConnectedModuleComponentBuilder : public ghost::ModuleComponentBuilder
+class ConnectionExtensionBuilder : public ghost::ModuleExtensionBuilder
 {
 public:
-	static std::shared_ptr<ghost::ConnectedModuleComponentBuilder> create();
+	static std::shared_ptr<ghost::ConnectionExtensionBuilder> create();
 
-	virtual ~ConnectedModuleComponentBuilder() = default;
+	virtual ~ConnectionExtensionBuilder() = default;
 	/**
 	 *	Gets the ghost::ConnectionManager used by the module.
 	 *	Its factory is used to create connections, in particular in combination
@@ -53,7 +53,7 @@ public:
 	 *	@param configuration	connection configuration of the local server accepting clients.
 	 *	@return an instance of this.
 	 */
-	virtual ConnectedModuleComponentBuilder& addRemoteAccess(
+	virtual ConnectionExtensionBuilder& addRemoteAccess(
 	    const ghost::ConnectionConfiguration& configuration) = 0;
 	/**
 	 *	Sets the configuration of the remote server to control.
@@ -63,9 +63,9 @@ public:
 	 *	@param configuration	configuration of a remote server to control.
 	 *	@return an instance of this.
 	 */
-	virtual ConnectedModuleComponentBuilder& setRemoteControl(
+	virtual ConnectionExtensionBuilder& setRemoteControl(
 	    const ghost::ConnectionConfiguration& configuration) = 0;
 };
 } // namespace ghost
 
-#endif // GHOST_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
+#endif // GHOST_CONNECTIONEXTENSIONBUILDER_HPP

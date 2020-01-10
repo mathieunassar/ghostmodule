@@ -25,8 +25,8 @@ std::unique_ptr<ghost::ModuleBuilder> ghost::ModuleBuilder::create()
 	return std::make_unique<ghost::internal::ModuleBuilder>();
 }
 
-void ghost::ModuleBuilder::setModuleToComponent(const std::shared_ptr<ghost::Module>& module,
-						const std::shared_ptr<ghost::ModuleComponent>& component)
+void ghost::ModuleBuilder::setModuleToExtension(const std::shared_ptr<ghost::Module>& module,
+						const std::shared_ptr<ghost::ModuleExtension>& component)
 {
 	component->_module = module;
 }
@@ -72,7 +72,7 @@ ModuleBuilder& ModuleBuilder::setLogger(const std::shared_ptr<ghost::Logger>& lo
 	return *this;
 }
 
-ModuleBuilder& ModuleBuilder::addComponentBuilder(const std::shared_ptr<ghost::ModuleComponentBuilder>& builder)
+ModuleBuilder& ModuleBuilder::addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder)
 {
 	_componentBuilders.push_back(builder);
 	return *this;
@@ -80,7 +80,7 @@ ModuleBuilder& ModuleBuilder::addComponentBuilder(const std::shared_ptr<ghost::M
 
 std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleName)
 {
-	std::vector<std::shared_ptr<ghost::ModuleComponent>> components;
+	std::vector<std::shared_ptr<ghost::ModuleExtension>> components;
 
 	// Create the module components
 	for (const auto& builder : _componentBuilders)
@@ -99,11 +99,11 @@ std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleNam
 	for (const auto& component : components)
 	{
 		// This can only be achieved because ghost::ModuleBuilder (base class of this)
-		// is friend of ghost::ModuleComponent
+		// is friend of ghost::ModuleExtension
 		// This allows the public API to not expose a setter of the parent module
-		// For that reason "setModuleToComponent is a protected static method of ghost::ModuleBuilder
+		// For that reason "setModuleToExtension is a protected static method of ghost::ModuleBuilder
 		// and not of this internal class.
-		setModuleToComponent(module, component);
+		setModuleToExtension(module, component);
 	}
 
 	return module;

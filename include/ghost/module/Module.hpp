@@ -105,9 +105,9 @@ public:
 	 *		If no such component exists in the module, returns nullptr.
 	 */
 	template <typename ComponentType>
-	const std::shared_ptr<ComponentType> getComponent() const
+	const std::shared_ptr<ComponentType> getExtension() const
 	{
-		return std::dynamic_pointer_cast<ComponentType>(getComponent(ComponentType::NAME));
+		return std::dynamic_pointer_cast<ComponentType>(getExtension(ComponentType::NAME));
 	}
 	/**
 	 *	Prints "GHOST" in ASCII characters.
@@ -120,7 +120,7 @@ protected:
 	 *	@param typeName	name of the type of component.
 	 *	@return the component, or nullptr if no such component exists.
 	 */
-	virtual std::shared_ptr<ghost::ModuleComponent> getComponent(const std::string& typeName) const = 0;
+	virtual std::shared_ptr<ghost::ModuleExtension> getExtension(const std::string& typeName) const = 0;
 };
 } // namespace ghost
 

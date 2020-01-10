@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_CONNECTEDMODULE_HPP
-#define GHOST_INTERNAL_CONNECTEDMODULE_HPP
+#ifndef GHOST_INTERNAL_CONNECTIONEXTENSION_HPP
+#define GHOST_INTERNAL_CONNECTIONEXTENSION_HPP
 
-#include <ghost/connected_module/ConnectedModule.hpp>
+#include <ghost/connection_extension/ConnectionExtension.hpp>
 #include <ghost/module/ModuleComponent.hpp>
 #include <memory>
 #include "RemoteAccessServer.hpp"
@@ -27,10 +27,10 @@ namespace ghost
 {
 namespace internal
 {
-class ConnectedModule : public ghost::ConnectedModule, public ghost::ModuleComponent
+class ConnectionExtension : public ghost::ConnectionExtension, public ghost::ModuleExtension
 {
 public:
-	ConnectedModule(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+	ConnectionExtension(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 			const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
 			const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration);
 
@@ -58,4 +58,4 @@ private:
 } // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_CONNECTEDMODULE_HPP
+#endif // GHOST_INTERNAL_CONNECTIONEXTENSION_HPP

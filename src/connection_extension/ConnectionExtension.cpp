@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-#include "ConnectedModule.hpp"
+#include "ConnectionExtension.hpp"
 #include <ghost/module/Module.hpp>
 
 using namespace ghost::internal;
 
-const std::string ghost::ConnectedModule::NAME = "ConnectedModule";
+const std::string ghost::ConnectionExtension::NAME = "ConnectionExtension";
 
-ConnectedModule::ConnectedModule(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+ConnectionExtension::ConnectionExtension(
+    const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 				 const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
 				 const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration)
     : _connectionManager(connectionManager), _remoteAccessConfigurations(remoteAccessConfigurations)
@@ -32,18 +33,18 @@ ConnectedModule::ConnectedModule(const std::shared_ptr<ghost::ConnectionManager>
 	}
 }
 
-std::shared_ptr<ghost::ConnectionManager> ConnectedModule::getConnectionManager() const
+std::shared_ptr<ghost::ConnectionManager> ConnectionExtension::getConnectionManager() const
 {
 	return _connectionManager;
 }
 
-void ConnectedModule::setRemoteControl(const ghost::ConnectionConfiguration& configuration)
+void ConnectionExtension::setRemoteControl(const ghost::ConnectionConfiguration& configuration)
 {
 	_remoteConfiguration = std::make_unique<ghost::ConnectionConfiguration>(configuration);
 }
 
 // From ghost::ModuleComponent
-bool ConnectedModule::start()
+bool ConnectionExtension::start()
 {
 	// Sanity check to not crash if no parent module was set.
 	if (!getModule()) return false;
@@ -56,7 +57,7 @@ bool ConnectedModule::start()
 	return remoteAccessInitialized && remoteControlInitialized;
 }
 
-void ConnectedModule::stop()
+void ConnectionExtension::stop()
 {
 	GHOST_INFO(getModule()->getLogger()) << "Stopping remote access...";
 
@@ -70,12 +71,12 @@ void ConnectedModule::stop()
 	_connectionManager.reset();
 }
 
-std::string ConnectedModule::getName() const
+std::string ConnectionExtension::getName() const
 {
-	return ghost::ConnectedModule::NAME;
+	return ghost::ConnectionExtension::NAME;
 }
 
-bool ConnectedModule::initializeRemoteAccess()
+bool ConnectionExtension::initializeRemoteAccess()
 {
 	GHOST_INFO(getModule()->getLogger()) << "Starting remote access...";
 	_remoteAccess = std::make_unique<RemoteAccessServer>(_remoteAccessConfigurations, _connectionManager,
@@ -87,7 +88,7 @@ bool ConnectedModule::initializeRemoteAccess()
 	return startResult;
 }
 
-bool ConnectedModule::initializeRemoteControl()
+bool ConnectionExtension::initializeRemoteControl()
 {
 	// The user didn't configure a remote module
 	if (!_remoteConfiguration) return true;

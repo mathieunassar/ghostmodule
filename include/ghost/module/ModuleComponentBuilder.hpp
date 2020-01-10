@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_MODULE_COMPONENT_BUILDER_HPP
-#define GHOST_MODULE_COMPONENT_BUILDER_HPP
+#ifndef GHOST_MODULE_EXTENSION_BUILDER_HPP
+#define GHOST_MODULE_EXTENSION_BUILDER_HPP
 
 #include <ghost/module/ModuleComponent.hpp>
 #include <memory>
@@ -28,18 +28,18 @@ namespace ghost
  *	will be called while building the module. This allows external components
  *	to be managed by the module, which owns them.
  */
-class ModuleComponentBuilder
+class ModuleExtensionBuilder
 {
 public:
-	virtual ~ModuleComponentBuilder() = default;
+	virtual ~ModuleExtensionBuilder() = default;
 	/**
 	 *	Builds the module which this builder is the builder of.
 	 *	@return a shared_ptr to the built module, downcasted to the public
-	 *		interface ghost::ModuleComponent.
+	 *		interface ghost::ModuleExtension.
 	 */
-	virtual std::shared_ptr<ghost::ModuleComponent> build() = 0;
+	virtual std::shared_ptr<ghost::ModuleExtension> build() = 0;
 };
 
 } // namespace ghost
 
-#endif // GHOST_MODULE_COMPONENT_BUILDER_HPP
+#endif // GHOST_MODULE_EXTENSION_BUILDER_HPP

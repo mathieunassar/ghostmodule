@@ -16,7 +16,7 @@
 
 #include <ghost/module/ModuleComponent.hpp>
 
-std::shared_ptr<ghost::Module> ghost::ModuleComponent::getModule() const
+std::shared_ptr<ghost::Module> ghost::ModuleExtension::getModule() const
 {
 	return _module.lock();
 }

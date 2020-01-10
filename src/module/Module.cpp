@@ -24,7 +24,7 @@ using namespace ghost::internal;
 
 Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
 	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
-	       const std::vector<std::shared_ptr<ghost::ModuleComponent>>& components,
+	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
 	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
 	       const std::function<bool(const ghost::Module&)>& runningBehavior,
 	       const std::function<void(const ghost::Module&)>& disposeBehavior)
@@ -212,7 +212,7 @@ void Module::printGhostASCII(const std::string& suffix) const
 	if (console) console->flush();
 }
 
-std::shared_ptr<ghost::ModuleComponent> Module::getComponent(const std::string& typeName) const
+std::shared_ptr<ghost::ModuleExtension> Module::getExtension(const std::string& typeName) const
 {
 	for (const auto& c : _components)
 	{

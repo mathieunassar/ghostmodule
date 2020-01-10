@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-#include "ConnectedModuleComponentBuilder.hpp"
+#include "ConnectionExtensionBuilder.hpp"
 
-#include "ConnectedModule.hpp"
+#include "ConnectionExtension.hpp"
 
 using namespace ghost::internal;
 
-std::shared_ptr<ghost::ConnectedModuleComponentBuilder> ghost::ConnectedModuleComponentBuilder::create()
+std::shared_ptr<ghost::ConnectionExtensionBuilder> ghost::ConnectionExtensionBuilder::create()
 {
-	return std::make_shared<ghost::internal::ConnectedModuleComponentBuilder>();
+	return std::make_shared<ghost::internal::ConnectionExtensionBuilder>();
 }
 
-ConnectedModuleComponentBuilder::ConnectedModuleComponentBuilder()
+ConnectionExtensionBuilder::ConnectionExtensionBuilder()
     : _connectionManager(ghost::ConnectionManager::create())
 {
 }
 
 // From ghost::ConnectivityComponentBuilder
-std::shared_ptr<ghost::ConnectionManager> ConnectedModuleComponentBuilder::configureConnectionManager()
+std::shared_ptr<ghost::ConnectionManager> ConnectionExtensionBuilder::configureConnectionManager()
 {
 	return _connectionManager;
 }
 
-ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::addRemoteAccess(
+ConnectionExtensionBuilder& ConnectionExtensionBuilder::addRemoteAccess(
     const ghost::ConnectionConfiguration& configuration)
 {
 	_remoteAccessConfigurations.push_back(configuration);
 	return *this;
 }
 
-ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::setRemoteControl(
+ConnectionExtensionBuilder& ConnectionExtensionBuilder::setRemoteControl(
     const ghost::ConnectionConfiguration& configuration)
 {
 	_remoteControlConfiguration = std::make_unique<ghost::ConnectionConfiguration>(configuration);
@@ -51,8 +51,8 @@ ConnectedModuleComponentBuilder& ConnectedModuleComponentBuilder::setRemoteContr
 }
 
 // From ghost::ModuleComponentBuilder
-std::shared_ptr<ghost::ModuleComponent> ConnectedModuleComponentBuilder::build()
+std::shared_ptr<ghost::ModuleExtension> ConnectionExtensionBuilder::build()
 {
-	return std::make_shared<ghost::internal::ConnectedModule>(_connectionManager, _remoteAccessConfigurations,
+	return std::make_shared<ghost::internal::ConnectionExtension>(_connectionManager, _remoteAccessConfigurations,
 								  _remoteControlConfiguration);
 }

@@ -37,7 +37,7 @@ public:
 	ModuleBuilder& setProgramOptions(int argc, char* argv[]) override;
 	std::shared_ptr<ghost::Console> setConsole() override;
 	ModuleBuilder& setLogger(const std::shared_ptr<ghost::Logger>& logger) override;
-	ModuleBuilder& addComponentBuilder(const std::shared_ptr<ghost::ModuleComponentBuilder>& builder) override;
+	ModuleBuilder& addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder) override;
 
 	std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") override;
 
@@ -45,7 +45,7 @@ private:
 	std::function<bool(const ghost::Module&)> _initializationBehavior;
 	std::function<bool(const ghost::Module&)> _runningBehavior;
 	std::function<void(const ghost::Module&)> _disposeBehavior;
-	std::vector<std::shared_ptr<ghost::ModuleComponentBuilder>> _componentBuilders;
+	std::vector<std::shared_ptr<ghost::ModuleExtensionBuilder>> _componentBuilders;
 	ghost::CommandLine _options;
 	std::shared_ptr<Console> _console;
 	std::shared_ptr<ghost::Logger> _logger;

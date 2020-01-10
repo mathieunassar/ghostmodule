@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_MODULE_COMPONENT_HPP
-#define GHOST_MODULE_COMPONENT_HPP
+#ifndef GHOST_MODULE_EXTENSION_HPP
+#define GHOST_MODULE_EXTENSION_HPP
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@ namespace ghost
 class Module;
 class ModuleBuilder;
 /**
- *	A module component is an extension of the module that is managed by the module
+ *	A module extension is an component of the module that is managed by the module
  *	workflow.
  *	For example, the Ghost library "ghost_connected_module" provides a component
  *	that adds connectivity to the module.
@@ -33,10 +33,10 @@ class ModuleBuilder;
  *	An implementation of a ghost::ModuleComponent must define a public member of type
  *	std::string called "NAME" to be usable by a ghost::Module object.
  */
-class ModuleComponent
+class ModuleExtension
 {
 public:
-	virtual ~ModuleComponent() = default;
+	virtual ~ModuleExtension() = default;
 	/**
 	 *	Starts the component.
 	 *	@return true if the component started successfully, false otherwise.
@@ -66,4 +66,4 @@ private:
 
 } // namespace ghost
 
-#endif // GHOST_MODULE_COMPONENT_HPP
+#endif // GHOST_MODULE_EXTENSION_HPP

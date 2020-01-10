@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_CONNECTEDMODULE_HPP
-#define GHOST_CONNECTEDMODULE_HPP
+#ifndef GHOST_CONNECTIONEXTENSION_HPP
+#define GHOST_CONNECTIONEXTENSION_HPP
 
 #include <ghost/connection/ConnectionManager.hpp>
 #include <string>
@@ -23,10 +23,10 @@
 namespace ghost
 {
 /**
- *	The ghost::ConnectedModule extension integrates the features of the
+ *	The ghost::ConnectionExtension extension integrates the features of the
  *	ghost_connection library into a ghost::Module.
  *
- *	In order to use this class, use the ghost::ConnectedModuleComponentBuilder to configure
+ *	In order to use this class, use the ghost::ConnectionExtensionBuilder to configure
  *	this component and pass the builder to an instance of ghost::ModuleBuilder.
  *	This component provides a ghost::ConnectionManger that can be configured and used to
  *	create ghost::Connection objects.
@@ -35,13 +35,13 @@ namespace ghost
  *	control, i.e. to use this module as a proxy for another module. The controlled module must
  *	have integrated this component as well and configured the builder with a remote access.
  */
-class ConnectedModule
+class ConnectionExtension
 {
 public:
 	/// Name of this component. Used by ghost::Module to identify this component.
 	static const std::string NAME;
 
-	virtual ~ConnectedModule() = default;
+	virtual ~ConnectionExtension() = default;
 
 	/**
 	 *	@return the instance of ghost::ConnectionManager used by the component. This instance
@@ -66,4 +66,4 @@ public:
 };
 } // namespace ghost
 
-#endif // GHOST_CONNECTEDMODULE_HPP
+#endif // GHOST_CONNECTIONEXTENSION_HPP

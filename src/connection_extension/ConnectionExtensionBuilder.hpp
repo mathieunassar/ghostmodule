@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
-#define GHOST_INTERNAL_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
+#ifndef GHOST_INTERNAL_CONNECTION_EXTENSION_BUILDER_HPP
+#define GHOST_INTERNAL_CONNECTION_EXTENSION_BUILDER_HPP
 
-#include <ghost/connected_module/ConnectedModuleComponentBuilder.hpp>
-#include <ghost/module/ModuleComponentBuilder.hpp>
+#include <ghost/connection_extension/ConnectionExtensionBuilder.hpp>
+#include <ghost/module/ModuleExtensionBuilder.hpp>
 #include <memory>
 #include <vector>
 
@@ -26,18 +26,18 @@ namespace ghost
 {
 namespace internal
 {
-class ConnectedModuleComponentBuilder : public ghost::ConnectedModuleComponentBuilder
+class ConnectionExtensionBuilder : public ghost::ConnectionExtensionBuilder
 {
 public:
-	ConnectedModuleComponentBuilder();
+	ConnectionExtensionBuilder();
 
 	// From ghost::ConnectivityComponentBuilder
 	std::shared_ptr<ghost::ConnectionManager> configureConnectionManager() override;
-	ConnectedModuleComponentBuilder& addRemoteAccess(const ghost::ConnectionConfiguration& configuration) override;
-	ConnectedModuleComponentBuilder& setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
+	ConnectionExtensionBuilder& addRemoteAccess(const ghost::ConnectionConfiguration& configuration) override;
+	ConnectionExtensionBuilder& setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
 
 	// From ghost::ModuleComponentBuilder
-	std::shared_ptr<ghost::ModuleComponent> build() override;
+	std::shared_ptr<ghost::ModuleExtension> build() override;
 
 private:
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
@@ -47,4 +47,4 @@ private:
 } // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_CONNECTED_MODULE_COMPONENT_BUILDER_HPP
+#endif // GHOST_INTERNAL_CONNECTION_EXTENSION_BUILDER_HPP
