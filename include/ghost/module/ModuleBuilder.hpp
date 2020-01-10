@@ -21,7 +21,7 @@
 #include <ghost/module/Console.hpp>
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/Module.hpp>
-#include <ghost/module/ModuleComponentBuilder.hpp>
+#include <ghost/module/ModuleExtensionBuilder.hpp>
 #include <memory>
 #include <string>
 

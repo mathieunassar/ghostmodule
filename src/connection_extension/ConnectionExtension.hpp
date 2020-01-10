@@ -18,7 +18,7 @@
 #define GHOST_INTERNAL_CONNECTIONEXTENSION_HPP
 
 #include <ghost/connection_extension/ConnectionExtension.hpp>
-#include <ghost/module/ModuleComponent.hpp>
+#include <ghost/module/ModuleExtension.hpp>
 #include <memory>
 #include "RemoteAccessServer.hpp"
 #include "RemoteControlClient.hpp"

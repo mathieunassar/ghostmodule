@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include <ghost/connected_module/ConnectedModule.hpp>
-#include <ghost/connected_module/ConnectedModuleComponentBuilder.hpp>
+#include <ghost/connection_extension/ConnectionExtension.hpp>
+#include <ghost/connection_extension/ConnectionExtensionBuilder.hpp>
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
 #include <ghost/module/Command.hpp>
@@ -52,7 +52,7 @@ public:
 				console->write("Enter the port number of the remote server to control: ");
 				std::string port = console->getLine();
 				int portNumber = std::stoi(port);
-				module.getComponent<ghost::ConnectedModule>()->setRemoteControl(
+				module.getExtension<ghost::ConnectionExtension>()->setRemoteControl(
 				    ghost::ConnectionConfigurationGRPC(ip, portNumber));
 				break;
 			}
@@ -89,14 +89,14 @@ int main()
 	// The GhostLogger writes in the ghost::Console, which manages the inputs and outputs.
 	builder->setLogger(ghost::GhostLogger::create(console));
 
-	auto connectedModuleBuilder = ghost::ConnectedModuleComponentBuilder::create();
+	auto connectedModuleBuilder = ghost::ConnectionExtensionBuilder::create();
 	// Put some GRPC definitions in the connection builder
 	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager());
 	// Configure a remote access server on the localhost on port 8001
 	ghost::ConnectionConfigurationGRPC config("127.0.0.1", 8001);
 	// connectedModuleBuilder->addRemoteAccess(config);
 	// Add the component builder to the module builder
-	builder->addComponentBuilder(connectedModuleBuilder);
+	builder->addExtensionBuilder(connectedModuleBuilder);
 
 	// The following line creates the module with all the parameters, and names it "myModuleInstance0".
 	std::shared_ptr<ghost::Module> module = builder->build("myModuleInstance0");

@@ -21,7 +21,7 @@
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Console.hpp>
 #include <ghost/module/Logger.hpp>
-#include <ghost/module/ModuleComponent.hpp>
+#include <ghost/module/ModuleExtension.hpp>
 #include <ghost/module/UserManager.hpp>
 #include <memory>
 #include <string>

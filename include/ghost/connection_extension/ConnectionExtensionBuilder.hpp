@@ -19,7 +19,7 @@
 
 #include <ghost/connection/ConnectionConfiguration.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
-#include <ghost/module/ModuleComponentBuilder.hpp>
+#include <ghost/module/ModuleExtensionBuilder.hpp>
 #include <memory>
 
 namespace ghost

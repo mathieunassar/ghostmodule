@@ -19,10 +19,10 @@
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/module/StdoutLogger.hpp>
 #include "../connection/ConnectionTestUtils.hpp"
-#include "../src/connected_module/RemoteAccessServer.hpp"
-#include "../src/connected_module/RemoteConsole.hpp"
-#include "../src/connected_module/RemoteControlClient.hpp"
-#include "../src/connected_module/RemoteHandler.hpp"
+#include "../src/connection_extension/RemoteAccessServer.hpp"
+#include "../src/connection_extension/RemoteConsole.hpp"
+#include "../src/connection_extension/RemoteControlClient.hpp"
+#include "../src/connection_extension/RemoteHandler.hpp"
 
 using testing::_;
 

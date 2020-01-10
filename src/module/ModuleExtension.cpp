@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <ghost/module/ModuleComponent.hpp>
+#include <ghost/module/ModuleExtension.hpp>
 
 std::shared_ptr<ghost::Module> ghost::ModuleExtension::getModule() const
 {

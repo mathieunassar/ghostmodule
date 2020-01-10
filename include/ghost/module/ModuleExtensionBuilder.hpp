@@ -17,7 +17,7 @@
 #ifndef GHOST_MODULE_EXTENSION_BUILDER_HPP
 #define GHOST_MODULE_EXTENSION_BUILDER_HPP
 
-#include <ghost/module/ModuleComponent.hpp>
+#include <ghost/module/ModuleExtension.hpp>
 #include <memory>
 
 namespace ghost

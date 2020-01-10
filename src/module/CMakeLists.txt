@@ -19,8 +19,8 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Logger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/LoggerLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/GhostLogger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/StdoutLogger.hpp
-${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleComponent.hpp
-${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleComponentBuilder.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleExtension.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleExtensionBuilder.hpp
 )
 
 file(GLOB header_module_lib_internal_windows
@@ -93,7 +93,7 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/UserManager.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Session.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Module.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleBuilder.cpp
-${GHOST_MODULE_ROOT_DIR}/src/module/ModuleComponent.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ModuleExtension.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/GhostLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/StdoutLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/LoggerLine.cpp

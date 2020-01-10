@@ -25,7 +25,7 @@
 
 #include "../src/module/Module.hpp"
 
-class ModuleComponentMock : public ghost::ModuleComponent
+class ModuleExtensionMock : public ghost::ModuleExtension
 {
 public:
 	static const std::string NAME;
@@ -35,10 +35,10 @@ public:
 	MOCK_CONST_METHOD0(getName, std::string());
 };
 
-class ModuleComponentBuilderMock : public ghost::ModuleComponentBuilder
+class ModuleExtensionBuilderMock : public ghost::ModuleExtensionBuilder
 {
 public:
-	MOCK_METHOD0(build, std::shared_ptr<ghost::ModuleComponent>());
+	MOCK_METHOD0(build, std::shared_ptr<ghost::ModuleExtension>());
 };
 
 class ModuleTest : public testing::Test
@@ -47,8 +47,8 @@ protected:
 	void SetUp() override
 	{
 		_builder = ghost::ModuleBuilder::create();
-		_builderMock = std::make_shared<ModuleComponentBuilderMock>();
-		_componentMock = std::make_shared<ModuleComponentMock>();
+		_builderMock = std::make_shared<ModuleExtensionBuilderMock>();
+		_componentMock = std::make_shared<ModuleExtensionMock>();
 
 		_initReturn = true;
 		_initIsCalled = false;
@@ -63,8 +63,8 @@ protected:
 	}
 
 	std::unique_ptr<ghost::ModuleBuilder> _builder;
-	std::shared_ptr<ModuleComponentBuilderMock> _builderMock;
-	std::shared_ptr<ModuleComponentMock> _componentMock;
+	std::shared_ptr<ModuleExtensionBuilderMock> _builderMock;
+	std::shared_ptr<ModuleExtensionMock> _componentMock;
 	bool _initIsCalled;
 	bool _initReturn;
 	bool _runIsCalled;
@@ -95,7 +95,7 @@ public:
 };
 
 const std::string ModuleTest::TEST_MODULE_NAME = "TestModule";
-const std::string ModuleComponentMock::NAME = ModuleTest::TEST_MODULE_NAME;
+const std::string ModuleExtensionMock::NAME = ModuleTest::TEST_MODULE_NAME;
 
 TEST_F(ModuleTest, Test_ModuleBuilder_simpleModule)
 {
@@ -167,11 +167,11 @@ TEST_F(ModuleTest, Test_ModuleBuilder_component_isAccessible)
 	EXPECT_CALL(*_componentMock, getName).Times(2).WillRepeatedly(testing::Return(TEST_MODULE_NAME));
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
 
-	_builder->addComponentBuilder(_builderMock);
+	_builder->addExtensionBuilder(_builderMock);
 	auto module = _builder->build();
 	ASSERT_TRUE(module);
 
-	auto retrievedComponent = module->getComponent<ModuleComponentMock>();
+	auto retrievedComponent = module->getExtension<ModuleExtensionMock>();
 	ASSERT_TRUE(retrievedComponent);
 	ASSERT_TRUE(retrievedComponent->getName() == TEST_MODULE_NAME);
 }
@@ -181,7 +181,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_componentBuilderFails)
 	// build fails, returns nullptr
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(nullptr));
 
-	_builder->addComponentBuilder(_builderMock);
+	_builder->addExtensionBuilder(_builderMock);
 	auto module = _builder->build();
 	ASSERT_FALSE(module);
 }
@@ -192,7 +192,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_componentIsStarted_When_moduleIsStarted)
 	EXPECT_CALL(*_componentMock, stop).Times(1);
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
 
-	_builder->addComponentBuilder(_builderMock);
+	_builder->addExtensionBuilder(_builderMock);
 	auto module = _builder->build();
 	ASSERT_TRUE(module);
 	module->start();
@@ -205,7 +205,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_moduleRuns_When_componentStartSucceeds)
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
 	_builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
 
-	_builder->addComponentBuilder(_builderMock);
+	_builder->addExtensionBuilder(_builderMock);
 	auto module = _builder->build();
 	ASSERT_TRUE(module);
 	module->start();
@@ -219,7 +219,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_moduleFails_When_componentStartFails)
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
 	_builder->setRunningBehavior(std::bind(&ModuleTest::run, this, std::placeholders::_1));
 
-	_builder->addComponentBuilder(_builderMock);
+	_builder->addExtensionBuilder(_builderMock);
 	auto module = _builder->build();
 	ASSERT_TRUE(module);
 	module->start();
@@ -231,7 +231,7 @@ TEST_F(ModuleTest, Test_ModuleBuilder_componentIsNotStopped_When_moduleIsAlready
 	EXPECT_CALL(*_componentMock, stop).Times(0);
 	EXPECT_CALL(*_builderMock, build()).Times(1).WillOnce(testing::Return(_componentMock));
 
-	_builder->addComponentBuilder(_builderMock);
+	_builder->addExtensionBuilder(_builderMock);
 	auto module = _builder->build();
 	ASSERT_TRUE(module);
 	module->stop();
