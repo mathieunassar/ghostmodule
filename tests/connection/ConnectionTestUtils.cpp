@@ -26,8 +26,15 @@ const std::string GhostMessageTester::TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED
 
 ServerMock::ServerMock(const ghost::ConnectionConfiguration& config)
 {
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, stop()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
+}
+
+NotRunningServerMock::NotRunningServerMock(const ghost::ConnectionConfiguration& config) : ServerMock(config)
+{
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
 }
 
 ClientMock::ClientMock(const ghost::ConnectionConfiguration& config) : ghost::Client(config)
