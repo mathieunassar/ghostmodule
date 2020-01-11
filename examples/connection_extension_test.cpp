@@ -30,36 +30,27 @@
 	Again and type "exit" to quit the program.
 ***************************/
 
-// In this example, the run method will print a message every second.
-// We register in the initialization a command to let the user update the text of the message.
-// While the module is running, the user can type the command and update the text.
 class MyModule
 {
 public:
 	// This method will be provided to the module builder as the "initialization method" of the program
 	bool initialize(const ghost::Module& module)
 	{
-		// Among other things, the logger and the name of this module are reachable from these methods
-		GHOST_INFO(module.getLogger()) << "This is module " << module.getModuleName();
+		ghost::ConnectionConfigurationGRPC config("127.0.0.1", 8001);
 
-		auto console = module.getConsole();
-		console->write("Enter the IP address of the remote server to control: ");
-		std::string ip = console->getLine();
-		while (true)
+		// Providing "daemon" as first parameter starts the program as a service.
+		if (module.getProgramOptions().hasParameter("__0") &&
+		    module.getProgramOptions().getParameter<std::string>("__0") == "daemon")
 		{
-			try
-			{
-				console->write("Enter the port number of the remote server to control: ");
-				std::string port = console->getLine();
-				int portNumber = std::stoi(port);
-				module.getExtension<ghost::ConnectionExtension>()->setRemoteControl(
-				    ghost::ConnectionConfigurationGRPC(ip, portNumber));
-				break;
-			}
-			catch (const std::exception& e)
-			{
-				console->write("Invalid entry for the port number (it must be an integer).\n");
-			}
+			GHOST_INFO(module.getLogger()) << "This is the service version of module " << module.getModuleName();
+			// Sets "config" as the server configuration to listen to incoming remote control clients.
+			module.getExtension<ghost::ConnectionExtension>()->addRemoteAccess(config);
+		}
+		else // Otherwise it is a client to the daemon.
+		{
+			GHOST_INFO(module.getLogger()) << "This is the remote controller version of " << module.getModuleName();
+			// Sets "config" as the configuration of the server listening to incoming remote control clients.
+			module.getExtension<ghost::ConnectionExtension>()->setRemoteControl(config);
 		}
 
 		return true; // The initialization was successful, we can return true.
@@ -74,7 +65,7 @@ public:
 	}
 };
 
-int main()
+int main(int argc, char** argv)
 {
 	MyModule myModule;
 
@@ -88,13 +79,12 @@ int main()
 	std::shared_ptr<ghost::Console> console = builder->setConsole();
 	// The GhostLogger writes in the ghost::Console, which manages the inputs and outputs.
 	builder->setLogger(ghost::GhostLogger::create(console));
+	// Parse the program options to determine what to do:
+	builder->setProgramOptions(argc, argv);
 
 	auto connectedModuleBuilder = ghost::ConnectionExtensionBuilder::create();
-	// Put some GRPC definitions in the connection builder
+	// Put GRPC definitions in the connection extension builder to allow it to create gRPC connections.
 	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager());
-	// Configure a remote access server on the localhost on port 8001
-	ghost::ConnectionConfigurationGRPC config("127.0.0.1", 8001);
-	// connectedModuleBuilder->addRemoteAccess(config);
 	// Add the component builder to the module builder
 	builder->addExtensionBuilder(connectedModuleBuilder);
 

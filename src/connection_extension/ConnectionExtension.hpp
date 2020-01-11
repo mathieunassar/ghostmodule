@@ -37,6 +37,7 @@ public:
 	// From ghost::ConnectedModule
 	std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const override;
 	void setRemoteControl(const ghost::ConnectionConfiguration& configuration) override;
+	void addRemoteAccess(const ghost::ConnectionConfiguration& configuration) override;
 
 	// From ghost::ModuleComponent
 	bool start() override;

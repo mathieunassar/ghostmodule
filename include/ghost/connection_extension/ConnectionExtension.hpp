@@ -63,6 +63,15 @@ public:
 	 *	@param configuration	connection information pointing to the module to control.
 	 */
 	virtual void setRemoteControl(const ghost::ConnectionConfiguration& configuration) = 0;
+
+	/**
+	 *	During the module's initialization phase, this method configures the module to be remotely
+	 *	controllable with a server listening to the connection referenced by the "configuration" parameter.
+
+	 *	This method has no effect if called after the module's initialization phase.
+	 *	@param configuration	configuration of a server listening for remote controlling clients.
+	 */
+	virtual void addRemoteAccess(const ghost::ConnectionConfiguration& configuration) = 0;
 };
 } // namespace ghost
 
