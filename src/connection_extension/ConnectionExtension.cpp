@@ -23,8 +23,8 @@ const std::string ghost::ConnectionExtension::NAME = "ConnectionExtension";
 
 ConnectionExtension::ConnectionExtension(
     const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
-				 const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
-				 const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration)
+    const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
+    const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration)
     : _connectionManager(connectionManager), _remoteAccessConfigurations(remoteAccessConfigurations)
 {
 	if (remoteControlConfiguration)

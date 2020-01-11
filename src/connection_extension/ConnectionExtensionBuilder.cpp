@@ -25,8 +25,7 @@ std::shared_ptr<ghost::ConnectionExtensionBuilder> ghost::ConnectionExtensionBui
 	return std::make_shared<ghost::internal::ConnectionExtensionBuilder>();
 }
 
-ConnectionExtensionBuilder::ConnectionExtensionBuilder()
-    : _connectionManager(ghost::ConnectionManager::create())
+ConnectionExtensionBuilder::ConnectionExtensionBuilder() : _connectionManager(ghost::ConnectionManager::create())
 {
 }
 
@@ -54,5 +53,5 @@ ConnectionExtensionBuilder& ConnectionExtensionBuilder::setRemoteControl(
 std::shared_ptr<ghost::ModuleExtension> ConnectionExtensionBuilder::build()
 {
 	return std::make_shared<ghost::internal::ConnectionExtension>(_connectionManager, _remoteAccessConfigurations,
-								  _remoteControlConfiguration);
+								      _remoteControlConfiguration);
 }
