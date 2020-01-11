@@ -31,8 +31,8 @@ class ConnectionExtension : public ghost::ConnectionExtension, public ghost::Mod
 {
 public:
 	ConnectionExtension(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
-			const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
-			const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration);
+			    const std::vector<ghost::ConnectionConfiguration>& remoteAccessConfigurations,
+			    const std::unique_ptr<ghost::ConnectionConfiguration>& remoteControlConfiguration);
 
 	// From ghost::ConnectedModule
 	std::shared_ptr<ghost::ConnectionManager> getConnectionManager() const override;

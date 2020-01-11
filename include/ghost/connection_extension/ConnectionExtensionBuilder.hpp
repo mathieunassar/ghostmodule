@@ -53,8 +53,7 @@ public:
 	 *	@param configuration	connection configuration of the local server accepting clients.
 	 *	@return an instance of this.
 	 */
-	virtual ConnectionExtensionBuilder& addRemoteAccess(
-	    const ghost::ConnectionConfiguration& configuration) = 0;
+	virtual ConnectionExtensionBuilder& addRemoteAccess(const ghost::ConnectionConfiguration& configuration) = 0;
 	/**
 	 *	Sets the configuration of the remote server to control.
 	 *	This configures the module to forward user input to the remote server.
@@ -63,8 +62,7 @@ public:
 	 *	@param configuration	configuration of a remote server to control.
 	 *	@return an instance of this.
 	 */
-	virtual ConnectionExtensionBuilder& setRemoteControl(
-	    const ghost::ConnectionConfiguration& configuration) = 0;
+	virtual ConnectionExtensionBuilder& setRemoteControl(const ghost::ConnectionConfiguration& configuration) = 0;
 };
 } // namespace ghost
 
