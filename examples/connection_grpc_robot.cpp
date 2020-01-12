@@ -104,7 +104,7 @@ public:
 	}
 
 	// The execute method corresponds to the action of this command.
-	bool execute(const ghost::CommandLine& commandLine) override
+	bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) override
 	{
 		if (!commandLine.hasParameter("__0") || !commandLine.hasParameter("__1") || !_robot) return false;
 

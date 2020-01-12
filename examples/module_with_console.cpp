@@ -43,7 +43,8 @@ public:
 		}
 
 		// The execute method corresponds to the action of this command.
-		bool execute(const ghost::CommandLine& commandLine) override
+		bool execute(const ghost::CommandLine& commandLine,
+			     const ghost::CommandExecutionContext& context) override
 		{
 			// When we activated the console, we also redirected the stdout stream to it.
 			std::cout << "Enter new text: " << std::flush;

@@ -21,6 +21,7 @@
 #include <ghost/module/Console.hpp>
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/Module.hpp>
+#include <ghost/module/ModuleExtensionBuilder.hpp>
 #include <memory>
 #include <string>
 
@@ -44,8 +45,9 @@ public:
 	 *	If this method is not called, the initialization will not perform any
 	 *	action and will be considered successful.
 	 *	@param behavior	function to be called when the module initializes.
+	 *	@return an instance of this.
 	 */
-	virtual void setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
+	virtual ModuleBuilder& setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
 	/**
 	 *	Sets the function that will be called cyclically during the module's
 	 *	runtime. The function must return true if another cycle is necessary (if
@@ -53,8 +55,9 @@ public:
 	 *	If this method is not called, nothing will happen and the module will
 	 *	immediately dispose.
 	 *	@param behavior	function to be called cyclically during the module's runtime.
+	 *	@return an instance of this.
 	 */
-	virtual void setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
+	virtual ModuleBuilder& setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) = 0;
 	/**
 	 *	Sets the function that will be called to dispose the module.
 	 *	If an error happened during the runtime of the module, this function
@@ -62,15 +65,17 @@ public:
 	 *	If this method is not called, nothing will happen at the disposition of
 	 *	the module and the program will immediatly exit.
 	 *	@param behavior	function to be called when the module disposes.
+	 *	@return an instance of this.
 	 */
-	virtual void setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) = 0;
+	virtual ModuleBuilder& setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) = 0;
 	/**
 	 *	Passes the program options to the builder. The options will be parsed and
 	 *	made available to the built ghost::Module instance.
 	 *	@param argc	number of arguments present in "argv"
 	 *	@param argv	array of C-style string containing the program options.
+	 *	@return an instance of this.
 	 */
-	virtual void setProgramOptions(int argc, char* argv[]) = 0;
+	virtual ModuleBuilder& setProgramOptions(int argc, char* argv[]) = 0;
 	/**
 	 *	Activates the console management. A handle to the created ghost::Console
 	 *	is returned for further configuration possibilities.
@@ -80,14 +85,26 @@ public:
 	/**
 	 *	Sets the logger of this module.
 	 *	@param logger	logger to set.
+	 *	@return an instance of this.
 	 */
-	virtual void setLogger(const std::shared_ptr<ghost::Logger>& logger) = 0;
+	virtual ModuleBuilder& setLogger(const std::shared_ptr<ghost::Logger>& logger) = 0;
+	/**
+	 *	Adds a module extension builder to this builder. Its "build" method will be called
+	 *	when building this module.
+	 *	@param builder	Builder for a module extension.
+	 *	@return an instance of this.
+	 */
+	virtual ModuleBuilder& addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder) = 0;
 	/**
 	 *	Builds the module based on the parameters provided to this builder.
 	 *	@param moduleName	name of the module to build.
 	 *	@return the built module if the process was successful, nullptr otherwise.
 	 */
 	virtual std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") = 0;
+
+protected:
+	static void setModuleToExtension(const std::shared_ptr<ghost::Module>& module,
+					 const std::shared_ptr<ghost::ModuleExtension>& component);
 };
 } // namespace ghost
 

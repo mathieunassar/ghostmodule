@@ -67,7 +67,7 @@ class Console
 {
 public:
 	static std::shared_ptr<Console> create(bool redirectStdout = true);
-	virtual ~Console() = 0;
+	virtual ~Console() = default;
 
 	/// starts the console. Depending on the implementation, this operation can be unnecessary.
 	virtual void start() = 0;
@@ -96,9 +96,6 @@ public:
 	virtual std::string getCommand() = 0;
 };
 
-inline Console::~Console()
-{
-}
 } // namespace ghost
 
 #endif // GHOST_CONSOLE_HPP

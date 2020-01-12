@@ -6,17 +6,21 @@ file(GLOB header_module_lib
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Console.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandLineInterpreter.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Command.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandExecutionContext.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/PermissionEntity.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/User.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/UserGroup.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/UserManager.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Session.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Module.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleBuilder.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Logger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/LoggerLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/GhostLogger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/StdoutLogger.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleExtension.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleExtensionBuilder.hpp
 )
 
 file(GLOB header_module_lib_internal_windows
@@ -44,6 +48,7 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineParser.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/User.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserGroup.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserManager.hpp
+${GHOST_MODULE_ROOT_DIR}/src/module/Session.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Module.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleBuilder.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/GhostLogger.hpp
@@ -81,11 +86,14 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/LineRequestInputEvent.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLine.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineParser.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineInterpreter.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/CommandExecutionContext.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/User.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserGroup.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/UserManager.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/Session.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Module.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleBuilder.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ModuleExtension.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/GhostLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/StdoutLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/LoggerLine.cpp

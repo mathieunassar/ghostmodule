@@ -37,6 +37,8 @@ public:
 	void error(const std::string& line) override;
 
 private:
+	void printLine(const std::string& line) const;
+
 	std::shared_ptr<Console> _console;
 };
 } // namespace internal

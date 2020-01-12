@@ -21,6 +21,7 @@
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Console.hpp>
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/ModuleExtension.hpp>
 #include <ghost/module/UserManager.hpp>
 #include <memory>
 #include <string>
@@ -100,9 +101,26 @@ public:
 	 */
 	virtual const std::string& getModuleName() const = 0;
 	/**
+	 *	@return the component of this module whose type mathces the template parameter.
+	 *		If no such component exists in the module, returns nullptr.
+	 */
+	template <typename ComponentType>
+	const std::shared_ptr<ComponentType> getExtension() const
+	{
+		return std::dynamic_pointer_cast<ComponentType>(getExtension(ComponentType::NAME));
+	}
+	/**
 	 *	Prints "GHOST" in ASCII characters.
 	 */
 	virtual void printGhostASCII(const std::string& suffix = "") const = 0;
+
+protected:
+	/**
+	 *	Returns the component of the type with the provided type name.
+	 *	@param typeName	name of the type of component.
+	 *	@return the component, or nullptr if no such component exists.
+	 */
+	virtual std::shared_ptr<ghost::ModuleExtension> getExtension(const std::string& typeName) const = 0;
 };
 } // namespace ghost
 

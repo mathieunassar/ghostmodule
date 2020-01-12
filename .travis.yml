@@ -14,6 +14,8 @@ matrix:
             - cmake
             - clang-format
     - os: osx
+      osx_image: xcode11.3
+      python: 3.7
       compiler: clang
       cache:
         directories:
@@ -23,13 +25,13 @@ matrix:
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install conan; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install clang-format; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then pip install conan; fi
 
 install:
 # Automatic detection of your arch, compiler, etc.
   - conan user
   - conan remote add inexorgame "https://api.bintray.com/conan/inexorgame/inexor-conan"
+  - conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
 script:
   - mkdir build
@@ -37,6 +39,6 @@ script:
 # Call the build system
   - cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
   - cmake --build .
-  - cmake --build . --target format-check
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cmake --build . --target format-check; fi
 # Run the tests
   - ctest . -C Release

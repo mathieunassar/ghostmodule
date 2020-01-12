@@ -18,7 +18,7 @@
 
 #include "SystemtestExecutorModule.hpp"
 
-bool SystemtestCommand::execute(const ghost::CommandLine& commandLine)
+bool SystemtestCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
 	if (commandLine.hasParameter("__0"))
 	{

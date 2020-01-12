@@ -21,6 +21,7 @@
 
 #include <ghost/connection/Client.hpp>
 #include <ghost/connection/ClientHandler.hpp>
+#include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/Message.hpp>
 #include <ghost/connection/Publisher.hpp>
 #include <ghost/connection/ReadableConnection.hpp>
@@ -39,6 +40,12 @@ public:
 	MOCK_METHOD1(setClientHandler, void(std::shared_ptr<ghost::ClientHandler> handler));
 };
 
+class NotRunningServerMock : public ServerMock
+{
+public:
+	NotRunningServerMock(const ghost::ConnectionConfiguration& config);
+};
+
 class ClientMock : public ghost::Client
 {
 public:
@@ -46,6 +53,15 @@ public:
 	MOCK_METHOD0(start, bool());
 	MOCK_METHOD0(stop, bool());
 	MOCK_CONST_METHOD0(isRunning, bool());
+
+	void pushMessage(const google::protobuf::Any& message);
+	bool getMessage(google::protobuf::Any& message, const std::chrono::milliseconds& timeout);
+};
+
+class NotRunningClientMock : public ClientMock
+{
+public:
+	NotRunningClientMock(const ghost::ConnectionConfiguration& config);
 };
 
 class PublisherMock : public ghost::Publisher
@@ -73,6 +89,17 @@ class ClientHandlerMock : public ghost::ClientHandler
 public:
 	MOCK_METHOD1(configureClient, void(const std::shared_ptr<ghost::Client>& client));
 	MOCK_METHOD2(handle, bool(std::shared_ptr<ghost::Client> client, bool& keepClientAlive));
+};
+
+class ConnectionManagerMock : public ghost::ConnectionManager
+{
+public:
+	MOCK_METHOD1(createServer, std::shared_ptr<ghost::Server>(const ghost::ConnectionConfiguration& config));
+	MOCK_METHOD1(createClient, std::shared_ptr<ghost::Client>(const ghost::ConnectionConfiguration& config));
+	MOCK_METHOD1(createPublisher, std::shared_ptr<ghost::Publisher>(const ghost::ConnectionConfiguration& config));
+	MOCK_METHOD1(createSubscriber,
+		     std::shared_ptr<ghost::Subscriber>(const ghost::ConnectionConfiguration& config));
+	MOCK_METHOD0(getConnectionFactory, std::shared_ptr<ghost::ConnectionFactory>());
 };
 
 class MessageMock : public ghost::Message

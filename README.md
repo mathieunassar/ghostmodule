@@ -1,8 +1,8 @@
 ``` ascii
-                                                           ____
-_______  _      _  ______  ________ _________              '_' \
-|  _____ |______| |      | |_______     |                \_\    \_/    _
-|______| |      | |______| _______|     |                   \____\____|_|
+                                                   ____
+_______  _      _  ______  ________ _________      '_' \
+|  _____ |______| |      | |_______     |        \_\    \_/    _
+|______| |      | |______| _______|     |           \____\____|_|
 ```
 
 # ghostmodule
@@ -24,7 +24,7 @@ ghostmodule is a C++ library providing a framework for simple to complex command
 - **Command interpretation**: optionally processes user input as commands, previously defined by the developer;
 - **User management**: exposes a login system to restrict the access to some commands and program features;
 - **Data persistence**: provides a sub-library (ghost_persistence) based on Google's Protobuf to store data into save files;
-- **Connectivity and messaging:** provides sub-libraries (ghost_connection and ghost_connection_grpc) to exchange messages within your program and beyond. Define the transported data, ghostmodule does the rest;
+- **Connectivity and messaging:** provides sub-libraries (ghost_connection, ghost_connection_grpc, ghost_connection_extension) to exchange messages within your programs and beyond. Define the transported data, ghostmodule does the rest;
 - **Multiplatform**: the following platforms are officially supported:
   - Linux (Ubuntu Xenial, GCC compilers);
   - Windows (MSVC compilers);
@@ -134,6 +134,7 @@ Three examples are provided to grasp the basic features provided by ghostmodule:
 - examples/persistence_todo_list.cpp: In this example, a TODO list is managed by successive calls to the program with different parameters. By using the "**data persistence**" feature, the list is stored in a file and loaded when the program is used to edit it.
 - examples/connection_grpc_messenger.cpp: a classic and simplistic implementation of a messenger program. "**Connectivity and messaging**" is used through the "ghost_connection" and its specialization for networked connections "ghost_connection_grpc" to illustrate the message exchange between a chat server and client.
 - examples/connection_grpc_robot.cpp: This example gets closer to common uses of distributed system in that it simulates a (very simplified) robot that can move with a fixed velocity and provide its current odometry. While the "**console control**" feature is used to manipulate the velocity of the robot, this example emphasizes the usage of "**Connectivity and messaging**" to illustrate the odometry provision.
+- examples/connection_extension_daemon.cpp: the library ghost_connection_extension integrates the features of ghost_connection into the library ghost_module. This example shows how to use this sub-library to create a daemon / service module, accessible by a remote client. That is, it illustrates the features "**command interpretation**" and "**console control**" together with the "**Connectivity and messaging**".
 
 In order to build the examples, pass the flag "`-DBUILD_EXAMPLES=True`" to CMake. After quickly inspecting the source code, you can execute the programs and play around with them.
 

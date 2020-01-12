@@ -29,6 +29,11 @@ class CommandLineInterpreterTest : public testing::Test
 protected:
 	void SetUp() override
 	{
+		_userManager = ghost::UserManager::create();
+		_interpreter = ghost::CommandLineInterpreter::create(_userManager);
+
+		ASSERT_TRUE(_userManager);
+		ASSERT_TRUE(_interpreter);
 	}
 
 	void TearDown() override
@@ -50,17 +55,24 @@ protected:
 	static const std::string TEST_COMMAND_LINE_STRING_WITH_ILLEGAL;
 
 	static const std::string TEST_COMMAND_LINE_STRING_WITH_MIXED;
+
+	ghost::internal::CommandLineParser _parser;
+	std::shared_ptr<ghost::UserManager> _userManager;
+	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 };
 
 class CustomCommand : public ghost::Command
 {
 public:
-	CustomCommand(bool returnResult) : _returnResult(returnResult), _executeWasCalled(false)
+	CustomCommand(bool returnResult)
+	    : _returnResult(returnResult), _executeWasCalled(false), _hadConsole(false), _lastSessionId("")
 	{
 	}
 
-	bool execute(const ghost::CommandLine& commandLine) override
+	bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) override
 	{
+		if (context.getConsole()) _hadConsole = true;
+		if (context.getSession()) _lastSessionId = context.getSession()->getUUID();
 		_executeWasCalled = true;
 		return _returnResult;
 	}
@@ -82,6 +94,8 @@ public:
 
 	bool _returnResult;
 	bool _executeWasCalled;
+	bool _hadConsole;
+	std::string _lastSessionId;
 };
 
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_CMDNAME = "testCommand";
@@ -109,17 +123,14 @@ const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_ILLE
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_emptyLine)
 {
-	ghost::internal::CommandLineParser parser;
-
-	auto commandLine = parser.parseCommandLine("");
+	auto commandLine = _parser.parseCommandLine("");
 	ASSERT_TRUE(commandLine.getCommandName().empty());
 	ASSERT_TRUE(commandLine.getParametersMap().empty());
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_unknownParameters)
 {
-	ghost::internal::CommandLineParser parser;
-	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING);
+	ghost::CommandLine line = _parser.parseCommandLine(TEST_COMMAND_LINE_STRING);
 	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
 	ASSERT_TRUE(line.getParametersMap().size() == 3);
 	ASSERT_TRUE(line.hasParameter("__0"));
@@ -132,16 +143,14 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_unknownParameters
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_noParameters)
 {
-	ghost::internal::CommandLineParser parser;
-	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_CMDNAME);
+	ghost::CommandLine line = _parser.parseCommandLine(TEST_COMMAND_LINE_CMDNAME);
 	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
 	ASSERT_TRUE(line.getParametersMap().size() == 0);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_namedParameters)
 {
-	ghost::internal::CommandLineParser parser;
-	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_PARAMNAME);
+	ghost::CommandLine line = _parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_PARAMNAME);
 	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
 	ASSERT_TRUE(line.getParametersMap().size() == 2);
 	ASSERT_TRUE(line.hasParameter(TEST_COMMAND_LINE_NAMEA));
@@ -152,8 +161,7 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_namedParameters)
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_mixedParameters)
 {
-	ghost::internal::CommandLineParser parser;
-	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_MIXED);
+	ghost::CommandLine line = _parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_MIXED);
 	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
 	ASSERT_TRUE(line.getParametersMap().size() == 3);
 	ASSERT_TRUE(line.hasParameter(TEST_COMMAND_LINE_NAMEA));
@@ -166,8 +174,7 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_mixedParameters)
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_illegalParameters)
 {
-	ghost::internal::CommandLineParser parser;
-	ghost::CommandLine line = parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_ILLEGAL);
+	ghost::CommandLine line = _parser.parseCommandLine(TEST_COMMAND_LINE_STRING_WITH_ILLEGAL);
 	ASSERT_TRUE(line.getCommandName() == TEST_COMMAND_LINE_CMDNAME);
 	ASSERT_TRUE(line.getParametersMap().size() == 2);
 
@@ -181,63 +188,51 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_illegalParameters
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_ok)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
-
 	auto command = std::make_shared<CustomCommand>(true);
-	interpreter->registerCommand(command);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	_interpreter->registerCommand(command);
+	bool executeSuccess = _interpreter->execute(command->getShortcut(),
+						    ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_CommandLine)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
-
 	auto command = std::make_shared<CustomCommand>(true);
-	interpreter->registerCommand(command);
+	_interpreter->registerCommand(command);
 
-	ghost::internal::CommandLineParser parser;
-	ghost::CommandLine line = parser.parseCommandLine(command->getShortcut() + " -super parameter");
+	ghost::CommandLine line = _parser.parseCommandLine(command->getShortcut() + " -super parameter");
 
-	bool executeSuccess = interpreter->execute(line);
+	bool executeSuccess =
+	    _interpreter->execute(line, ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_commandNotRegistered)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
-
-	bool executeSuccess = interpreter->execute(CustomCommand(true).getShortcut());
+	bool executeSuccess = _interpreter->execute(CustomCommand(true).getShortcut(),
+						    ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_FALSE(executeSuccess);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_commandFails)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
-
 	auto command = std::make_shared<CustomCommand>(false);
-	interpreter->registerCommand(command);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	_interpreter->registerCommand(command);
+	bool executeSuccess = _interpreter->execute(command->getShortcut(),
+						    ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_FALSE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsInfo)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
-
 	auto command = std::make_shared<CustomCommand>(false);
-	interpreter->registerCommand(command);
+	_interpreter->registerCommand(command);
 
 	std::ostringstream oss;
-	interpreter->printHelp(oss);
+	_interpreter->printHelp(oss, ghost::Session::createLocal());
 
 	size_t nameFound = oss.str().find(command->getName());
 	ASSERT_TRUE(nameFound != std::string::npos);
@@ -251,11 +246,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsInfo
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsHelpAndLogin)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
-
 	std::ostringstream oss;
-	interpreter->printHelp(oss);
+	_interpreter->printHelp(oss, ghost::Session::createLocal());
 
 	size_t nameFound = oss.str().find("HelpCommand");
 	ASSERT_TRUE(nameFound != std::string::npos);
@@ -266,49 +258,66 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsHelp
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_permissionsListIsEmpty)
 {
-	auto userManager = ghost::UserManager::create();
-	auto interpreter = ghost::CommandLineInterpreter::create(userManager);
-	ASSERT_TRUE(interpreter);
-
 	auto command = std::make_shared<CustomCommand>(true);
-	interpreter->registerCommand(command);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	_interpreter->registerCommand(command);
+	bool executeSuccess = _interpreter->execute(command->getShortcut(),
+						    ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_noUserManagerPermissionsListNotEmpty)
 {
-	auto interpreter = ghost::CommandLineInterpreter::create();
-	ASSERT_TRUE(interpreter);
+	// recreate the interpreter without user manager for this test.
+	_interpreter = ghost::CommandLineInterpreter::create();
 
 	std::list<std::shared_ptr<ghost::PermissionEntity>> permissionsList;
 	auto user = std::make_shared<ghost::internal::User>("mathieu", "super");
 	permissionsList.push_back(user);
 
 	auto command = std::make_shared<CustomCommand>(true);
-	interpreter->registerCommand(command, permissionsList);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	_interpreter->registerCommand(command, permissionsList);
+	bool executeSuccess = _interpreter->execute(command->getShortcut(),
+						    ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_TRUE(executeSuccess);
 	ASSERT_TRUE(command->_executeWasCalled);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_userNotPermitted)
 {
-	auto userManager = ghost::UserManager::create();
-	auto interpreter = ghost::CommandLineInterpreter::create(userManager);
-	ASSERT_TRUE(interpreter);
-
 	std::list<std::shared_ptr<ghost::PermissionEntity>> permissionsList;
 	auto user = std::make_shared<ghost::internal::User>("mathieu", "super");
 	permissionsList.push_back(user);
 
-	userManager->createUser("mathieu2", "super2");
-	userManager->connect("mathieu2", "super2");
+	_userManager->createUser("mathieu2", "super2");
+	_userManager->connect("mathieu2", "super2", ghost::Session::createLocal());
 
 	auto command = std::make_shared<CustomCommand>(true);
-	interpreter->registerCommand(command, permissionsList);
-	bool executeSuccess = interpreter->execute(command->getShortcut());
+	_interpreter->registerCommand(command, permissionsList);
+	bool executeSuccess = _interpreter->execute(command->getShortcut(),
+						    ghost::CommandExecutionContext(ghost::Session::createLocal()));
 	ASSERT_FALSE(executeSuccess);
 	ASSERT_FALSE(command->_executeWasCalled);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_executeCanAccessContextConsole)
+{
+	auto command = std::make_shared<CustomCommand>(true);
+	_interpreter->registerCommand(command);
+	ghost::CommandExecutionContext context(ghost::Session::createLocal());
+	context.setConsole(ghost::Console::create());
+
+	_interpreter->execute(command->getShortcut(), context);
+	ASSERT_TRUE(command->_hadConsole);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_executeCanAccessContextSession)
+{
+	auto command = std::make_shared<CustomCommand>(true);
+	_interpreter->registerCommand(command);
+	auto session = ghost::Session::create();
+	ghost::CommandExecutionContext context(session);
+
+	_interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(session));
+	ASSERT_TRUE(command->_lastSessionId == session->getUUID());
 }

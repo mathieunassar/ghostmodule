@@ -17,6 +17,7 @@
 #ifndef GHOST_COMMAND_HPP
 #define GHOST_COMMAND_HPP
 
+#include <ghost/module/CommandExecutionContext.hpp>
 #include <ghost/module/CommandLine.hpp>
 
 namespace ghost
@@ -35,9 +36,11 @@ public:
 	 *	Execution of this command with the provided command line as parameters.
 	 *	The method should return true on success, and false otherwise.
 	 *	@param commandLine	the parameters for the execution of this command.
+	 *	@param context		Container of a ghost::Session and optionally a ghost::Console, representing
+	 *		the user who commanded the execution.
 	 *	@return true on a successful execution, false otherwise.
 	 */
-	virtual bool execute(const CommandLine& commandLine) = 0;
+	virtual bool execute(const CommandLine& commandLine, const ghost::CommandExecutionContext& context) = 0;
 	/**
 	 *	@return the name of this command.
 	 */

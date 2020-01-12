@@ -31,7 +31,7 @@ public:
 
 	LoginCommand(std::shared_ptr<ghost::UserManager> userManager);
 
-	bool execute(const CommandLine& commandLine) override;
+	bool execute(const CommandLine& commandLine, const ghost::CommandExecutionContext& context) override;
 
 	std::string getName() const override;
 	std::string getShortcut() const override;

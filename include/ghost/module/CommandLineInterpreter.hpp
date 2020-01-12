@@ -17,6 +17,7 @@
 #ifndef GHOST_COMMANDLINEINTERPRETER_HPP
 #define GHOST_COMMANDLINEINTERPRETER_HPP
 
+#include <ghost/module/CommandExecutionContext.hpp>
 #include <ghost/module/CommandLine.hpp>
 #include <ghost/module/PermissionEntity.hpp>
 #include <iostream>
@@ -62,16 +63,20 @@ public:
 	 *	whose shortcut matches the command's name. If such a command is found, executes it and returns its
 	 *	execution result. Otherwise, returns false.
 	 *	@param commandLine	String containing a command's shortcut and parameters separated by spaces.
+	 *	@param context		Container of a ghost::Session and optionally a ghost::Console, representing
+	 *		the user who commanded the execution.
 	 *	@return true if a matching command was found and successfully executed, false otherwise.
 	 */
-	virtual bool execute(const std::string& commandLine) = 0;
+	virtual bool execute(const std::string& commandLine, const ghost::CommandExecutionContext& context) = 0;
 	/**
 	 *	Searches for a registered ghost::Command whose shortcut matches the command's name. If such a
 	 *	command is found, executes it and returns its execution result. Otherwise, returns false.
 	 *	@param commandLine	parsed command line containing a command's shortcut and parameters.
+	 *	@param context		Container of a ghost::Session and optionally a ghost::Console, representing
+	 *		the user who commanded the execution.
 	 *	@return true if a matching command was found and successfully executed, false otherwise.
 	 */
-	virtual bool execute(const ghost::CommandLine& commandLine) = 0;
+	virtual bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) = 0;
 	/**
 	 *	Adds a command to the list of known executable commands. If a command is already registered with
 	 *	the same name, the older command will be replaced with the new one.
@@ -82,13 +87,15 @@ public:
 	 *	@param command	the command to register.
 	 *	@param permissions	list of users or group of users allowed to use this command.
 	 */
-	virtual void registerCommand(std::shared_ptr<Command> command,
-				     const std::list<std::shared_ptr<PermissionEntity>>& permissions = {}) = 0;
+	virtual void registerCommand(std::shared_ptr<ghost::Command> command,
+				     const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) = 0;
 	/**
 	 *	Prints the name, shortcut and description of all the registered commands into the provided stream.
 	 *	@param stream	stream in which the help will be printed.
+	 *	@param session	the session of the current execution used to determine are available to the current
+	 *		operator.
 	 */
-	virtual void printHelp(std::ostream& stream) const = 0;
+	virtual void printHelp(std::ostream& stream, const std::shared_ptr<ghost::Session>& session) const = 0;
 };
 
 inline CommandLineInterpreter::~CommandLineInterpreter()

@@ -66,15 +66,20 @@ std::shared_ptr<ghost::UserGroup> UserManager::createUserGroup(const std::string
 	return newGroup;
 }
 
-bool UserManager::connect(const std::string& username, const std::string& password)
+bool UserManager::connect(const std::string& username, const std::string& password,
+			  const std::shared_ptr<ghost::Session>& session)
 {
 	for (auto& user : _users)
 	{
 		if (user->getName() == username && user->isPasswordCorrect(password))
 		{
-			_connectedUser = user;
+			// The connection fails if the user is already connected in any session
+			if (isUserAlreadyConnected(user)) return false;
 
-			if (_connectedUserCallback) _connectedUserCallback(user);
+			_connectedUsers[session->getUUID()] = user;
+
+			if (_connectedUserCallbacks.find(session->getUUID()) != _connectedUserCallbacks.end())
+				_connectedUserCallbacks[session->getUUID()](user);
 
 			return true;
 		}
@@ -82,29 +87,42 @@ bool UserManager::connect(const std::string& username, const std::string& passwo
 	return false;
 }
 
-void UserManager::disconnect()
+void UserManager::disconnect(const std::shared_ptr<ghost::Session>& session)
 {
-	_connectedUser = nullptr;
+	_connectedUsers.erase(session->getUUID());
 
-	if (_connectedUserCallback) _connectedUserCallback(_connectedUser);
+	// Report to the callback that the user disconnected
+	if (_connectedUserCallbacks.find(session->getUUID()) != _connectedUserCallbacks.end())
+		_connectedUserCallbacks[session->getUUID()](nullptr);
 }
 
-bool UserManager::isUserConnected() const
+bool UserManager::isUserConnected(const std::shared_ptr<ghost::Session>& session) const
 {
-	return _connectedUser.operator bool();
+	return _connectedUsers.find(session->getUUID()) != _connectedUsers.end();
 }
 
-std::shared_ptr<ghost::User> UserManager::getConnectedUser() const
+std::shared_ptr<ghost::User> UserManager::getConnectedUser(const std::shared_ptr<ghost::Session>& session) const
 {
-	return _connectedUser;
+	if (_connectedUsers.find(session->getUUID()) == _connectedUsers.end()) return nullptr;
+	return _connectedUsers.at(session->getUUID());
 }
 
-void UserManager::setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback)
+void UserManager::setConnectedUserCallback(std::function<void(std::shared_ptr<ghost::User>)> callback,
+					   const std::shared_ptr<ghost::Session>& session)
 {
-	_connectedUserCallback = callback;
+	_connectedUserCallbacks[session->getUUID()] = callback;
 }
 
 std::vector<std::shared_ptr<ghost::UserGroup>> UserManager::getUserGroups() const
 {
 	return std::vector<std::shared_ptr<ghost::UserGroup>>(_groups.begin(), _groups.end());
+}
+
+bool UserManager::isUserAlreadyConnected(const std::shared_ptr<User>& user) const
+{
+	for (const auto& connectedUser : _connectedUsers)
+	{
+		if (connectedUser.second->getName() == user->getName()) return true;
+	}
+	return false;
 }

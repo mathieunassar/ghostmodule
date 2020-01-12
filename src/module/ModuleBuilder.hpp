@@ -31,12 +31,13 @@ class ModuleBuilder : public ghost::ModuleBuilder
 public:
 	ModuleBuilder();
 
-	void setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
-	void setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
-	void setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) override;
-	void setProgramOptions(int argc, char* argv[]) override;
+	ModuleBuilder& setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
+	ModuleBuilder& setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
+	ModuleBuilder& setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) override;
+	ModuleBuilder& setProgramOptions(int argc, char* argv[]) override;
 	std::shared_ptr<ghost::Console> setConsole() override;
-	void setLogger(const std::shared_ptr<ghost::Logger>& logger) override;
+	ModuleBuilder& setLogger(const std::shared_ptr<ghost::Logger>& logger) override;
+	ModuleBuilder& addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder) override;
 
 	std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") override;
 
@@ -44,6 +45,7 @@ private:
 	std::function<bool(const ghost::Module&)> _initializationBehavior;
 	std::function<bool(const ghost::Module&)> _runningBehavior;
 	std::function<void(const ghost::Module&)> _disposeBehavior;
+	std::vector<std::shared_ptr<ghost::ModuleExtensionBuilder>> _componentBuilders;
 	ghost::CommandLine _options;
 	std::shared_ptr<Console> _console;
 	std::shared_ptr<ghost::Logger> _logger;

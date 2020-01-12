@@ -31,7 +31,7 @@ ExitCommand::ExitCommand(ghost::internal::Module* module) : _module(module)
 {
 }
 
-bool ExitCommand::execute(const ghost::CommandLine& commandLine)
+bool ExitCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
 	_module->setState(ghost::internal::Module::DISPOSING);
 	_module->getConsole()->setInputMode(InputMode::DISCRETE); // do that to stop expecting user input

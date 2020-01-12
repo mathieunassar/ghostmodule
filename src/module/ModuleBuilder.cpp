@@ -25,29 +25,39 @@ std::unique_ptr<ghost::ModuleBuilder> ghost::ModuleBuilder::create()
 	return std::make_unique<ghost::internal::ModuleBuilder>();
 }
 
+void ghost::ModuleBuilder::setModuleToExtension(const std::shared_ptr<ghost::Module>& module,
+						const std::shared_ptr<ghost::ModuleExtension>& component)
+{
+	component->_module = module;
+}
+
 ModuleBuilder::ModuleBuilder() : _options("undefined")
 {
 }
 
-void ModuleBuilder::setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior)
+ModuleBuilder& ModuleBuilder::setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior)
 {
 	_initializationBehavior = behavior;
+	return *this;
 }
 
-void ModuleBuilder::setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior)
+ModuleBuilder& ModuleBuilder::setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior)
 {
 	_runningBehavior = behavior;
+	return *this;
 }
 
-void ModuleBuilder::setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior)
+ModuleBuilder& ModuleBuilder::setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior)
 {
 	_disposeBehavior = behavior;
+	return *this;
 }
 
-void ModuleBuilder::setProgramOptions(int argc, char* argv[])
+ModuleBuilder& ModuleBuilder::setProgramOptions(int argc, char* argv[])
 {
 	CommandLineParser parser;
 	_options = parser.parseCommandLine(argc, argv);
+	return *this;
 }
 
 std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
@@ -56,13 +66,45 @@ std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
 	return _console;
 }
 
-void ModuleBuilder::setLogger(const std::shared_ptr<ghost::Logger>& logger)
+ModuleBuilder& ModuleBuilder::setLogger(const std::shared_ptr<ghost::Logger>& logger)
 {
 	_logger = logger;
+	return *this;
+}
+
+ModuleBuilder& ModuleBuilder::addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder)
+{
+	_componentBuilders.push_back(builder);
+	return *this;
 }
 
 std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleName)
 {
-	return std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options,
-							 _initializationBehavior, _runningBehavior, _disposeBehavior);
+	std::vector<std::shared_ptr<ghost::ModuleExtension>> components;
+
+	// Create the module components
+	for (const auto& builder : _componentBuilders)
+	{
+		auto component = builder->build();
+		if (!component) return nullptr;
+		components.push_back(component);
+	}
+
+	// Create the module and give it the components
+	auto module =
+	    std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options, components,
+						      _initializationBehavior, _runningBehavior, _disposeBehavior);
+
+	// Give a weak_ptr of the parent module to its components
+	for (const auto& component : components)
+	{
+		// This can only be achieved because ghost::ModuleBuilder (base class of this)
+		// is friend of ghost::ModuleExtension
+		// This allows the public API to not expose a setter of the parent module
+		// For that reason "setModuleToExtension is a protected static method of ghost::ModuleBuilder
+		// and not of this internal class.
+		setModuleToExtension(module, component);
+	}
+
+	return module;
 }

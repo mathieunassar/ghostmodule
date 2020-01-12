@@ -26,14 +26,38 @@ const std::string GhostMessageTester::TEST_GHOST_MESSAGE_CUSTOM_OTHER_SERIALIZED
 
 ServerMock::ServerMock(const ghost::ConnectionConfiguration& config)
 {
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, stop()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 }
 
+NotRunningServerMock::NotRunningServerMock(const ghost::ConnectionConfiguration& config) : ServerMock(config)
+{
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+}
+
 ClientMock::ClientMock(const ghost::ConnectionConfiguration& config) : ghost::Client(config)
 {
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
 	EXPECT_CALL(*this, stop()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(true));
+}
+
+void ClientMock::pushMessage(const google::protobuf::Any& message)
+{
+	getReaderSink()->put(message);
+}
+
+NotRunningClientMock::NotRunningClientMock(const ghost::ConnectionConfiguration& config) : ClientMock(config)
+{
+	EXPECT_CALL(*this, start()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+	EXPECT_CALL(*this, isRunning()).Times(testing::AnyNumber()).WillRepeatedly(testing::Return(false));
+}
+
+bool ClientMock::getMessage(google::protobuf::Any& message, const std::chrono::milliseconds& timeout)
+{
+	return getWriterSink()->get(message, timeout);
 }
 
 PublisherMock::PublisherMock(const ghost::ConnectionConfiguration& config) : ghost::Publisher(config)

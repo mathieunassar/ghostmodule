@@ -18,7 +18,8 @@
 
 #include "SystemtestExecutorModule.hpp"
 
-bool StopSystemtestCommand::execute(const ghost::CommandLine& commandLine)
+bool StopSystemtestCommand::execute(const ghost::CommandLine& commandLine,
+				    const ghost::CommandExecutionContext& context)
 {
 	_parent->stopSystemtest();
 	return true;

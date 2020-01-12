@@ -18,6 +18,7 @@
 
 #include <iostream>
 
+#include <ghost/module/GhostLogger.hpp>
 #include "../CommandLineInterpreter.hpp"
 
 using namespace ghost::internal;
@@ -30,9 +31,15 @@ HelpCommand::HelpCommand(CommandLineInterpreter* interpreter) : _interpreter(int
 {
 }
 
-bool HelpCommand::execute(const ghost::CommandLine& commandLine)
+bool HelpCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
-	_interpreter->printHelp(std::cout);
+	auto logger = ghost::GhostLogger::create(context.getConsole());
+
+	std::ostringstream oss;
+	_interpreter->printHelp(oss, context.getSession());
+
+	GHOST_INFO(logger) << oss.str();
+
 	return true;
 }
 
