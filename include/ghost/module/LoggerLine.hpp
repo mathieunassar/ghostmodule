@@ -21,31 +21,39 @@
 
 namespace ghost
 {
-	class Logger;
+class Logger;
 
-	enum class LogLevel { LEVEL_TRACE, LEVEL_DEBUG, LEVEL_INFO, LEVEL_WARN, LEVEL_ERROR };
+enum class LogLevel
+{
+	LEVEL_TRACE,
+	LEVEL_DEBUG,
+	LEVEL_INFO,
+	LEVEL_WARN,
+	LEVEL_ERROR
+};
 
-	class LoggerLine
+class LoggerLine
+{
+public:
+	// Constructors
+	LoggerLine(Logger* logger, LogLevel level);
+	LoggerLine(const ghost::LoggerLine&& other);
+	~LoggerLine();
+
+	// Methods
+	template <typename T>
+	LoggerLine& operator<<(const T& part)
 	{
-	public:
-		// Constructors
-		LoggerLine(Logger* logger, LogLevel level);
-		LoggerLine(const ghost::LoggerLine&& other);
-		~LoggerLine();
+		_entry << part;
+		return *this;
+	}
 
-		// Methods
-		template<typename T>
-		LoggerLine& operator<<(const T& part) {
-			_entry << part;
-			return *this;
-		}
-
-	protected:
-		// Attributes
-		Logger* _logger;
-		std::ostringstream _entry;
-		LogLevel _level;
-	};
-}
+protected:
+	// Attributes
+	Logger* _logger;
+	std::ostringstream _entry;
+	LogLevel _level;
+};
+} // namespace ghost
 
 #endif // GHOST_MODULE_GHOST_LOGGER_LINE_HPP

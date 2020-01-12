@@ -17,27 +17,27 @@
 #ifndef GHOST_MODULE_INTERNAL_STDOUT_LOGGER_HPP
 #define GHOST_MODULE_INTERNAL_STDOUT_LOGGER_HPP
 
-#include <ghost/module/StdoutLogger.hpp>
 #include <ghost/module/Console.hpp>
+#include <ghost/module/StdoutLogger.hpp>
 
 namespace ghost
 {
-	namespace internal
-	{
-		class StdoutLogger : public ghost::StdoutLogger
-		{
-		public:
-			StdoutLogger();
+namespace internal
+{
+class StdoutLogger : public ghost::StdoutLogger
+{
+public:
+	StdoutLogger();
 
-			/* From ghost::Logger */
-			void trace(const std::string& line) override;
-			void debug(const std::string& line) override;
-			void info(const std::string& line) override;
-			void warn(const std::string& line) override;
-			void error(const std::string& line) override;
-		};
-	}
-	
-}
+	/* From ghost::Logger */
+	void trace(const std::string& line) override;
+	void debug(const std::string& line) override;
+	void info(const std::string& line) override;
+	void warn(const std::string& line) override;
+	void error(const std::string& line) override;
+};
+} // namespace internal
+
+} // namespace ghost
 
 #endif // GHOST_MODULE_INTERNAL_STDOUT_LOGGER_HPP

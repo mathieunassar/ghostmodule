@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option java_multiple_files = true;
+
+package ghost.protobuf.connection;
+
+// connection configuration structure
+message ConnectionConfiguration
+{
+	string name = 1;
+	
+	repeated ConnectionConfigurationField fields = 2;
+}
+
+message ConnectionConfigurationField
+{
+	// name of the configuration element
+	string name = 1;
+	
+	// serialized value of the element
+	string value = 2;
+}

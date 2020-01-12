@@ -15,14 +15,14 @@
  */
 
 #include "InputModeInputEvent.hpp"
+
 #include "InputController.hpp"
 
 using namespace ghost::internal;
 
 InputModeInputEvent::InputModeInputEventHandler::InputModeInputEventHandler(InputControllerAccess* controller)
-	: InputEventHandler(controller)
+    : InputEventHandler(controller)
 {
-
 }
 
 bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& event)
@@ -35,7 +35,7 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 	while (loop)
 	{
 		line = controller.readLine();
-		
+
 		if (line.empty())
 		{
 			controller.switchConsoleMode(ConsoleDevice::OUTPUT);
@@ -46,7 +46,8 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 			controller.switchConsoleMode(ConsoleDevice::OUTPUT);
 			controller.onNewInput(line);
 
-			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to output
+			// what happens next? if sequential, prompt displays, otherwise the mode is switched back to
+			// output
 			if (controller.getInputMode() == ghost::InputMode::SEQUENTIAL)
 			{
 				// TODO here wait that the command is processed

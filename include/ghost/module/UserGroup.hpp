@@ -17,34 +17,34 @@
 #ifndef GHOST_USERGROUP_HPP
 #define GHOST_USERGROUP_HPP
 
+#include <ghost/module/PermissionEntity.hpp>
+#include <ghost/module/User.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
-#include <ghost/module/User.hpp>
-#include <ghost/module/PermissionEntity.hpp>
-
 namespace ghost
 {
+/**
+ *	Represents a group of users which share permissions.
+ */
+class UserGroup : public PermissionEntity
+{
+public:
 	/**
-	 *	Represents a group of users which share permissions.
+	 *	@return the name of this group.
 	 */
-	class UserGroup : public PermissionEntity
-	{
-	public:
-		/**
-		 *	@return the name of this group.
-		 */
-		virtual const std::string& getName() const = 0;
-		/**
-		 *	@return a list of users in this group.
-		 */
-		virtual std::vector<std::shared_ptr<User>> getUsers() const = 0;
-		/**
-		 *	@param user	user to check if they belong to this group.
-		 *	@return true if the provided user belongs to this group.
-		 */
-		virtual bool containsUser(const User& user) const = 0;
-	};
-}
+	virtual const std::string& getName() const = 0;
+	/**
+	 *	@return a list of users in this group.
+	 */
+	virtual std::vector<std::shared_ptr<User>> getUsers() const = 0;
+	/**
+	 *	@param user	user to check if they belong to this group.
+	 *	@return true if the provided user belongs to this group.
+	 */
+	virtual bool containsUser(const User& user) const = 0;
+};
+} // namespace ghost
 
 #endif // GHOST_USERGROUP_HPP

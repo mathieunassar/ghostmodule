@@ -15,27 +15,28 @@
  */
 
 #include "Module.hpp"
+
 #include <ghost/module/Module.hpp>
 
 #include "commands/ExitCommand.hpp"
 
 using namespace ghost::internal;
 
-Module::Module(const std::string& name,
-	const std::shared_ptr<Console>& console,
-	const std::shared_ptr<ghost::Logger>& logger,
-	const ghost::CommandLine& options,
-	const std::function<bool(const ghost::Module&)>& initializationBehavior,
-	const std::function<bool(const ghost::Module&)>& runningBehavior,
-	const std::function<void(const ghost::Module&)>& disposeBehavior)
-	: _name(name)
-	, _options(options)
-	, _state(Module::STOPPED)
-	, _console(console)
-	, _logger(logger)
-	, _initializationBehavior(initializationBehavior)
-	, _runningBehavior(runningBehavior)
-	, _disposeBehavior(disposeBehavior)
+Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
+	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
+	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
+	       const std::function<bool(const ghost::Module&)>& runningBehavior,
+	       const std::function<void(const ghost::Module&)>& disposeBehavior)
+    : _name(name)
+    , _options(options)
+    , _state(Module::STOPPED)
+    , _console(console)
+    , _logger(logger)
+    , _components(components)
+    , _initializationBehavior(initializationBehavior)
+    , _runningBehavior(runningBehavior)
+    , _disposeBehavior(disposeBehavior)
 {
 	_userManager = std::shared_ptr<UserManager>(new UserManager());
 	_interpreter = std::shared_ptr<CommandLineInterpreter>(new CommandLineInterpreter(_userManager));
@@ -45,42 +46,40 @@ Module::Module(const std::string& name,
 
 	if (_console)
 	{
-		_console->setCommandCallback([this](const std::string& str)
-			{
-				_console->onNewInput(str);
-				_commandExecutorCV.notify_one();
-			});
+		_console->setCommandCallback([this](const std::string& str) {
+			_console->onNewInput(str);
+			_commandExecutorCV.notify_one();
+		});
 
-		_userManager->setConnectedUserCallback([this](std::shared_ptr<ghost::User> user)
-			{
-				_console->getPrompt().setUser(user->getName());
-			});
+		_userManager->setConnectedUserCallback(
+		    [this](std::shared_ptr<ghost::User> user) { _console->getPrompt().setUser(user->getName()); },
+		    ghost::Session::createLocal());
 	}
 }
 
 Module::~Module()
 {
-	if (_console)
-		_console->stop();
+	if (_console) _console->stop();
 }
 
 bool Module::setState(State state)
 {
+	std::unique_lock<std::mutex> lock(_moduleMutex);
 	switch (state)
 	{
-	case INITIALIZING:
-		if (_state != STOPPED) // cannot initialize if alread initialized
-			return false;
-		break;
-	case RUNNING:
-		if (_state != INITIALIZING)
-			return false;
-		break;
-	case DISPOSING:
-		if (_state == STOPPED) // cannot dispose if already stopped
-			return false;
-		break;
-	default: break;
+		case INITIALIZING:
+			if (_state != STOPPED) // cannot initialize if alread initialized
+				return false;
+			break;
+		case RUNNING:
+			if (_state != INITIALIZING) return false;
+			break;
+		case DISPOSING:
+			if (_state == STOPPED) // cannot dispose if already stopped
+				return false;
+			break;
+		default:
+			break;
 	}
 
 	_state = state;
@@ -89,6 +88,7 @@ bool Module::setState(State state)
 
 Module::State Module::getState() const
 {
+	std::unique_lock<std::mutex> lock(_moduleMutex);
 	return _state;
 }
 
@@ -98,48 +98,64 @@ void Module::start()
 	if (getState() != ghost::internal::Module::STOPPED) // only start if module is stopped
 		return;
 
-	if (_console)
-		_console->start();
+	if (_console) _console->start();
 
+	// Call the initialization routine
 	setState(ghost::internal::Module::INITIALIZING);
 	bool initSuccess = init(); // initialize the module
 	if (!initSuccess)
 	{
 		stop();
+		return;
 	}
-	else
+
+	// Start the components
+	bool componentsStarted = true;
+	for (const auto& component : _components) componentsStarted = componentsStarted && component->start();
+	if (!componentsStarted)
 	{
-		setState(ghost::internal::Module::RUNNING);
-		if (_console)
-			_commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
+		stop();
+		return;
+	}
 
-		bool runFinshed = false;
-		ghost::internal::Module::State currentState = getState();
-		while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
-		{
-			runFinshed = !run(); // run as long as the return value is true and the module state is running
-			currentState = getState();
-		}
+	// Set the module to running
+	setState(ghost::internal::Module::RUNNING);
+	if (_console) _commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
 
-		if (currentState == ghost::internal::Module::RUNNING || currentState == ghost::internal::Module::DISPOSING)
-			stop();
+	// Call the running routine as long as the module is running and it returns true
+	bool runFinshed = false;
+	ghost::internal::Module::State currentState = getState();
+	while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
+	{
+		runFinshed = !run(); // run as long as the return value is true and the module state is running
+		currentState = getState();
+	}
 
-		if (_console)
-		{
-			_commandExecutorCV.notify_one();
-			_commandExecutor.join();
-		}
+	// Dipose the module
+	if (currentState == ghost::internal::Module::RUNNING || currentState == ghost::internal::Module::DISPOSING)
+		stop();
+
+	if (_console)
+	{
+		_commandExecutorCV.notify_one();
+		_commandExecutor.join();
 	}
 }
 
 void Module::stop()
 {
+	if (getState() == ghost::internal::Module::STOPPED ||
+	    getState() == ghost::internal::Module::DISPOSING) // only stop if module is running or intializing
+		return;
+
 	setState(ghost::internal::Module::DISPOSING);
 	dispose();
 	setState(ghost::internal::Module::STOPPED);
 
-	if (_console)
-		_console->stop();
+	// Stop the components
+	for (const auto& component : _components) component->stop();
+
+	if (_console) _console->stop();
 }
 
 std::shared_ptr<ghost::Console> Module::getConsole() const
@@ -175,8 +191,7 @@ const std::string& Module::getModuleName() const
 void Module::printGhostASCII(const std::string& suffix) const
 {
 	std::string s = "";
-	if (!suffix.empty())
-		s = "/" + suffix;
+	if (!suffix.empty()) s = "/" + suffix;
 
 	if (_logger)
 	{
@@ -194,14 +209,21 @@ void Module::printGhostASCII(const std::string& suffix) const
 	}
 
 	auto console = getConsole();
-	if (console)
-		console->flush();
+	if (console) console->flush();
+}
+
+std::shared_ptr<ghost::ModuleExtension> Module::getExtension(const std::string& typeName) const
+{
+	for (const auto& c : _components)
+	{
+		if (c->getName() == typeName) return c;
+	}
+	return nullptr;
 }
 
 bool Module::init()
 {
-	if (_initializationBehavior)
-		return _initializationBehavior(*this);
+	if (_initializationBehavior) return _initializationBehavior(*this);
 
 	// per default do nothing
 	return true;
@@ -209,8 +231,7 @@ bool Module::init()
 
 bool Module::run()
 {
-	if (_runningBehavior)
-		return _runningBehavior(*this);
+	if (_runningBehavior) return _runningBehavior(*this);
 
 	// per default do nothing
 	return false;
@@ -218,8 +239,7 @@ bool Module::run()
 
 void Module::dispose()
 {
-	if (_disposeBehavior)
-		return _disposeBehavior(*this);
+	if (_disposeBehavior) return _disposeBehavior(*this);
 
 	// per default do nothing
 }
@@ -229,12 +249,15 @@ void Module::commandExecutor()
 	while (getState() == ghost::internal::Module::RUNNING)
 	{
 		std::unique_lock<std::mutex> lock(_commandExecutorMutex);
-		_commandExecutorCV.wait(lock, [&]{ return getState() != ghost::internal::Module::RUNNING || _console->hasCommands(); });
+		_commandExecutorCV.wait(
+		    lock, [&] { return getState() != ghost::internal::Module::RUNNING || _console->hasCommands(); });
 
 		if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
 		{
 			auto command = _console->getCommand();
-			_interpreter->execute(command);
+			ghost::CommandExecutionContext context(ghost::Session::createLocal());
+			context.setConsole(_console);
+			_interpreter->execute(command, context);
 			_console->flush();
 		}
 	}

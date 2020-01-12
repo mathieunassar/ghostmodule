@@ -15,7 +15,10 @@
  */
 
 #include "HelpCommand.hpp"
+
 #include <iostream>
+
+#include <ghost/module/GhostLogger.hpp>
 #include "../CommandLineInterpreter.hpp"
 
 using namespace ghost::internal;
@@ -24,15 +27,19 @@ const std::string HelpCommand::NAME = "HelpCommand";
 const std::string HelpCommand::_SHORTCUT = "help";
 const std::string HelpCommand::_DESCRIPTION = "Displays the list of available commands to the user";
 
-HelpCommand::HelpCommand(CommandLineInterpreter* interpreter)
-	: _interpreter(interpreter)
+HelpCommand::HelpCommand(CommandLineInterpreter* interpreter) : _interpreter(interpreter)
 {
-
 }
 
-bool HelpCommand::execute(const ghost::CommandLine& commandLine)
+bool HelpCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
-	_interpreter->printHelp(std::cout);
+	auto logger = ghost::GhostLogger::create(context.getConsole());
+
+	std::ostringstream oss;
+	_interpreter->printHelp(oss, context.getSession());
+
+	GHOST_INFO(logger) << oss.str();
+
 	return true;
 }
 

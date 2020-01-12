@@ -18,10 +18,8 @@
 
 using namespace ghost::internal;
 
-UserGroup::UserGroup(const std::string& name)
-	: _name(name)
+UserGroup::UserGroup(const std::string& name) : _name(name)
 {
-
 }
 
 void UserGroup::addUser(std::shared_ptr<User> user)
@@ -43,8 +41,7 @@ bool UserGroup::containsUser(const ghost::User& user) const
 {
 	for (auto& usr : _users)
 	{
-		if (usr->getName() == user.getName())
-			return true;
+		if (usr->getName() == user.getName()) return true;
 	}
 	return false;
 }
@@ -57,8 +54,7 @@ bool UserGroup::contains(const PermissionEntity& other) const
 	else
 	{
 		const User* cast2 = dynamic_cast<const User*>(&other);
-		if (cast2 != nullptr)
-			return containsUser(*cast2);
+		if (cast2 != nullptr) return containsUser(*cast2);
 	}
 	return false;
 }

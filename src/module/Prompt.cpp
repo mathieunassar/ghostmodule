@@ -15,13 +15,12 @@
  */
 
 #include "Prompt.hpp"
+
 #include <regex>
 
 using namespace ghost::internal;
 
-Prompt::Prompt(const std::string& format)
-	: _format(format)
-	, _user("")
+Prompt::Prompt(const std::string& format) : _format(format), _user("")
 {
 	update();
 }

@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-template<typename DataType>
+template <typename DataType>
 bool SaveData::get(DataType& type, size_t index) const
 {
-	if (index >= size())
-		return false;
+	if (index >= size()) return false;
 
 	return getData().at(index)->UnpackTo(&type);
 }
 
 // adds data to the data set
-template<typename DataType>
+template <typename DataType>
 void SaveData::put(const DataType& type)
 {
 	auto any = std::make_shared<google::protobuf::Any>();
@@ -32,11 +31,10 @@ void SaveData::put(const DataType& type)
 	getData().push_back(any);
 }
 
-template<typename DataType>
+template <typename DataType>
 bool SaveData::replace(const DataType& type, size_t index)
 {
-	if (index >= size())
-		return false;
+	if (index >= size()) return false;
 
 	auto any = std::make_shared<google::protobuf::Any>();
 	any->PackFrom(type);

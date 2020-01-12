@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option java_multiple_files = true;
+
+package ghost.protobuf.connection;
+
+// this message defines the structure that encapsulates a message with user specifc format
+message GenericMessage
+{
+	// message header
+	GenericMessageHeader header = 1;
+	
+	// serialized version of the message
+	string serial = 2;
+	
+	// format name of the message
+	string format = 3;
+	
+	// type name of the message
+	string name = 4;
+}
+
+// header of a GenericMessage
+message GenericMessageHeader
+{
+	// timestamp in ms
+	int64 timestamp = 1;
+	
+	// emitting machine
+	string hostname = 2;
+}

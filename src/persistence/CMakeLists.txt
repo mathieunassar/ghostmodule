@@ -45,11 +45,11 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 	file(GLOB source_persistence_tests
-		${GHOST_MODULE_ROOT_DIR}/tests/SaveFileTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/SaveDataTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/SaveManagerTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/PersistenceTestHelpers.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/PersistenceTestHelpers.hpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveFileTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveDataTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveManagerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/PersistenceTestHelpers.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/PersistenceTestHelpers.hpp
 	)
 
 	file(GLOB protobuf_persistence_tests

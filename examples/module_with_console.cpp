@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include <ghost/module/ModuleBuilder.hpp>
-#include <ghost/module/Module.hpp>
-#include <ghost/module/GhostLogger.hpp>
 #include <ghost/module/Command.hpp>
+#include <ghost/module/GhostLogger.hpp>
+#include <ghost/module/Module.hpp>
+#include <ghost/module/ModuleBuilder.hpp>
 #include <thread>
 
 /***************************
@@ -38,10 +38,13 @@ public:
 	{
 	public:
 		UpdateTextCommand(MyModule* parent, std::shared_ptr<ghost::Console> console)
-			: _parent(parent), _console(console) {}
+		    : _parent(parent), _console(console)
+		{
+		}
 
 		// The execute method corresponds to the action of this command.
-		bool execute(const ghost::CommandLine& commandLine) override
+		bool execute(const ghost::CommandLine& commandLine,
+			     const ghost::CommandExecutionContext& context) override
 		{
 			// When we activated the console, we also redirected the stdout stream to it.
 			std::cout << "Enter new text: " << std::flush;
@@ -52,10 +55,19 @@ public:
 			return true;
 		}
 
-		std::string getName() const override { return "UpdateTextCommand"; }
+		std::string getName() const override
+		{
+			return "UpdateTextCommand";
+		}
 		// This method defines the command that he user will have to enter to invoke this command
-		std::string getShortcut() const override { return "updateText"; }
-		std::string getDescription() const override { return "Updates the text of MyModule."; }
+		std::string getShortcut() const override
+		{
+			return "updateText";
+		}
+		std::string getDescription() const override
+		{
+			return "Updates the text of MyModule.";
+		}
 
 	private:
 		MyModule* _parent;
@@ -82,8 +94,9 @@ public:
 	bool run(const ghost::Module& module)
 	{
 		GHOST_INFO(module.getLogger()) << _theText;
-		// We could as well use the next line - if the output is blocked by ghost::Console, std::cout is also blocked
-		//std::cout << _theText << std::endl;
+		// We could as well use the next line - if the output is blocked by ghost::Console, std::cout is also
+		// blocked
+		// std::cout << _theText << std::endl;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		return true; // we will loop forever. Users can invoke the built-in "exit" command to leave the program.
@@ -117,9 +130,9 @@ int main()
 
 	// The following line creates the module with all the parameters, and names it "myModuleInstance0".
 	std::shared_ptr<ghost::Module> module = builder->build("myModuleInstance0");
-	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr here.
-	if (module)
-		module->start();
+	// If the build process is successful, we can start the module. If it were not successful, we would have nullptr
+	// here.
+	if (module) module->start();
 
 	// Start blocks until the module ends.
 	return 0;

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package ghost.examples.protobuf;
+
+message MessengerMessage
+{
+	string author = 1;
+
+	string content = 2;
+}

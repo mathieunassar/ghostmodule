@@ -14,43 +14,39 @@
  * limitations under the License.
  */
 
-#include <ghost/module/LoggerLine.hpp>
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/LoggerLine.hpp>
 
-ghost::LoggerLine::LoggerLine(ghost::Logger* logger, ghost::LogLevel level)
-	: _logger(logger)
-	, _level(level)
+ghost::LoggerLine::LoggerLine(ghost::Logger* logger, ghost::LogLevel level) : _logger(logger), _level(level)
 {
-
 }
 
 ghost::LoggerLine::LoggerLine(const ghost::LoggerLine&& other)
-	: _logger(std::move(other._logger))
-	, _level(std::move(other._level))
+    : _logger(std::move(other._logger)), _level(std::move(other._level))
 {
 	// entry is left uninitialized
 }
-
 
 ghost::LoggerLine::~LoggerLine()
 {
 	switch (_level)
 	{
-	case ghost::LogLevel::LEVEL_TRACE:
-		_logger->trace(_entry.str());
-		break;
-	case ghost::LogLevel::LEVEL_DEBUG:
-		_logger->debug(_entry.str());
-		break;
-	case ghost::LogLevel::LEVEL_INFO:
-		_logger->info(_entry.str());
-		break;
-	case ghost::LogLevel::LEVEL_WARN:
-		_logger->warn(_entry.str());
-		break;
-	case ghost::LogLevel::LEVEL_ERROR:
-		_logger->error(_entry.str());
-		break;
-	default: break;
+		case ghost::LogLevel::LEVEL_TRACE:
+			_logger->trace(_entry.str());
+			break;
+		case ghost::LogLevel::LEVEL_DEBUG:
+			_logger->debug(_entry.str());
+			break;
+		case ghost::LogLevel::LEVEL_INFO:
+			_logger->info(_entry.str());
+			break;
+		case ghost::LogLevel::LEVEL_WARN:
+			_logger->warn(_entry.str());
+			break;
+		case ghost::LogLevel::LEVEL_ERROR:
+			_logger->error(_entry.str());
+			break;
+		default:
+			break;
 	}
 }

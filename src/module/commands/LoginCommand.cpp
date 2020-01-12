@@ -15,6 +15,8 @@
  */
 
 #include "LoginCommand.hpp"
+
+#include <ghost/module/GhostLogger.hpp>
 #include <iostream>
 
 using namespace ghost::internal;
@@ -27,14 +29,13 @@ const std::string LoginCommand::_PARAM_PASSWORD = "password";
 const std::string LoginCommand::_PARAM_USERNAME_SHORT = "u";
 const std::string LoginCommand::_PARAM_PASSWORD_SHORT = "p";
 
-LoginCommand::LoginCommand(std::shared_ptr<ghost::UserManager> userManager)
-	: _userManager(userManager)
+LoginCommand::LoginCommand(std::shared_ptr<ghost::UserManager> userManager) : _userManager(userManager)
 {
-
 }
 
-bool LoginCommand::execute(const ghost::CommandLine& commandLine)
+bool LoginCommand::execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context)
 {
+	auto logger = ghost::GhostLogger::create(context.getConsole());
 	std::string username, password;
 	if (commandLine.hasParameter(_PARAM_USERNAME))
 	{
@@ -58,19 +59,19 @@ bool LoginCommand::execute(const ghost::CommandLine& commandLine)
 
 	if (username.empty())
 	{
-		std::cout << "The username cannot be empty." << std::endl;
+		GHOST_INFO(logger) << "The username cannot be empty.";
 		return false;
 	}
 
-	bool connectionSuccess = _userManager->connect(username, password);
-	if (!connectionSuccess || !_userManager->isUserConnected())
+	bool connectionSuccess = _userManager->connect(username, password, context.getSession());
+	if (!connectionSuccess || !_userManager->isUserConnected(context.getSession()))
 	{
-		std::cout << "Connection failed: invalid username / password combination" << std::endl;
+		GHOST_INFO(logger) << "Connection failed: invalid username / password combination";
 		return false;
 	}
 
-	auto user = _userManager->getConnectedUser();
-	std::cout << "User " << user->getName() << " successfully connected" << std::endl;
+	auto user = _userManager->getConnectedUser(context.getSession());
+	GHOST_INFO(logger) << "User " << user->getName() << " successfully connected";
 	return true;
 }
 

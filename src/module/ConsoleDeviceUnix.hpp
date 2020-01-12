@@ -18,47 +18,48 @@
 #define GHOST_INTERNAL_CONSOLEDEVICE_UNIX_HPP
 
 #include <termios.h>
-#include <functional>
 #include <unistd.h>
+
 #include <atomic>
+#include <functional>
 
 #include "ConsoleDevice.hpp"
 
 namespace ghost
 {
-	namespace internal
+namespace internal
+{
+/**
+ *	Implementation of a {@ref ConsoleDevice} for Windows.
+ */
+class ConsoleDeviceUnix : public ConsoleDevice
+{
+public:
+	ConsoleDeviceUnix();
+
+	bool start() override;
+	void stop() override;
+
+	bool setConsoleMode(ConsoleMode mode) override;
+	bool awaitInputMode() override;
+	bool read(std::string& output) override;
+	bool write(const std::string& text) override;
+
+private:
+	enum class DeviceMode
 	{
-		/**
-		*	Implementation of a {@ref ConsoleDevice} for Windows.
-		*/
-		class ConsoleDeviceUnix : public ConsoleDevice
-		{
-		public:
-			ConsoleDeviceUnix();
+		IDLE,
+		AWAIT_INPUT,
+		READ
+	};
 
-			bool start() override;
-			void stop() override;
+	bool awaitInput(const std::function<bool()>& untilPredicate);
 
-			bool setConsoleMode(ConsoleMode mode) override;
-			bool awaitInputMode() override;
-			bool read(std::string& output) override;
-			bool write(const std::string& text) override;
-
-		private:
-			enum class DeviceMode
-			{
-				IDLE,
-				AWAIT_INPUT,
-				READ
-			};
-			
-			bool awaitInput(const std::function<bool()>& untilPredicate);
-			
-			termios _referenceState;
-			std::atomic<bool> _enable;
-			std::atomic<DeviceMode> _mode;
-		};
-	}
-}
+	termios _referenceState;
+	std::atomic<bool> _enable;
+	std::atomic<DeviceMode> _mode;
+};
+} // namespace internal
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_CONSOLEDEVICE_UNIX_HPP

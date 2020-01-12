@@ -21,31 +21,31 @@
 
 namespace ghost
 {
-	namespace internal
-	{
-		class Module;
+namespace internal
+{
+class Module;
 
-		class ExitCommand : public ghost::Command
-		{
-		public:
-			static const std::string NAME;
+class ExitCommand : public ghost::Command
+{
+public:
+	static const std::string NAME;
 
-			ExitCommand(Module* interpreter);
+	ExitCommand(Module* interpreter);
 
-			bool execute(const CommandLine& commandLine) override;
-			
-			std::string getName() const override;
-			std::string getShortcut() const override;
-			std::string getDescription() const override;
+	bool execute(const CommandLine& commandLine, const ghost::CommandExecutionContext& context) override;
 
-		private:
-			static const std::string _SHORTCUT;
-			static const std::string _DESCRIPTION;
+	std::string getName() const override;
+	std::string getShortcut() const override;
+	std::string getDescription() const override;
 
-			Module* _module;
-		};
-	}
-	
-}
+private:
+	static const std::string _SHORTCUT;
+	static const std::string _DESCRIPTION;
+
+	Module* _module;
+};
+} // namespace internal
+
+} // namespace ghost
 
 #endif // GHOST_INTERNAL_COMMANDS_EXITCOMMAND_HPP

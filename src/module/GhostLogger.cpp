@@ -15,6 +15,7 @@
  */
 
 #include "GhostLogger.hpp"
+#include <iostream>
 
 using namespace ghost::internal;
 
@@ -23,39 +24,45 @@ std::shared_ptr<ghost::GhostLogger> ghost::GhostLogger::create(const std::shared
 	return std::make_shared<ghost::internal::GhostLogger>(console);
 }
 
-GhostLogger::GhostLogger(const std::shared_ptr<ghost::Console>& console)
-	: _console(console)
+GhostLogger::GhostLogger(const std::shared_ptr<ghost::Console>& console) : _console(console)
 {
-
 }
 
 /* From ghost::Logger */
 void GhostLogger::trace(const std::string& line)
 {
 	std::string toWrite = "[TRACE] " + line + "\n";
-	_console->write(toWrite);
+	printLine(toWrite);
 }
 
 void GhostLogger::debug(const std::string& line)
 {
 	std::string toWrite = "[DEBUG] " + line + "\n";
-	_console->write(toWrite);
+	printLine(toWrite);
 }
 
 void GhostLogger::info(const std::string& line)
 {
 	std::string toWrite = "[INFO ] " + line + "\n";
-	_console->write(toWrite);
+	printLine(toWrite);
 }
 
 void GhostLogger::warn(const std::string& line)
 {
 	std::string toWrite = "[WARN ] " + line + "\n";
-	_console->write(toWrite);
+	printLine(toWrite);
 }
 
 void GhostLogger::error(const std::string& line)
 {
 	std::string toWrite = "[ERROR] " + line + "\n";
-	_console->write(toWrite);
+	printLine(toWrite);
+}
+
+void GhostLogger::printLine(const std::string& line) const
+{
+	if (_console)
+		_console->write(line);
+	else
+		std::cout << line << std::flush;
 }
