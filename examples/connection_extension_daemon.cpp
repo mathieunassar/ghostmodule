@@ -26,15 +26,14 @@
 
 /***************************
 	TRY IT:
-	 The module presented in this example illustrates how to use the connection_extension library to create a daemon/service and
-	 to communicate with it from a client.
-	 When the module is started as a service with the "daemon" parameter, it sets up a server listening to incoming connections from
-	 clients that can remotely control it.
-	 When a client is connected to a service, it forwards all the commands from its console to the service.
-	 In order to execute commands on the client side, prefix the commands with "local:".
-	 Both daemon/client provide the "uptime" command.
-	 For example: start the daemon and start a client. On the client's console, enter "uptime" and observe that the printed value matches
-	 the uptime of the daemon. Then, enter "local:uptime": this time, the client executes the command locally and prints its own uptime.
+	 The module presented in this example illustrates how to use the connection_extension library to create a
+daemon/service and to communicate with it from a client. When the module is started as a service with the "daemon"
+parameter, it sets up a server listening to incoming connections from clients that can remotely control it. When a
+client is connected to a service, it forwards all the commands from its console to the service. In order to execute
+commands on the client side, prefix the commands with "local:". Both daemon/client provide the "uptime" command. For
+example: start the daemon and start a client. On the client's console, enter "uptime" and observe that the printed value
+matches the uptime of the daemon. Then, enter "local:uptime": this time, the client executes the command locally and
+prints its own uptime.
 ***************************/
 
 /**
@@ -54,13 +53,20 @@ public:
 	{
 		// Use a ghost::GhostLogger to handle the console provided in the context.
 		auto logger = ghost::GhostLogger::create(context.getConsole());
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - _startTime);
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+										     _startTime);
 		logger->info(std::to_string(elapsed.count()));
 		return true;
 	}
 
-	std::string getName() const override { return "UptimeCommand"; }
-	std::string getShortcut() const override { return "uptime"; }
+	std::string getName() const override
+	{
+		return "UptimeCommand";
+	}
+	std::string getShortcut() const override
+	{
+		return "uptime";
+	}
 	std::string getDescription() const override
 	{
 		return "Gets the number of milliseconds elapsed since the beginning of the program.";
@@ -87,15 +93,18 @@ public:
 		if (module.getProgramOptions().hasParameter("__0") &&
 		    module.getProgramOptions().getParameter<std::string>("__0") == "daemon")
 		{
-			GHOST_INFO(module.getLogger()) << "This is the service version of module " << module.getModuleName();
+			GHOST_INFO(module.getLogger())
+			    << "This is the service version of module " << module.getModuleName();
 			// Sets "config" as the server configuration to listen to incoming remote control clients.
 			module.getExtension<ghost::ConnectionExtension>()->addRemoteAccess(config);
 		}
 		else // Otherwise it is a client to the daemon.
 		{
-			GHOST_INFO(module.getLogger()) << "This is the remote controller version of " << module.getModuleName();
-			// Sets "config" as the configuration of the server listening to incoming remote control clients.
-			// Note: from that point, if the server is not available, the client program will fail to start.
+			GHOST_INFO(module.getLogger())
+			    << "This is the remote controller version of " << module.getModuleName();
+			// Sets "config" as the configuration of the server listening to incoming remote control
+			// clients. Note: from that point, if the server is not available, the client program will fail
+			// to start.
 			module.getExtension<ghost::ConnectionExtension>()->setRemoteControl(config);
 		}
 
@@ -122,7 +131,8 @@ int main(int argc, char** argv)
 	// Configuration of the module. We provide here all the components to the builder.
 	auto builder = ghost::ModuleBuilder::create();
 	// This line will provide the intialization method.
-	builder->setInitializeBehavior(std::bind(&ConnectionExtensionDaemonModule::initialize, &myModule, std::placeholders::_1));
+	builder->setInitializeBehavior(
+	    std::bind(&ConnectionExtensionDaemonModule::initialize, &myModule, std::placeholders::_1));
 	// This line will provide the run method, which will be called cyclically.
 	builder->setRunningBehavior(std::bind(&ConnectionExtensionDaemonModule::run, &myModule, std::placeholders::_1));
 	// We want to manipulate the console; the following line activates this feature.
@@ -141,7 +151,7 @@ int main(int argc, char** argv)
 	// The following line creates the module with all the parameters, and names it "myModuleInstance0".
 	std::shared_ptr<ghost::Module> module = builder->build("myModuleInstance0");
 	// If the build process is successful, we can start the module.
-	//If it were not successful, we would have nullptr here.
+	// If it were not successful, we would have nullptr here.
 	if (module) module->start();
 
 	// Start blocks until the module ends.
