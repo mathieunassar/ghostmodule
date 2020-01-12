@@ -59,9 +59,9 @@ endif()
 
 if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
 	# minimum code to create a remote module
-	add_executable(connection_extension_test
-		${GHOST_MODULE_ROOT_DIR}/examples/connection_extension_test.cpp)
-	target_link_libraries(connection_extension_test ghost_module ghost_connection ghost_connection_grpc ghost_connection_extension)
+	add_executable(connection_extension_daemon
+		${GHOST_MODULE_ROOT_DIR}/examples/connection_extension_daemon.cpp)
+	target_link_libraries(connection_extension_daemon ghost_module ghost_connection ghost_connection_grpc ghost_connection_extension)
 
-	set_property(TARGET connection_extension_test PROPERTY FOLDER "examples")
+	set_property(TARGET connection_extension_daemon PROPERTY FOLDER "examples")
 endif()

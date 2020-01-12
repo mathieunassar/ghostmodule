@@ -75,7 +75,7 @@ private:
  *	The "initialize" method configures the remote access on the daemon and the remote control on the client
  *	and registers the "uptime" command.
  */
-class ConnectionExtensionExampleModule
+class ConnectionExtensionDaemonModule
 {
 public:
 	// This method will be provided to the module builder as the "initialization method" of the program
@@ -117,14 +117,14 @@ public:
 
 int main(int argc, char** argv)
 {
-	ConnectionExtensionExampleModule myModule;
+	ConnectionExtensionDaemonModule myModule;
 
 	// Configuration of the module. We provide here all the components to the builder.
 	auto builder = ghost::ModuleBuilder::create();
 	// This line will provide the intialization method.
-	builder->setInitializeBehavior(std::bind(&ConnectionExtensionExampleModule::initialize, &myModule, std::placeholders::_1));
+	builder->setInitializeBehavior(std::bind(&ConnectionExtensionDaemonModule::initialize, &myModule, std::placeholders::_1));
 	// This line will provide the run method, which will be called cyclically.
-	builder->setRunningBehavior(std::bind(&ConnectionExtensionExampleModule::run, &myModule, std::placeholders::_1));
+	builder->setRunningBehavior(std::bind(&ConnectionExtensionDaemonModule::run, &myModule, std::placeholders::_1));
 	// We want to manipulate the console; the following line activates this feature.
 	std::shared_ptr<ghost::Console> console = builder->setConsole();
 	// The GhostLogger writes in the ghost::Console, which manages the inputs and outputs.
