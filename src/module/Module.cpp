@@ -255,7 +255,9 @@ void Module::commandExecutor()
 		if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
 		{
 			auto command = _console->getCommand();
-			_interpreter->execute(command, ghost::CommandExecutionContext(ghost::Session::createLocal()));
+			ghost::CommandExecutionContext context(ghost::Session::createLocal());
+			context.setConsole(_console);
+			_interpreter->execute(command, context);
 			_console->flush();
 		}
 	}
