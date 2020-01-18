@@ -28,7 +28,7 @@
 class ModuleExtensionMock : public ghost::ModuleExtension
 {
 public:
-	static const std::string NAME;
+	static const std::string getExtensionName();
 
 	MOCK_METHOD0(start, bool());
 	MOCK_METHOD0(stop, void());
@@ -95,7 +95,11 @@ public:
 };
 
 const std::string ModuleTest::TEST_MODULE_NAME = "TestModule";
-const std::string ModuleExtensionMock::NAME = ModuleTest::TEST_MODULE_NAME;
+
+const std::string ModuleExtensionMock::getExtensionName()
+{
+	return ModuleTest::TEST_MODULE_NAME;
+}
 
 TEST_F(ModuleTest, Test_ModuleBuilder_simpleModule)
 {

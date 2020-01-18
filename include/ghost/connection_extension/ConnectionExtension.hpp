@@ -39,7 +39,7 @@ class ConnectionExtension
 {
 public:
 	/// Name of this component. Used by ghost::Module to identify this component.
-	static const std::string NAME;
+	static const std::string getExtensionName();
 
 	virtual ~ConnectionExtension() = default;
 

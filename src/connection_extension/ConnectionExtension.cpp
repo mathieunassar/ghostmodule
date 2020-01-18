@@ -19,7 +19,10 @@
 
 using namespace ghost::internal;
 
-const std::string ghost::ConnectionExtension::NAME = "ConnectionExtension";
+const std::string ghost::ConnectionExtension::getExtensionName()
+{
+	return "ConnectionExtension";
+}
 
 ConnectionExtension::ConnectionExtension(
     const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
@@ -78,7 +81,7 @@ void ConnectionExtension::stop()
 
 std::string ConnectionExtension::getName() const
 {
-	return ghost::ConnectionExtension::NAME;
+	return ghost::ConnectionExtension::getExtensionName();
 }
 
 bool ConnectionExtension::initializeRemoteAccess()

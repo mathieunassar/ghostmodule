@@ -107,7 +107,7 @@ public:
 	template <typename ComponentType>
 	const std::shared_ptr<ComponentType> getExtension() const
 	{
-		return std::dynamic_pointer_cast<ComponentType>(getExtension(ComponentType::NAME));
+		return std::dynamic_pointer_cast<ComponentType>(getExtension(ComponentType::getExtensionName()));
 	}
 	/**
 	 *	Prints "GHOST" in ASCII characters.
