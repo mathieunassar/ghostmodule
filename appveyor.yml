@@ -13,7 +13,6 @@ install:
   - conan user # Create the conan data directory
   - conan --version
   - conan remote add inexorgame "https://api.bintray.com/conan/inexorgame/inexor-conan"
-  - conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
 build_script:
   - mkdir build
