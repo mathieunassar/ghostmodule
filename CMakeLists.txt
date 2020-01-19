@@ -72,9 +72,12 @@ fetch_ghost_library(ghost_support ${GHOST_SUPPORT_URL} ${GHOST_SUPPORT_BRANCH})
 ######################################################## INCLUDE DIRECTORIES AND LINK ####################################################
 ##########################################################################################################################################
 
-SET(GHOST_MODULE_INCLUDE_DIRECTORIES
+set(BOOST_UUID_INCLUDE_DIRECTORY ${GHOST_MODULE_ROOT_DIR}/third-party/boost-1.72.0)
+
+set(GHOST_MODULE_INCLUDE_DIRECTORIES
 	${GHOST_MODULE_ROOT_DIR}/include
 	${GHOST_SUPPORT_INCLUDE_DIRECTORIES}
+	${BOOST_UUID_INCLUDE_DIRECTORY}
 	${PROTOC_OUTPUT}
 	CACHE FILEPATH "Include directories of ghostmodule"
 )
