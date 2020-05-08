@@ -1,6 +1,6 @@
 /*
 Copyright 2017-2018 Glen Joseph Fernandes
-(glenjofe@gmail.com)
+<glenjofe -at- gmail.com>
 
 Distributed under the Boost Software License,
 Version 1.0. (See accompanying file LICENSE_1_0.txt

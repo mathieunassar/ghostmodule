@@ -3,7 +3,7 @@
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
-//   https://www.boost.org/LICENSE_1_0.txt)
+//   http://www.boost.org/LICENCE_1_0.txt)
 //
 // Platform-specific random entropy provider platform definition
 //
@@ -17,8 +17,6 @@
 # include <boost/uuid/detail/random_provider_bcrypt.ipp>
 #elif defined(BOOST_UUID_RANDOM_PROVIDER_GETENTROPY)
 # include <boost/uuid/detail/random_provider_getentropy.ipp>
-#elif defined(BOOST_UUID_RANDOM_PROVIDER_GETRANDOM)
-# include <boost/uuid/detail/random_provider_getrandom.ipp>
 #elif defined(BOOST_UUID_RANDOM_PROVIDER_POSIX)
 # include <boost/uuid/detail/random_provider_posix.ipp>
 #elif defined(BOOST_UUID_RANDOM_PROVIDER_WINCRYPT)
