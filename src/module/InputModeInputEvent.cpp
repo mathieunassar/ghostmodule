@@ -34,7 +34,7 @@ bool InputModeInputEvent::InputModeInputEventHandler::handle(const InputEvent& e
 
 	while (loop)
 	{
-		line = controller.readLine();
+		line = controller.readLine(false);
 
 		if (line.empty())
 		{

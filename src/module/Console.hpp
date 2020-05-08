@@ -45,7 +45,7 @@ public:
 	void setCommandCallback(std::function<void(const std::string&)> cmdCallback) override;
 
 	void write(const std::string& line) override;
-	std::string getLine() override;
+	std::string getLine(bool secret = false) override;
 	void flush() override;
 	bool hasCommands() const override;
 	std::string getCommand() override;

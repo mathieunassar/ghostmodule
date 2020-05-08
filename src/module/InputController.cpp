@@ -94,11 +94,11 @@ void InputController::stop()
 	}
 }
 
-std::string InputController::getLine()
+std::string InputController::getLine(bool secret)
 {
 	_explicitInput = nullptr;
 
-	auto promise = onNewEvent(std::make_shared<LineRequestInputEvent>()); // here wait that the event is completed
+	auto promise = onNewEvent(std::make_shared<LineRequestInputEvent>(secret)); // here wait that the event is completed
 	promise->get_future().wait();
 
 	if (_explicitInput)
@@ -170,10 +170,10 @@ void InputController::enterPressedThread()
 	}
 }
 
-std::string InputController::readLine()
+std::string InputController::readLine(bool secret)
 {
 	std::string readLine;
-	bool readSuccess = _device->read(readLine);
+	bool readSuccess = _device->read(readLine, secret);
 	if (!readSuccess) return "";
 
 	return readLine;

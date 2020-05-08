@@ -46,6 +46,10 @@ public:
 		bool execute(const ghost::CommandLine& commandLine,
 			     const ghost::CommandExecutionContext& context) override
 		{
+			// A password can be queried from the user: their input will not be displayed
+			std::cout << "Enter password: (hint: it's \"ghost\") " << std::flush;
+			std::string hiddenLine = _console->getLine(true);
+			std::cout << "Your password is: " << hiddenLine << "..." << std::endl;
 			// When we activated the console, we also redirected the stdout stream to it.
 			std::cout << "Enter new text: " << std::flush;
 			// Gets a line and blocks the output stream while the user writes something

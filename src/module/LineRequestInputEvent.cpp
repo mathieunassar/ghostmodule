@@ -32,7 +32,9 @@ bool LineRequestInputEvent::LineRequestInputEventHandler::handle(const InputEven
 	ConsoleDevice::ConsoleMode oldState = controller.getConsoleMode();
 	controller.switchConsoleMode(ConsoleDevice::INPUT);
 
-	std::string line = controller.readLine();
+	const LineRequestInputEvent& lineRequestEvent = static_cast<const LineRequestInputEvent&>(event);
+
+	std::string line = controller.readLine(lineRequestEvent.isSecret());
 	controller.setLineRequestResult(line);
 
 	controller.switchConsoleMode(oldState);
@@ -46,9 +48,18 @@ const LineRequestInputEvent& LineRequestInputEvent::LineRequestInputEventHandler
 	return static_cast<const LineRequestInputEvent&>(event);
 }
 
+LineRequestInputEvent::LineRequestInputEvent(bool secret) : _secret(secret)
+{
+}
+
 std::string LineRequestInputEvent::getEventName() const
 {
 	return _NAME;
+}
+
+bool LineRequestInputEvent::isSecret() const
+{
+	return _secret;
 }
 
 const std::string LineRequestInputEvent::_NAME = "LineRequest";

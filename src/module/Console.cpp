@@ -97,10 +97,10 @@ void Console::write(const std::string& line)
 	_outputController->write(line);
 }
 
-std::string Console::getLine()
+std::string Console::getLine(bool secret)
 {
 	flush();
-	return _inputController->getLine();
+	return _inputController->getLine(secret);
 }
 
 void Console::flush()

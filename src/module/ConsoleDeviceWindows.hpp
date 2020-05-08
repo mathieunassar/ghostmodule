@@ -45,7 +45,7 @@ public:
 
 	bool setConsoleMode(ConsoleMode mode) override;
 	bool awaitInputMode() override;
-	bool read(std::string& output) override;
+	bool read(std::string& output, bool secret) override;
 	bool write(const std::string& text) override;
 
 private:
