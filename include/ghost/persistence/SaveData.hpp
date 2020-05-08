@@ -19,11 +19,11 @@
 
 #include <google/protobuf/any.pb.h>
 
+#include <functional>
+#include <list>
 #include <memory>
 #include <string>
-#include <list>
 #include <vector>
-#include <functional>
 
 namespace ghost
 {
