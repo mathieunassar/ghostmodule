@@ -300,3 +300,10 @@ TEST_F(ModuleTest, Test_Module_stops)
 	module->stop();
 	t.join();
 }
+
+TEST_F(ModuleTest, Test_Session_generatesUniqueUuid_When_createIsCalled)
+{
+	auto session = ghost::Session::create();
+	auto session2 = ghost::Session::create();
+	ASSERT_NE(session->getUUID(), session2->getUUID());
+}
