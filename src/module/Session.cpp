@@ -16,6 +16,7 @@
 
 #include "Session.hpp"
 #include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 using namespace ghost::internal;
@@ -23,7 +24,7 @@ using namespace ghost::internal;
 std::shared_ptr<ghost::Session> ghost::Session::create()
 {
 	boost::uuids::uuid u;
-	return std::make_shared<ghost::internal::Session>(boost::uuids::to_string(u));
+	return std::make_shared<ghost::internal::Session>(boost::uuids::to_string(boost::uuids::random_generator()()));
 }
 
 std::shared_ptr<ghost::Session> ghost::Session::createLocal()
