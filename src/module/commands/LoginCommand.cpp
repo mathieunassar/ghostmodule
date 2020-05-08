@@ -45,6 +45,11 @@ bool LoginCommand::execute(const ghost::CommandLine& commandLine, const ghost::C
 	{
 		username = commandLine.getParameter<std::string>(_PARAM_USERNAME_SHORT);
 	}
+	else
+	{
+		GHOST_INFO(logger) << "Username: ";
+		username = context.getConsole()->getLine(false);
+	}
 
 	if (commandLine.hasParameter(_PARAM_PASSWORD))
 	{
@@ -53,6 +58,11 @@ bool LoginCommand::execute(const ghost::CommandLine& commandLine, const ghost::C
 	else if (commandLine.hasParameter(_PARAM_PASSWORD_SHORT))
 	{
 		password = commandLine.getParameter<std::string>(_PARAM_PASSWORD_SHORT);
+	}
+	else
+	{
+		GHOST_INFO(logger) << "Password: ";
+		password = context.getConsole()->getLine(true);
 	}
 
 	// here, if the module has a console and missing parameters, ask the user

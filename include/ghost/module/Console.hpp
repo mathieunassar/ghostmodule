@@ -85,7 +85,8 @@ public:
 	/// the console is in output mode
 	virtual void write(const std::string& line) = 0;
 	/// Queries a line from the user.
-	virtual std::string getLine() = 0;
+	/// set "secret" to true if the input characters shall be hidden (e.g. for a password)
+	virtual std::string getLine(bool secret = false) = 0;
 	/// flushes the write queue by printing everything
 	virtual void flush() = 0;
 	/// if the command callback is not set with "setCommandCallback", user commands are collected by the console

@@ -64,7 +64,7 @@ void RemoteConsole::write(const std::string& line)
 	_writer->write(msg);
 }
 
-std::string RemoteConsole::getLine()
+std::string RemoteConsole::getLine(bool secret)
 {
 	// If a command is already available, return it
 	if (hasCommands()) return getCommand();

@@ -59,11 +59,11 @@ public:
 	/// sets the callback that will be called when the user enters a new command
 	void setCommandCallback(std::function<void(const std::string&)> cmdCallback);
 
-	std::string getLine();
+	std::string getLine(bool secret = false);
 
 	void printPrompt() const override;
 	void switchConsoleMode(ConsoleDevice::ConsoleMode newMode) override;
-	std::string readLine() override;
+	std::string readLine(bool secret) override;
 	InputMode getInputMode() const override;
 	ConsoleDevice::ConsoleMode getConsoleMode() const override;
 	void onNewInput(const std::string& input) override;

@@ -42,8 +42,13 @@ public:
 	};
 
 	/* Event */
+	LineRequestInputEvent(bool secret);
 	std::string getEventName() const override;
+	bool isSecret() const;
 	static const std::string _NAME;
+
+private:
+	bool _secret;
 };
 } // namespace internal
 } // namespace ghost

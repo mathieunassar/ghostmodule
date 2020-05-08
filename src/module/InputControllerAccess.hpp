@@ -41,7 +41,7 @@ public:
 	/// Switches the console mode and calls performs the necessary operations
 	virtual void switchConsoleMode(ConsoleDevice::ConsoleMode newMode) = 0;
 	/// Reads a line from stdin
-	virtual std::string readLine() = 0;
+	virtual std::string readLine(bool secret) = 0;
 	/// Returns the input mode of the input controller, a.k.a. whether commands are entered sequentially or not
 	virtual ghost::InputMode getInputMode() const = 0;
 	/// Returns the console mode, a.k.a. input or output

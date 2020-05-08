@@ -69,15 +69,19 @@ bool ConsoleDeviceUnix::awaitInputMode()
 	return _enable; // user pressed enter, hence the string is empty but there was something to read in the select
 }
 
-bool ConsoleDeviceUnix::read(std::string& output)
+bool ConsoleDeviceUnix::read(std::string& output, bool secret)
 {
 	_mode = DeviceMode::READ;
+
+	if (secret) setConsoleMode(ConsoleDevice::OUTPUT);
 
 	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
 	if (!gotInput) // _enable is false or the console is used for something else
 		return false;
 
 	std::getline(std::cin, output);
+
+	if (secret) setConsoleMode(ConsoleDevice::INPUT);
 
 	_mode = DeviceMode::IDLE;
 	return true;

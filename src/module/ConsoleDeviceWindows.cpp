@@ -105,15 +105,19 @@ bool ConsoleDeviceWindows::awaitInput(const std::function<bool()>& untilPredicat
 	return false;
 }
 
-bool ConsoleDeviceWindows::read(std::string& output)
+bool ConsoleDeviceWindows::read(std::string& output, bool secret)
 {
 	_mode = DeviceMode::READ;
+
+	if (secret) setConsoleMode(ConsoleDevice::OUTPUT);
 
 	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
 	if (!gotInput) // _enable is false
 		return false;
 
 	std::getline(std::cin, output);
+
+	if (secret) setConsoleMode(ConsoleDevice::INPUT);
 
 	_mode = DeviceMode::IDLE;
 	return true;

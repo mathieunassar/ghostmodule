@@ -71,9 +71,10 @@ public:
 	/**
 	 *	Reads a line from the console device.
 	 *	@param output	Output parameter containing the result if this method returns true
+	 *	@param secret	Do not display the characters entered by the user.
 	 *	@return true if a line was read, false otherwise.
 	 */
-	virtual bool read(std::string& output) = 0;
+	virtual bool read(std::string& output, bool secret) = 0;
 
 	/**
 	 *	Writes the given line to the console device.

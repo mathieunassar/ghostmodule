@@ -56,7 +56,7 @@ protected:
 		    .WillOnce(testing::Return(true))
 		    .WillRepeatedly(testing::Return(false));
 
-		EXPECT_CALL(*_consoleDeviceMock, read(_))
+		EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 		    .Times(1)
 		    .WillRepeatedly(
 			testing::DoAll(testing::SetArgReferee<0>(TEST_COMMAND_LINE), testing::Return(true)));
@@ -147,7 +147,7 @@ TEST_F(ConsoleTests, Test_Console_getLineFlushesBeforeReading)
 		    }));
 		EXPECT_CALL(*_consoleDeviceMock, write(TEST_WRITE_LINE2)).Times(1);
 
-		EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1);
+		EXPECT_CALL(*_consoleDeviceMock, read(_, false)).Times(1);
 	}
 
 	_console->start(); // necessary to be before getLine, otherwise flush won't flush
