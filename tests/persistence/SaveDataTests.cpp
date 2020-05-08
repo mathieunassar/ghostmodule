@@ -147,3 +147,213 @@ TEST_F(SaveDataTest, test_saveData_remove_When_ok)
 	bool removeSuccess3 = data1->remove(0);
 	ASSERT_TRUE(!removeSuccess3);
 }
+
+TEST_F(SaveDataTest, test_SaveData_getIf_When_oneElementMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	msg.set_field1(TEST_DATA_FIELD1);
+	data->put(msg);
+	data->put(msg2);
+
+	auto gotIf = data->get_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(gotIf.size(), 1);
+}
+
+TEST_F(SaveDataTest, test_SaveData_getIf_When_twoElementsMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	msg.set_field1(TEST_DATA_FIELD1);
+	msg2.set_field1(TEST_DATA_FIELD1);
+	data->put(msg);
+	data->put(msg2);
+
+	auto gotIf = data->get_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(gotIf.size(), 2);
+}
+
+TEST_F(SaveDataTest, test_SaveData_getIf_When_noElementMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	data->put(msg);
+	data->put(msg2);
+
+	auto gotIf = data->get_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(gotIf.size(), 0);
+}
+
+TEST_F(SaveDataTest, test_SaveData_getIf_When_dataHasAnotherType)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg;
+	msg.set_field1(TEST_DATA_FIELD1);
+	ghost::internal::protobuf::TestMessage2 msg2;
+	data->put(msg);
+	data->put(msg2);
+
+	auto gotIf = data->get_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(gotIf.size(), 1);
+}
+
+TEST_F(SaveDataTest, test_SaveData_removeIf_When_oneElementMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	msg.set_field1(TEST_DATA_FIELD1);
+	data->put(msg);
+	data->put(msg2);
+
+	auto removed = data->remove_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(removed, 1);
+	ASSERT_EQ(data->size(), 1);
+}
+
+TEST_F(SaveDataTest, test_SaveData_removeIf_When_twoElementsMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	msg.set_field1(TEST_DATA_FIELD1);
+	msg2.set_field1(TEST_DATA_FIELD1);
+	data->put(msg);
+	data->put(msg2);
+
+	auto removed = data->remove_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(removed, 2);
+	ASSERT_EQ(data->size(), 0);
+}
+
+TEST_F(SaveDataTest, test_SaveData_removeIf_When_noElementMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	data->put(msg);
+	data->put(msg2);
+
+	auto removed = data->remove_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(removed, 0);
+	ASSERT_EQ(data->size(), 2);
+}
+
+TEST_F(SaveDataTest, test_SaveData_removeIf_When_dataHasAnotherType)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg;
+	msg.set_field1(TEST_DATA_FIELD1);
+	ghost::internal::protobuf::TestMessage2 msg2;
+	data->put(msg);
+	data->put(msg2);
+
+	auto removed = data->remove_if<ghost::internal::protobuf::TestMessage1>(
+	    [&](const auto& dat) { return dat.field1() == TEST_DATA_FIELD1; });
+	ASSERT_EQ(removed, 1);
+	ASSERT_EQ(data->size(), 1);
+}
+
+TEST_F(SaveDataTest, test_SaveData_replaceIf_When_oneElementMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	msg.set_field1(TEST_DATA_FIELD1);
+	data->put(msg);
+	data->put(msg2);
+
+	auto updated = data->replace_if<ghost::internal::protobuf::TestMessage1>([&](auto& dat) {
+		if (dat.field1() == TEST_DATA_FIELD1)
+		{
+			dat.set_field1(TEST_DATA_NAME);
+			return true;
+		}
+		return false;
+	});
+	ASSERT_EQ(updated, 1);
+
+	auto up = ghost::internal::protobuf::TestMessage1::default_instance();
+	ASSERT_TRUE(data->get(up, 0));
+	ASSERT_TRUE(up.field1() == TEST_DATA_NAME);
+	ASSERT_TRUE(data->get(up, 1));
+	ASSERT_TRUE(up.field1().empty());
+}
+
+TEST_F(SaveDataTest, test_SaveData_replaceIf_When_twoElementsMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	msg.set_field1(TEST_DATA_FIELD1);
+	msg2.set_field1(TEST_DATA_FIELD1);
+	data->put(msg);
+	data->put(msg2);
+
+	auto updated = data->replace_if<ghost::internal::protobuf::TestMessage1>([&](auto& dat) {
+		if (dat.field1() == TEST_DATA_FIELD1)
+		{
+			dat.set_field1(TEST_DATA_NAME);
+			return true;
+		}
+		return false;
+	});
+	ASSERT_EQ(updated, 2);
+
+	auto up = ghost::internal::protobuf::TestMessage1::default_instance();
+	ASSERT_TRUE(data->get(up, 0));
+	ASSERT_TRUE(up.field1() == TEST_DATA_NAME);
+	ASSERT_TRUE(data->get(up, 1));
+	ASSERT_TRUE(up.field1() == TEST_DATA_NAME);
+}
+
+TEST_F(SaveDataTest, test_SaveData_replaceIf_When_noElementMatches)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg, msg2;
+	data->put(msg);
+	data->put(msg2);
+
+	auto updated = data->replace_if<ghost::internal::protobuf::TestMessage1>([&](auto& dat) {
+		if (dat.field1() == TEST_DATA_FIELD1)
+		{
+			dat.set_field1(TEST_DATA_NAME);
+			return true;
+		}
+		return false;
+	});
+	ASSERT_EQ(updated, 0);
+
+	auto up = ghost::internal::protobuf::TestMessage1::default_instance();
+	ASSERT_TRUE(data->get(up, 0));
+	ASSERT_TRUE(up.field1().empty());
+	ASSERT_TRUE(data->get(up, 1));
+	ASSERT_TRUE(up.field1().empty());
+}
+
+TEST_F(SaveDataTest, test_SaveData_replaceIf_When_dataHasAnotherType)
+{
+	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	ghost::internal::protobuf::TestMessage1 msg;
+	msg.set_field1(TEST_DATA_FIELD1);
+	ghost::internal::protobuf::TestMessage2 msg2;
+	data->put(msg);
+	data->put(msg2);
+
+	auto updated = data->replace_if<ghost::internal::protobuf::TestMessage1>([&](auto& dat) {
+		if (dat.field1() == TEST_DATA_FIELD1)
+		{
+			dat.set_field1(TEST_DATA_NAME);
+			return true;
+		}
+		return false;
+	});
+	ASSERT_EQ(updated, 1);
+
+	auto up = ghost::internal::protobuf::TestMessage1::default_instance();
+	ASSERT_TRUE(data->get(up, 0));
+	ASSERT_TRUE(up.field1() == TEST_DATA_NAME);
+	ASSERT_FALSE(data->get(up, 1));
+}

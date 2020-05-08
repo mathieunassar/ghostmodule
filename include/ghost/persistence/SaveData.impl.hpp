@@ -23,7 +23,7 @@ bool SaveData::get(DataType& type, size_t index) const
 }
 
 template <typename DataType>
-std::list<DataType> SaveData::get(const std::function<bool(const DataType&)>& filter) const
+std::list<DataType> SaveData::get_if(const std::function<bool(const DataType&)>& filter) const
 {
 	std::list<DataType> result;
 
@@ -38,6 +38,27 @@ std::list<DataType> SaveData::get(const std::function<bool(const DataType&)>& fi
 	}
 
 	return result;
+}
+
+template <typename DataType>
+size_t SaveData::replace_if(const std::function<bool(DataType&)>& operation)
+{
+	size_t updatedCount = 0;
+	for (size_t i = 0; i < size(); ++i)
+	{
+		auto data = DataType::default_instance();
+
+		bool getResult = get(data, i);
+		if (!getResult) continue;
+
+		if (operation(data))
+		{
+			replace(data, i);
+			++updatedCount;
+		}
+	}
+
+	return updatedCount;
 }
 
 template <typename DataType>
@@ -64,20 +85,6 @@ size_t SaveData::remove_if(const std::function<bool(DataType&)>& filter)
 	for (auto it = indicesToRemove.rbegin(); it != indicesToRemove.rend(); ++it) remove(*it);
 
 	return removedCount;
-}
-
-template <typename DataType>
-void SaveData::execute(const std::function<bool(DataType&)>& operation)
-{
-	for (size_t i = 0; i < size(); ++i)
-	{
-		auto data = DataType::default_instance();
-
-		bool getResult = get(data, i);
-		if (!getResult) continue;
-
-		if (filter(data)) replace(data, i);
-	}
 }
 
 // adds data to the data set
