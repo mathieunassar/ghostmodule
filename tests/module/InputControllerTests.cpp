@@ -209,11 +209,11 @@ TEST_F(InputControllerTests, Test_InputController_promptMatchesConfiguration_Whe
 
 TEST_F(InputControllerTests, Test_InputController_deviceReadIsCalled_When_controllerReadLineIsCalled)
 {
-	EXPECT_CALL(*_consoleDeviceMock, read(_))
+	EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 	    .Times(1)
 	    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<0>(TEST_READ_LINE), testing::Return(true)));
 
-	auto readLine = _inputController->readLine();
+	auto readLine = _inputController->readLine(false);
 	ASSERT_TRUE(readLine == TEST_READ_LINE);
 }
 
@@ -255,7 +255,7 @@ TEST_F(InputControllerTests, Test_InputController_deviceConsoleModeSwitchesToInp
 {
 	startController();
 	// read will be called in this test, but we don't test that here (suppresses the warning)
-	EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1);
+	EXPECT_CALL(*_consoleDeviceMock, read(_, false)).Times(1);
 
 	// to read
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(ghost::internal::ConsoleDevice::INPUT)).Times(1);
@@ -273,7 +273,7 @@ TEST_F(InputControllerTests,
 
 	startController();
 	// read will be called in this test, but we don't test that here (suppresses the warning)
-	EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1);
+	EXPECT_CALL(*_consoleDeviceMock, read(_, false)).Times(1);
 
 	// to read and set it back
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(ghost::internal::ConsoleDevice::INPUT)).Times(2);
@@ -285,7 +285,7 @@ TEST_F(InputControllerTests, Test_InputController_inputLineIsGotten_When_getLine
 	startController();
 
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(2);
-	EXPECT_CALL(*_consoleDeviceMock, read(_))
+	EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 	    .Times(1)
 	    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<0>(TEST_READ_LINE), testing::Return(true)));
 
@@ -299,10 +299,10 @@ TEST_F(InputControllerTests, Test_InputController_eventIsExecuted_When_newEventI
 {
 	startController();
 	// read will be called in this test, but we don't test that here (suppresses the warning)
-	EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1);
+	EXPECT_CALL(*_consoleDeviceMock, read(_, false)).Times(1);
 
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(2);
-	auto promise = _inputController->onNewEvent(std::make_shared<ghost::internal::LineRequestInputEvent>());
+	auto promise = _inputController->onNewEvent(std::make_shared<ghost::internal::LineRequestInputEvent>(false));
 	auto future = promise->get_future();
 	future.wait();
 	bool testResult = future.get();
@@ -312,7 +312,7 @@ TEST_F(InputControllerTests, Test_InputController_eventIsExecuted_When_newEventI
 TEST_F(InputControllerTests, Test_InputController_eventIsNotExecuted_When_newEventIsAddedAndControllerIsNotStarted)
 {
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(0);
-	auto promise = _inputController->onNewEvent(std::make_shared<ghost::internal::LineRequestInputEvent>());
+	auto promise = _inputController->onNewEvent(std::make_shared<ghost::internal::LineRequestInputEvent>(false));
 	auto future = promise->get_future();
 	ASSERT_TRUE(future.wait_for(std::chrono::seconds(1)) == std::future_status::timeout);
 }
@@ -323,7 +323,7 @@ TEST_F(InputControllerTests, Test_InputController_eventIsNotExecuted_When_newEve
 	stopController();
 
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(0);
-	auto promise = _inputController->onNewEvent(std::make_shared<ghost::internal::LineRequestInputEvent>());
+	auto promise = _inputController->onNewEvent(std::make_shared<ghost::internal::LineRequestInputEvent>(false));
 	auto future = promise->get_future();
 	ASSERT_TRUE(future.wait_for(std::chrono::seconds(1)) == std::future_status::timeout);
 }
@@ -368,7 +368,7 @@ TEST_F(InputControllerTests,
 	EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1);
 	// read will be called in this test (to read the result of the input mode), but we don't test that here
 	// (suppresses the warning)
-	EXPECT_CALL(*_consoleDeviceMock, read(_)).Times(1);
+	EXPECT_CALL(*_consoleDeviceMock, read(_, false)).Times(1);
 
 	EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(ghost::internal::ConsoleDevice::INPUT)).Times(1);
 
@@ -389,7 +389,7 @@ TEST_F(InputControllerTests, Test_InputController_workflowIsCorrect_When_inputMo
 		// 2. force print the prompt
 		EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1);
 		// 3. read the entry: empty line
-		EXPECT_CALL(*_consoleDeviceMock, read(_))
+		EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 		    .Times(1)
 		    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<0>(""), testing::Return(true)));
 		// 4. empty line -> output mode
@@ -416,7 +416,7 @@ TEST_F(InputControllerTests, Test_InputController_workflowIsCorrect_When_inputMo
 		// 2. force print the prompt
 		EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1);
 		// 3. read the entry: non empty line
-		EXPECT_CALL(*_consoleDeviceMock, read(_))
+		EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 		    .Times(1)
 		    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<0>(TEST_READ_LINE), testing::Return(true)));
 		// 4. empty line -> output mode
@@ -447,7 +447,7 @@ TEST_F(
 		// 2. force print the prompt
 		EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1);
 		// 3. read the entry: non empty line
-		EXPECT_CALL(*_consoleDeviceMock, read(_))
+		EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 		    .Times(1)
 		    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<0>(TEST_READ_LINE), testing::Return(true)));
 		// 4. empty line -> output mode
@@ -458,7 +458,7 @@ TEST_F(
 		// 6. the prompt is printed again
 		EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(1);
 		// 7. Read should be called again, but this time there is nothing to read to stop the loop
-		EXPECT_CALL(*_consoleDeviceMock, read(_))
+		EXPECT_CALL(*_consoleDeviceMock, read(_, false))
 		    .Times(1)
 		    .WillRepeatedly(testing::DoAll(testing::SetArgReferee<0>(""), testing::Return(true)));
 	}

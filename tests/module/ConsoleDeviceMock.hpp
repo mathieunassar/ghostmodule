@@ -29,7 +29,7 @@ public:
 	MOCK_METHOD0(stop, void());
 	MOCK_METHOD1(setConsoleMode, bool(ConsoleMode mode));
 	MOCK_METHOD0(awaitInputMode, bool());
-	MOCK_METHOD1(read, bool(std::string& output));
+	MOCK_METHOD2(read, bool(std::string& output, bool secret));
 	MOCK_METHOD1(write, bool(const std::string& text));
 };
 
