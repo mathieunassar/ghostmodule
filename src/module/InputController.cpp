@@ -98,7 +98,8 @@ std::string InputController::getLine(bool secret)
 {
 	_explicitInput = nullptr;
 
-	auto promise = onNewEvent(std::make_shared<LineRequestInputEvent>(secret)); // here wait that the event is completed
+	auto promise =
+	    onNewEvent(std::make_shared<LineRequestInputEvent>(secret)); // here wait that the event is completed
 	promise->get_future().wait();
 
 	if (_explicitInput)

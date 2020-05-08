@@ -73,8 +73,7 @@ bool ConsoleDeviceUnix::read(std::string& output, bool secret)
 {
 	_mode = DeviceMode::READ;
 
-	if (secret)
-		setConsoleMode(ConsoleDevice::OUTPUT);
+	if (secret) setConsoleMode(ConsoleDevice::OUTPUT);
 
 	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
 	if (!gotInput) // _enable is false or the console is used for something else
@@ -82,8 +81,7 @@ bool ConsoleDeviceUnix::read(std::string& output, bool secret)
 
 	std::getline(std::cin, output);
 
-	if (secret)
-		setConsoleMode(ConsoleDevice::INPUT);
+	if (secret) setConsoleMode(ConsoleDevice::INPUT);
 
 	_mode = DeviceMode::IDLE;
 	return true;
