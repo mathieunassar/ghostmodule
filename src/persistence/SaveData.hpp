@@ -37,7 +37,7 @@ public:
 	size_t size() const override;
 	const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const override;
 
-	std::vector<std::shared_ptr<google::protobuf::Any>>& getData() override;
+	std::vector<std::shared_ptr<google::protobuf::Any>>& getAllData() override;
 	void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data) override;
 
 private:

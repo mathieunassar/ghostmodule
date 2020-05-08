@@ -52,7 +52,7 @@ const std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::Save
 	return _data;
 }
 
-std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::SaveData::getData()
+std::vector<std::shared_ptr<google::protobuf::Any>>& ghost::internal::SaveData::getAllData()
 {
 	return _data;
 }

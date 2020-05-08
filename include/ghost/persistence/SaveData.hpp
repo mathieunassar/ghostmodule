@@ -19,6 +19,8 @@
 
 #include <google/protobuf/any.pb.h>
 
+#include <functional>
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -65,6 +67,18 @@ public:
 	bool get(DataType& type, size_t index) const;
 
 	/**
+	 * @brief Gets all the data in this ghost::SaveData that matches the provided filter.
+	 *
+	 * The provided is given the data and must return true if the data is accepted, and false otherwise.
+	 *
+	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
+	 * @param filter filter to select the data.
+	 * @return a list of elements of type DataType contained in this ghost::SaveData that matches the filter.
+	 */
+	template <typename DataType>
+	std::list<DataType> get_if(const std::function<bool(const DataType&)>& filter) const;
+
+	/**
 	 * @brief Pushes data into the data set, effectively increasing the size by one.
 	 *
 	 * @tparam DataType Type of data that is being added. Currently this type must be a protobuf message.
@@ -86,6 +100,22 @@ public:
 	bool replace(const DataType& type, size_t index);
 
 	/**
+	 * @brief Executes the provided operation on every element contained in this ghost::SaveData of the provided
+	 * type. If the provided operation function returns true, the data passed as a parameter is updated in the
+	 * ghost::SavaData. Otherwise, no update is performed. The provided operation function is expected to modified
+	 * the data passed as a parameter if an update is wanted.
+	 *
+	 * The provided operation is given the data and must return true if the data is accepted, and false otherwise.
+	 *
+	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
+	 * @param operation	A function that may update the data passed as a parameter and return true if the
+	 *  ghost::SaveData must be updated.
+	 * @return the number of elements that have been updated.
+	 */
+	template <typename DataType>
+	size_t replace_if(const std::function<bool(DataType&)>& operation);
+
+	/**
 	 * @brief Removes the data at the given index.
 	 *
 	 * @param index position of the object in the data set. If the index is out of range, the method returns false
@@ -93,6 +123,18 @@ public:
 	 * @return false if no data has been removed from the data set.
 	 */
 	virtual bool remove(size_t index) = 0;
+
+	/**
+	 * @brief Removed data from the ghost::SaveData based on a provided condition.
+	 *
+	 * The provided filter is given the data and must return true if the data must be removed, and false otherwise.
+	 *
+	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
+	 * @param filter filter to select the data to remove.
+	 * @return the number of elements that have been removed.
+	 */
+	template <typename DataType>
+	size_t remove_if(const std::function<bool(DataType&)>& filter);
 
 	/**
 	 * @brief Gets the name of this data set
@@ -116,7 +158,7 @@ public:
 	virtual const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const = 0;
 
 protected:
-	virtual std::vector<std::shared_ptr<google::protobuf::Any>>& getData() = 0;
+	virtual std::vector<std::shared_ptr<google::protobuf::Any>>& getAllData() = 0;
 
 	virtual void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data) = 0;
 };

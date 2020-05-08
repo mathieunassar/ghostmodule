@@ -22,13 +22,78 @@ bool SaveData::get(DataType& type, size_t index) const
 	return getData().at(index)->UnpackTo(&type);
 }
 
+template <typename DataType>
+std::list<DataType> SaveData::get_if(const std::function<bool(const DataType&)>& filter) const
+{
+	std::list<DataType> result;
+
+	for (size_t i = 0; i < size(); ++i)
+	{
+		auto data = DataType::default_instance();
+
+		bool getResult = get(data, i);
+		if (!getResult) continue;
+
+		if (filter(data)) result.push_back(data);
+	}
+
+	return result;
+}
+
+template <typename DataType>
+size_t SaveData::replace_if(const std::function<bool(DataType&)>& operation)
+{
+	size_t updatedCount = 0;
+	for (size_t i = 0; i < size(); ++i)
+	{
+		auto data = DataType::default_instance();
+
+		bool getResult = get(data, i);
+		if (!getResult) continue;
+
+		if (operation(data))
+		{
+			replace(data, i);
+			++updatedCount;
+		}
+	}
+
+	return updatedCount;
+}
+
+template <typename DataType>
+size_t SaveData::remove_if(const std::function<bool(DataType&)>& filter)
+{
+	size_t removedCount = 0;
+	std::list<size_t> indicesToRemove;
+
+	for (size_t i = 0; i < size(); ++i)
+	{
+		auto data = DataType::default_instance();
+
+		bool getResult = get(data, i);
+		if (!getResult) continue;
+
+		if (filter(data))
+		{
+			indicesToRemove.push_back(i);
+			++removedCount;
+		}
+	}
+
+	// Start from the end because the data size is reduced after each call to "remove"
+	for (auto it = indicesToRemove.rbegin(); it != indicesToRemove.rend(); ++it) remove(*it);
+
+	return removedCount;
+}
+
 // adds data to the data set
 template <typename DataType>
 void SaveData::put(const DataType& type)
 {
 	auto any = std::make_shared<google::protobuf::Any>();
 	any->PackFrom(type);
-	getData().push_back(any);
+	getAllData().push_back(any);
 }
 
 template <typename DataType>
@@ -38,7 +103,7 @@ bool SaveData::replace(const DataType& type, size_t index)
 
 	auto any = std::make_shared<google::protobuf::Any>();
 	any->PackFrom(type);
-	getData()[index] = any;
+	getAllData()[index] = any;
 
 	return true;
 }
