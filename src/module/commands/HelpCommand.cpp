@@ -23,11 +23,12 @@
 
 using namespace ghost::internal;
 
-const std::string HelpCommand::NAME = "HelpCommand";
+const std::string HelpCommand::NAME = "Help";
 const std::string HelpCommand::_SHORTCUT = "help";
 const std::string HelpCommand::_DESCRIPTION = "Displays the list of available commands to the user";
 
-HelpCommand::HelpCommand(CommandLineInterpreter* interpreter) : _interpreter(interpreter)
+HelpCommand::HelpCommand(CommandLineInterpreter* interpreter)
+    : _interpreter(interpreter), _commandParameter("command", "", "", "Displays help for a specific command", true)
 {
 }
 
@@ -35,10 +36,27 @@ bool HelpCommand::execute(const ghost::CommandLine& commandLine, const ghost::Co
 {
 	auto logger = ghost::GhostLogger::create(context.getConsole());
 
-	std::ostringstream oss;
-	_interpreter->printHelp(oss, context.getSession());
+	if (commandLine.hasParameter("__0"))
+	{
+		std::string commandToGetHelpFor = commandLine.getParameter<std::string>("__0");
 
-	GHOST_INFO(logger) << oss.str();
+		std::ostringstream oss;
+		bool commandFound = _interpreter->printCommandHelp(oss, commandToGetHelpFor, context.getSession());
+		if (!commandFound)
+		{
+			GHOST_ERROR(logger) << commandToGetHelpFor << ": command not found.";
+			return false;
+		}
+
+		GHOST_INFO(logger) << oss.str();
+	}
+	else
+	{
+		std::ostringstream oss;
+		_interpreter->printHelp(oss, context.getSession());
+
+		GHOST_INFO(logger) << oss.str();
+	}
 
 	return true;
 }
@@ -56,4 +74,9 @@ std::string HelpCommand::getShortcut() const
 std::string HelpCommand::getDescription() const
 {
 	return _DESCRIPTION;
+}
+
+std::list<ghost::CommandParameter> HelpCommand::getOptionalParameters() const
+{
+	return {_commandParameter};
 }

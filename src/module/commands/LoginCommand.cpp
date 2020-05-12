@@ -21,7 +21,7 @@
 
 using namespace ghost::internal;
 
-const std::string LoginCommand::NAME = "LoginCommand";
+const std::string LoginCommand::NAME = "Login";
 const std::string LoginCommand::_SHORTCUT = "login";
 const std::string LoginCommand::_DESCRIPTION = "changes the connected user.";
 const std::string LoginCommand::_PARAM_USERNAME = "username";

@@ -22,7 +22,7 @@
 
 using namespace ghost::internal;
 
-const std::string ExitCommand::NAME = "ExitCommand";
+const std::string ExitCommand::NAME = "Exit";
 const std::string ExitCommand::_SHORTCUT = "exit";
 const std::string ExitCommand::_DESCRIPTION =
     "Switches the module state to 'DISPOSING'. The module will exit before the next call to run.";

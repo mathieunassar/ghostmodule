@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <ghost/module/Command.hpp>
@@ -24,13 +25,53 @@
 #include "../src/module/CommandLineParser.hpp"
 #include "../src/module/User.hpp"
 
+using ::testing::_;
+
+// Some mocks
+
+class CommandMock : public ghost::Command
+{
+public:
+	MOCK_METHOD2(execute,
+		     bool(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context));
+	MOCK_CONST_METHOD0(getName, std::string());
+	MOCK_CONST_METHOD0(getShortcut, std::string());
+	MOCK_CONST_METHOD0(getDescription, std::string());
+	MOCK_CONST_METHOD0(getCategory, std::string());
+	MOCK_CONST_METHOD0(getRequiredParameters, std::list<ghost::CommandParameter>());
+	MOCK_CONST_METHOD0(getOptionalParameters, std::list<ghost::CommandParameter>());
+};
+
+class LoggerMock : public ghost::Logger
+{
+public:
+	MOCK_METHOD1(trace, void(const std::string& line));
+	MOCK_METHOD1(debug, void(const std::string& line));
+	MOCK_METHOD1(info, void(const std::string& line));
+	MOCK_METHOD1(warn, void(const std::string& line));
+	MOCK_METHOD1(error, void(const std::string& line));
+};
+
 class CommandLineInterpreterTest : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
+		_logger = std::make_shared<LoggerMock>();
 		_userManager = ghost::UserManager::create();
-		_interpreter = ghost::CommandLineInterpreter::create(_userManager);
+		_interpreter = ghost::CommandLineInterpreter::create(_userManager, _logger);
+
+		_command = std::make_shared<CommandMock>();
+		EXPECT_CALL(*_command, getShortcut())
+		    .Times(testing::AnyNumber())
+		    .WillRepeatedly(testing::Return(TEST_COMMAND_LINE_SHORTCUT));
+		EXPECT_CALL(*_command, getName())
+		    .Times(testing::AnyNumber())
+		    .WillRepeatedly(testing::Return(TEST_COMMAND_LINE_CMDNAME));
+		EXPECT_CALL(*_command, getDescription())
+		    .Times(testing::AnyNumber())
+		    .WillRepeatedly(testing::Return(TEST_COMMAND_LINE_DESCRIPTION));
+		_interpreter->registerCommand(_command);
 
 		ASSERT_TRUE(_userManager);
 		ASSERT_TRUE(_interpreter);
@@ -41,6 +82,9 @@ protected:
 	}
 
 	static const std::string TEST_COMMAND_LINE_CMDNAME;
+	static const std::string TEST_COMMAND_LINE_SHORTCUT;
+	static const std::string TEST_COMMAND_LINE_DESCRIPTION;
+	static const std::string TEST_COMMAND_LINE_PARAMETER_DESCRIPTION;
 
 	static const std::string TEST_COMMAND_LINE_PARAMA;
 	static const std::string TEST_COMMAND_LINE_PARAMB;
@@ -58,7 +102,9 @@ protected:
 
 	ghost::internal::CommandLineParser _parser;
 	std::shared_ptr<ghost::UserManager> _userManager;
+	std::shared_ptr<LoggerMock> _logger;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
+	std::shared_ptr<CommandMock> _command;
 };
 
 class CustomCommand : public ghost::Command
@@ -99,6 +145,9 @@ public:
 };
 
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_CMDNAME = "testCommand";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_SHORTCUT = "commandShortcut";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_DESCRIPTION = "This is a description";
+const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMETER_DESCRIPTION = "This is another description";
 
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMA = "paramA";
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_PARAMB = "paramB";
@@ -120,6 +169,30 @@ const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_NAMEILLEGAL = "_
 const std::string CommandLineInterpreterTest::TEST_COMMAND_LINE_STRING_WITH_ILLEGAL =
     TEST_COMMAND_LINE_CMDNAME + " " + TEST_COMMAND_LINE_PARAMC + " --" + TEST_COMMAND_LINE_NAMEILLEGAL + " " +
     TEST_COMMAND_LINE_PARAMA;
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLine_hasParameterReturnsTrue_When_stringParameterIsAvailable)
+{
+	ghost::CommandLine line(TEST_COMMAND_LINE_CMDNAME, {{TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA}});
+	ASSERT_TRUE(line.hasParameter(TEST_COMMAND_LINE_NAMEA));
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLine_hasParameterReturnsFalse_When_parameterIsNotAvailable)
+{
+	ghost::CommandLine line(TEST_COMMAND_LINE_CMDNAME, {});
+	ASSERT_FALSE(line.hasParameter(TEST_COMMAND_LINE_NAMEA));
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLine_hasCommandParameterReturnsTrue_When_identifierIsAvailable)
+{
+	ghost::CommandLine line(TEST_COMMAND_LINE_CMDNAME, {{TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA}});
+	ASSERT_TRUE(line.hasParameter(ghost::CommandParameter("", "", TEST_COMMAND_LINE_NAMEA, "", true)));
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLine_hasCommandParameterReturnsTrue_When_shortIdentifierIsAvailable)
+{
+	ghost::CommandLine line(TEST_COMMAND_LINE_CMDNAME, {{TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA}});
+	ASSERT_TRUE(line.hasParameter(ghost::CommandParameter("", TEST_COMMAND_LINE_NAMEA, "", "", true)));
+}
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineParser_When_emptyLine)
 {
@@ -249,11 +322,52 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_help_containsHelp
 	std::ostringstream oss;
 	_interpreter->printHelp(oss, ghost::Session::createLocal());
 
-	size_t nameFound = oss.str().find("HelpCommand");
+	size_t nameFound = oss.str().find("Help");
 	ASSERT_TRUE(nameFound != std::string::npos);
 
-	size_t shortcutFound = oss.str().find("LoginCommand");
+	size_t shortcutFound = oss.str().find("Login");
 	ASSERT_TRUE(shortcutFound != std::string::npos);
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_commandHelReturnsFalse_When_commandNotFound)
+{
+	auto command = std::make_shared<CustomCommand>(false);
+
+	std::ostringstream oss;
+	ASSERT_FALSE(_interpreter->printCommandHelp(oss, command->getName(), ghost::Session::createLocal()));
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_commandHelp_containsInfo)
+{
+	EXPECT_CALL(*_command, getRequiredParameters())
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "",
+					 TEST_COMMAND_LINE_PARAMETER_DESCRIPTION, true)})));
+
+	_interpreter->registerCommand(_command);
+
+	std::ostringstream oss;
+	bool printResult = _interpreter->printCommandHelp(oss, _command->getShortcut(), ghost::Session::createLocal());
+	ASSERT_TRUE(printResult);
+
+	size_t nameFound = oss.str().find(_command->getName());
+	ASSERT_TRUE(nameFound != std::string::npos);
+
+	size_t shortcutFound = oss.str().find(_command->getShortcut());
+	ASSERT_TRUE(shortcutFound != std::string::npos);
+
+	size_t descriptionFound = oss.str().find(_command->getDescription());
+	ASSERT_TRUE(descriptionFound != std::string::npos);
+
+	size_t parameterNameFound = oss.str().find(TEST_COMMAND_LINE_NAMEA);
+	ASSERT_TRUE(parameterNameFound != std::string::npos);
+
+	size_t parameterIdentifierFound = oss.str().find(TEST_COMMAND_LINE_PARAMA);
+	ASSERT_TRUE(parameterNameFound != std::string::npos);
+
+	size_t parameterDescriptionFound = oss.str().find(TEST_COMMAND_LINE_PARAMETER_DESCRIPTION);
+	ASSERT_TRUE(parameterDescriptionFound != std::string::npos);
 }
 
 TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_execute_When_permissionsListIsEmpty)
@@ -320,4 +434,85 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_executeCanAccessC
 
 	_interpreter->execute(command->getShortcut(), ghost::CommandExecutionContext(session));
 	ASSERT_TRUE(command->_lastSessionId == session->getUUID());
+}
+
+TEST_F(CommandLineInterpreterTest,
+       Test_CommandLineInterpreter_invalidates_When_requiredParameterIsMissingWithoutShortIdentifier)
+{
+	// Setup the command
+	EXPECT_CALL(*_command, getRequiredParameters())
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "", "", true)})));
+
+	// Define expectations
+	EXPECT_CALL(*_command, execute(_, _)).Times(0);
+	EXPECT_CALL(*_logger, error(_command->getShortcut() + ": usage: " + _command->getShortcut() + " -" +
+				    TEST_COMMAND_LINE_PARAMA + " <" + TEST_COMMAND_LINE_NAMEA + ">"))
+	    .Times(1);
+
+	_interpreter->execute(_command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
+}
+
+TEST_F(CommandLineInterpreterTest,
+       Test_CommandLineInterpreter_invalidates_When_requiredParameterIsMissingWithShortIdentifier)
+{
+	// Setup the command
+	EXPECT_CALL(*_command, getRequiredParameters())
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "p", "", true)})));
+
+	// Define expectations
+	EXPECT_CALL(*_command, execute(_, _)).Times(0);
+	EXPECT_CALL(*_logger, error(_command->getShortcut() + ": usage: " + _command->getShortcut() + " -" +
+				    TEST_COMMAND_LINE_PARAMA + "|--p <" + TEST_COMMAND_LINE_NAMEA + ">"))
+	    .Times(1);
+
+	_interpreter->execute(_command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
+}
+
+TEST_F(CommandLineInterpreterTest,
+       Test_CommandLineInterpreter_validates_When_requiredParameterIsProvidedAsShortIdentifier)
+{
+	// Setup the command
+	EXPECT_CALL(*_command, getRequiredParameters())
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "p", "", true)})));
+
+	// Define expectations
+	EXPECT_CALL(*_command, execute(_, _)).Times(1);
+
+	_interpreter->execute(_command->getShortcut() + " --p dummy",
+			      ghost::CommandExecutionContext(ghost::Session::createLocal()));
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_validates_When_requiredParameterIsProvidedAsIdentifier)
+{
+	// Setup the command
+	EXPECT_CALL(*_command, getRequiredParameters())
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "p", "", true)})));
+
+	// Define expectations
+	EXPECT_CALL(*_command, execute(_, _)).Times(1);
+
+	_interpreter->execute(_command->getShortcut() + " -" + TEST_COMMAND_LINE_PARAMA + " dummy",
+			      ghost::CommandExecutionContext(ghost::Session::createLocal()));
+}
+
+TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_validates_When_optionalParameterIsNotProvided)
+{
+	// Setup the command
+	EXPECT_CALL(*_command, getOptionalParameters())
+	    .Times(testing::AnyNumber())
+	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "p", "", true)})));
+
+	// Define expectations
+	EXPECT_CALL(*_command, execute(_, _)).Times(1);
+
+	_interpreter->execute(_command->getShortcut(), ghost::CommandExecutionContext(ghost::Session::createLocal()));
 }

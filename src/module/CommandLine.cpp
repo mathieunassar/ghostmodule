@@ -33,6 +33,11 @@ bool CommandLine::hasParameter(const std::string& parameterName) const
 	return _parameters.count(parameterName) != 0;
 }
 
+bool CommandLine::hasParameter(const ghost::CommandParameter& parameter) const
+{
+	return hasParameter(parameter.getIdentifier()) || hasParameter(parameter.getShortIdentifier());
+}
+
 const std::map<std::string, std::string>& CommandLine::getParametersMap() const
 {
 	return _parameters;

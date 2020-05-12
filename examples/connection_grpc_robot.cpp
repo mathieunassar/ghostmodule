@@ -99,7 +99,10 @@ private:
 class UpdateVelocityCommand : public ghost::Command
 {
 public:
-	UpdateVelocityCommand(const std::shared_ptr<Robot>& robot) : _robot(robot)
+	UpdateVelocityCommand(const std::shared_ptr<Robot>& robot)
+	    : _robot(robot)
+	    , _vxParameter("Vx", "", "", "the velocity in x direction", true)
+	    , _vyParameter("Vy", "", "", "the velocity in y direction", true)
 	{
 	}
 
@@ -117,7 +120,7 @@ public:
 
 	std::string getName() const override
 	{
-		return "UpdateVelocityCommand";
+		return "UpdateVelocity";
 	}
 	// This method defines the command that he user will have to enter to invoke this command
 	std::string getShortcut() const override
@@ -128,8 +131,21 @@ public:
 	{
 		return "Updates the robot's velocity";
 	}
+	// You can use the method "getCategory" to sort the commands when they are displayed with the "help" command.
+	std::string getCategory() const override
+	{
+		return "Robot";
+	}
+	// This method sets up the validation that happens before "execute" is called.
+	// In the validation step, the command line is parsed and the presence of the required parameters is asserted.
+	std::list<ghost::CommandParameter> getRequiredParameters() const override
+	{
+		return {_vxParameter, _vyParameter};
+	}
 
 private:
+	ghost::CommandParameter _vxParameter;
+	ghost::CommandParameter _vyParameter;
 	std::shared_ptr<Robot> _robot;
 };
 
@@ -183,8 +199,8 @@ public:
 	bool run(const ghost::Module& module)
 	{
 		if (_robot) _robot->update();
-		// The robot will send new odometry data (roughly) with a 20 Hz frequency
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		// The robot will send new odometry data (roughly) with a 2 Hz frequency
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		return true;
 	}
 
@@ -209,7 +225,9 @@ int main(int argc, char** argv)
 	// waiting for a little bit.
 	builder->setRunningBehavior(std::bind(&RobotModule::run, &myModule, std::placeholders::_1));
 	// We will use a ghost::Console in this example to control the inputs while the odometry is being printed
-	(void)builder->setConsole();
+	std::shared_ptr<ghost::Console> console = builder->setConsole();
+	// The GhostLogger writes in the ghost::Console, which manages the inputs and outputs.
+	builder->setLogger(ghost::GhostLogger::create(console));
 	// Parse the program options to determine what to do:
 	builder->setProgramOptions(argc, argv);
 

@@ -37,12 +37,14 @@ public:
 	std::string getName() const override;
 	std::string getShortcut() const override;
 	std::string getDescription() const override;
+	std::list<ghost::CommandParameter> getOptionalParameters() const override;
 
 private:
 	static const std::string _SHORTCUT;
 	static const std::string _DESCRIPTION;
 
 	CommandLineInterpreter* _interpreter;
+	ghost::CommandParameter _commandParameter;
 };
 } // namespace internal
 

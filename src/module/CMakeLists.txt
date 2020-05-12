@@ -6,6 +6,7 @@ file(GLOB header_module_lib
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Console.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandLineInterpreter.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Command.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandParameter.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandExecutionContext.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/CommandLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/PermissionEntity.hpp
@@ -83,7 +84,9 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/OutputController.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/EnterPressedInputEvent.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/InputModeInputEvent.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/LineRequestInputEvent.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/CommandParameter.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLine.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/Command.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineParser.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandLineInterpreter.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/CommandExecutionContext.cpp

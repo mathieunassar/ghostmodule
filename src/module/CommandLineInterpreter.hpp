@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_COMMANDLINEINTERPRETER_HPP
 
 #include <ghost/module/CommandLineInterpreter.hpp>
+#include <ghost/module/CommandParameter.hpp>
 #include <list>
 #include <map>
 #include <memory>
@@ -34,7 +35,7 @@ namespace internal
 class CommandLineInterpreter : public ghost::CommandLineInterpreter
 {
 public:
-	CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager);
+	CommandLineInterpreter(std::shared_ptr<ghost::UserManager> userManager, std::shared_ptr<ghost::Logger> logger);
 
 	bool execute(const std::string& commandLine, const ghost::CommandExecutionContext& context) override;
 	bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) override;
@@ -43,6 +44,8 @@ public:
 			     const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions = {}) override;
 
 	void printHelp(std::ostream& stream, const std::shared_ptr<ghost::Session>& session) const override;
+	bool printCommandHelp(std::ostream& stream, const std::string& commandName,
+			      const std::shared_ptr<ghost::Session>& session) const override;
 
 private:
 	struct CommandEntry
@@ -52,9 +55,13 @@ private:
 	};
 
 	bool executionPermitted(const CommandEntry& entry, const std::shared_ptr<ghost::Session>& session) const;
+	bool validate(const CommandEntry& entry, const ghost::CommandLine& commandLine) const;
+	std::string makeUsageString(const CommandEntry& entry) const;
+	std::string makeParameterUsageString(const ghost::CommandParameter& parameter) const;
 
 	std::map<std::string, CommandEntry> _commands;
 	std::shared_ptr<ghost::UserManager> _userManager;
+	std::shared_ptr<ghost::Logger> _logger;
 };
 } // namespace internal
 } // namespace ghost

@@ -35,6 +35,8 @@ public:
 	MOCK_METHOD2(registerCommand, void(std::shared_ptr<ghost::Command> command,
 					   const std::list<std::shared_ptr<ghost::PermissionEntity>>& permissions));
 	MOCK_CONST_METHOD2(printHelp, void(std::ostream& stream, const std::shared_ptr<ghost::Session>& session));
+	MOCK_CONST_METHOD3(printCommandHelp, bool(std::ostream& stream, const std::string& commandName,
+						  const std::shared_ptr<ghost::Session>& session));
 };
 
 class ConnectedModuleTests : public testing::Test
