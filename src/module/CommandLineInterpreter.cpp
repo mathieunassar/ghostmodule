@@ -132,12 +132,12 @@ bool CommandLineInterpreter::printCommandHelp(std::ostream& stream, const std::s
 	if (_commands.find(commandName) == _commands.end()) return false;
 	// Check that the user is allowed to see it
 	if (!executionPermitted(_commands.at(commandName), session)) return false;
-	
+
 	std::ostringstream oss;
 	const auto& cmd = _commands.at(commandName).command;
 	oss << "Name: " << cmd->getName() << " [" << cmd->getShortcut() << "]" << std::endl;
 	oss << "Description: " << cmd->getDescription() << std::endl;
-	
+
 	oss << "Required parameters:" << std::endl;
 	for (auto parameter : cmd->getRequiredParameters())
 	{
@@ -151,7 +151,7 @@ bool CommandLineInterpreter::printCommandHelp(std::ostream& stream, const std::s
 		oss << makeParameterUsageString(parameter) << std::endl;
 		oss << "\t" << parameter.getDescription() << std::endl;
 	}
-	
+
 	stream << oss.str();
 	return true;
 }

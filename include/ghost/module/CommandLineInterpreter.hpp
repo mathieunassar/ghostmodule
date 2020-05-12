@@ -98,7 +98,7 @@ public:
 	 *		operator.
 	 */
 	virtual void printHelp(std::ostream& stream, const std::shared_ptr<ghost::Session>& session) const = 0;
-	
+
 	/**
 	 *	Prints the name, shortcut, description as well as all registered required and optional parameters of
 	 *	the command referenced by "commandName".
@@ -109,7 +109,7 @@ public:
 	 *	@return true if the corresponding command was found, false otherwise.
 	 */
 	virtual bool printCommandHelp(std::ostream& stream, const std::string& commandName,
-			      const std::shared_ptr<ghost::Session>& session) const = 0;
+				      const std::shared_ptr<ghost::Session>& session) const = 0;
 };
 
 } // namespace ghost

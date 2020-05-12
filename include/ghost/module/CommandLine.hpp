@@ -18,10 +18,10 @@
 #define GHOST_COMMANDLINE_HPP
 
 #include <exception>
+#include <ghost/module/CommandParameter.hpp>
 #include <map>
 #include <sstream>
 #include <string>
-#include <ghost/module/CommandParameter.hpp>
 
 namespace ghost
 {

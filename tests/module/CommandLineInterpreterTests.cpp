@@ -342,7 +342,8 @@ TEST_F(CommandLineInterpreterTest, Test_CommandLineInterpreter_commandHelp_conta
 	EXPECT_CALL(*_command, getRequiredParameters())
 	    .Times(testing::AnyNumber())
 	    .WillRepeatedly(testing::Return(std::list<ghost::CommandParameter>(
-		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "", TEST_COMMAND_LINE_PARAMETER_DESCRIPTION, true)})));
+		{ghost::CommandParameter(TEST_COMMAND_LINE_NAMEA, TEST_COMMAND_LINE_PARAMA, "",
+					 TEST_COMMAND_LINE_PARAMETER_DESCRIPTION, true)})));
 
 	_interpreter->registerCommand(_command);
 
