@@ -39,7 +39,7 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
     , _disposeBehavior(disposeBehavior)
 {
 	_userManager = std::shared_ptr<UserManager>(new UserManager());
-	_interpreter = std::shared_ptr<CommandLineInterpreter>(new CommandLineInterpreter(_userManager));
+	_interpreter = std::shared_ptr<CommandLineInterpreter>(new CommandLineInterpreter(_userManager, logger));
 
 	// add useful commands
 	_interpreter->registerCommand(std::shared_ptr<ghost::Command>(new ExitCommand(this)), {});

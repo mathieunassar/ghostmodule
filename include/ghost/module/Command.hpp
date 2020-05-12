@@ -19,6 +19,8 @@
 
 #include <ghost/module/CommandExecutionContext.hpp>
 #include <ghost/module/CommandLine.hpp>
+#include <ghost/module/CommandParameter.hpp>
+#include <list>
 
 namespace ghost
 {
@@ -40,7 +42,7 @@ public:
 	 *		the user who commanded the execution.
 	 *	@return true on a successful execution, false otherwise.
 	 */
-	virtual bool execute(const CommandLine& commandLine, const ghost::CommandExecutionContext& context) = 0;
+	virtual bool execute(const ghost::CommandLine& commandLine, const ghost::CommandExecutionContext& context) = 0;
 	/**
 	 *	@return the name of this command.
 	 */
@@ -57,6 +59,31 @@ public:
 	 *	@return the description string of this command.
 	 */
 	virtual std::string getDescription() const = 0;
+	/**
+	 *	Optionally implement this function to determine a category that will be used to sort the commands.
+	 *	Per default, the category is an empty string.
+	 *	@return the category of this command.
+	 */
+	virtual std::string getCategory() const;
+	/**
+	 *	Optionally implement this function to generate a sanity check for this command.
+	 *	Based on this information, user input is validated before the execution of the command
+	 *	and a help page is generated.
+	 *	If the expected parameters are not present, an error message is shown to the user.
+	 *	@return a list containing required parameters
+	 */
+	virtual std::list<ghost::CommandParameter> getRequiredParameters() const;
+	/**
+	 *	Optionally implement this function to generate a sanity check for this command.
+	 *	Based on this information, user input is validated before the execution of the command
+	 *	and a help page is generated.
+	 *	@return a list containing optional parameters
+	 */
+	virtual std::list<ghost::CommandParameter> getOptionalParameters() const;
+
+private:
+	std::map<std::string, ghost::CommandParameter> _requiredParameters;
+	std::map<std::string, ghost::CommandParameter> _optionalParameters;
 };
 } // namespace ghost
 

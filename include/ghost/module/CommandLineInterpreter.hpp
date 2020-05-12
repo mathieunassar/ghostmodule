@@ -19,6 +19,7 @@
 
 #include <ghost/module/CommandExecutionContext.hpp>
 #include <ghost/module/CommandLine.hpp>
+#include <ghost/module/Logger.hpp>
 #include <ghost/module/PermissionEntity.hpp>
 #include <iostream>
 #include <list>
@@ -51,12 +52,13 @@ public:
 	/**
 	 *	Creates an instance of the command line interpreter that ignores permission.
 	 */
-	static std::shared_ptr<CommandLineInterpreter> create();
+	static std::shared_ptr<CommandLineInterpreter> create(std::shared_ptr<ghost::Logger> logger = {});
 	/**
 	 *	Creates an instance of the command line interpreter that can manage permissions.
 	 */
-	static std::shared_ptr<CommandLineInterpreter> create(std::shared_ptr<UserManager> userManager);
-	virtual ~CommandLineInterpreter() = 0;
+	static std::shared_ptr<CommandLineInterpreter> create(std::shared_ptr<UserManager> userManager,
+							      std::shared_ptr<ghost::Logger> logger = {});
+	virtual ~CommandLineInterpreter() = default;
 
 	/**
 	 *	Parses the provided string to a ghost::CommandLine. Then, searches for a registered ghost::Command
@@ -96,11 +98,20 @@ public:
 	 *		operator.
 	 */
 	virtual void printHelp(std::ostream& stream, const std::shared_ptr<ghost::Session>& session) const = 0;
+	
+	/**
+	 *	Prints the name, shortcut, description as well as all registered required and optional parameters of
+	 *	the command referenced by "commandName".
+	 *	@param stream	stream in which the help will be printed.
+	 *	@param commandName	name of the command to print the help of.
+	 *	@param session	the session of the current execution used to determine are available to the current
+	 *		operator.
+	 *	@return true if the corresponding command was found, false otherwise.
+	 */
+	virtual bool printCommandHelp(std::ostream& stream, const std::string& commandName,
+			      const std::shared_ptr<ghost::Session>& session) const = 0;
 };
 
-inline CommandLineInterpreter::~CommandLineInterpreter()
-{
-}
 } // namespace ghost
 
 #endif // GHOST_COMMANDLINEINTERPRETER_HPP
