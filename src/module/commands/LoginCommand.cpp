@@ -73,10 +73,17 @@ bool LoginCommand::execute(const ghost::CommandLine& commandLine, const ghost::C
 		return false;
 	}
 
+	if (_userManager->isUserConnected(context.getSession()) &&
+	    _userManager->getConnectedUser(context.getSession())->getName() == username)
+	{
+		GHOST_INFO(logger) << "Connection failed: this user is already connected.";
+		return false;
+	}
+
 	bool connectionSuccess = _userManager->connect(username, password, context.getSession());
 	if (!connectionSuccess || !_userManager->isUserConnected(context.getSession()))
 	{
-		GHOST_INFO(logger) << "Connection failed: invalid username / password combination";
+		GHOST_INFO(logger) << "Connection failed: invalid username / password combination.";
 		return false;
 	}
 
