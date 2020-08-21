@@ -131,7 +131,9 @@ void Module::start()
 
 	// Set the module to running
 	setState(ghost::internal::Module::RUNNING);
-	if (_console) _commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
+	if (_console)
+		_threadPool->makeScheduledExecutor()->scheduleAtFixedRate(std::bind(&Module::commandExecutor, this),
+									  std::chrono::milliseconds(10));
 
 	// Call the running routine as long as the module is running and it returns true
 	bool runFinshed = false;
@@ -145,12 +147,6 @@ void Module::start()
 	// Dipose the module
 	if (currentState == ghost::internal::Module::RUNNING || currentState == ghost::internal::Module::DISPOSING)
 		stop();
-
-	if (_console)
-	{
-		_commandExecutorCV.notify_one();
-		_commandExecutor.join();
-	}
 }
 
 void Module::stop()
@@ -166,6 +162,7 @@ void Module::stop()
 	// Stop the components
 	for (const auto& component : _components) component->stop();
 
+	_threadPool->stop(true);
 	if (_console) _console->stop();
 }
 
@@ -257,19 +254,18 @@ void Module::dispose()
 
 void Module::commandExecutor()
 {
-	while (getState() == ghost::internal::Module::RUNNING)
-	{
-		std::unique_lock<std::mutex> lock(_commandExecutorMutex);
-		_commandExecutorCV.wait(
-		    lock, [&] { return getState() != ghost::internal::Module::RUNNING || _console->hasCommands(); });
+	std::unique_lock<std::mutex> lock(_commandExecutorMutex);
+	bool waitResult = _commandExecutorCV.wait_for(lock, std::chrono::milliseconds(1), [&] {
+		return getState() != ghost::internal::Module::RUNNING || _console->hasCommands();
+	});
+	if (!waitResult) return;
 
-		if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
-		{
-			auto command = _console->getCommand();
-			ghost::CommandExecutionContext context(ghost::Session::createLocal());
-			context.setConsole(_console);
-			_interpreter->execute(command, context);
-			_console->flush();
-		}
+	if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
+	{
+		auto command = _console->getCommand();
+		ghost::CommandExecutionContext context(ghost::Session::createLocal());
+		context.setConsole(_console);
+		_interpreter->execute(command, context);
+		_console->flush();
 	}
 }

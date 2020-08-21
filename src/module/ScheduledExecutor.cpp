@@ -34,8 +34,8 @@ void ScheduledExecutor::scheduleAtFixedRate(const std::function<void()>& task, c
 	t.lastStart = std::chrono::steady_clock::now();
 	t.rate = rate;
 	t.task = task;
-	_threadPool->execute(task);
-	_scheduledTasks.push_back(t);
+	t.lastFuture = _threadPool->execute(task);
+	_scheduledTasks.push_back(std::move(t));
 }
 
 bool ScheduledExecutor::update()
@@ -46,10 +46,11 @@ bool ScheduledExecutor::update()
 	auto now = std::chrono::steady_clock::now();
 	for (auto& t : _scheduledTasks)
 	{
-		if (now >= t.lastStart + t.rate)
+		if (t.lastFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready &&
+		    now >= t.lastStart + t.rate)
 		{
 			t.lastStart = now;
-			_threadPool->execute(t.task);
+			t.lastFuture = _threadPool->execute(t.task);
 		}
 	}
 	return true;

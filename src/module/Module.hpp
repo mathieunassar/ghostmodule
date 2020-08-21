@@ -89,7 +89,6 @@ private:
 	std::function<bool(const ghost::Module&)> _runningBehavior;
 	std::function<void(const ghost::Module&)> _disposeBehavior;
 
-	std::thread _commandExecutor;
 	std::mutex _commandExecutorMutex;
 	std::condition_variable _commandExecutorCV;
 	void commandExecutor();

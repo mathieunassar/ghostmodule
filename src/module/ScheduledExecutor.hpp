@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <chrono>
+#include <future>
 #include <functional>
 #include <atomic>
 
@@ -72,6 +73,7 @@ private:
 	struct ScheduledTask
 	{
 		std::function<void()> task;
+		std::future<void> lastFuture;
 		std::chrono::steady_clock::time_point lastStart;
 		std::chrono::milliseconds rate;
 	};
