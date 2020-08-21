@@ -90,9 +90,11 @@ std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleNam
 		components.push_back(component);
 	}
 
+	if (!_threadPool) _threadPool = std::make_shared<ThreadPool>(std::thread::hardware_concurrency());
+
 	// Create the module and give it the components
 	auto module =
-	    std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options, components,
+	    std::make_shared<ghost::internal::Module>(moduleName, _threadPool, _console, _logger, _options, components,
 						      _initializationBehavior, _runningBehavior, _disposeBehavior);
 
 	// Give a weak_ptr of the parent module to its components

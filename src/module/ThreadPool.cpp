@@ -18,18 +18,23 @@
 
 using namespace ghost::internal;
 
+ThreadPool::ThreadPool(size_t threadsCount)
+{
+	_threads.resize(threadsCount);
+}
+
 ThreadPool::~ThreadPool()
 {
 	stop(true);
 }
 
-bool ThreadPool::start(size_t threadsCount)
+bool ThreadPool::start()
 {
 	// Check that the pool size is positive and that it has not started yet
-	if (threadsCount == 0 || _threads.size() != 0) return false;
+	if (_threads.size() == 0 || _threads.front().joinable()) return false;
 
 	_enable = true;
-	for (size_t i = 0; i < threadsCount; ++i) _threads.emplace_back(&ThreadPool::worker, this);
+	for (size_t i = 0; i < _threads.size(); ++i) _threads[i] = std::thread(&ThreadPool::worker, this);
 
 	return true;
 }

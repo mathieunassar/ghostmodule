@@ -22,8 +22,9 @@
 
 using namespace ghost::internal;
 
-Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
-	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+Module::Module(const std::string& name, const std::shared_ptr<ThreadPool>& threadPool,
+	       const std::shared_ptr<Console>& console, const std::shared_ptr<ghost::Logger>& logger,
+	       const ghost::CommandLine& options,
 	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
 	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
 	       const std::function<bool(const ghost::Module&)>& runningBehavior,
@@ -31,6 +32,7 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
     : _name(name)
     , _options(options)
     , _state(Module::STOPPED)
+    , _threadPool(threadPool)
     , _console(console)
     , _logger(logger)
     , _components(components)
@@ -64,6 +66,7 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
 
 Module::~Module()
 {
+	_threadPool->stop(true);
 	if (_console) _console->stop();
 }
 
@@ -102,6 +105,9 @@ void Module::start()
 {
 	if (getState() != ghost::internal::Module::STOPPED) // only start if module is stopped
 		return;
+
+	// Start the thread pool
+	_threadPool->start();
 
 	if (_console) _console->start();
 

@@ -24,6 +24,7 @@
 
 #include "CommandLineInterpreter.hpp"
 #include "Console.hpp"
+#include "ThreadPool.hpp"
 #include "UserManager.hpp"
 
 namespace ghost
@@ -41,8 +42,9 @@ public:
 		DISPOSING     // dispose method is being called
 	};
 
-	Module(const std::string& name, const std::shared_ptr<Console>& console,
-	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+	Module(const std::string& name, const std::shared_ptr<ThreadPool>& threadPool,
+	       const std::shared_ptr<Console>& console, const std::shared_ptr<ghost::Logger>& logger,
+	       const ghost::CommandLine& options,
 	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
 	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
 	       const std::function<bool(const ghost::Module&)>& runningBehavior,
@@ -76,6 +78,7 @@ private:
 	std::string _name;
 	ghost::CommandLine _options;
 	State _state;
+	std::shared_ptr<ThreadPool> _threadPool;
 	std::shared_ptr<Console> _console;
 	std::shared_ptr<ghost::Logger> _logger;
 	std::shared_ptr<UserManager> _userManager;

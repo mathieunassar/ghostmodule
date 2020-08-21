@@ -35,6 +35,10 @@ namespace internal
 class ThreadPool
 {
 public:
+	/**
+	 *	@param threadsCount number of threads to manage in this pool.
+	 */
+	ThreadPool(size_t threadsCount);
 	~ThreadPool();
 
 	/**
@@ -43,10 +47,9 @@ public:
 	 *	then their execution begins.
 	 *	If all the workers cannot be started, then stop is called and the
 	 *	method returns false.
-	 *	@param threadsCount number of threads to manage in this pool.
 	 *	@return true if all the workers started successfully, false otherwise.
 	 */
-	bool start(size_t threadsCount);
+	bool start();
 	/**
 	 *	Stops all the execution in the thread pool.
 	 *	If "joinThreads" is set to true, then the method will block

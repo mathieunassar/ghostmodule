@@ -17,10 +17,10 @@
 #ifndef GHOST_INTERNAL_SCHEDULEDEXECUTOR_HPP
 #define GHOST_INTERNAL_SCHEDULEDEXECUTOR_HPP
 
+#include <vector>
 #include <chrono>
 #include <functional>
-#include <future>
-#include <memory>
+#include <atomic>
 
 namespace ghost
 {

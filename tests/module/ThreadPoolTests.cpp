@@ -23,7 +23,7 @@ class ThreadPoolTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-		_threadPool = std::make_shared<ghost::internal::ThreadPool>();
+		
 	}
 
 	void TearDown() override
@@ -32,7 +32,8 @@ protected:
 
 	void goToThreadPoolStartedState(size_t threadCount = 2)
 	{
-		bool startResult = _threadPool->start(threadCount);
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(threadCount);
+		bool startResult = _threadPool->start();
 		ASSERT_TRUE(startResult);
 	}
 
@@ -52,7 +53,8 @@ TEST_F(ThreadPoolTests, Test_ThreadPool_startsAndStop_When_1ThreadIsStarted)
 
 TEST_F(ThreadPoolTests, Test_ThreadPool_doesnotStart_When_0ThreadIsStarted)
 {
-	bool startResult = _threadPool->start(0);
+	_threadPool = std::make_shared<ghost::internal::ThreadPool>(0);
+	bool startResult = _threadPool->start();
 	ASSERT_FALSE(startResult);
 }
 

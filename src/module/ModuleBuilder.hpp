@@ -47,6 +47,7 @@ private:
 	std::function<void(const ghost::Module&)> _disposeBehavior;
 	std::vector<std::shared_ptr<ghost::ModuleExtensionBuilder>> _componentBuilders;
 	ghost::CommandLine _options;
+	std::shared_ptr<ThreadPool> _threadPool;
 	std::shared_ptr<Console> _console;
 	std::shared_ptr<ghost::Logger> _logger;
 };
