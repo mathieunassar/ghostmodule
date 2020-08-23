@@ -66,8 +66,10 @@ Module::Module(const std::string& name, const std::shared_ptr<ThreadPool>& threa
 
 Module::~Module()
 {
-	_threadPool->stop(true);
 	if (_console) _console->stop();
+
+	// The thread pool is the last thing to stop, to give a chance to the components to clean-up their executors
+	_threadPool->stop(true);
 }
 
 bool Module::setState(State state)

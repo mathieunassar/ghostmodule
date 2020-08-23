@@ -56,7 +56,7 @@ Console::Console(const std::shared_ptr<ConsoleDevice>& device, std::shared_ptr<T
 	_inputController = std::make_shared<internal::InputController>(
 	    threadPool, _device, internal::ConsoleDevice::OUTPUT, cmdCallback, modeCallback);
 
-	_outputController = std::make_shared<internal::OutputController>(_device, redirectStdout);
+	_outputController = std::make_shared<internal::OutputController>(threadPool, _device, redirectStdout);
 }
 
 std::shared_ptr<ConsoleDevice> Console::makeConsoleDevice()

@@ -26,6 +26,9 @@ class OutputControllerTests : public testing::Test
 protected:
 	void SetUp() override
 	{
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(std::thread::hardware_concurrency());
+		_threadPool->start();
+
 		_consoleDeviceMock = std::make_shared<ConsoleDeviceMock>();
 		_writeCallsCounter = 0;
 		_expectedWriteCallsCount = 0;
@@ -35,12 +38,14 @@ protected:
 	{
 		if (_outputController) _outputController.reset();
 
+		_threadPool->stop(true);
 		_consoleDeviceMock.reset();
 	}
 
 	void setupOutputController(bool redirect = true)
 	{
-		_outputController = std::make_shared<ghost::internal::OutputController>(_consoleDeviceMock, redirect);
+		_outputController =
+		    std::make_shared<ghost::internal::OutputController>(_threadPool, _consoleDeviceMock, redirect);
 	}
 
 	void startController()
@@ -92,6 +97,7 @@ protected:
 		});
 	}
 
+	std::shared_ptr<ghost::internal::ThreadPool> _threadPool;
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
 	std::shared_ptr<ghost::internal::OutputController> _outputController;
 	int _writeCallsCounter;
