@@ -27,6 +27,9 @@ class InputControllerTests : public testing::Test
 protected:
 	void SetUp() override
 	{
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(std::thread::hardware_concurrency());
+		_threadPool->start();
+
 		_consoleDeviceMock = std::make_shared<ConsoleDeviceMock>();
 		_commandCallbackCallCounter = 0;
 		_modeCallbackCallCounter = 0;
@@ -42,6 +45,7 @@ protected:
 			_inputController.reset();
 		}
 
+		_threadPool->stop(true);
 		_consoleDeviceMock.reset();
 	}
 
@@ -51,7 +55,7 @@ protected:
 		EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(initialMode)).Times(1);
 
 		_inputController = std::make_shared<ghost::internal::InputController>(
-		    _consoleDeviceMock, initialMode,
+		    _threadPool, _consoleDeviceMock, initialMode,
 		    std::bind(&InputControllerTests::commandCallback, this, std::placeholders::_1),
 		    std::bind(&InputControllerTests::modeCallback, this, std::placeholders::_1));
 
@@ -96,6 +100,7 @@ protected:
 		}
 	}
 
+	std::shared_ptr<ghost::internal::ThreadPool> _threadPool;
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
 	std::shared_ptr<ghost::internal::InputController> _inputController;
 

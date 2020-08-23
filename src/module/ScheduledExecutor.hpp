@@ -36,6 +36,7 @@ class Executor
 public:
 	virtual ~Executor() = default;
 	virtual bool update() = 0;
+	virtual void stop() = 0;
 };
 
 class ThreadPool;
@@ -53,7 +54,7 @@ public:
 	 *	This method does not cancel the execution of already submitted tasks.
 	 *	This method does not block and does not wait until completion of scheduled tasks.
 	 */
-	void stop();
+	void stop() override;
 	/**
 	 *	Creates a task in the attached thread pool that begins now,
 	 *	and that is repeated with the given period until the executor is stopped.
@@ -69,6 +70,7 @@ public:
 
 private:
 	ThreadPool* _threadPool;
+	std::mutex _mutex;
 
 	struct ScheduledTask
 	{

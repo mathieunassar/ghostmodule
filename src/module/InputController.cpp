@@ -26,11 +26,11 @@
 
 using namespace ghost::internal;
 
-InputController::InputController(std::shared_ptr<ConsoleDevice> device, ConsoleDevice::ConsoleMode initialMode,
+InputController::InputController(const std::shared_ptr<ThreadPool>& threadPool, std::shared_ptr<ConsoleDevice> device,
+				 ConsoleDevice::ConsoleMode initialMode,
 				 std::function<void(const std::string&)> cmdCallback,
 				 std::function<void(ConsoleDevice::ConsoleMode)> modeCallback)
-    : _inputThreadEnable(false)
-    , _enterPressedThreadEnable(false)
+    : _threadPool(threadPool)
     , _device(device)
     , _prompt(new Prompt(">"))
     , _consoleMode(initialMode)
@@ -65,14 +65,15 @@ void InputController::setCommandCallback(std::function<void(const std::string&)>
 
 void InputController::start()
 {
-	if (!_enterPressedThreadEnable)
+	if (!_executor)
 	{
 		_device->start();
 
-		_enterPressedThreadEnable = true;
-		_inputThreadEnable = true;
-		_inputThread = std::thread(&InputController::inputListenerThread, this);
-		_enterPressedThread = std::thread(&InputController::enterPressedThread, this);
+		_executor = _threadPool->makeScheduledExecutor();
+		_executor->scheduleAtFixedRate(std::bind(&InputController::inputListenerThread, this),
+					       std::chrono::milliseconds(1));
+		_executor->scheduleAtFixedRate(std::bind(&InputController::enterPressedThread, this),
+					       std::chrono::milliseconds(1));
 	}
 }
 
@@ -80,17 +81,10 @@ void InputController::stop()
 {
 	_device->stop();
 
-	// join this thread first to avoid that it waits for input thread which would be already finished
-	if (_enterPressedThreadEnable)
+	if (_executor)
 	{
-		_enterPressedThreadEnable = false;
-		if (_enterPressedThread.joinable()) _enterPressedThread.join();
-	}
-
-	if (_inputThreadEnable)
-	{
-		_inputThreadEnable = false;
-		if (_inputThread.joinable()) _inputThread.join();
+		_executor->stop();
+		_executor.reset();
 	}
 }
 
@@ -133,41 +127,26 @@ void InputController::registerEventHandlers()
 
 void InputController::inputListenerThread()
 {
-	while (_inputThreadEnable)
-	{
-		QueueElement<std::shared_ptr<InputEvent>> event;
-		if (!_eventQueue.tryGet(std::chrono::milliseconds(100), event)) // tryget only blocks for a second
-		{
-			continue;
-		}
+	QueueElement<std::shared_ptr<InputEvent>> event;
+	if (!_eventQueue.tryGet(std::chrono::milliseconds(1), event)) return; // tryget only blocks for a second
 
-		_eventQueue.pop();
-		auto& handler = _eventHandlers.at(event.element->getEventName());
-		bool success = handler->handle(*event.element);
-		event.result->set_value(success);
+	_eventQueue.pop();
+	auto& handler = _eventHandlers.at(event.element->getEventName());
+	bool success = handler->handle(*event.element);
+	event.result->set_value(success);
 
-		if (!success)
-		{
-			std::cout << "Failed to handle event of type: " << event.element->getEventName() << std::endl;
-		}
-	}
+	if (!success) std::cout << "Failed to handle event of type: " << event.element->getEventName() << std::endl;
 }
 
 void InputController::enterPressedThread()
 {
-	while (_enterPressedThreadEnable)
+	if (_consoleMode == ConsoleDevice::INPUT) return;
+
+	if (_device->awaitInputMode() && _consoleMode == ConsoleDevice::OUTPUT)
 	{
-		if (_consoleMode == ConsoleDevice::INPUT)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			continue;
-		}
-		if (_device->awaitInputMode() && _consoleMode == ConsoleDevice::OUTPUT)
-		{
-			auto promise = onNewEvent(
-			    std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
-			promise->get_future().wait();
-		}
+		auto promise =
+		    onNewEvent(std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
+		promise->get_future().wait();
 	}
 }
 

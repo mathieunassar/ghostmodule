@@ -19,8 +19,8 @@
 
 #include <BlockingQueue.hpp>
 #include <atomic>
-#include <mutex>
 #include <future>
+#include <mutex>
 #include <thread>
 #include <vector>
 #include "ScheduledExecutor.hpp"
@@ -88,6 +88,13 @@ template <typename Callable>
 auto ThreadPool::execute(Callable&& callable) -> std::future<typename std::result_of<Callable()>::type>
 {
 	using ReturnType = typename std::result_of<Callable()>::type;
+
+	// If the thread pool is stopped, don't execute anything
+	if (!_enable)
+	{
+		return std::future<ReturnType>();
+	}
+
 	auto ptask = std::make_shared<std::packaged_task<ReturnType()>>(callable);
 	std::future<ReturnType> res = ptask->get_future();
 	_queue.push([ptask]() { (*ptask)(); });

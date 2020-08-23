@@ -23,7 +23,6 @@ class ThreadPoolTests : public testing::Test
 protected:
 	void SetUp() override
 	{
-		
 	}
 
 	void TearDown() override
@@ -122,7 +121,8 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_poolStops_When_executorIsStillActi
 
 TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPool_When_ok)
 {
-	goToThreadPoolStartedState();
+	// 100 threads ready to process the tasks in order to test the frequency of the scheduling
+	goToThreadPoolStartedState(100);
 	auto executor = _threadPool->makeScheduledExecutor();
 
 	int counter = 0;
@@ -132,7 +132,7 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPool_When_ok)
 	_threadPool->stop(true);
 	std::cout << counter << std::endl;
 	ASSERT_GE(counter, 15);
-	ASSERT_LE(counter, 21);
+	ASSERT_LE(counter, 22);
 }
 
 TEST_F(ThreadPoolTests, Test_ScheduleExecutor_usesAllTheThreads_When_scheduleAtFixedRate)

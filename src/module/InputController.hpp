@@ -27,6 +27,7 @@
 #include <string>
 #include <thread>
 
+#include "ThreadPool.hpp"
 #include "ConsoleDevice.hpp"
 #include "InputControllerAccess.hpp"
 #include "InputEvent.hpp"
@@ -44,8 +45,8 @@ namespace internal
 class InputController : public InputControllerAccess
 {
 public:
-	InputController(std::shared_ptr<ConsoleDevice> device, ConsoleDevice::ConsoleMode initialMode,
-			std::function<void(const std::string&)> cmdCallback,
+	InputController(const std::shared_ptr<ThreadPool>& threadPool, std::shared_ptr<ConsoleDevice> device,
+			ConsoleDevice::ConsoleMode initialMode, std::function<void(const std::string&)> cmdCallback,
 			std::function<void(ConsoleDevice::ConsoleMode)> modeCallback);
 	~InputController();
 
@@ -76,17 +77,13 @@ private:
 	void inputListenerThread();
 	void enterPressedThread();
 
-	/* thread stuff */
-	std::thread _inputThread;
-	std::atomic<bool> _inputThreadEnable;
-	std::thread _enterPressedThread;
-	std::atomic<bool> _enterPressedThreadEnable;
-
 	/* Runtime variables */
 	BlockingQueue<QueueElement<std::shared_ptr<InputEvent>>> _eventQueue;
 	std::shared_ptr<std::string> _explicitInput;
 
 	/* configuration */
+	std::shared_ptr<ThreadPool> _threadPool;
+	std::shared_ptr<ScheduledExecutor> _executor;
 	std::shared_ptr<ConsoleDevice> _device;
 	std::unique_ptr<Prompt> _prompt;
 	ConsoleDevice::ConsoleMode _consoleMode;

@@ -34,8 +34,9 @@ namespace internal
 class Console : public ghost::Console
 {
 public:
-	Console(bool redirectStdout = true);
-	Console(const std::shared_ptr<ConsoleDevice>& device, bool redirectStdout = true);
+	Console(std::shared_ptr<ThreadPool> threadPool = nullptr, bool redirectStdout = true);
+	Console(const std::shared_ptr<ConsoleDevice>& device, std::shared_ptr<ThreadPool> threadPool = nullptr,
+		bool redirectStdout = true);
 
 	void start() override;
 	void stop() override;
@@ -55,6 +56,8 @@ public:
 	void onNewInput(const std::string& str);
 
 private:
+	std::shared_ptr<ConsoleDevice> makeConsoleDevice();
+
 	/* Callbacks for the input controller */
 	void onNewMode(ConsoleDevice::ConsoleMode mode);
 

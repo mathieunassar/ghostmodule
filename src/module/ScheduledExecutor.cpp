@@ -26,10 +26,18 @@ ScheduledExecutor::ScheduledExecutor(ThreadPool* threadPool) : _threadPool(threa
 void ScheduledExecutor::stop()
 {
 	_enable = false;
+
+	std::unique_lock<std::mutex> lock(_mutex);
+	for (auto& t : _scheduledTasks)
+	{
+		if (t.lastFuture.valid()) t.lastFuture.get();
+	}
+	_scheduledTasks.clear();
 }
 
 void ScheduledExecutor::scheduleAtFixedRate(const std::function<void()>& task, const std::chrono::milliseconds& rate)
 {
+	std::unique_lock<std::mutex> lock(_mutex);
 	ScheduledTask t;
 	t.lastStart = std::chrono::steady_clock::now();
 	t.rate = rate;
@@ -43,10 +51,13 @@ bool ScheduledExecutor::update()
 	// Return false if the executor was stopped
 	if (!_enable) return false;
 
+	std::unique_lock<std::mutex> lock(_mutex);
+
 	auto now = std::chrono::steady_clock::now();
 	for (auto& t : _scheduledTasks)
 	{
-		if (t.lastFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready &&
+		if (t.lastFuture.valid() &&
+		    t.lastFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready &&
 		    now >= t.lastStart + t.rate)
 		{
 			t.lastStart = now;

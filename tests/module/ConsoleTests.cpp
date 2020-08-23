@@ -38,7 +38,7 @@ protected:
 		EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(testing::AnyNumber());
 		EXPECT_CALL(*_consoleDeviceMock, write(">")).Times(testing::AnyNumber());
 
-		_console = std::make_shared<ghost::internal::Console>(_consoleDeviceMock, false);
+		_console = std::make_shared<ghost::internal::Console>(_consoleDeviceMock, nullptr, false);
 	}
 
 	void TearDown() override

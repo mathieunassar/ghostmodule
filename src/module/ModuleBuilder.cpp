@@ -31,7 +31,8 @@ void ghost::ModuleBuilder::setModuleToExtension(const std::shared_ptr<ghost::Mod
 	component->_module = module;
 }
 
-ModuleBuilder::ModuleBuilder() : _options("undefined")
+ModuleBuilder::ModuleBuilder()
+    : _options("undefined"), _threadPool(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()))
 {
 }
 
@@ -62,7 +63,7 @@ ModuleBuilder& ModuleBuilder::setProgramOptions(int argc, char* argv[])
 
 std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
 {
-	_console = std::shared_ptr<Console>(new ghost::internal::Console());
+	_console = std::shared_ptr<Console>(new ghost::internal::Console(_threadPool));
 	return _console;
 }
 

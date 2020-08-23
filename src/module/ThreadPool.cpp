@@ -41,6 +41,14 @@ bool ThreadPool::start()
 
 void ThreadPool::stop(bool joinThreads)
 {
+	std::unique_lock<std::mutex> lock(_mutex);
+	std::vector<std::shared_ptr<Executor>> executors = _executors;
+	lock.unlock();
+
+	// Stop the executors - this will wait that their tasks complete
+	for (auto& executor : executors) executor->stop();
+
+	// Stop tasks execution and join the workers
 	_enable = false;
 	if (joinThreads)
 	{
