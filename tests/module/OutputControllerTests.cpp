@@ -63,7 +63,7 @@ protected:
 		startController();
 
 		// wait to let internal threads reach the test points
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
 	void waitForWriteCalls()
@@ -172,6 +172,7 @@ TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsNotCalled_When_
 TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsCalled_When_ControllerIsEnabledAgain)
 {
 	setupOutputController();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(0);
 	_outputController->start();
 
