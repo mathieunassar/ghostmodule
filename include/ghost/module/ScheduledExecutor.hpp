@@ -17,8 +17,8 @@
 #ifndef GHOST_MODULE_SCHEDULEDEXECUTOR_HPP
 #define GHOST_MODULE_SCHEDULEDEXECUTOR_HPP
 
-#include <functional>
 #include <chrono>
+#include <functional>
 
 namespace ghost
 {

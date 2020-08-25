@@ -27,11 +27,11 @@
 #include <string>
 #include <thread>
 
-#include "ThreadPool.hpp"
 #include "ConsoleDevice.hpp"
 #include "InputControllerAccess.hpp"
 #include "InputEvent.hpp"
 #include "Prompt.hpp"
+#include "ThreadPool.hpp"
 
 namespace ghost
 {

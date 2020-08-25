@@ -17,12 +17,12 @@
 #ifndef GHOST_INTERNAL_SCHEDULEDEXECUTOR_HPP
 #define GHOST_INTERNAL_SCHEDULEDEXECUTOR_HPP
 
+#include <atomic>
+#include <chrono>
+#include <functional>
+#include <future>
 #include <ghost/module/ScheduledExecutor.hpp>
 #include <vector>
-#include <chrono>
-#include <future>
-#include <functional>
-#include <atomic>
 
 namespace ghost
 {
@@ -50,7 +50,7 @@ class ScheduledExecutor : public Executor, public ghost::ScheduledExecutor
 {
 public:
 	ScheduledExecutor(ThreadPool* threadPool);
-	
+
 	// From ghost::ScheduledExecutor
 	void stop() override;
 	void scheduleAtFixedRate(const std::function<void()>& task, const std::chrono::milliseconds& rate) override;
