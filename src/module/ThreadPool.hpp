@@ -58,7 +58,7 @@ private:
 
 	std::vector<std::thread> _threads;
 	std::mutex _mutex;
-	std::atomic_bool _enable = true;
+	std::atomic_bool _enable{true};
 	BlockingQueue<std::function<void(void)>> _queue;
 	std::vector<std::shared_ptr<Executor>> _executors;
 };

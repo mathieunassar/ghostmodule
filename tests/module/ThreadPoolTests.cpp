@@ -93,7 +93,7 @@ TEST_F(ThreadPoolTests, Test_ThreadPool_executesTask_When_valueIsExpected)
 TEST_F(ThreadPoolTests, Test_ThreadPool_executesTaskParallely_When_twoTasksAreCommanded)
 {
 	goToThreadPoolStartedState();
-	std::atomic_bool allowedToComplete = false;
+	std::atomic_bool allowedToComplete{false};
 	int maxIterations = 100;
 	auto future = _threadPool->execute([&]() {
 		while (!allowedToComplete && maxIterations > 0)

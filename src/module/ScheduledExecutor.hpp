@@ -70,7 +70,7 @@ private:
 		std::chrono::milliseconds rate;
 	};
 	std::vector<ScheduledTask> _scheduledTasks;
-	std::atomic_bool _enable = true;
+	std::atomic_bool _enable{true};
 };
 } // namespace internal
 } // namespace ghost
