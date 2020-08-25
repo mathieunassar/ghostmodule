@@ -27,6 +27,11 @@ protected:
 
 	void TearDown() override
 	{
+		if (_threadPool)
+		{
+			_threadPool->stop(true);
+			_threadPool.reset();
+		}
 	}
 
 	void goToThreadPoolStartedState(size_t threadCount = 2)
@@ -122,8 +127,9 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_poolStops_When_executorIsStillActi
 TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPool_When_ok)
 {
 	// 100 threads ready to process the tasks in order to test the frequency of the scheduling
-	goToThreadPoolStartedState(100);
+	goToThreadPoolStartedState(10);
 	auto executor = _threadPool->makeScheduledExecutor();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	int counter = 0;
 	executor->scheduleAtFixedRate([&]() { counter++; }, std::chrono::milliseconds(5));

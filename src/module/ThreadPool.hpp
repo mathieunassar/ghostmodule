@@ -20,6 +20,7 @@
 #include <BlockingQueue.hpp>
 #include <atomic>
 #include <future>
+#include <ghost/module/ThreadPool.hpp>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -32,7 +33,7 @@ namespace internal
 /**
  *	Executes tasks in a pool of threads.
  */
-class ThreadPool
+class ThreadPool : public ghost::ThreadPool
 {
 public:
 	/**
@@ -41,33 +42,13 @@ public:
 	ThreadPool(size_t threadsCount);
 	~ThreadPool();
 
-	/**
-	 *	Starts the worker threads in the pool.
-	 *	If tasks have already been enqueued through calls to "execute",
-	 *	then their execution begins.
-	 *	If all the workers cannot be started, then stop is called and the
-	 *	method returns false.
-	 *	@return true if all the workers started successfully, false otherwise.
-	 */
-	bool start();
-	/**
-	 *	Stops all the execution in the thread pool.
-	 *	If "joinThreads" is set to true, then the method will block
-	 *	until all the worker threads have joined.
-	 *	@param joinThreads	set to true to join the worker threads.
-	 */
-	void stop(bool joinThreads);
-	/**
-	 *	Enqueues a task that will be executed by a worker in this pool.
-	 *	The returned promise will be fulfilled upon completion of the task.
-	 */
-	template <typename Callable>
-	auto execute(Callable&& callable) -> std::future<typename std::result_of<Callable()>::type>;
-	/**
-	 *	Creates an executor that can schedule tasks to the thread pool.
-	 *	@return the created executor that can schedule tasks.
-	 */
-	std::shared_ptr<ScheduledExecutor> makeScheduledExecutor();
+	bool start() override;
+	void stop(bool joinThreads) override;
+	std::shared_ptr<ghost::ScheduledExecutor> makeScheduledExecutor() override;
+
+protected:
+	bool enabled() const override;
+	void enqueue(std::function<void(void)>&& task) override;
 
 private:
 	/// The worker function, run by all the threads
@@ -81,25 +62,6 @@ private:
 	BlockingQueue<std::function<void(void)>> _queue;
 	std::vector<std::shared_ptr<Executor>> _executors;
 };
-
-///// Template definition /////
-
-template <typename Callable>
-auto ThreadPool::execute(Callable&& callable) -> std::future<typename std::result_of<Callable()>::type>
-{
-	using ReturnType = typename std::result_of<Callable()>::type;
-
-	// If the thread pool is stopped, don't execute anything
-	if (!_enable)
-	{
-		return std::future<ReturnType>();
-	}
-
-	auto ptask = std::make_shared<std::packaged_task<ReturnType()>>(callable);
-	std::future<ReturnType> res = ptask->get_future();
-	_queue.push([ptask]() { (*ptask)(); });
-	return res;
-}
 
 } // namespace internal
 } // namespace ghost

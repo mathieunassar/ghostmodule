@@ -83,7 +83,7 @@ private:
 
 	/* configuration */
 	std::shared_ptr<ThreadPool> _threadPool;
-	std::shared_ptr<ScheduledExecutor> _executor;
+	std::shared_ptr<ghost::ScheduledExecutor> _executor;
 	std::shared_ptr<ConsoleDevice> _device;
 	std::unique_ptr<Prompt> _prompt;
 	ConsoleDevice::ConsoleMode _consoleMode;

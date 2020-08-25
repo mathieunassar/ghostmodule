@@ -63,7 +63,7 @@ private:
 
 	/* thread stuff */
 	std::shared_ptr<ThreadPool> _threadPool;
-	std::shared_ptr<ScheduledExecutor> _executor;
+	std::shared_ptr<ghost::ScheduledExecutor> _executor;
 	void writerThread();
 	bool awaitOutput();
 	std::condition_variable _waitForOutput;

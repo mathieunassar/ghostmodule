@@ -60,12 +60,22 @@ void ThreadPool::stop(bool joinThreads)
 	_executors.clear();
 }
 
-std::shared_ptr<ScheduledExecutor> ThreadPool::makeScheduledExecutor()
+std::shared_ptr<ghost::ScheduledExecutor> ThreadPool::makeScheduledExecutor()
 {
 	std::unique_lock<std::mutex> lock(_mutex);
 	auto executor = std::make_shared<ScheduledExecutor>(this);
 	_executors.push_back(executor);
 	return executor;
+}
+
+bool ThreadPool::enabled() const
+{
+	return _enable;
+}
+
+void ThreadPool::enqueue(std::function<void(void)>&& task)
+{
+	_queue.push(task);
 }
 
 void ThreadPool::worker()

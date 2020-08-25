@@ -17,6 +17,7 @@
 #ifndef GHOST_INTERNAL_SCHEDULEDEXECUTOR_HPP
 #define GHOST_INTERNAL_SCHEDULEDEXECUTOR_HPP
 
+#include <ghost/module/ScheduledExecutor.hpp>
 #include <vector>
 #include <chrono>
 #include <future>
@@ -45,25 +46,14 @@ class ThreadPool;
  *	An executor that can schedule commands to run after a given delay,
  *	or to execute periodically.
  */
-class ScheduledExecutor : public Executor
+class ScheduledExecutor : public Executor, public ghost::ScheduledExecutor
 {
 public:
 	ScheduledExecutor(ThreadPool* threadPool);
-	/**
-	 *	Stops scheduling new tasks after schedule operations were called.
-	 *	This method does not cancel the execution of already submitted tasks.
-	 *	This method does not block and does not wait until completion of scheduled tasks.
-	 */
+	
+	// From ghost::ScheduledExecutor
 	void stop() override;
-	/**
-	 *	Creates a task in the attached thread pool that begins now,
-	 *	and that is repeated with the given period until the executor is stopped.
-	 *	If the task has not completed at the end of the period, the next task is delayed.
-	 *	Calling this method more than once does not stop scheduling tasks from the previous calls.
-	 *	@param task	task to schedule and repeat.
-	 *	@param rate	period in milliseconds between two starts of the execution of the task.
-	 */
-	void scheduleAtFixedRate(const std::function<void()>& task, const std::chrono::milliseconds& rate);
+	void scheduleAtFixedRate(const std::function<void()>& task, const std::chrono::milliseconds& rate) override;
 
 	/// Enqueues new tasks - called by the thread pool that created the executor.
 	bool update() override;

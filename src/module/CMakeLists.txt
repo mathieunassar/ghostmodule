@@ -16,6 +16,8 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/UserManager.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Session.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Module.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleBuilder.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ThreadPool.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ScheduledExecutor.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Logger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/LoggerLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/GhostLogger.hpp
