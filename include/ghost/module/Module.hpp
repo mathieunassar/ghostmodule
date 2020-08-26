@@ -22,8 +22,8 @@
 #include <ghost/module/Console.hpp>
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/ModuleExtension.hpp>
-#include <ghost/module/UserManager.hpp>
 #include <ghost/module/ThreadPool.hpp>
+#include <ghost/module/UserManager.hpp>
 #include <memory>
 #include <string>
 
@@ -105,7 +105,7 @@ public:
 	 *	Users should avoid blocking threads for a longer period of time. Instead,
 	 *	it is recommended to schedule the execution of a task with a given rate.
 	 *	For example, instead of scheduling a task surrounded by "while(true)",
-	 *	users should prefer to schedule the task periodically. This allows the 
+	 *	users should prefer to schedule the task periodically. This allows the
 	 *	thread pool to optimize the usage of threads, and to stop the execution
 	 *	of the program when the thread pool stops.
 	 */

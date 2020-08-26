@@ -21,10 +21,10 @@
 #include <atomic>
 #include <future>
 #include <ghost/module/ThreadPool.hpp>
+#include <map>
 #include <mutex>
 #include <thread>
 #include <vector>
-#include <map>
 #include "ScheduledExecutor.hpp"
 
 namespace ghost

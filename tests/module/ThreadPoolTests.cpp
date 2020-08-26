@@ -183,14 +183,13 @@ TEST_F(ThreadPoolTests, Test_ThreadPool_effectivelyResizes_When_oneThreadToTwoAn
 	// Queue a long task that will use the first thread
 	auto future1 = _threadPool->execute([&]() {
 		task1Started = true;
-		while (!task2Completed)
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		while (!task2Completed) std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		task1Completed = true;
 	});
 
 	// Wait that the first task starts
 	while (!task1Started) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	
+
 	// Enqueue the second task
 	auto future2 = _threadPool->execute([&]() { task2Completed = true; });
 
