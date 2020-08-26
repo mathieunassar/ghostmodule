@@ -132,13 +132,13 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPool_When_ok)
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	int counter = 0;
-	executor->scheduleAtFixedRate([&]() { counter++; }, std::chrono::milliseconds(5));
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	executor->scheduleAtFixedRate([&]() { counter++; }, std::chrono::milliseconds(50));
+	std::this_thread::sleep_for(std::chrono::milliseconds(220));
 
 	_threadPool->stop(true);
 	std::cout << counter << std::endl;
-	ASSERT_GE(counter, 15);
-	ASSERT_LE(counter, 22);
+	ASSERT_GE(counter, 4);
+	ASSERT_LE(counter, 5);
 }
 
 TEST_F(ThreadPoolTests, Test_ScheduleExecutor_usesAllTheThreads_When_scheduleAtFixedRate)

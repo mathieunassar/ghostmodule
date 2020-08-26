@@ -61,14 +61,14 @@ void OutputController::stop()
 
 void OutputController::enable()
 {
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	std::unique_lock<std::mutex> lock(_modeLock);
 	_consoleMode = ConsoleDevice::OUTPUT;
 	_waitForOutput.notify_all();
 }
 
 void OutputController::disable()
 {
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	std::unique_lock<std::mutex> lock(_modeLock);
 	_consoleMode = ConsoleDevice::INPUT;
 }
 
@@ -103,7 +103,7 @@ void OutputController::flush()
 
 bool OutputController::isEnabled() const
 {
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	std::unique_lock<std::mutex> lock(_modeLock);
 	return _consoleMode == ConsoleDevice::OUTPUT;
 }
 
@@ -124,13 +124,17 @@ void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>** que
 
 void OutputController::writerThread()
 {
-	if (!awaitOutput()) // wait until the console mode is input
-		return;
+	std::unique_lock<std::mutex> modeLock(_modeLock);
 
-	std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
+	// Only process the outputs if the mode is output
+	bool isOutputMode = _waitForOutput.wait_for(modeLock, std::chrono::milliseconds(0),
+						    [&]() { return _consoleMode == ConsoleDevice::OUTPUT; });
+	if (!isOutputMode) return;
+
+	std::unique_lock<std::mutex> queueSwitchLock(_writeQueueSwitchLock);
 	BlockingQueue<QueueElement<std::string>>* queue =
 	    _activeOutputQueue; // choose the queue with the lock in case of flush
-	lock.unlock();
+	queueSwitchLock.unlock();
 
 	QueueElement<std::string> entry;
 	if (!queue->tryGetAndPop(std::chrono::milliseconds(0), entry)) return;
@@ -138,12 +142,4 @@ void OutputController::writerThread()
 	_device->write(entry.element);
 	// (idea) the promise could be used to know when the entry is effectively executed...
 	entry.result->set_value(true);
-}
-
-bool OutputController::awaitOutput()
-{
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
-
-	return _waitForOutput.wait_for(lock, std::chrono::milliseconds(0),
-				       [&]() { return _consoleMode == ConsoleDevice::OUTPUT; });
 }
