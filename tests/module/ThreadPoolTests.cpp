@@ -158,3 +158,52 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_usesAllTheThreads_When_scheduleAtF
 	_threadPool->stop(true);
 	ASSERT_EQ(threads.size(), 2);
 }
+
+TEST_F(ThreadPoolTests, Test_ThreadPool_successfullyStops_When_resizedToMoreThreads)
+{
+	goToThreadPoolStartedState();
+	_threadPool->resize(5);
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+}
+
+TEST_F(ThreadPoolTests, Test_ThreadPool_successfullyStops_When_resizedToLessThreads)
+{
+	goToThreadPoolStartedState(5);
+	_threadPool->resize(2);
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+}
+
+TEST_F(ThreadPoolTests, Test_ThreadPool_effectivelyResizes_When_oneThreadToTwoAndNonIndependentTasksAreSubmitted)
+{
+	std::atomic_bool task1Completed{false};
+	std::atomic_bool task1Started{false};
+	std::atomic_bool task2Completed{false};
+	goToThreadPoolStartedState(1);
+
+	// Queue a long task that will use the first thread
+	auto future1 = _threadPool->execute([&]() {
+		task1Started = true;
+		while (!task2Completed)
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		task1Completed = true;
+	});
+
+	// Wait that the first task starts
+	while (!task1Started) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	
+	// Enqueue the second task
+	auto future2 = _threadPool->execute([&]() { task2Completed = true; });
+
+	// Wait that the first task potentially start
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+	// Since it didn't start, resize the pool
+	_threadPool->resize(2);
+
+	// Join
+	future2.get();
+	future1.get();
+
+	ASSERT_TRUE(task2Completed);
+	ASSERT_TRUE(task1Completed);
+}

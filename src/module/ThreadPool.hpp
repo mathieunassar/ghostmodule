@@ -24,6 +24,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <map>
 #include "ScheduledExecutor.hpp"
 
 namespace ghost
@@ -44,6 +45,8 @@ public:
 
 	bool start() override;
 	void stop(bool joinThreads) override;
+	void resize(size_t newThreadsCount) override;
+	size_t size() const override;
 	std::shared_ptr<ghost::ScheduledExecutor> makeScheduledExecutor() override;
 
 protected:
@@ -55,10 +58,15 @@ private:
 	void worker();
 	/// Checks the executors for new scheduled tasks.
 	void updateExecutors();
+	/// Checks if new threads must be spawned or if this thread must terminate
+	bool checkThreadsCount();
 
-	std::vector<std::thread> _threads;
-	std::mutex _mutex;
-	std::atomic_bool _enable{true};
+	std::map<std::thread::id, std::thread> _threads;
+	std::list<std::thread> _threadsToJoin;
+	size_t _threadsCount{0};
+	std::mutex _executorsMutex;
+	mutable std::mutex _poolMutex;
+	std::atomic_bool _enable{false};
 	BlockingQueue<std::function<void(void)>> _queue;
 	std::vector<std::shared_ptr<Executor>> _executors;
 };

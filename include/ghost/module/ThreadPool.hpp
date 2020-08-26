@@ -47,6 +47,21 @@ public:
 	 */
 	virtual void stop(bool joinThreads) = 0;
 	/**
+	 *	Triggers a resizing operation on the pool threads to the provided size.
+	 *	If more threads must spawn, their creation occurs during this call.
+	 *	If newThreadsCount is smaller than the current count of threads in the pool,
+	 *	then the unnecessary threads will stop execution but will not be joined by this call.
+	 *	@param newThreadsCount	target size of the thread pool
+	 */
+	virtual void resize(size_t newThreadsCount) = 0;
+	/**
+	 *	The pool's size reflects the number of threads still available for 
+	 *	executing tasks. It may not be equal to the target size of the pool when called
+	 *	directly after "resize".
+	 *	@return the effective size of the pool.
+	 */
+	virtual size_t size() const = 0;
+	/**
 	 *	Enqueues a task that will be executed by a worker in this pool.
 	 *	The returned promise will be fulfilled upon completion of the task.
 	 */

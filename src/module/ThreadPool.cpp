@@ -18,9 +18,8 @@
 
 using namespace ghost::internal;
 
-ThreadPool::ThreadPool(size_t threadsCount)
+ThreadPool::ThreadPool(size_t threadsCount) : _threadsCount(threadsCount)
 {
-	_threads.resize(threadsCount);
 }
 
 ThreadPool::~ThreadPool()
@@ -30,18 +29,24 @@ ThreadPool::~ThreadPool()
 
 bool ThreadPool::start()
 {
+	std::unique_lock<std::mutex> lock(_poolMutex);
+
 	// Check that the pool size is positive and that it has not started yet
-	if (_threads.size() == 0 || _threads.front().joinable()) return false;
+	if (_threadsCount == 0 || !_threads.empty()) return false;
 
 	_enable = true;
-	for (size_t i = 0; i < _threads.size(); ++i) _threads[i] = std::thread(&ThreadPool::worker, this);
+	for (size_t i = 0; i < _threadsCount; ++i)
+	{
+		auto thread = std::thread(&ThreadPool::worker, this);
+		_threads[thread.get_id()] = std::move(thread);
+	}
 
 	return true;
 }
 
 void ThreadPool::stop(bool joinThreads)
 {
-	std::unique_lock<std::mutex> lock(_mutex);
+	std::unique_lock<std::mutex> lock(_executorsMutex);
 	std::vector<std::shared_ptr<Executor>> executors = _executors;
 	lock.unlock();
 
@@ -49,20 +54,36 @@ void ThreadPool::stop(bool joinThreads)
 	for (auto& executor : executors) executor->stop();
 
 	// Stop tasks execution and join the workers
+	// No need to lock the _poolMutex since the threads will not use shared data after _enable is false
 	_enable = false;
 	if (joinThreads)
 	{
 		for (auto& thread : _threads)
-		{
+			if (thread.second.joinable()) thread.second.join();
+		for (auto& thread : _threadsToJoin)
 			if (thread.joinable()) thread.join();
-		}
 	}
 	_executors.clear();
 }
 
+void ThreadPool::resize(size_t newThreadsCount)
+{
+	std::unique_lock<std::mutex> lock(_poolMutex);
+	_threadsCount = newThreadsCount;
+	lock.unlock();
+
+	checkThreadsCount();
+}
+
+size_t ThreadPool::size() const
+{
+	std::unique_lock<std::mutex> lock(_poolMutex);
+	return _threads.size();
+}
+
 std::shared_ptr<ghost::ScheduledExecutor> ThreadPool::makeScheduledExecutor()
 {
-	std::unique_lock<std::mutex> lock(_mutex);
+	std::unique_lock<std::mutex> lock(_executorsMutex);
 	auto executor = std::make_shared<ScheduledExecutor>(this);
 	_executors.push_back(executor);
 	return executor;
@@ -89,12 +110,16 @@ void ThreadPool::worker()
 		if (taskGetResult && task) task();
 
 		updateExecutors();
+
+		// Manage the pool's size
+		bool thisThreadEnable = checkThreadsCount();
+		if (!thisThreadEnable) break;
 	}
 }
 
 void ThreadPool::updateExecutors()
 {
-	std::unique_lock<std::mutex> lock(_mutex);
+	std::unique_lock<std::mutex> lock(_executorsMutex);
 
 	auto it = _executors.begin();
 	while (it != _executors.end())
@@ -107,4 +132,40 @@ void ThreadPool::updateExecutors()
 		else
 			++it;
 	}
+}
+
+bool ThreadPool::checkThreadsCount()
+{
+	std::unique_lock<std::mutex> lock(_poolMutex);
+
+	// the pool ended or did not start yet, nothing to do
+	if (!_enable) return false;
+
+	// 1. Join threads waiting to finish
+	for (auto& thread : _threadsToJoin)
+		if (thread.joinable()) thread.join();
+	_threadsToJoin.clear();
+
+	// 1. Check if this thread must finish
+	if (_threads.size() > _threadsCount)
+	{
+		// If the thread id is not in the map, it is the main thread, don't join it!!
+		if (_threads.find(std::this_thread::get_id()) == _threads.end()) return true;
+
+		// this thread finishes: move the thread from the map to the list of threads to join
+		_threadsToJoin.push_back(std::move(_threads[std::this_thread::get_id()]));
+		_threads.erase(std::this_thread::get_id());
+		return false;
+	}
+	else if (_threads.size() < _threadsCount)
+	{
+		// Start as many threads as the user wants
+		for (size_t i = _threads.size(); i < _threadsCount; ++i)
+		{
+			auto thread = std::thread(&ThreadPool::worker, this);
+			_threads[thread.get_id()] = std::move(thread);
+		}
+	}
+
+	return true;
 }
