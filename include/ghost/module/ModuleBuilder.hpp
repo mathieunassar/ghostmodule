@@ -81,8 +81,12 @@ public:
 	 *	Retrieves the ghost::ThreadPool that will be used by the module.
 	 *	It can be used prior to the module build call to configure module extensions
 	 *	or to parameterize the pool's size.
-	 *	After the initialization phase of the constructed module, the thread pool is started.
-	 *	The thread pool may optionally also be started before calling "build".
+	 *	Per default, the pool will be constructed with as many threads as the hardware
+	 *	concurrency limit.
+	 *	Note: Threads will only be created after the thread pool is started, which happens
+	 *	after the initialization behavior is called.
+	 *	The thread pool may optionally also be started before calling "build" (by calling
+	 *	"start" on the pool).
 	 *	@return the thread pool of the module being constructed.
 	 */
 	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool() const = 0;
