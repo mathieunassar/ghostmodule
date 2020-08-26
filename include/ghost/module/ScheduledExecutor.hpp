@@ -25,6 +25,10 @@ namespace ghost
 /**
  *	An executor that can schedule commands to run after a given delay,
  *	or to execute periodically.
+ *
+ *	The ghost::ScheduledExecutor uses the standard chrono library (specifically, a steady clock)
+ *	to measure time intervals. Scheduling tasks with specific rates does therefore not
+ *	provide any real-time guarantee.
  */
 class ScheduledExecutor
 {
@@ -41,6 +45,7 @@ public:
 	 *	and that is repeated with the given period until the executor is stopped.
 	 *	If the task has not completed at the end of the period, the next task is delayed.
 	 *	Calling this method more than once does not stop scheduling tasks from the previous calls.
+	 *
 	 *	@param task	task to schedule and repeat.
 	 *	@param rate	period in milliseconds between two starts of the execution of the task.
 	 */
