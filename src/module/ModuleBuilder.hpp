@@ -35,6 +35,7 @@ public:
 	ModuleBuilder& setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
 	ModuleBuilder& setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) override;
 	ModuleBuilder& setProgramOptions(int argc, char* argv[]) override;
+	std::shared_ptr<ghost::ThreadPool> getThreadPool() const override;
 	std::shared_ptr<ghost::Console> setConsole() override;
 	ModuleBuilder& setLogger(const std::shared_ptr<ghost::Logger>& logger) override;
 	ModuleBuilder& addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder) override;

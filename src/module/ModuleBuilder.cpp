@@ -61,6 +61,11 @@ ModuleBuilder& ModuleBuilder::setProgramOptions(int argc, char* argv[])
 	return *this;
 }
 
+std::shared_ptr<ghost::ThreadPool> ModuleBuilder::getThreadPool() const
+{
+	return _threadPool;
+}
+
 std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
 {
 	_console = std::shared_ptr<Console>(new ghost::internal::Console(_threadPool));

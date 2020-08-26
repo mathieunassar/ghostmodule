@@ -193,6 +193,11 @@ const ghost::CommandLine& Module::getProgramOptions() const
 	return _options;
 }
 
+std::shared_ptr<ghost::ThreadPool> Module::getThreadPool() const
+{
+	return _threadPool;
+}
+
 const std::string& Module::getModuleName() const
 {
 	return _name;

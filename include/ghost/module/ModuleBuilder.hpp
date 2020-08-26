@@ -22,6 +22,7 @@
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/Module.hpp>
 #include <ghost/module/ModuleExtensionBuilder.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <string>
 
@@ -76,6 +77,15 @@ public:
 	 *	@return an instance of this.
 	 */
 	virtual ModuleBuilder& setProgramOptions(int argc, char* argv[]) = 0;
+	/**
+	 *	Retrieves the ghost::ThreadPool that will be used by the module.
+	 *	It can be used prior to the module build call to configure module extensions
+	 *	or to parameterize the pool's size.
+	 *	After the initialization phase of the constructed module, the thread pool is started.
+	 *	The thread pool may optionally also be started before calling "build".
+	 *	@return the thread pool of the module being constructed.
+	 */
+	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool() const = 0;
 	/**
 	 *	Activates the console management. A handle to the created ghost::Console
 	 *	is returned for further configuration possibilities.

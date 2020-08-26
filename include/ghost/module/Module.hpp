@@ -23,6 +23,7 @@
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/ModuleExtension.hpp>
 #include <ghost/module/UserManager.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <string>
 
@@ -96,6 +97,19 @@ public:
 	 *	@return a ghost::CommandLine object containing the parsed program options.
 	 */
 	virtual const ghost::CommandLine& getProgramOptions() const = 0;
+	/**
+	 *	The ghost::ThreadPool can be used to submit tasks to the pool of threads
+	 *	managed by the module.
+	 *	A ghost::ScheduledExecutor can also be created from the pool to submit
+	 *	tasks periodically.
+	 *	Users should avoid blocking threads for a longer period of time. Instead,
+	 *	it is recommended to schedule the execution of a task with a given rate.
+	 *	For example, instead of scheduling a task surrounded by "while(true)",
+	 *	users should prefer to schedule the task periodically. This allows the 
+	 *	thread pool to optimize the usage of threads, and to stop the execution
+	 *	of the program when the thread pool stops.
+	 */
+	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool() const = 0;
 	/**
 	 *	@returns the name of the module.
 	 */

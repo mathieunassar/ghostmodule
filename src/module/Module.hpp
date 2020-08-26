@@ -63,6 +63,7 @@ public:
 	std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter() const override;
 	std::shared_ptr<ghost::UserManager> getUserManager() const override;
 	const ghost::CommandLine& getProgramOptions() const override;
+	std::shared_ptr<ghost::ThreadPool> getThreadPool() const override;
 	const std::string& getModuleName() const override;
 	void printGhostASCII(const std::string& suffix = "") const override;
 

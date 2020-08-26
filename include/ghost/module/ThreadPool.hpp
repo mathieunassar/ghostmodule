@@ -19,6 +19,7 @@
 
 #include <ghost/module/ScheduledExecutor.hpp>
 #include <memory>
+#include <future>
 
 namespace ghost
 {
