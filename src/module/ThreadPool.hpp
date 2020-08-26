@@ -21,6 +21,7 @@
 #include <atomic>
 #include <future>
 #include <ghost/module/ThreadPool.hpp>
+#include <list>
 #include <map>
 #include <mutex>
 #include <thread>
