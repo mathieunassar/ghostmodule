@@ -20,8 +20,9 @@ using namespace ghost::internal;
 
 RemoteControllersHandler::RemoteControllersHandler(
     const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
+    const std::shared_ptr<ghost::ThreadPool>& threadPool,
     const std::shared_ptr<ghost::Logger>& logger)
-    : _interpreter(commandLineInterpreter), _logger(logger)
+    : _interpreter(commandLineInterpreter), _threadPool(threadPool), _logger(logger)
 {
 }
 
@@ -29,7 +30,7 @@ void RemoteControllersHandler::configureClient(const std::shared_ptr<ghost::Clie
 {
 	GHOST_INFO(_logger) << "Remote controller connected.";
 	purgeInactiveClients();
-	auto controller = std::make_shared<RemoteHandler>(client, _interpreter);
+	auto controller = std::make_shared<RemoteHandler>(client, _threadPool, _interpreter);
 	_controllers.push_back(controller);
 }
 

@@ -20,10 +20,11 @@
 #include <ghost/connection/Client.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Session.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <mutex>
+#include <future>
 #include <string>
-#include <thread>
 #include "RemoteConsole.hpp"
 
 namespace ghost
@@ -34,6 +35,7 @@ class RemoteHandler
 {
 public:
 	RemoteHandler(const std::shared_ptr<ghost::Client>& client,
+		const std::shared_ptr<ghost::ThreadPool>& threadPool,
 		      const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
 	~RemoteHandler();
 
@@ -51,7 +53,8 @@ private:
 	std::shared_ptr<RemoteConsole> _console;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
 	std::shared_ptr<ghost::Session> _session;
-	std::thread _executor;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
+	std::future<void> _execution;
 	State _state;
 	mutable std::mutex _mutex;
 };

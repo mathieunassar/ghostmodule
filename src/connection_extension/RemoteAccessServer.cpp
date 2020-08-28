@@ -21,17 +21,19 @@ using namespace ghost::internal;
 RemoteAccessServer::RemoteAccessServer(const std::vector<ghost::ConnectionConfiguration>& configurations,
 				       const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 				       const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
+				       const std::shared_ptr<ghost::ThreadPool>& threadPool,
 				       const std::shared_ptr<ghost::Logger>& logger)
     : _connectionManager(connectionManager)
     , _remoteAccessConfigurations(configurations)
     , _interpreter(commandLineInterpreter)
+    , _threadPool(threadPool)
     , _logger(logger)
 {
 }
 
 bool RemoteAccessServer::start()
 {
-	_remoteControllersHandler = std::make_shared<RemoteControllersHandler>(_interpreter, _logger);
+	_remoteControllersHandler = std::make_shared<RemoteControllersHandler>(_interpreter, _threadPool, _logger);
 
 	for (const auto& configuration : _remoteAccessConfigurations)
 	{

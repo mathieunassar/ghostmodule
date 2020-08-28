@@ -19,6 +19,7 @@
 
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <vector>
 #include "RemoteControllersHandler.hpp"
@@ -43,6 +44,7 @@ public:
 	RemoteAccessServer(const std::vector<ghost::ConnectionConfiguration>& configurations,
 			   const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
 			   const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
+			   const std::shared_ptr<ghost::ThreadPool>& threadPool,
 			   const std::shared_ptr<ghost::Logger>& logger);
 
 	bool start();
@@ -54,6 +56,7 @@ private:
 	std::shared_ptr<RemoteControllersHandler> _remoteControllersHandler;
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
 	std::shared_ptr<ghost::CommandLineInterpreter> _interpreter;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	std::shared_ptr<ghost::Logger> _logger;
 };
 } // namespace internal
