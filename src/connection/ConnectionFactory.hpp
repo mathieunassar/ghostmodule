@@ -37,10 +37,10 @@ public:
 
 	/* Methods to set up the factory */
 
-	void addServerRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
-	void addClientRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
-	void addPublisherRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
-	void addSubscriberRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) override;
+	void addServerRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) override;
+	void addClientRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) override;
+	void addPublisherRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) override;
+	void addSubscriberRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) override;
 
 	/* Methods to create connections */
 

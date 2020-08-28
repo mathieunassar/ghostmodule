@@ -28,6 +28,7 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/NetworkConnectionConfiguration
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionManager.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionFactory.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionFactory.impl.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ConnectionFactoryRule.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/Writer.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/WriterSink.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/Reader.hpp
@@ -35,7 +36,7 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/ReaderSink.hpp
 )
 
 file(GLOB header_connection_lib_internal
-${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/ConnectionFactoryRule.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/ConnectionFactoryGenericRule.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/MessageHandlerCallback.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/GenericWriter.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/connection/internal/GenericReader.hpp

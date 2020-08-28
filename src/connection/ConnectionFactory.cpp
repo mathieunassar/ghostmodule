@@ -24,22 +24,22 @@ ConnectionFactory::ConnectionFactory()
 {
 }
 
-void ConnectionFactory::addServerRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+void ConnectionFactory::addServerRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule)
 {
 	_serverRules.push_back(rule);
 }
 
-void ConnectionFactory::addClientRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+void ConnectionFactory::addClientRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule)
 {
 	_clientRules.push_back(rule);
 }
 
-void ConnectionFactory::addPublisherRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+void ConnectionFactory::addPublisherRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule)
 {
 	_publisherRules.push_back(rule);
 }
 
-void ConnectionFactory::addSubscriberRule(std::shared_ptr<ghost::internal::ConnectionFactoryRule> rule)
+void ConnectionFactory::addSubscriberRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule)
 {
 	_subscriberRules.push_back(rule);
 }

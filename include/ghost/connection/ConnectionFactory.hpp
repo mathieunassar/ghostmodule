@@ -18,7 +18,8 @@
 #define GHOST_CONNECTIONFACTORY_HPP
 
 #include <ghost/connection/ConnectionConfiguration.hpp>
-#include <ghost/connection/internal/ConnectionFactoryRule.hpp>
+#include <ghost/connection/ConnectionFactoryRule.hpp>
+#include <ghost/connection/internal/ConnectionFactoryGenericRule.hpp>
 #include <memory>
 
 namespace ghost
@@ -85,10 +86,10 @@ public:
 protected:
 	// the following contains internal implementation detail. Please do not rely on this in your code.
 
-	virtual void addServerRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
-	virtual void addClientRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
-	virtual void addPublisherRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
-	virtual void addSubscriberRule(std::shared_ptr<internal::ConnectionFactoryRule> rule) = 0;
+	virtual void addServerRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) = 0;
+	virtual void addClientRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) = 0;
+	virtual void addPublisherRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) = 0;
+	virtual void addSubscriberRule(std::shared_ptr<ghost::ConnectionFactoryRule> rule) = 0;
 };
 
 #include "ConnectionFactory.impl.hpp"
