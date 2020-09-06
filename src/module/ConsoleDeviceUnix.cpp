@@ -56,11 +56,11 @@ bool ConsoleDeviceUnix::setConsoleMode(ConsoleMode mode)
 	return tcsetattr(STDIN_FILENO, TCSANOW, &oldt) == 0;
 }
 
-bool ConsoleDeviceUnix::awaitInputMode()
+bool ConsoleDeviceUnix::awaitInputMode(const std::chrono::steady_clock::duration& timeout)
 {
 	_mode = DeviceMode::AWAIT_INPUT;
 
-	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); });
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); }, timeout);
 	if (!gotInput) // _enable is false or the console is used for something else
 		return false;
 
@@ -75,7 +75,7 @@ bool ConsoleDeviceUnix::read(std::string& output, bool secret)
 
 	if (secret) setConsoleMode(ConsoleDevice::OUTPUT);
 
-	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); }, std::chrono::milliseconds(-1));
 	if (!gotInput) // _enable is false or the console is used for something else
 		return false;
 
@@ -94,9 +94,12 @@ bool ConsoleDeviceUnix::write(const std::string& text)
 	return true;
 }
 
-bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate)
+bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate,
+				   const std::chrono::steady_clock::duration& timeout)
 {
-	while (untilPredicate())
+	auto now = std::chrono::steady_clock::now();
+	auto deadline = now + timeout;
+	while (untilPredicate() && (timeout.count() < 0 || now < deadline))
 	{
 		fd_set fdr;
 		FD_ZERO(&fdr);
@@ -113,8 +116,12 @@ bool ConsoleDeviceUnix::awaitInput(const std::function<bool()>& untilPredicate)
 		}
 		else if (selectResult == 0) // nothing to read
 		{
+			// return without waiting if the timeout is set to zero
+			if (timeout.count() == 0) return false;
+
 			std::this_thread::sleep_for(
 			    std::chrono::milliseconds(1)); // but don't wait too long to stay reactive
+			now = std::chrono::steady_clock::now();
 			continue;
 		}
 

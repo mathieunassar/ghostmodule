@@ -22,7 +22,8 @@
 
 using namespace ghost::internal;
 
-Module::Module(const std::string& name, const std::shared_ptr<ThreadPool>& threadPool,
+Module::Module(const std::string& name,
+	       const std::map<std::string, std::shared_ptr<ghost::internal::ThreadPool>>& threadPools,
 	       const std::shared_ptr<Console>& console, const std::shared_ptr<ghost::Logger>& logger,
 	       const ghost::CommandLine& options,
 	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
@@ -32,7 +33,7 @@ Module::Module(const std::string& name, const std::shared_ptr<ThreadPool>& threa
     : _name(name)
     , _options(options)
     , _state(Module::STOPPED)
-    , _threadPool(threadPool)
+    , _threadPools(threadPools)
     , _console(console)
     , _logger(logger)
     , _components(components)
@@ -69,7 +70,7 @@ Module::~Module()
 	if (_console) _console->stop();
 
 	// The thread pool is the last thing to stop, to give a chance to the components to clean-up their executors
-	_threadPool->stop(true);
+	for (auto& pool : _threadPools) pool.second->stop(true);
 }
 
 bool Module::setState(State state)
@@ -109,7 +110,7 @@ void Module::start()
 		return;
 
 	// Start the thread pool
-	_threadPool->start();
+	for (auto& pool : _threadPools) pool.second->start();
 
 	if (_console) _console->start();
 
@@ -134,15 +135,25 @@ void Module::start()
 	// Set the module to running
 	setState(ghost::internal::Module::RUNNING);
 	if (_console)
-		_threadPool->makeScheduledExecutor()->scheduleAtFixedRate(std::bind(&Module::commandExecutor, this),
-									  std::chrono::milliseconds(10));
+		_threadPools[""]->makeScheduledExecutor()->scheduleAtFixedRate(
+		    std::bind(&Module::commandExecutor, this), std::chrono::milliseconds(10));
 
 	// Call the running routine as long as the module is running and it returns true
-	bool runFinshed = false;
 	ghost::internal::Module::State currentState = getState();
-	while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
+	_threadPools[""]->makeScheduledExecutor()->scheduleAtFixedRate(
+	    [&]() {
+		    if (getState() == ghost::internal::Module::RUNNING)
+		    {
+			    bool runResult = run();
+			    if (!runResult) setState(ghost::internal::Module::DISPOSING);
+		    }
+		    else
+			    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	    },
+	    std::chrono::milliseconds(0));
+	while (currentState == ghost::internal::Module::RUNNING)
 	{
-		runFinshed = !run(); // run as long as the return value is true and the module state is running
+		_threadPools[""]->work();
 		currentState = getState();
 	}
 
@@ -153,8 +164,7 @@ void Module::start()
 
 void Module::stop()
 {
-	if (getState() == ghost::internal::Module::STOPPED ||
-	    getState() == ghost::internal::Module::DISPOSING) // only stop if module is running or intializing
+	if (getState() == ghost::internal::Module::STOPPED) // only stop if module is running or intializing
 		return;
 
 	setState(ghost::internal::Module::DISPOSING);
@@ -164,8 +174,10 @@ void Module::stop()
 	// Stop the components
 	for (const auto& component : _components) component->stop();
 
-	_threadPool->stop(true);
 	if (_console) _console->stop();
+
+	// The thread pool is the last thing to stop, to give a chance to the components to clean-up their executors
+	for (auto& pool : _threadPools) pool.second->stop(true);
 }
 
 std::shared_ptr<ghost::Console> Module::getConsole() const
@@ -193,9 +205,18 @@ const ghost::CommandLine& Module::getProgramOptions() const
 	return _options;
 }
 
-std::shared_ptr<ghost::ThreadPool> Module::getThreadPool() const
+std::shared_ptr<ghost::ThreadPool> Module::getThreadPool(const std::string& label) const
 {
-	return _threadPool;
+	if (_threadPools.find(label) == _threadPools.end()) return nullptr;
+	return _threadPools.at(label);
+}
+
+std::shared_ptr<ghost::ThreadPool> Module::addThreadPool(const std::string& label, size_t threadsCount)
+{
+	if (_threadPools.find(label) != _threadPools.end()) return _threadPools.at(label);
+
+	_threadPools[label] = std::make_shared<ghost::internal::ThreadPool>(threadsCount);
+	return _threadPools.at(label);
 }
 
 const std::string& Module::getModuleName() const

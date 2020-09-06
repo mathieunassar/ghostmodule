@@ -61,14 +61,14 @@ bool ConsoleDeviceWindows::setConsoleMode(ConsoleMode mode)
 	return SetConsoleMode(_hStdin, targetMode);
 }
 
-bool ConsoleDeviceWindows::awaitInputMode()
+bool ConsoleDeviceWindows::awaitInputMode(const std::chrono::steady_clock::duration& timeout)
 {
 	DWORD cNumRead, i;
 	INPUT_RECORD irInBuf[128];
 	_mode = DeviceMode::AWAIT_INPUT;
 
-	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); });
-	if (!gotInput) // _enable is false
+	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::AWAIT_INPUT && _enable.load(); }, timeout);
+	if (!gotInput) // _enable is false or time is over
 		return false;
 
 	if (!ReadConsoleInput(_hStdin,    // input buffer handle
@@ -87,16 +87,23 @@ bool ConsoleDeviceWindows::awaitInputMode()
 	return false;
 }
 
-bool ConsoleDeviceWindows::awaitInput(const std::function<bool()>& untilPredicate)
+bool ConsoleDeviceWindows::awaitInput(const std::function<bool()>& untilPredicate,
+				      const std::chrono::steady_clock::duration& timeout)
 {
-	while (untilPredicate())
+	auto now = std::chrono::steady_clock::now();
+	auto deadline = now + timeout;
+	while (untilPredicate() && (timeout.count() < 0 || now < deadline))
 	{
 		DWORD number;
 		if (GetNumberOfConsoleInputEvents(_hStdin, &number) &&
 		    number == 0) // don't start to read if there is nothing to read
 		{
+			// return without waiting if the timeout is set to zero
+			if (timeout.count() == 0) return false;
+
 			std::this_thread::sleep_for(
 			    std::chrono::microseconds(1)); // but don't wait too long to stay reactive
+			now = std::chrono::steady_clock::now();
 			continue;
 		}
 
@@ -111,7 +118,8 @@ bool ConsoleDeviceWindows::read(std::string& output, bool secret)
 
 	if (secret) setConsoleMode(ConsoleDevice::OUTPUT);
 
-	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); });
+	bool gotInput =
+	    awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); }, std::chrono::milliseconds(-1));
 	if (!gotInput) // _enable is false
 		return false;
 

@@ -45,7 +45,7 @@ void OutputController::start()
 	if (!_executor)
 	{
 		_executor = _threadPool->makeScheduledExecutor();
-		_executor->scheduleAtFixedRate(std::bind(&OutputController::writerThread, this),
+		_executor->scheduleAtFixedRate(std::bind(&OutputController::writerTask, this),
 					       std::chrono::milliseconds(1));
 	}
 }
@@ -92,10 +92,8 @@ void OutputController::flush()
 	swapQueues(
 	    &_activeInputQueue); // now write() will write in the second queue while the writer empties the first queue
 
-	while (_activeOutputQueue->size() != 0)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1)); // wait 1ms
-	}
+	// While there are lines to write in the queue, execute the tasks
+	while (_activeOutputQueue->size() != 0) writerTask();
 
 	// now _activeOutputQueue is empty and can start writing the content of the other queue
 	swapQueues(&_activeOutputQueue);
@@ -122,7 +120,7 @@ void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>** que
 		*queue = &_writeQueue1;
 }
 
-void OutputController::writerThread()
+void OutputController::writerTask()
 {
 	std::unique_lock<std::mutex> modeLock(_modeLock);
 

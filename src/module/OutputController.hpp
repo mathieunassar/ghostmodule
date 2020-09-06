@@ -64,7 +64,7 @@ private:
 	/* thread stuff */
 	std::shared_ptr<ThreadPool> _threadPool;
 	std::shared_ptr<ghost::ScheduledExecutor> _executor;
-	void writerThread();
+	void writerTask();
 	std::condition_variable _waitForOutput;
 	mutable std::mutex _modeLock;
 

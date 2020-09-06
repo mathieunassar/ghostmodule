@@ -142,12 +142,8 @@ void InputController::enterPressedThread()
 {
 	if (_consoleMode == ConsoleDevice::INPUT) return;
 
-	if (_device->awaitInputMode() && _consoleMode == ConsoleDevice::OUTPUT)
-	{
-		auto promise =
-		    onNewEvent(std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
-		promise->get_future().wait();
-	}
+	if (_device->awaitInputMode(std::chrono::milliseconds(1)) && _consoleMode == ConsoleDevice::OUTPUT)
+		onNewEvent(std::make_shared<EnterPressedInputEvent>()); // here wait that the event is completed
 }
 
 std::string InputController::readLine(bool secret)

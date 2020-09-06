@@ -48,6 +48,7 @@ public:
 	void resize(size_t newThreadsCount) override;
 	size_t size() const override;
 	std::shared_ptr<ghost::ScheduledExecutor> makeScheduledExecutor() override;
+	bool work() override;
 
 protected:
 	bool enabled() const override;

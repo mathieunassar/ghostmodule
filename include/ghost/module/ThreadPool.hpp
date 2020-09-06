@@ -72,6 +72,12 @@ public:
 	 *	@return the created executor that can schedule tasks.
 	 */
 	virtual std::shared_ptr<ghost::ScheduledExecutor> makeScheduledExecutor() = 0;
+	/**
+	 *	Executes a task that was scheduled to the thread pool. If there is nothing to execute,
+	 *	the method returns immediatly.
+	 *	@return true if some work was executed, false otherwise;
+	 */
+	virtual bool work() = 0;
 
 protected:
 	virtual bool enabled() const = 0;

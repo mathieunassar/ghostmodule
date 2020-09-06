@@ -42,7 +42,8 @@ public:
 		DISPOSING     // dispose method is being called
 	};
 
-	Module(const std::string& name, const std::shared_ptr<ThreadPool>& threadPool,
+	Module(const std::string& name,
+	       const std::map<std::string, std::shared_ptr<ghost::internal::ThreadPool>>& threadPools,
 	       const std::shared_ptr<Console>& console, const std::shared_ptr<ghost::Logger>& logger,
 	       const ghost::CommandLine& options,
 	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
@@ -58,12 +59,19 @@ public:
 	void start() override;
 	void stop() override;
 
+	// Observability
 	std::shared_ptr<ghost::Console> getConsole() const override;
 	std::shared_ptr<ghost::Logger> getLogger() const override;
 	std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter() const override;
 	std::shared_ptr<ghost::UserManager> getUserManager() const override;
+	
+	// Program options
 	const ghost::CommandLine& getProgramOptions() const override;
-	std::shared_ptr<ghost::ThreadPool> getThreadPool() const override;
+	
+	// Thread pools
+	std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label = "") const override;
+	std::shared_ptr<ghost::ThreadPool> addThreadPool(const std::string& label, size_t threadsCount) override;
+	
 	const std::string& getModuleName() const override;
 	void printGhostASCII(const std::string& suffix = "") const override;
 
@@ -79,7 +87,7 @@ private:
 	std::string _name;
 	ghost::CommandLine _options;
 	State _state;
-	std::shared_ptr<ThreadPool> _threadPool;
+	std::map<std::string, std::shared_ptr<ghost::internal::ThreadPool>> _threadPools;
 	std::shared_ptr<Console> _console;
 	std::shared_ptr<ghost::Logger> _logger;
 	std::shared_ptr<UserManager> _userManager;

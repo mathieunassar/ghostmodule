@@ -66,7 +66,8 @@ public:
 	 *	Waits that the user presses enter to switch to input mode.
 	 *	@return true if the user pressed enter.
 	 */
-	virtual bool awaitInputMode() = 0;
+	virtual bool awaitInputMode(
+	    const std::chrono::steady_clock::duration& timeout = std::chrono::milliseconds(-1)) = 0;
 
 	/**
 	 *	Reads a line from the console device.

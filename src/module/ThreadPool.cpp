@@ -32,7 +32,7 @@ bool ThreadPool::start()
 	std::unique_lock<std::mutex> lock(_poolMutex);
 
 	// Check that the pool size is positive and that it has not started yet
-	if (_threadsCount == 0 || !_threads.empty()) return false;
+	if (!_threads.empty()) return false;
 
 	_enable = true;
 	for (size_t i = 0; i < _threadsCount; ++i)
@@ -87,6 +87,21 @@ std::shared_ptr<ghost::ScheduledExecutor> ThreadPool::makeScheduledExecutor()
 	auto executor = std::make_shared<ScheduledExecutor>(this);
 	_executors.push_back(executor);
 	return executor;
+}
+
+bool ThreadPool::work()
+{
+	std::function<void()> task;
+	bool taskGetResult = _queue.tryGetAndPop(std::chrono::milliseconds(1), task);
+
+	if (!taskGetResult || !task) return false;
+
+	// If a task was gotten, execute it
+	task();
+
+	updateExecutors();
+	checkThreadsCount();
+	return true;
 }
 
 bool ThreadPool::enabled() const
