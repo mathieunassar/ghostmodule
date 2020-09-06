@@ -17,9 +17,9 @@
 #ifndef GHOST_MODULE_THREADPOOL_HPP
 #define GHOST_MODULE_THREADPOOL_HPP
 
+#include <future>
 #include <ghost/module/ScheduledExecutor.hpp>
 #include <memory>
-#include <future>
 
 namespace ghost
 {
@@ -55,7 +55,7 @@ public:
 	 */
 	virtual void resize(size_t newThreadsCount) = 0;
 	/**
-	 *	The pool's size reflects the number of threads still available for 
+	 *	The pool's size reflects the number of threads still available for
 	 *	executing tasks. It may not be equal to the target size of the pool when called
 	 *	directly after "resize".
 	 *	@return the effective size of the pool.

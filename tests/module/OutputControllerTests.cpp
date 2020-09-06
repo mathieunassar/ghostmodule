@@ -181,7 +181,7 @@ TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsCalled_When_Con
 
 	_outputController->write(TEST_WRITE_LINE);
 	std::this_thread::sleep_for(std::chrono::milliseconds(200)); // wait to see that write is never called
-	
+
 	ASSERT_EQ(_expectedWriteCallsCount, 0);
 	setupWriteCallExpectation();
 	_outputController->enable();
