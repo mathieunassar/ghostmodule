@@ -17,6 +17,7 @@
 #ifndef GHOST_CONNECTIONGRPC_HPP
 #define GHOST_CONNECTIONGRPC_HPP
 
+#include <ghost/module/ThreadPool.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
@@ -47,6 +48,7 @@ public:
 	 */
 	static void initialize(
 	    const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+	    const std::shared_ptr<ghost::ThreadPool>& threadPool,
 	    const ghost::NetworkConnectionConfiguration& minimumConfiguration = ghost::ConnectionConfigurationGRPC());
 };
 } // namespace ghost

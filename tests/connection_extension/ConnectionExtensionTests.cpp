@@ -23,6 +23,7 @@
 #include "../src/connection_extension/RemoteConsole.hpp"
 #include "../src/connection_extension/RemoteControlClient.hpp"
 #include "../src/connection_extension/RemoteHandler.hpp"
+#include "../src/module/ThreadPool.hpp"
 
 using testing::_;
 
@@ -49,6 +50,8 @@ protected:
 		_client = std::make_shared<ClientMock>(_configuration);
 		_console = std::make_shared<ghost::internal::RemoteConsole>(_client);
 		_interpreter = std::make_shared<CommandLineInterpreterMock>();
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(std::thread::hardware_concurrency());
+		_threadPool->start();
 
 		_connectionManager = ghost::ConnectionManager::create();
 		_connectionManager->getConnectionFactory()->addClientRule<ClientMock>(_configuration);
@@ -93,7 +96,7 @@ protected:
 			confs.push_back(_configuration);
 		}
 		_remoteAccessServer = std::make_shared<ghost::internal::RemoteAccessServer>(
-		    confs, _connectionManager, _interpreter, ghost::StdoutLogger::create());
+		    confs, _connectionManager, _interpreter, _threadPool, ghost::StdoutLogger::create());
 	}
 
 	ghost::ConnectionConfiguration _configuration;
@@ -101,6 +104,7 @@ protected:
 	std::shared_ptr<ghost::internal::RemoteConsole> _console;
 	std::shared_ptr<ClientMock> _client;
 	std::shared_ptr<CommandLineInterpreterMock> _interpreter;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	std::shared_ptr<ghost::internal::RemoteHandler> _remoteHandler;
 	std::shared_ptr<ghost::internal::RemoteControlClient> _remoteControlClient;
 	std::shared_ptr<ghost::internal::RemoteAccessServer> _remoteAccessServer;
@@ -204,7 +208,7 @@ TEST_F(ConnectedModuleTests, test_RemoteConsole_stopCallsClientStop)
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_isActive_When_clientIsRunning)
 {
-	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _threadPool, _interpreter);
 	ASSERT_TRUE(_remoteHandler->isActive());
 	_client->stop();
 }
@@ -217,7 +221,7 @@ TEST_F(ConnectedModuleTests, test_RemoteHandler_isActive_When_clientIsNotRunning
 		    std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		    return true;
 	    });
-	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _threadPool, _interpreter);
 
 	_remoteHandler->commandCallback(TEST_CONSOLE_ENTRY);
 	_client->stop();
@@ -228,14 +232,14 @@ TEST_F(ConnectedModuleTests, test_RemoteHandler_isActive_When_clientIsNotRunning
 TEST_F(ConnectedModuleTests, test_RemoteHandler_isNotActive_When_clientIsNotRunningAndStateIsNotExecuting)
 {
 	EXPECT_CALL(*_client, isRunning).WillRepeatedly(testing::Return(false));
-	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _threadPool, _interpreter);
 	ASSERT_FALSE(_remoteHandler->isActive());
 	_client->stop();
 }
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_executes_When_oneCommandIsProvided)
 {
-	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _threadPool, _interpreter);
 	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(1).WillRepeatedly(testing::Return(true));
 	feedClient(_client, TEST_CONSOLE_ENTRY);
 
@@ -245,7 +249,7 @@ TEST_F(ConnectedModuleTests, test_RemoteHandler_executes_When_oneCommandIsProvid
 
 TEST_F(ConnectedModuleTests, test_RemoteHandler_executesTwoCommands_WhenTwoCommandsAreProvided)
 {
-	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _interpreter);
+	_remoteHandler = std::make_shared<ghost::internal::RemoteHandler>(_client, _threadPool, _interpreter);
 	EXPECT_CALL(*_interpreter, execute(TEST_CONSOLE_ENTRY, _)).Times(2).WillRepeatedly(testing::Return(true));
 	feedClient(_client, TEST_CONSOLE_ENTRY);
 	feedClient(_client, TEST_CONSOLE_ENTRY);
@@ -332,7 +336,7 @@ TEST_F(ConnectedModuleTests, test_RemoteAccessServer_doesNotStart_When_connectio
 {
 	std::vector<ghost::ConnectionConfiguration> confs({_configuration});
 	_remoteAccessServer = std::make_shared<ghost::internal::RemoteAccessServer>(
-	    confs, ghost::ConnectionManager::create(), _interpreter, ghost::StdoutLogger::create());
+	    confs, ghost::ConnectionManager::create(), _interpreter, _threadPool, ghost::StdoutLogger::create());
 
 	ASSERT_FALSE(_remoteAccessServer->start());
 }
@@ -343,7 +347,7 @@ TEST_F(ConnectedModuleTests, test_RemoteAccessServer_doesNotStart_When_serverDoe
 	connectionManager->getConnectionFactory()->addServerRule<NotRunningServerMock>(_configuration);
 	std::vector<ghost::ConnectionConfiguration> confs({_configuration});
 	_remoteAccessServer = std::make_shared<ghost::internal::RemoteAccessServer>(
-	    confs, connectionManager, _interpreter, ghost::StdoutLogger::create());
+	    confs, connectionManager, _interpreter, _threadPool, ghost::StdoutLogger::create());
 
 	ASSERT_FALSE(_remoteAccessServer->start());
 }

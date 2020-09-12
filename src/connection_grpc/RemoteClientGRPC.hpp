@@ -18,8 +18,8 @@
 #define GHOST_INTERNAL_NETWORK_REMOTECLIENTGRPC_HPP
 
 #include <ghost/connection/Client.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
-#include <thread>
 
 #include "rpc/IncomingRPC.hpp"
 
@@ -32,24 +32,25 @@ class ServerGRPC;
 class RemoteClientGRPC : public ghost::Client
 {
 public:
-	RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration, const std::shared_ptr<IncomingRPC>& rpc,
+	RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration,
+			 const std::shared_ptr<ghost::ThreadPool>& threadPool, const std::shared_ptr<IncomingRPC>& rpc,
 			 ServerGRPC* parentServer);
-	~RemoteClientGRPC();
 
 	bool start() override;
 	bool stop() override;
 	bool isRunning() const override;
 
 	void execute();
+	void shutdown();
 
 	std::shared_ptr<ghost::ReaderSink> getReaderSink() const;
 	std::shared_ptr<ghost::WriterSink> getWriterSink() const;
 	const std::shared_ptr<IncomingRPC> getRPC() const;
 
 private:
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
+	std::future<void> _execution;
 	std::shared_ptr<IncomingRPC> _rpc;
-	std::atomic_bool _running;
-	std::thread _executor;
 
 	ServerGRPC* _parentServer;
 };

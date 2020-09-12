@@ -18,10 +18,9 @@
 #define GHOST_INTERNAL_NETWORK_COMPLETIONQUEUEEXECUTOR_HPP
 
 #include <grpcpp/completion_queue.h>
-
 #include <functional>
+#include <ghost/module/ThreadPool.hpp>
 #include <list>
-#include <thread>
 
 namespace ghost
 {
@@ -30,8 +29,9 @@ namespace internal
 class CompletionQueueExecutor
 {
 public:
-	CompletionQueueExecutor();
-	CompletionQueueExecutor(grpc::CompletionQueue* completion);
+	CompletionQueueExecutor(const std::shared_ptr<ghost::ThreadPool>& threadPool);
+	CompletionQueueExecutor(grpc::CompletionQueue* completion,
+				const std::shared_ptr<ghost::ThreadPool>& threadPool);
 	~CompletionQueueExecutor();
 
 	void setCompletionQueue(std::unique_ptr<grpc::CompletionQueue> completion);
@@ -44,8 +44,9 @@ private:
 	void handleRpcs();
 
 	std::unique_ptr<grpc::CompletionQueue> _completionQueue;
-
-	std::list<std::thread> _threadPool;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
+	std::list<std::shared_ptr<ghost::ScheduledExecutor>> _executors;
+	std::atomic_bool _completionQueueShutdown{true};
 };
 
 /**

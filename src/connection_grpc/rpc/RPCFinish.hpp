@@ -37,8 +37,8 @@ public:
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
 
 private:
 	grpc::Status _status;
@@ -49,7 +49,7 @@ private:
 template <typename ReaderWriter, typename ContextType>
 RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 						const grpc::Status& status)
-    : RPCOperation<ReaderWriter, ContextType>(parent, false, true) // restart = false, blocking = false
+    : RPCOperation<ReaderWriter, ContextType>(parent)
     , _status(status)
 {
 }
@@ -57,7 +57,7 @@ RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, 
 template <typename ReaderWriter, typename ContextType>
 RPCFinish<ReaderWriter, ContextType>::~RPCFinish()
 {
-	RPCOperation<ReaderWriter, ContextType>::stop();
+	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -72,7 +72,7 @@ bool RPCFinish<ReaderWriter, ContextType>::initiateOperation()
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
+void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
@@ -81,7 +81,7 @@ void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
+void RPCFinish<ReaderWriter, ContextType>::onOperationFailed()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;

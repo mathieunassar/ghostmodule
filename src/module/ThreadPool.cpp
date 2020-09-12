@@ -94,14 +94,28 @@ bool ThreadPool::work()
 	std::function<void()> task;
 	bool taskGetResult = _queue.tryGetAndPop(std::chrono::milliseconds(1), task);
 
-	if (!taskGetResult || !task) return false;
-
-	// If a task was gotten, execute it
-	task();
+	if (taskGetResult && task)
+	{
+		// If a task was gotten, execute it
+		task();
+	}
 
 	updateExecutors();
 	checkThreadsCount();
 	return true;
+}
+
+void ThreadPool::yield(const std::chrono::steady_clock::duration& minimumDuration)
+{
+	auto deadline = std::chrono::steady_clock::now() + minimumDuration;
+	bool continueYielding = work();
+	auto now = std::chrono::steady_clock::now();
+	while (now < deadline && continueYielding)
+	{
+		work();
+		continueYielding = _enable;
+		now = std::chrono::steady_clock::now();
+	}
 }
 
 bool ThreadPool::enabled() const

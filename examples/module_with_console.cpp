@@ -128,7 +128,7 @@ int main()
 
 	// Configuration of the module. We provide here all the components to the builder.
 	auto builder = ghost::ModuleBuilder::create();
-	builder->getThreadPool()->resize(1);
+	builder->getThreadPool()->resize(0);
 	// This line will provide the intialization method.
 	builder->setInitializeBehavior(std::bind(&MyModule::initialize, &myModule, std::placeholders::_1));
 	// This line will provide the run method, which will be called cyclically.

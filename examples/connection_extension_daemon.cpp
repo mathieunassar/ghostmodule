@@ -144,7 +144,8 @@ int main(int argc, char** argv)
 
 	auto connectedModuleBuilder = ghost::ConnectionExtensionBuilder::create();
 	// Put GRPC definitions in the connection extension builder to allow it to create gRPC connections.
-	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager());
+	ghost::ConnectionGRPC::initialize(connectedModuleBuilder->configureConnectionManager(),
+					  builder->getThreadPool());
 	// Add the component builder to the module builder
 	builder->addExtensionBuilder(connectedModuleBuilder);
 

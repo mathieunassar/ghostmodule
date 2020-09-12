@@ -22,7 +22,7 @@
 
 using namespace ghost::internal;
 
-ClientManager::ClientManager()
+ClientManager::ClientManager(const std::shared_ptr<ghost::ThreadPool>& threadPool) : _threadPool(threadPool)
 {
 }
 
@@ -33,16 +33,19 @@ ClientManager::~ClientManager()
 
 void ClientManager::start()
 {
-	_clientManagerThreadEnable = true;
-	_clientManagerThread = std::thread(&ClientManager::manageClients, this);
+	if (!_executor)
+	{
+		_executor = _threadPool->makeScheduledExecutor();
+		_executor->scheduleAtFixedRate(std::bind(&ClientManager::manageClients, this),
+					       std::chrono::milliseconds(100));
+	}
 }
 
 void ClientManager::stop()
 {
 	stopClients();
 
-	_clientManagerThreadEnable = false;
-	if (_clientManagerThread.joinable()) _clientManagerThread.join();
+	if (_executor) _executor->stop();
 
 	// do not delete the clients -> this might be called by a client's thread shutting down the server. In that
 	// case, its executor thread would try to join itself
@@ -63,6 +66,17 @@ void ClientManager::stopClients()
 	}
 
 	for (auto it = allClients.begin(); it != allClients.end(); ++it) (*it)->stop();
+}
+
+void ClientManager::shutdownClients()
+{
+	std::deque<std::shared_ptr<RemoteClientGRPC>> allClients;
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+		allClients = _allClients;
+	}
+
+	for (auto it = allClients.begin(); it != allClients.end(); ++it) (*it)->shutdown();
 }
 
 void ClientManager::deleteDisposableClients()
@@ -99,10 +113,6 @@ void ClientManager::deleteAllClients()
 
 void ClientManager::manageClients()
 {
-	while (_clientManagerThreadEnable)
-	{
-		deleteDisposableClients(); // stop, dispose grpc and delete all clients whose shared_ptr has a counter
-					   // of 1
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
+	// stop, dispose grpc and delete all clients whose shared_ptr has a counter of 1
+	deleteDisposableClients();
 }

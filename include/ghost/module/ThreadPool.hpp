@@ -78,6 +78,12 @@ public:
 	 *	@return true if some work was executed, false otherwise;
 	 */
 	virtual bool work() = 0;
+	/**
+	 *	Gives up the thread execution to perform tasks queued in the thread pool.
+	 *	@param minimumDuration the minimum duration during which the thread execution is given up.
+	 */
+	virtual void yield(
+	    const std::chrono::steady_clock::duration& minimumDuration = std::chrono::milliseconds(1)) = 0;
 
 protected:
 	virtual bool enabled() const = 0;

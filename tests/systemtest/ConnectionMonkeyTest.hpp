@@ -31,7 +31,8 @@
 class ConnectionMonkeyTest : public Systemtest
 {
 public:
-	ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>& logger);
+	ConnectionMonkeyTest(const std::shared_ptr<ghost::ThreadPool>& threadPool,
+			     const std::shared_ptr<ghost::Logger>& logger);
 
 	std::string getName() const override;
 

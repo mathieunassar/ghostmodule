@@ -18,13 +18,15 @@
 
 using namespace ghost::internal;
 
-PublisherGRPC::PublisherGRPC(const ghost::ConnectionConfiguration& config)
-    : PublisherGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+PublisherGRPC::PublisherGRPC(const ghost::ConnectionConfiguration& config,
+			     const std::shared_ptr<ghost::ThreadPool>& threadPool)
+    : PublisherGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config), threadPool)
 {
 }
 
-PublisherGRPC::PublisherGRPC(const ghost::NetworkConnectionConfiguration& config)
-    : ghost::Publisher(config), _server(config), _writerThreadEnable(false)
+PublisherGRPC::PublisherGRPC(const ghost::NetworkConnectionConfiguration& config,
+			     const std::shared_ptr<ghost::ThreadPool>& threadPool)
+    : ghost::Publisher(config), _threadPool(threadPool), _server(config, threadPool)
 {
 	_handler = std::make_shared<PublisherClientHandler>();
 	_server.setClientHandler(_handler);
@@ -32,18 +34,22 @@ PublisherGRPC::PublisherGRPC(const ghost::NetworkConnectionConfiguration& config
 
 bool PublisherGRPC::start()
 {
-	_writerThreadEnable = true;
-	_writerThread = std::thread(&PublisherGRPC::writerThread, this);
+	if (!_executor)
+	{
+		_executor = _threadPool->makeScheduledExecutor();
+		_executor->scheduleAtFixedRate(std::bind(&PublisherGRPC::writerThread, this),
+					       std::chrono::milliseconds(10));
 
-	return _server.start();
+		return _server.start();
+	}
+	return false;
 }
 
 bool PublisherGRPC::stop()
 {
 	getWriterSink()->drain();
 
-	_writerThreadEnable = false;
-	if (_writerThread.joinable()) _writerThread.join();
+	if (_executor) _executor->stop();
 
 	_handler->releaseClients();
 	return _server.stop();
@@ -61,12 +67,12 @@ size_t PublisherGRPC::countSubscribers() const
 
 void PublisherGRPC::writerThread()
 {
-	while (_writerThreadEnable)
+	auto writer = getWriterSink();
+	google::protobuf::Any message;
+	bool getSuccess = true;
+	while (getSuccess)
 	{
-		auto writer = getWriterSink();
-		google::protobuf::Any message;
-		bool getSuccess = writer->get(message, std::chrono::milliseconds(10));
-
+		getSuccess = writer->get(message, std::chrono::milliseconds(0));
 		if (getSuccess)
 		{
 			_handler->send(message);

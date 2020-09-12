@@ -40,8 +40,8 @@ public:
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
 
 private:
 	std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
@@ -55,16 +55,14 @@ RPCConnect<ReaderWriter, ContextType>::RPCConnect(
     std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
     const std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub>& stub,
     grpc::CompletionQueue* completionQueue)
-    : RPCOperation<ReaderWriter, ContextType>(parent, false, true) // restart = false, blocking = true
-    , _stub(stub)
-    , _completionQueue(completionQueue)
+    : RPCOperation<ReaderWriter, ContextType>(parent), _stub(stub), _completionQueue(completionQueue)
 {
 }
 
 template <typename ReaderWriter, typename ContextType>
 RPCConnect<ReaderWriter, ContextType>::~RPCConnect()
 {
-	RPCOperation<ReaderWriter, ContextType>::stop();
+	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -79,18 +77,17 @@ bool RPCConnect<ReaderWriter, ContextType>::initiateOperation()
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCConnect<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
+void RPCConnect<ReaderWriter, ContextType>::onOperationSucceeded()
 {
-	if (rpcFinished) return; // nothing to do here
-
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
+	if (rpc->isFinished()) return; // nothing to do here
 
 	rpc->getStateMachine().setState(RPCStateMachine::EXECUTING);
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCConnect<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
+void RPCConnect<ReaderWriter, ContextType>::onOperationFailed()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;

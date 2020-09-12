@@ -36,8 +36,8 @@ public:
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
 
 private:
 	ReadMessageType _incomingMessage;
@@ -49,15 +49,14 @@ private:
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
 RPCRead<ReaderWriter, ContextType, ReadMessageType>::RPCRead(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 							     const std::shared_ptr<ghost::ReaderSink>& readerSink)
-    : RPCOperation<ReaderWriter, ContextType>(parent, true, false) // restart = true, blocking = false
-    , _readerSink(readerSink)
+    : RPCOperation<ReaderWriter, ContextType>(parent), _readerSink(readerSink)
 {
 }
 
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
 RPCRead<ReaderWriter, ContextType, ReadMessageType>::~RPCRead()
 {
-	RPCOperation<ReaderWriter, ContextType>::stop();
+	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
@@ -73,7 +72,7 @@ bool RPCRead<ReaderWriter, ContextType, ReadMessageType>::initiateOperation()
 }
 
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
-void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationSucceeded(bool rpcFinished)
+void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationSucceeded()
 {
 	google::protobuf::Any anyMessage;
 	if (_incomingMessage.GetTypeName() == anyMessage.descriptor()->full_name())
@@ -84,12 +83,11 @@ void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationSucceeded(b
 }
 
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
-void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationFailed(bool rpcFinished)
+void RPCRead<ReaderWriter, ContextType, ReadMessageType>::onOperationFailed()
 {
-	if (rpcFinished) return; // nothing to do here
-
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
+	if (rpc->isFinished()) return; // nothing to do here
 
 	rpc->getStateMachine().setState(RPCStateMachine::INACTIVE);
 }

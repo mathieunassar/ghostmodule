@@ -21,8 +21,9 @@
 
 const std::string ConnectionMonkeyTest::TEST_NAME = "ConnectionMonkey";
 
-ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>& logger)
-    : Systemtest(logger)
+ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::ThreadPool>& threadPool,
+					   const std::shared_ptr<ghost::Logger>& logger)
+    : Systemtest(threadPool, logger)
     , _lastSentId(0)
     , _minPort(7600)
     , _maxPort(7610)
@@ -44,7 +45,7 @@ bool ConnectionMonkeyTest::setUp()
 	GHOST_INFO(_logger) << "  \\____|____/";
 
 	_connectionManager = ghost::ConnectionManager::create();
-	ghost::ConnectionGRPC::initialize(_connectionManager);
+	ghost::ConnectionGRPC::initialize(_connectionManager, _threadPool);
 
 	_lastSentId = 0;
 

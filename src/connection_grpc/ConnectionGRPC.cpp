@@ -16,6 +16,7 @@
 
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
+#include "ConnectionFactoryRuleGRPC.hpp"
 
 #include "ClientGRPC.hpp"
 #include "PublisherGRPC.hpp"
@@ -28,14 +29,56 @@ void blackholeLogger(gpr_log_func_args* args)
 {
 }
 
+namespace
+{
+std::shared_ptr<ghost::ThreadPool> connectionGRPCThreadPool;
+}
+
+// Template specialization for the ghost::ConnectionFactory
+
+template <>
+void ghost::ConnectionFactory::addServerRule<ghost::internal::ServerGRPC>(const ghost::ConnectionConfiguration& config)
+{
+	return addServerRule(std::make_shared<internal::ConnectionFactoryRuleGRPC<ghost::internal::ServerGRPC>>(
+	    config, connectionGRPCThreadPool));
+}
+
+template <>
+void ghost::ConnectionFactory::addClientRule<ghost::internal::ClientGRPC>(const ghost::ConnectionConfiguration& config)
+{
+	return addClientRule(std::make_shared<internal::ConnectionFactoryRuleGRPC<ghost::internal::ClientGRPC>>(
+	    config, connectionGRPCThreadPool));
+}
+
+template <>
+void ghost::ConnectionFactory::addPublisherRule<ghost::internal::PublisherGRPC>(
+    const ghost::ConnectionConfiguration& config)
+{
+	return addPublisherRule(std::make_shared<internal::ConnectionFactoryRuleGRPC<ghost::internal::PublisherGRPC>>(
+	    config, connectionGRPCThreadPool));
+}
+
+template <>
+void ghost::ConnectionFactory::addSubscriberRule<ghost::internal::SubscriberGRPC>(
+    const ghost::ConnectionConfiguration& config)
+{
+	return addSubscriberRule(std::make_shared<internal::ConnectionFactoryRuleGRPC<ghost::internal::SubscriberGRPC>>(
+	    config, connectionGRPCThreadPool));
+}
+
 void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+				const std::shared_ptr<ghost::ThreadPool>& threadPool,
 				const ghost::NetworkConnectionConfiguration& minimumConfiguration)
 {
 	gpr_set_log_function(blackholeLogger);
+
+	connectionGRPCThreadPool = threadPool;
 
 	// Assign the gRPC implementations to this configuration.
 	connectionManager->getConnectionFactory()->addServerRule<internal::ServerGRPC>(minimumConfiguration);
 	connectionManager->getConnectionFactory()->addClientRule<internal::ClientGRPC>(minimumConfiguration);
 	connectionManager->getConnectionFactory()->addPublisherRule<internal::PublisherGRPC>(minimumConfiguration);
 	connectionManager->getConnectionFactory()->addSubscriberRule<internal::SubscriberGRPC>(minimumConfiguration);
+
+	connectionGRPCThreadPool.reset();
 }

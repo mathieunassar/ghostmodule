@@ -40,8 +40,8 @@ public:
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
 
 private:
 	ServiceType* _service;
@@ -57,7 +57,7 @@ RPCRequest<ReaderWriter, ContextType, ServiceType>::RPCRequest(std::weak_ptr<RPC
 							       ServiceType* service,
 							       grpc::CompletionQueue* rpcCompletionQueue,
 							       grpc::ServerCompletionQueue* completionQueue)
-    : RPCOperation<ReaderWriter, ContextType>(parent, false, false) // restart = false, blocking = false
+    : RPCOperation<ReaderWriter, ContextType>(parent)
     , _service(service)
     , _rpcCompletionQueue(rpcCompletionQueue)
     , _completionQueue(completionQueue)
@@ -67,7 +67,7 @@ RPCRequest<ReaderWriter, ContextType, ServiceType>::RPCRequest(std::weak_ptr<RPC
 template <typename ReaderWriter, typename ContextType, typename ServiceType>
 RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
 {
-	RPCOperation<ReaderWriter, ContextType>::stop();
+	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename ServiceType>
@@ -90,19 +90,18 @@ bool RPCRequest<ReaderWriter, ContextType, ServiceType>::initiateOperation()
 }
 
 template <typename ReaderWriter, typename ContextType, typename ServiceType>
-void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationSucceeded(bool rpcFinished)
+void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationSucceeded()
 {
-	if (rpcFinished) return; // nothing to do here
-
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
+	if (rpc->isFinished()) return; // nothing to do here
 
 	rpc->getStateMachine().setState(RPCStateMachine::EXECUTING);
 	if (_connectionCallback) _connectionCallback();
 }
 
 template <typename ReaderWriter, typename ContextType, typename ServiceType>
-void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed(bool rpcFinished)
+void RPCRequest<ReaderWriter, ContextType, ServiceType>::onOperationFailed()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;

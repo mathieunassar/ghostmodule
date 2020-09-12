@@ -55,13 +55,6 @@ TEST_F(ThreadPoolTests, Test_ThreadPool_startsAndStop_When_1ThreadIsStarted)
 	goToThreadPoolStartedState(1);
 }
 
-TEST_F(ThreadPoolTests, Test_ThreadPool_doesnotStart_When_0ThreadIsStarted)
-{
-	_threadPool = std::make_shared<ghost::internal::ThreadPool>(0);
-	bool startResult = _threadPool->start();
-	ASSERT_FALSE(startResult);
-}
-
 TEST_F(ThreadPoolTests, Test_ThreadPool_startsAndStop_When_2ThreadIsStarted)
 {
 	goToThreadPoolStartedState();

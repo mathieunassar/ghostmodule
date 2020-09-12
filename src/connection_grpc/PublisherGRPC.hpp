@@ -19,8 +19,8 @@
 
 #include <atomic>
 #include <ghost/connection/Publisher.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
-#include <thread>
 
 #include "PublisherClientHandler.hpp"
 #include "ServerGRPC.hpp"
@@ -32,8 +32,10 @@ namespace internal
 class PublisherGRPC : public ghost::Publisher
 {
 public:
-	PublisherGRPC(const ghost::ConnectionConfiguration& config);
-	PublisherGRPC(const ghost::NetworkConnectionConfiguration& config);
+	PublisherGRPC(const ghost::ConnectionConfiguration& config,
+		      const std::shared_ptr<ghost::ThreadPool>& threadPool);
+	PublisherGRPC(const ghost::NetworkConnectionConfiguration& config,
+		      const std::shared_ptr<ghost::ThreadPool>& threadPool);
 
 	bool start() override;
 	bool stop() override;
@@ -44,10 +46,10 @@ public:
 private:
 	void writerThread(); // waits for the writer to be fed and sends the data to the handler
 
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
+	std::shared_ptr<ghost::ScheduledExecutor> _executor;
 	ServerGRPC _server;
 	std::shared_ptr<PublisherClientHandler> _handler;
-	std::thread _writerThread;
-	std::atomic_bool _writerThreadEnable;
 };
 } // namespace internal
 } // namespace ghost

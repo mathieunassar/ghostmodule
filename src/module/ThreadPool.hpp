@@ -50,6 +50,7 @@ public:
 	size_t size() const override;
 	std::shared_ptr<ghost::ScheduledExecutor> makeScheduledExecutor() override;
 	bool work() override;
+	void yield(const std::chrono::steady_clock::duration& minimumDuration = std::chrono::milliseconds(1)) override;
 
 protected:
 	bool enabled() const override;

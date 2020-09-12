@@ -21,14 +21,10 @@
 using namespace ghost::internal;
 
 RemoteClientGRPC::RemoteClientGRPC(const ghost::ConnectionConfiguration& configuration,
+				   const std::shared_ptr<ghost::ThreadPool>& threadPool,
 				   const std::shared_ptr<IncomingRPC>& rpc, ServerGRPC* parentServer)
-    : ghost::Client(configuration), _rpc(rpc), _running(false), _parentServer(parentServer)
+    : ghost::Client(configuration), _threadPool(threadPool), _rpc(rpc), _parentServer(parentServer)
 {
-}
-
-RemoteClientGRPC::~RemoteClientGRPC()
-{
-	if (_executor.joinable()) _executor.join();
 }
 
 bool RemoteClientGRPC::start()
@@ -38,19 +34,19 @@ bool RemoteClientGRPC::start()
 
 bool RemoteClientGRPC::stop()
 {
-	return _rpc->stop();
+	if (_execution.valid()) _execution.get();
+	return !isRunning();
 }
 
 bool RemoteClientGRPC::isRunning() const
 {
-	return !_rpc->isFinished() || _running;
+	return !_rpc->isFinished() ||
+	       _execution.valid() && _execution.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready;
 }
 
 void RemoteClientGRPC::execute()
 {
-	_executor = std::thread([this] {
-		_running = true;
-
+	_execution = _threadPool->execute([this] {
 		if (_parentServer->getClientHandler())
 			_parentServer->getClientHandler()->configureClient(_rpc->getParent());
 
@@ -66,13 +62,16 @@ void RemoteClientGRPC::execute()
 			    _parentServer->getClientHandler()->handle(_rpc->getParent(), keepClientAlive);
 
 		// only stop the client if the user left "keepClientAlive" to false
-		if (!keepClientAlive) stop();
+		if (!keepClientAlive) shutdown();
 
 		// if continueExecution is false, stop the server
-		if (!continueExecution) _parentServer->stop();
-
-		_running = false;
+		if (!continueExecution) _parentServer->shutdown();
 	});
+}
+
+void RemoteClientGRPC::shutdown()
+{
+	_rpc->stop();
 }
 
 std::shared_ptr<ghost::ReaderSink> RemoteClientGRPC::getReaderSink() const

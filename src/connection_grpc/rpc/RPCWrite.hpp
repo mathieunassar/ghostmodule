@@ -30,14 +30,14 @@ template <typename ReaderWriter, typename ContextType, typename WriteMessageType
 class RPCWrite : public RPCOperation<ReaderWriter, ContextType>
 {
 public:
-	RPCWrite(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, bool autoRestart, bool blocking,
+	RPCWrite(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 		 const std::shared_ptr<ghost::WriterSink>& writerSink);
 	~RPCWrite();
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
 
 private:
 	std::shared_ptr<ghost::WriterSink> _writerSink;
@@ -47,16 +47,15 @@ private:
 
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
 RPCWrite<ReaderWriter, ContextType, WriteMessageType>::RPCWrite(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
-								bool autoRestart, bool blocking,
 								const std::shared_ptr<ghost::WriterSink>& writerSink)
-    : RPCOperation<ReaderWriter, ContextType>(parent, autoRestart, blocking), _writerSink(writerSink)
+    : RPCOperation<ReaderWriter, ContextType>(parent), _writerSink(writerSink)
 {
 }
 
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
 RPCWrite<ReaderWriter, ContextType, WriteMessageType>::~RPCWrite()
 {
-	RPCOperation<ReaderWriter, ContextType>::stop();
+	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
@@ -68,49 +67,38 @@ bool RPCWrite<ReaderWriter, ContextType, WriteMessageType>::initiateOperation()
 	google::protobuf::Any message;
 	bool success = false;
 
-	if (RPCOperation<ReaderWriter, ContextType>::_blocking)
-	{
-		while (!success && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING)
-		{
-			success = _writerSink->get(message, std::chrono::milliseconds(1));
-		}
-	}
-	else // Non-blocking call - returns immediatly even if there is no messages in the queue
-		success = _writerSink->get(message, std::chrono::milliseconds(0));
+	bool hasMessage = _writerSink->get(message, std::chrono::milliseconds(0));
+	if (!hasMessage) return false;
 
-	if (success)
+	WriteMessageType msg;
+	if (msg.GetTypeName() == message.descriptor()->full_name()) // Don't unpack any to any because it will fail
+		msg = message;
+	else
 	{
-		WriteMessageType msg;
-		if (msg.GetTypeName() ==
-		    message.descriptor()->full_name()) // Don't unpack any to any because it will fail
-			msg = message;
-		else
-		{
-			bool unpackSuccess = message.UnpackTo(&msg);
-			if (!unpackSuccess) return false;
-		}
-
-		rpc->getClient()->Write(msg, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
+		bool unpackSuccess = message.UnpackTo(&msg);
+		if (!unpackSuccess) return false;
 	}
 
-	return success;
+	rpc->getClient()->Write(msg, &(RPCOperation<ReaderWriter, ContextType>::_operationCompletedCallback));
+	return true;
 }
 
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
-void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationSucceeded(bool rpcFinished)
+void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationSucceeded()
 {
-	if (rpcFinished) return; // nothing to do here
+	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
+	if (!rpc) return;
+	if (rpc->isFinished()) return; // nothing to do here
 
 	_writerSink->pop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
-void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationFailed(bool rpcFinished)
+void RPCWrite<ReaderWriter, ContextType, WriteMessageType>::onOperationFailed()
 {
-	if (rpcFinished) return; // nothing to do here
-
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
+	if (rpc->isFinished()) return; // nothing to do here
 
 	rpc->getStateMachine().setState(RPCStateMachine::INACTIVE);
 }

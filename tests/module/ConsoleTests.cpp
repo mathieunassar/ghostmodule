@@ -30,7 +30,7 @@ protected:
 		_callbackCount = 0;
 		_lastCommandReceived.clear();
 
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 		    .Times(testing::AnyNumber())
 		    .WillRepeatedly(testing::Return(false));
 		EXPECT_CALL(*_consoleDeviceMock, start()).Times(testing::AnyNumber());
@@ -51,7 +51,7 @@ protected:
 
 	void gotoInputIsProvided()
 	{
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 		    .Times(testing::AnyNumber())
 		    .WillOnce(testing::Return(true))
 		    .WillRepeatedly(testing::Return(false));

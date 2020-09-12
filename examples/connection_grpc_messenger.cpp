@@ -72,7 +72,7 @@ public:
 		{
 			// Setup the connection manager and load gRPC connection implementations
 			_connectionManager = ghost::ConnectionManager::create();
-			ghost::ConnectionGRPC::initialize(_connectionManager);
+			ghost::ConnectionGRPC::initialize(_connectionManager, module.getThreadPool());
 
 			// Setup the configuration used by this example
 			_configuration.setServerIpAddress("127.0.0.1");

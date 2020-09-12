@@ -21,7 +21,7 @@
 #include <deque>
 #include <memory>
 #include <mutex>
-#include <thread>
+#include <ghost/module/ThreadPool.hpp>
 
 namespace ghost
 {
@@ -32,7 +32,7 @@ class RemoteClientGRPC;
 class ClientManager
 {
 public:
-	ClientManager();
+	ClientManager(const std::shared_ptr<ghost::ThreadPool>& threadPool);
 	~ClientManager();
 
 	/// Starts a thread periodically deleting old clients
@@ -45,6 +45,7 @@ public:
 	void addClient(std::shared_ptr<RemoteClientGRPC> client);
 	/// Stops currently running clients.
 	void stopClients();
+	void shutdownClients();
 
 private:
 	/// dispose and delete clients that are in finished state and owned solely by this manager
@@ -54,8 +55,8 @@ private:
 	/// loops over the managed clients and tries to delte unused clients with "deleteDisposableClients"
 	void manageClients();
 
-	std::thread _clientManagerThread;
-	std::atomic<bool> _clientManagerThreadEnable;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
+	std::shared_ptr<ghost::ScheduledExecutor> _executor;
 	std::mutex _mutex;
 	std::deque<std::shared_ptr<RemoteClientGRPC>> _allClients;
 };

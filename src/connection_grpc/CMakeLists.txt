@@ -25,6 +25,7 @@ ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/PublisherClientHandler.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/SubscriberGRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/CompletionQueueExecutor.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientManager.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ConnectionFactoryRuleGRPC.hpp
 )
 
 file(GLOB header_connectiongrpc_internal_lib_rpc
@@ -39,6 +40,8 @@ ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCConnect.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCFinish.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCServerFinish.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCDone.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/ReaderRPC.hpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/WriterRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/OutgoingRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/IncomingRPC.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.hpp
@@ -58,6 +61,8 @@ ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientManager.cpp
 )
 
 file(GLOB source_connectiongrpc_lib_rpc
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/ReaderRPC.cpp
+${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/WriterRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/OutgoingRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/IncomingRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.cpp
@@ -91,7 +96,7 @@ if (UNIX)
 	target_link_libraries(ghost_connection_grpc pthread)
 endif()
 
-target_link_libraries(ghost_connection_grpc ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})
+target_link_libraries(ghost_connection_grpc ghost_module ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})
 
 ##### Unit tests #####
 

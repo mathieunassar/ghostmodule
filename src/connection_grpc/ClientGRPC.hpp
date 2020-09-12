@@ -19,6 +19,7 @@
 
 #include <ghost/connection/Client.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include <ghost/module/ThreadPool.hpp>
 
 #include "rpc/OutgoingRPC.hpp"
 
@@ -33,8 +34,9 @@ namespace internal
 class ClientGRPC : public ghost::Client
 {
 public:
-	ClientGRPC(const ghost::ConnectionConfiguration& config);
-	ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
+	ClientGRPC(const ghost::ConnectionConfiguration& config, const std::shared_ptr<ghost::ThreadPool>& threadPool);
+	ClientGRPC(const ghost::NetworkConnectionConfiguration& config,
+		   const std::shared_ptr<ghost::ThreadPool>& threadPool);
 
 	bool start() override;
 	bool stop() override;

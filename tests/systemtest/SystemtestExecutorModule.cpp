@@ -31,8 +31,8 @@ bool SystemtestExecutorModule::initialize(const ghost::Module& module)
 	module.getInterpreter()->registerCommand(std::make_shared<SystemtestCommand>(this, module.getConsole()));
 	module.getInterpreter()->registerCommand(std::make_shared<StopSystemtestCommand>(this));
 
-	registerSystemtest(std::make_shared<ConnectionStressTest>(_logger));
-	registerSystemtest(std::make_shared<ConnectionMonkeyTest>(_logger));
+	registerSystemtest(std::make_shared<ConnectionStressTest>(module.getThreadPool(), _logger));
+	registerSystemtest(std::make_shared<ConnectionMonkeyTest>(module.getThreadPool(), _logger));
 
 	GHOST_INFO(_logger) << "Systemtest executor initialized";
 	return true;
