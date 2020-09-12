@@ -64,14 +64,14 @@ public:
 	std::shared_ptr<ghost::Logger> getLogger() const override;
 	std::shared_ptr<ghost::CommandLineInterpreter> getInterpreter() const override;
 	std::shared_ptr<ghost::UserManager> getUserManager() const override;
-	
+
 	// Program options
 	const ghost::CommandLine& getProgramOptions() const override;
-	
+
 	// Thread pools
 	std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label = "") const override;
 	std::shared_ptr<ghost::ThreadPool> addThreadPool(const std::string& label, size_t threadsCount) override;
-	
+
 	const std::string& getModuleName() const override;
 	void printGhostASCII(const std::string& suffix = "") const override;
 

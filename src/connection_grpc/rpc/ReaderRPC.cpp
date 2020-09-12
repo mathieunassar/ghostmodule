@@ -17,4 +17,3 @@
 #include "ReaderRPC.hpp"
 
 using namespace ghost::internal;
-

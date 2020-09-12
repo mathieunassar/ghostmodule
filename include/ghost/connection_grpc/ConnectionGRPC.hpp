@@ -17,10 +17,10 @@
 #ifndef GHOST_CONNECTIONGRPC_HPP
 #define GHOST_CONNECTIONGRPC_HPP
 
-#include <ghost/module/ThreadPool.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
+#include <ghost/module/ThreadPool.hpp>
 
 namespace ghost
 {

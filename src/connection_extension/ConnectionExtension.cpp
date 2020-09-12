@@ -88,7 +88,8 @@ bool ConnectionExtension::initializeRemoteAccess()
 {
 	GHOST_INFO(getModule()->getLogger()) << "Starting remote access...";
 	_remoteAccess = std::make_unique<RemoteAccessServer>(_remoteAccessConfigurations, _connectionManager,
-							     getModule()->getInterpreter(), getModule()->getThreadPool(), getModule()->getLogger());
+							     getModule()->getInterpreter(),
+							     getModule()->getThreadPool(), getModule()->getLogger());
 
 	// Start the remote
 	bool startResult = _remoteAccess->start();

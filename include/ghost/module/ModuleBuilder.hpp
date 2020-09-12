@@ -92,7 +92,7 @@ public:
 	 *	@param label the name of the thread pool to return
 	 *	@return the thread pool of the module being constructed.
 	 */
-	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label="") const = 0;
+	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label = "") const = 0;
 	/**
 	 *	Adds a ghost::ThreadPool to the module's execution. The pool is returned
 	 *	and is not started automatically, so that the pool may be configured before

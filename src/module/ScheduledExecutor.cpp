@@ -40,10 +40,9 @@ void ScheduledExecutor::stop()
 			{
 				auto status = t.lastFuture.wait_for(std::chrono::milliseconds(0));
 				waitForFuture = status != std::future_status::ready;
-				if (waitForFuture)
-					_threadPool->yield(std::chrono::milliseconds(1));
+				if (waitForFuture) _threadPool->yield(std::chrono::milliseconds(1));
 			}
-			
+
 			t.lastFuture.get();
 		}
 	}

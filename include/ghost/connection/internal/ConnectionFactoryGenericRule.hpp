@@ -26,7 +26,6 @@ namespace ghost
 {
 namespace internal
 {
-
 /* Generic class */
 template <typename ConnectionType>
 class ConnectionFactoryGenericRule : public ghost::ConnectionFactoryRule
