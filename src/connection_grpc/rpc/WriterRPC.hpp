@@ -128,12 +128,9 @@ void WriterRPC<ReaderWriter, ContextType>::restartWriter()
 	auto writerOperation =
 	    std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, _writerSink);
 	writerOperation->onFinish(std::bind(&WriterRPC<ReaderWriter, ContextType>::restartWriter, this));
+
 	bool startResult = writerOperation->start();
 	if (startResult) _activeWriterOperation = writerOperation;
-
-	static int counter1 = 0;
-	counter1++;
-	printf("write: %d\n", counter1);
 }
 
 } // namespace internal

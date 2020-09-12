@@ -32,7 +32,6 @@ class RPCRead : public RPCOperation<ReaderWriter, ContextType>
 public:
 	RPCRead(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 		const std::shared_ptr<ghost::ReaderSink>& readerSink);
-	~RPCRead();
 
 protected:
 	bool initiateOperation() override;
@@ -51,12 +50,6 @@ RPCRead<ReaderWriter, ContextType, ReadMessageType>::RPCRead(std::weak_ptr<RPC<R
 							     const std::shared_ptr<ghost::ReaderSink>& readerSink)
     : RPCOperation<ReaderWriter, ContextType>(parent), _readerSink(readerSink)
 {
-}
-
-template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
-RPCRead<ReaderWriter, ContextType, ReadMessageType>::~RPCRead()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>

@@ -86,10 +86,6 @@ void ReaderRPC<ReaderWriter, ContextType>::restartReader()
 
 	bool startResult = readerOperation->start();
 	if (startResult) _activeReaderOperation = readerOperation;
-
-	static int counter2 = 0;
-	counter2++;
-	printf("read: %d\n", counter2);
 }
 
 template <typename ReaderWriter, typename ContextType>

@@ -66,23 +66,26 @@ void CompletionQueueExecutor::stop()
 
 void CompletionQueueExecutor::handleRpcs()
 {
-	TagInfo tag;
-	// Block waiting to read the next event from the completion queue. The
-	// event is uniquely identified by its tag, which in this case is the
-	// memory address of a CallData instance.
-	// The return value of Next should always be checked. This return value
-	// tells us whether there is any kind of event or cq_ is shutting down.
-	auto now = std::chrono::system_clock::now();
-	auto status = _completionQueue->AsyncNext((void**)&tag.processor, &tag.ok, now);
+	while (true) // loop until there are no new tags to find
+	{
+		TagInfo tag;
+		// Block waiting to read the next event from the completion queue. The
+		// event is uniquely identified by its tag, which in this case is the
+		// memory address of a CallData instance.
+		// The return value of Next should always be checked. This return value
+		// tells us whether there is any kind of event or cq_ is shutting down.
+		auto now = std::chrono::system_clock::now();
+		auto status = _completionQueue->AsyncNext((void**)&tag.processor, &tag.ok, now);
 
-	// Update the state of the completion queue
-	if (status == grpc::CompletionQueue::NextStatus::SHUTDOWN)
-		_completionQueueShutdown = true;
-	else
-		_completionQueueShutdown = false;
+		// Update the state of the completion queue
+		if (status == grpc::CompletionQueue::NextStatus::SHUTDOWN)
+			_completionQueueShutdown = true;
+		else
+			_completionQueueShutdown = false;
 
-	// Only pass this point if there is something to complete.
-	if (status != grpc::CompletionQueue::NextStatus::GOT_EVENT) return;
+		// Only pass this point if there is something to complete.
+		if (status != grpc::CompletionQueue::NextStatus::GOT_EVENT) return;
 
-	(*tag.processor)(tag.ok);
+		(*tag.processor)(tag.ok);
+	}
 }

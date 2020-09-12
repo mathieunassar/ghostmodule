@@ -36,7 +36,6 @@ public:
 	RPCConnect(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 		   const std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub>& stub,
 		   grpc::CompletionQueue* completionQueue);
-	~RPCConnect();
 
 protected:
 	bool initiateOperation() override;
@@ -57,12 +56,6 @@ RPCConnect<ReaderWriter, ContextType>::RPCConnect(
     grpc::CompletionQueue* completionQueue)
     : RPCOperation<ReaderWriter, ContextType>(parent), _stub(stub), _completionQueue(completionQueue)
 {
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCConnect<ReaderWriter, ContextType>::~RPCConnect()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>

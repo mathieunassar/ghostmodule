@@ -32,7 +32,6 @@ class RPCWrite : public RPCOperation<ReaderWriter, ContextType>
 public:
 	RPCWrite(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 		 const std::shared_ptr<ghost::WriterSink>& writerSink);
-	~RPCWrite();
 
 protected:
 	bool initiateOperation() override;
@@ -50,12 +49,6 @@ RPCWrite<ReaderWriter, ContextType, WriteMessageType>::RPCWrite(std::weak_ptr<RP
 								const std::shared_ptr<ghost::WriterSink>& writerSink)
     : RPCOperation<ReaderWriter, ContextType>(parent), _writerSink(writerSink)
 {
-}
-
-template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
-RPCWrite<ReaderWriter, ContextType, WriteMessageType>::~RPCWrite()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>

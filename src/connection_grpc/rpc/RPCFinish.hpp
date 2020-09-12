@@ -31,7 +31,6 @@ class RPCFinish : public RPCOperation<ReaderWriter, ContextType>
 public:
 	RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 		  const grpc::Status& status = grpc::Status::CANCELLED);
-	~RPCFinish();
 
 	const grpc::Status& getStatus() const;
 
@@ -52,12 +51,6 @@ RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, 
     : RPCOperation<ReaderWriter, ContextType>(parent)
     , _status(status)
 {
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCFinish<ReaderWriter, ContextType>::~RPCFinish()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>

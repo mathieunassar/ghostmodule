@@ -30,7 +30,6 @@ class RPCDone : public RPCOperation<ReaderWriter, ContextType>
 {
 public:
 	RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
-	~RPCDone();
 
 protected:
 	bool initiateOperation() override;
@@ -45,12 +44,6 @@ template <typename ReaderWriter, typename ContextType>
 RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
     : RPCOperation<ReaderWriter, ContextType>(parent)
 {
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCDone<ReaderWriter, ContextType>::~RPCDone()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>

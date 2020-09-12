@@ -30,7 +30,6 @@ class RPCServerFinish : public RPCOperation<ReaderWriter, ContextType>
 {
 public:
 	RPCServerFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, const grpc::Status& status);
-	~RPCServerFinish();
 
 protected:
 	bool initiateOperation() override;
@@ -48,12 +47,6 @@ RPCServerFinish<ReaderWriter, ContextType>::RPCServerFinish(std::weak_ptr<RPC<Re
 							    const grpc::Status& status)
     : RPCOperation<ReaderWriter, ContextType>(parent), _status(status)
 {
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCServerFinish<ReaderWriter, ContextType>::~RPCServerFinish()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>

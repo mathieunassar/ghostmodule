@@ -34,7 +34,6 @@ class RPCRequest : public RPCOperation<ReaderWriter, ContextType>
 public:
 	RPCRequest(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, ServiceType* service,
 		   grpc::CompletionQueue* rpcCompletionQueue, grpc::ServerCompletionQueue* completionQueue);
-	~RPCRequest();
 
 	void setConnectionCallback(const std::function<void()>& callback);
 
@@ -62,12 +61,6 @@ RPCRequest<ReaderWriter, ContextType, ServiceType>::RPCRequest(std::weak_ptr<RPC
     , _rpcCompletionQueue(rpcCompletionQueue)
     , _completionQueue(completionQueue)
 {
-}
-
-template <typename ReaderWriter, typename ContextType, typename ServiceType>
-RPCRequest<ReaderWriter, ContextType, ServiceType>::~RPCRequest()
-{
-	//RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType, typename ServiceType>

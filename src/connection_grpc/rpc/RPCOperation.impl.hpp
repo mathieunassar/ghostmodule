@@ -86,5 +86,7 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 	else
 		onOperationFailed();
 
+	// free the mutex because the callback may trigger the destruction of this object
+	lock.unlock();
 	if (_finishCallback) _finishCallback();
 }

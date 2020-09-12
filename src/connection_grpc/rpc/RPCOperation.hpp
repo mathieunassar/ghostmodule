@@ -51,6 +51,7 @@ public:
 	};
 
 	RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
+	virtual ~RPCOperation() = default;
 
 	bool start();
 	bool isRunning() const;
