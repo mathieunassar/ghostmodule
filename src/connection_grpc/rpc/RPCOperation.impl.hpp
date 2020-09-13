@@ -29,7 +29,8 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 	if (!rpc) return false;
 
 	// Do not start RPCs that are already finished
-	if (rpc->getStateMachine().getState() == RPCStateMachine::FINISHED) return false;
+	auto rpcState = rpc->getStateMachine().getState();
+	if (rpcState == RPCStateMachine::FINISHED || rpcState == RPCStateMachine::INACTIVE) return false;
 
 	std::unique_lock<std::mutex> lock(_operationMutex);
 
