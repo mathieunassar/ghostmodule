@@ -33,17 +33,17 @@ void ScheduledExecutor::stop()
 
 	for (auto& t : tasks)
 	{
-		if (t.lastFuture.valid())
+		if (t->lastFuture.valid())
 		{
 			bool waitForFuture = true;
 			while (waitForFuture)
 			{
-				auto status = t.lastFuture.wait_for(std::chrono::milliseconds(0));
+				auto status = t->lastFuture.wait_for(std::chrono::milliseconds(0));
 				waitForFuture = status != std::future_status::ready;
 				if (waitForFuture) _threadPool->yield(std::chrono::milliseconds(1));
 			}
 
-			t.lastFuture.get();
+			t->lastFuture.get();
 		}
 	}
 }
@@ -51,12 +51,22 @@ void ScheduledExecutor::stop()
 void ScheduledExecutor::scheduleAtFixedRate(const std::function<void()>& task, const std::chrono::milliseconds& rate)
 {
 	std::unique_lock<std::mutex> lock(_mutex);
-	ScheduledTask t;
-	t.lastStart = std::chrono::steady_clock::now();
-	t.rate = rate;
-	t.task = task;
-	t.lastFuture = _threadPool->execute(task);
-	_scheduledTasks.push_back(std::move(t));
+
+	auto t = std::make_shared<ScheduledTask>();
+	t->lastStart = std::chrono::steady_clock::now();
+	t->rate = rate;
+	t->task = task;
+	t->taskCompleted = false;
+	t->lastFuture = _threadPool->execute(std::bind(&ScheduledExecutor::scheduledTaskExecutor, this, t));
+
+	_scheduledTasks.push_back(t);
+}
+
+void ScheduledExecutor::scheduledTaskExecutor(const std::shared_ptr<ScheduledTask>& task)
+{
+	task->task();
+	std::unique_lock<std::mutex> lock(_mutex);
+	task->taskCompleted = true;
 }
 
 bool ScheduledExecutor::update()
@@ -68,12 +78,12 @@ bool ScheduledExecutor::update()
 	auto now = std::chrono::steady_clock::now();
 	for (auto& t : _scheduledTasks)
 	{
-		if (t.lastFuture.valid() &&
-		    t.lastFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready &&
-		    now >= t.lastStart + t.rate)
+		if (t->taskCompleted && now >= t->lastStart + t->rate)
 		{
-			t.lastStart = now;
-			t.lastFuture = _threadPool->execute(t.task);
+			t->lastStart = now;
+			t->taskCompleted = false;
+			t->lastFuture =
+			    _threadPool->execute(std::bind(&ScheduledExecutor::scheduledTaskExecutor, this, t));
 		}
 	}
 	return true;

@@ -146,8 +146,8 @@ bool ConnectionMonkeyTest::createPublisherAction()
 		_publishers[chosenPort] = publisher;
 		_publishersCreated++;
 		GHOST_INFO(_logger) << "createPublisherAction on port " << chosenPort
-				    << ": started new publisher - waiting 200 ms for setup";
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				    << ": started new publisher - waiting 500 ms for setup";
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
 	return true;
@@ -177,8 +177,8 @@ bool ConnectionMonkeyTest::createSubscriberAction()
 		_subscribers[chosenPort].push_back(subscriber);
 		_subscribersCreated++;
 		GHOST_INFO(_logger) << "createSubscriberAction on port " << chosenPort
-				    << ": started new subscriber - waiting 200 ms for setup";
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				    << ": started new subscriber - waiting 500 ms for setup";
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	else
 	{

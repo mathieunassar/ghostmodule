@@ -61,16 +61,18 @@ public:
 private:
 	ThreadPool* _threadPool;
 	std::mutex _mutex;
-
 	struct ScheduledTask
 	{
 		std::function<void()> task;
 		std::future<void> lastFuture;
+		bool taskCompleted;
 		std::chrono::steady_clock::time_point lastStart;
 		std::chrono::milliseconds rate;
 	};
-	std::vector<ScheduledTask> _scheduledTasks;
+	std::vector<std::shared_ptr<ScheduledTask>> _scheduledTasks;
 	std::atomic_bool _enable{true};
+
+	void scheduledTaskExecutor(const std::shared_ptr<ScheduledTask>& task);
 };
 } // namespace internal
 } // namespace ghost
