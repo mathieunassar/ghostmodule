@@ -21,8 +21,8 @@
 #include <ghost/connection_grpc/ServerClientService.pb.h>
 
 #include <atomic>
-#include <memory>
 #include <ghost/module/ThreadPool.hpp>
+#include <memory>
 
 #include "RPCStateMachine.hpp"
 

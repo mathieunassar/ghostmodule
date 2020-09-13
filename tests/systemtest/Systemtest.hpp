@@ -20,9 +20,9 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
-#include <ghost/module/ThreadPool.hpp>
 #include <ghost/module/CommandLine.hpp>
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <mutex>
 #include <string>

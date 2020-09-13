@@ -48,8 +48,7 @@ private:
 template <typename ReaderWriter, typename ContextType>
 RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 						const grpc::Status& status)
-    : RPCOperation<ReaderWriter, ContextType>(parent)
-    , _status(status)
+    : RPCOperation<ReaderWriter, ContextType>(parent), _status(status)
 {
 }
 

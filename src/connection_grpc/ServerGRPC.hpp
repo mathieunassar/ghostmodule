@@ -53,7 +53,7 @@ public:
 	bool stop() override;
 	bool isRunning() const override;
 	bool isShutdown() const;
-	
+
 	void shutdown();
 	void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
 	const std::shared_ptr<ClientHandler> getClientHandler() const;

@@ -19,9 +19,9 @@
 
 #include <atomic>
 #include <deque>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <mutex>
-#include <ghost/module/ThreadPool.hpp>
 
 namespace ghost
 {

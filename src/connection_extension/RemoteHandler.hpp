@@ -17,13 +17,13 @@
 #ifndef GHOST_INTERNAL_REMOTEHANDLER_HPP
 #define GHOST_INTERNAL_REMOTEHANDLER_HPP
 
+#include <future>
 #include <ghost/connection/Client.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Session.hpp>
 #include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <mutex>
-#include <future>
 #include <string>
 #include "RemoteConsole.hpp"
 
@@ -35,7 +35,7 @@ class RemoteHandler
 {
 public:
 	RemoteHandler(const std::shared_ptr<ghost::Client>& client,
-		const std::shared_ptr<ghost::ThreadPool>& threadPool,
+		      const std::shared_ptr<ghost::ThreadPool>& threadPool,
 		      const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter);
 	~RemoteHandler();
 

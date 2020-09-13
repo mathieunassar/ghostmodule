@@ -17,4 +17,3 @@
 #include "WriterRPC.hpp"
 
 using namespace ghost::internal;
-

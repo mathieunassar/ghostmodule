@@ -75,7 +75,8 @@ bool ConsoleDeviceUnix::read(std::string& output, bool secret)
 
 	if (secret) setConsoleMode(ConsoleDevice::OUTPUT);
 
-	bool gotInput = awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); }, std::chrono::milliseconds(-1));
+	bool gotInput =
+	    awaitInput([&]() { return _mode == DeviceMode::READ && _enable.load(); }, std::chrono::milliseconds(-1));
 	if (!gotInput) // _enable is false or the console is used for something else
 		return false;
 

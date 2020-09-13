@@ -19,8 +19,8 @@
 
 #include <ghost/connection/ClientHandler.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>
-#include <ghost/module/ThreadPool.hpp>
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include "RemoteHandler.hpp"
 
 namespace ghost
@@ -37,7 +37,7 @@ class RemoteControllersHandler : public ghost::ClientHandler
 {
 public:
 	RemoteControllersHandler(const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
-		const std::shared_ptr<ghost::ThreadPool>& threadPool,
+				 const std::shared_ptr<ghost::ThreadPool>& threadPool,
 				 const std::shared_ptr<ghost::Logger>& logger);
 
 	// From ghost::ClientHandler

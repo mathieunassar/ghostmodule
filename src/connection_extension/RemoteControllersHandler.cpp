@@ -20,8 +20,7 @@ using namespace ghost::internal;
 
 RemoteControllersHandler::RemoteControllersHandler(
     const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter,
-    const std::shared_ptr<ghost::ThreadPool>& threadPool,
-    const std::shared_ptr<ghost::Logger>& logger)
+    const std::shared_ptr<ghost::ThreadPool>& threadPool, const std::shared_ptr<ghost::Logger>& logger)
     : _interpreter(commandLineInterpreter), _threadPool(threadPool), _logger(logger)
 {
 }
