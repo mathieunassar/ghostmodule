@@ -117,7 +117,7 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_poolStops_When_executorIsStillActi
 	ASSERT_TRUE(true);
 }
 
-TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPool_When_ok)
+TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPoolOnce_When_notEnoughTimeForMorePeriods)
 {
 	// 100 threads ready to process the tasks in order to test the frequency of the scheduling
 	goToThreadPoolStartedState(10);
@@ -125,13 +125,26 @@ TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPool_When_ok)
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	int counter = 0;
-	executor->scheduleAtFixedRate([&]() { counter++; }, std::chrono::milliseconds(50));
-	std::this_thread::sleep_for(std::chrono::milliseconds(220));
+	executor->scheduleAtFixedRate([&]() { counter++; }, std::chrono::milliseconds(500));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	_threadPool->stop(true);
-	std::cout << counter << std::endl;
-	ASSERT_GE(counter, 4);
-	ASSERT_LE(counter, 5);
+	ASSERT_EQ(counter, 1);
+}
+
+TEST_F(ThreadPoolTests, Test_ScheduleExecutor_pushesToPoolTwice_When_enoughTimeForTwoPeriods)
+{
+	// 100 threads ready to process the tasks in order to test the frequency of the scheduling
+	goToThreadPoolStartedState(10);
+	auto executor = _threadPool->makeScheduledExecutor();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+	int counter = 0;
+	executor->scheduleAtFixedRate([&]() { counter++; }, std::chrono::milliseconds(500));
+	std::this_thread::sleep_for(std::chrono::milliseconds(900));
+
+	_threadPool->stop(true);
+	ASSERT_EQ(counter, 2);
 }
 
 TEST_F(ThreadPoolTests, Test_ScheduleExecutor_usesAllTheThreads_When_scheduleAtFixedRate)
