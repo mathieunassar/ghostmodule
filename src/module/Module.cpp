@@ -148,7 +148,7 @@ void Module::start()
 	    std::chrono::milliseconds(0));
 	while (currentState == ghost::internal::Module::RUNNING)
 	{
-		_threadPools[""]->work();
+		_threadPools[""]->work(); // while the module is running, participate in the default thread pool
 		currentState = getState();
 	}
 
