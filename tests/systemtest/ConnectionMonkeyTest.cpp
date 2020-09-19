@@ -17,8 +17,8 @@
 #include "ConnectionMonkeyTest.hpp"
 
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
-#include "../../src/connection_grpc/PublisherGRPC.hpp"
 #include <thread>
+#include "../../src/connection_grpc/PublisherGRPC.hpp"
 
 const std::string ConnectionMonkeyTest::TEST_NAME = "ConnectionMonkey";
 
@@ -171,8 +171,7 @@ bool ConnectionMonkeyTest::createSubscriberAction()
 	size_t subscribersCount = 0;
 	if (_publishers.find(chosenPort) != _publishers.end())
 	{
-		publisherGRPC = std::static_pointer_cast<ghost::internal::PublisherGRPC>(
-			_publishers.at(chosenPort));
+		publisherGRPC = std::static_pointer_cast<ghost::internal::PublisherGRPC>(_publishers.at(chosenPort));
 		subscribersCount = publisherGRPC->countSubscribers();
 	}
 
