@@ -17,7 +17,6 @@
 #ifndef GHOST_INTERNAL_MODULE_HPP
 #define GHOST_INTERNAL_MODULE_HPP
 
-#include <condition_variable>
 #include <ghost/module/Module.hpp>
 #include <mutex>
 #include <thread>
@@ -98,8 +97,6 @@ private:
 	std::function<bool(const ghost::Module&)> _runningBehavior;
 	std::function<void(const ghost::Module&)> _disposeBehavior;
 
-	std::mutex _commandExecutorMutex;
-	std::condition_variable _commandExecutorCV;
 	void commandExecutor();
 };
 } // namespace internal

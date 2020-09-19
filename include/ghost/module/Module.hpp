@@ -128,7 +128,7 @@ public:
 	 */
 	virtual const std::string& getModuleName() const = 0;
 	/**
-	 *	@return the component of this module whose type mathces the template parameter.
+	 *	@return the component of this module whose type matches the template parameter.
 	 *		If no such component exists in the module, returns nullptr.
 	 */
 	template <typename ComponentType>

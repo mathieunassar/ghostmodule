@@ -49,11 +49,6 @@ Module::Module(const std::string& name,
 
 	if (_console)
 	{
-		_console->setCommandCallback([this](const std::string& str) {
-			_console->onNewInput(str);
-			_commandExecutorCV.notify_one();
-		});
-
 		_userManager->setConnectedUserCallback(
 		    [this](std::shared_ptr<ghost::User> user) {
 			    if (user)
@@ -282,12 +277,6 @@ void Module::dispose()
 
 void Module::commandExecutor()
 {
-	std::unique_lock<std::mutex> lock(_commandExecutorMutex);
-	bool waitResult = _commandExecutorCV.wait_for(lock, std::chrono::milliseconds(1), [&] {
-		return getState() != ghost::internal::Module::RUNNING || _console->hasCommands();
-	});
-	if (!waitResult) return;
-
 	if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
 	{
 		auto command = _console->getCommand();
