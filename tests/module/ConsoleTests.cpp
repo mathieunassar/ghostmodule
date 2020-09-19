@@ -30,7 +30,7 @@ protected:
 		_callbackCount = 0;
 		_lastCommandReceived.clear();
 
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 		    .Times(testing::AnyNumber())
 		    .WillRepeatedly(testing::Return(false));
 		EXPECT_CALL(*_consoleDeviceMock, start()).Times(testing::AnyNumber());
@@ -38,7 +38,7 @@ protected:
 		EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(testing::AnyNumber());
 		EXPECT_CALL(*_consoleDeviceMock, write(">")).Times(testing::AnyNumber());
 
-		_console = std::make_shared<ghost::internal::Console>(_consoleDeviceMock, false);
+		_console = std::make_shared<ghost::internal::Console>(_consoleDeviceMock, nullptr, false);
 	}
 
 	void TearDown() override
@@ -49,9 +49,9 @@ protected:
 		_consoleDeviceMock.reset();
 	}
 
-	void gotoInputIsProvided()
+	void gotoInputIsProvided(bool commandExpected = true)
 	{
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 		    .Times(testing::AnyNumber())
 		    .WillOnce(testing::Return(true))
 		    .WillRepeatedly(testing::Return(false));
@@ -61,15 +61,26 @@ protected:
 		    .WillRepeatedly(
 			testing::DoAll(testing::SetArgReferee<0>(TEST_COMMAND_LINE), testing::Return(true)));
 
-		runConsole();
+		runConsole(commandExpected);
 	}
 
-	void runConsole()
+	void runConsole(bool commandExpected = true)
 	{
 		_console->start();
 
-		// wait to let internal threads reach the test points
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		if (commandExpected)
+		{
+			auto now = std::chrono::steady_clock::now();
+			auto deadline = now + std::chrono::milliseconds(500);
+			while (!_console->hasCommands() && now < deadline)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				now = std::chrono::steady_clock::now();
+			}
+		}
+		else
+			// wait to let internal threads reach the test points
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
@@ -104,6 +115,7 @@ TEST_F(ConsoleTests, Test_Console_doesNotHang_When_startedAndStopped)
 TEST_F(ConsoleTests, Test_Console_commandIsReceived_When_inputIsProvided)
 {
 	gotoInputIsProvided();
+	ASSERT_TRUE(_console->hasCommands());
 
 	ASSERT_TRUE(_console->hasCommands());
 	ASSERT_TRUE(_console->getCommand() == TEST_COMMAND_LINE);
@@ -112,6 +124,7 @@ TEST_F(ConsoleTests, Test_Console_commandIsReceived_When_inputIsProvided)
 TEST_F(ConsoleTests, Test_Console_commandIsReceivedOnlyOnce_When_inputIsProvided)
 {
 	gotoInputIsProvided();
+	ASSERT_TRUE(_console->hasCommands());
 	_console->getCommand();
 
 	ASSERT_FALSE(_console->hasCommands());
@@ -163,7 +176,7 @@ TEST_F(ConsoleTests, Test_Console_getLineFlushesBeforeReading)
 TEST_F(ConsoleTests, Test_Console_customCommandCallbackCanBeSet)
 {
 	_console->setCommandCallback(std::bind(&ConsoleTests::commandCallback, this, std::placeholders::_1));
-	gotoInputIsProvided();
+	gotoInputIsProvided(false);
 
 	ASSERT_FALSE(_console->hasCommands());
 

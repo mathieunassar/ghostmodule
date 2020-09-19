@@ -30,9 +30,12 @@ bool EnterPressedInputEvent::EnterPressedInputEventHandler::handle(const InputEv
 {
 	InputControllerAccess& controller = getController();
 
-	controller.switchConsoleMode(ConsoleDevice::INPUT);
-	controller.printPrompt();
-	controller.onNewEvent(std::make_shared<InputModeInputEvent>());
+	if (controller.getConsoleMode() == ConsoleDevice::OUTPUT)
+	{
+		controller.switchConsoleMode(ConsoleDevice::INPUT);
+		controller.printPrompt();
+		controller.onNewEvent(std::make_shared<InputModeInputEvent>());
+	}
 	return true;
 }
 

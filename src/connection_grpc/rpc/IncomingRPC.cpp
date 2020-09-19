@@ -22,9 +22,12 @@ using namespace ghost::internal;
 
 IncomingRPC::IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* service,
 			 grpc::ServerCompletionQueue* completionQueue,
+			 const std::shared_ptr<ghost::ThreadPool>& threadPool,
 			 const std::function<void(std::shared_ptr<RemoteClientGRPC>)>& clientConnectedCallback)
-    : _serverCallback(clientConnectedCallback)
-    , _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
+    : WriterRPC(threadPool)
+    , _serverCallback(clientConnectedCallback)
+    , _threadPool(threadPool)
+    , _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>(threadPool))
     , _requestOperation(std::make_shared<RPCRequest<ReaderWriter, ContextType, ServiceType>>(
 	  _rpc, service, completionQueue, completionQueue))
     , _doneOperation(std::make_shared<RPCDone<ReaderWriter, ContextType>>(_rpc))
@@ -36,6 +39,9 @@ IncomingRPC::IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::A
 	    _rpc->getContext().get()));
 	_rpc->getStateMachine().setStateChangedCallback(
 	    std::bind(&IncomingRPC::onRPCStateChanged, this, std::placeholders::_1));
+
+	initReader(_rpc);
+	initWriter(_rpc);
 
 	_doneOperation->start();
 	start();
@@ -69,35 +75,10 @@ bool IncomingRPC::stop(const grpc::Status& status)
 	return true;
 }
 
-void IncomingRPC::startWriter(const std::shared_ptr<ghost::WriterSink>& sink)
-{
-	if (sink)
-	{
-		_writerSink = sink;
-		_writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(
-		    _rpc, true, true, sink);
-		_writerOperation->startAsync();
-	}
-}
-
-void IncomingRPC::startReader(const std::shared_ptr<ghost::ReaderSink>& sink)
-{
-	if (sink)
-	{
-		_readerSink = sink;
-		_readerOperation =
-		    std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, sink);
-		_readerOperation->start();
-	}
-}
-
 void IncomingRPC::dispose()
 {
-	if (_writerOperation) _writerOperation->stop();
-	if (_readerOperation) _readerOperation->stop();
-	if (_requestOperation) _requestOperation->stop();
-	if (_finishOperation) _finishOperation->stop();
-	if (_doneOperation) _doneOperation->stop();
+	stopReader();
+	stopWriter();
 
 	// only delete this object when the state is finished and no other operations are running
 	// if operations were running after this gets deleted, function pointers to callbacks would be lead to
@@ -137,7 +118,7 @@ void IncomingRPC::onRPCStateChanged(RPCStateMachine::State newState)
 {
 	if (newState == RPCStateMachine::INACTIVE || newState == RPCStateMachine::FINISHED)
 	{
-		if (_readerSink) _readerSink->drain();
-		if (_writerSink) _writerSink->drain();
+		drainReader();
+		drainWriter();
 	}
 }

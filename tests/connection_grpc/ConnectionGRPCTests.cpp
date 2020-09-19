@@ -26,6 +26,7 @@
 #include <thread>
 
 #include "../../src/connection_grpc/PublisherGRPC.hpp"
+#include "../../src/module/ThreadPool.hpp"
 #include "../connection/ConnectionTestUtils.hpp"
 
 using namespace ghost;
@@ -46,9 +47,12 @@ protected:
 	void SetUp() override
 	{
 		_connectionManager = ghost::ConnectionManager::create();
-		ghost::ConnectionGRPC::initialize(_connectionManager, _config);
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(1);
+		_threadPool->start();
+		ghost::ConnectionGRPC::initialize(_connectionManager, _threadPool, _config);
 
 		_config.setServerPortNumber(TEST_PORT);
+		_config.setOperationBlocking(false);
 
 		_doubleValueMessageWasHandledCounter = 0;
 		_doubleValueMessageWasHandledMap.clear();
@@ -60,6 +64,8 @@ protected:
 	void TearDown() override
 	{
 		_connectionManager.reset();
+		_threadPool->stop(true);
+		_threadPool.reset();
 	}
 
 	void createServer(const ghost::NetworkConnectionConfiguration& config)
@@ -200,6 +206,7 @@ protected:
 	}
 
 	std::shared_ptr<ghost::ConnectionManager> _connectionManager;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	ghost::ConnectionConfigurationGRPC _config;
 
 	std::shared_ptr<ghost::Server> _server;
@@ -378,14 +385,15 @@ TEST_F(ConnectionGRPCTests, test_ServerGRPC_stops_When_clientHandlerReturnsFalse
 	EXPECT_CALL(*_clientHandlerMock, handle(_, _)).Times(1).WillOnce(testing::Return(false));
 
 	startClients(_config, 1, false);
+	auto serverGrpc = std::dynamic_pointer_cast<ghost::internal::ServerGRPC>(_server);
 	auto now = std::chrono::steady_clock::now();
 	auto deadline = now + std::chrono::seconds(1);
-	while (now < deadline && _server->isRunning())
+	while (now < deadline && !serverGrpc->isShutdown())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		now = std::chrono::steady_clock::now();
 	}
-	ASSERT_FALSE(_server->isRunning());
+	ASSERT_TRUE(serverGrpc->isShutdown());
 }
 
 /* Subscriber / Publisher connections */

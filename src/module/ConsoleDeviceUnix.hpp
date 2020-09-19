@@ -41,7 +41,8 @@ public:
 	void stop() override;
 
 	bool setConsoleMode(ConsoleMode mode) override;
-	bool awaitInputMode() override;
+	bool awaitInputMode(
+	    const std::chrono::steady_clock::duration& timeout = std::chrono::milliseconds(-1)) override;
 	bool read(std::string& output, bool secret) override;
 	bool write(const std::string& text) override;
 
@@ -53,7 +54,8 @@ private:
 		READ
 	};
 
-	bool awaitInput(const std::function<bool()>& untilPredicate);
+	bool awaitInput(const std::function<bool()>& untilPredicate,
+			const std::chrono::steady_clock::duration& timeout);
 
 	termios _referenceState;
 	std::atomic<bool> _enable;

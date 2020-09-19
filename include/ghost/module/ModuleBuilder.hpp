@@ -22,6 +22,7 @@
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/Module.hpp>
 #include <ghost/module/ModuleExtensionBuilder.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <string>
 
@@ -76,6 +77,31 @@ public:
 	 *	@return an instance of this.
 	 */
 	virtual ModuleBuilder& setProgramOptions(int argc, char* argv[]) = 0;
+	/**
+	 *	Retrieves a ghost::ThreadPool that will be used by the module.
+	 *	It can be used prior to the module build call to configure module extensions
+	 *	or to parameterize the pool's size.
+	 *	Per default, the pool will be constructed with as many threads as the hardware
+	 *	concurrency limit.
+	 *	Note: Threads will only be created after the thread pool is started, which happens
+	 *	after the initialization behavior is called.
+	 *	The thread pool may optionally also be started before calling "build" (by calling
+	 *	"start" on the pool).
+	 *	Per default one thread pool is started by the module, with an empty name.
+	 *	Users can configured multiple thread pool at module-build time or during runtime.
+	 *	@param label the name of the thread pool to return
+	 *	@return the thread pool of the module being constructed.
+	 */
+	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label = "") const = 0;
+	/**
+	 *	Adds a ghost::ThreadPool to the module's execution. The pool is returned
+	 *	and is not started automatically, so that the pool may be configured before
+	 *	it gets started.
+	 *	@param label the name of the thread pool to add.
+	 *	@param threadsCount the number of threads managed by the thread pool to add.
+	 *	@return the thread pool created by the module, stored with the given label.
+	 */
+	virtual std::shared_ptr<ghost::ThreadPool> addThreadPool(const std::string& label, size_t threadsCount) = 0;
 	/**
 	 *	Activates the console management. A handle to the created ghost::Console
 	 *	is returned for further configuration possibilities.

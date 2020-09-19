@@ -21,8 +21,8 @@
 #include <ghost/connection_grpc/ServerClientService.pb.h>
 
 #include <atomic>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
-#include <thread>
 
 #include "RPCStateMachine.hpp"
 
@@ -41,7 +41,7 @@ template <typename ReaderWriter, typename ContextType>
 class RPC
 {
 public:
-	RPC();
+	RPC(const std::shared_ptr<ghost::ThreadPool>& threadPool);
 	~RPC();
 
 	/// Clears gRPC objects. Call this before the destructor.
@@ -54,8 +54,8 @@ public:
 	bool dispose();
 	/// Increases the number of ongoing operations by one.
 	void startOperation();
-	/// Decreases the number of ongoing operations by one, and returns false if the RPC completed.
-	bool finishOperation();
+	/// Decreases the number of ongoing operations by one.
+	void finishOperation();
 
 	/* RPC state accessors */
 	/// Checks that the RPC is completed and has no operation ongoing.
@@ -77,6 +77,7 @@ public:
 protected:
 	/* async operations management */
 	std::atomic<int> _operationsRunning;
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 
 	/* gRPC and connection objects */
 	RPCStateMachine _statemachine;

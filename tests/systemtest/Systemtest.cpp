@@ -26,7 +26,9 @@ void Systemtest::Parameters::print() const
 	}
 }
 
-Systemtest::Systemtest(const std::shared_ptr<ghost::Logger>& logger) : _logger(logger), _state(Systemtest::State::READY)
+Systemtest::Systemtest(const std::shared_ptr<ghost::ThreadPool>& threadPool,
+		       const std::shared_ptr<ghost::Logger>& logger)
+    : _threadPool(threadPool), _logger(logger), _state(Systemtest::State::READY)
 {
 }
 

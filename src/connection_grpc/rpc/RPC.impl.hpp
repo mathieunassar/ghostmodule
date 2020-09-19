@@ -15,7 +15,8 @@
  */
 
 template <typename ReaderWriter, typename ContextType>
-RPC<ReaderWriter, ContextType>::RPC() : _operationsRunning(0), _context(new ContextType())
+RPC<ReaderWriter, ContextType>::RPC(const std::shared_ptr<ghost::ThreadPool>& threadPool)
+    : _operationsRunning(0), _threadPool(threadPool), _context(new ContextType())
 {
 }
 
@@ -66,11 +67,9 @@ void RPC<ReaderWriter, ContextType>::startOperation()
 }
 
 template <typename ReaderWriter, typename ContextType>
-bool RPC<ReaderWriter, ContextType>::finishOperation()
+void RPC<ReaderWriter, ContextType>::finishOperation()
 {
 	_operationsRunning--;
-
-	return !(_operationsRunning == 0 && _statemachine.getState() == RPCStateMachine::FINISHED);
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -86,7 +85,7 @@ void RPC<ReaderWriter, ContextType>::awaitFinished()
 		_statemachine.getState() != RPCStateMachine::CREATED) ||
 	       _operationsRunning > 0)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		_threadPool->yield(std::chrono::milliseconds(1));
 	}
 }
 

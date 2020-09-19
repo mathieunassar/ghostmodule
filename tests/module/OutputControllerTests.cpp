@@ -26,6 +26,9 @@ class OutputControllerTests : public testing::Test
 protected:
 	void SetUp() override
 	{
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(std::thread::hardware_concurrency());
+		_threadPool->start();
+
 		_consoleDeviceMock = std::make_shared<ConsoleDeviceMock>();
 		_writeCallsCounter = 0;
 		_expectedWriteCallsCount = 0;
@@ -35,12 +38,14 @@ protected:
 	{
 		if (_outputController) _outputController.reset();
 
+		_threadPool->stop(true);
 		_consoleDeviceMock.reset();
 	}
 
 	void setupOutputController(bool redirect = true)
 	{
-		_outputController = std::make_shared<ghost::internal::OutputController>(_consoleDeviceMock, redirect);
+		_outputController =
+		    std::make_shared<ghost::internal::OutputController>(_threadPool, _consoleDeviceMock, redirect);
 	}
 
 	void startController()
@@ -58,7 +63,7 @@ protected:
 		startController();
 
 		// wait to let internal threads reach the test points
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
 	void waitForWriteCalls()
@@ -92,6 +97,7 @@ protected:
 		});
 	}
 
+	std::shared_ptr<ghost::internal::ThreadPool> _threadPool;
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
 	std::shared_ptr<ghost::internal::OutputController> _outputController;
 	int _writeCallsCounter;
@@ -166,6 +172,7 @@ TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsNotCalled_When_
 TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsCalled_When_ControllerIsEnabledAgain)
 {
 	setupOutputController();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	EXPECT_CALL(*_consoleDeviceMock, write(_)).Times(0);
 	_outputController->start();
 
@@ -175,11 +182,13 @@ TEST_F(OutputControllerTests, Test_OutputController_deviceWriteIsCalled_When_Con
 	_outputController->write(TEST_WRITE_LINE);
 	std::this_thread::sleep_for(std::chrono::milliseconds(200)); // wait to see that write is never called
 
+	ASSERT_EQ(_expectedWriteCallsCount, 0);
 	setupWriteCallExpectation();
 	_outputController->enable();
 	ASSERT_TRUE(_outputController->isEnabled());
 
 	waitForWriteCalls();
+	ASSERT_EQ(_expectedWriteCallsCount, 1);
 }
 
 TEST_F(OutputControllerTests, Test_OutputController_flushAndWrite)

@@ -20,12 +20,14 @@
 using namespace ghost::internal;
 
 RemoteHandler::RemoteHandler(const std::shared_ptr<ghost::Client>& client,
+			     const std::shared_ptr<ghost::ThreadPool>& threadPool,
 			     const std::shared_ptr<ghost::CommandLineInterpreter>& commandLineInterpreter)
     : _client(client)
     , _console(std::make_shared<RemoteConsole>(client))
     , _state(State::IDLE)
     , _interpreter(commandLineInterpreter)
     , _session(ghost::Session::create())
+    , _threadPool(threadPool)
 {
 	_console->start();
 	_console->setCommandCallback(std::bind(&RemoteHandler::commandCallback, this, std::placeholders::_1));
@@ -33,7 +35,7 @@ RemoteHandler::RemoteHandler(const std::shared_ptr<ghost::Client>& client,
 
 RemoteHandler::~RemoteHandler()
 {
-	if (_executor.joinable()) _executor.join();
+	if (_execution.valid()) _execution.get();
 }
 
 bool RemoteHandler::isActive() const
@@ -50,10 +52,10 @@ void RemoteHandler::commandCallback(const std::string& command)
 		_state = State::EXECUTING;
 	}
 	// Wait for the end of the previous command's execution
-	if (_executor.joinable()) _executor.join();
+	if (_execution.valid()) _execution.get();
 
 	// Start an executor thread that will loop until there are no more commands
-	_executor = std::thread([&]() {
+	_execution = _threadPool->execute([&]() {
 		bool enable = _console->hasCommands();
 		while (enable)
 		{

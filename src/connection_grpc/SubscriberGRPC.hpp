@@ -19,6 +19,7 @@
 
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection/Subscriber.hpp>
+#include <ghost/module/ThreadPool.hpp>
 
 #include "rpc/OutgoingRPC.hpp"
 
@@ -26,11 +27,17 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Utilizes an ghost::internal::OutgoingRPC to fulfill the ghost::Subscriber interface.
+ *	Initialized the RPC with a readerSink from the ghost::ReabableConnection.
+ */
 class SubscriberGRPC : public ghost::Subscriber
 {
 public:
-	SubscriberGRPC(const ghost::ConnectionConfiguration& config);
-	SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config);
+	SubscriberGRPC(const ghost::ConnectionConfiguration& config,
+		       const std::shared_ptr<ghost::ThreadPool>& threadPool);
+	SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config,
+		       const std::shared_ptr<ghost::ThreadPool>& threadPool);
 
 	bool start() override;
 	bool stop() override;

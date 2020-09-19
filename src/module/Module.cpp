@@ -22,8 +22,10 @@
 
 using namespace ghost::internal;
 
-Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
-	       const std::shared_ptr<ghost::Logger>& logger, const ghost::CommandLine& options,
+Module::Module(const std::string& name,
+	       const std::map<std::string, std::shared_ptr<ghost::internal::ThreadPool>>& threadPools,
+	       const std::shared_ptr<Console>& console, const std::shared_ptr<ghost::Logger>& logger,
+	       const ghost::CommandLine& options,
 	       const std::vector<std::shared_ptr<ghost::ModuleExtension>>& components,
 	       const std::function<bool(const ghost::Module&)>& initializationBehavior,
 	       const std::function<bool(const ghost::Module&)>& runningBehavior,
@@ -31,6 +33,7 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
     : _name(name)
     , _options(options)
     , _state(Module::STOPPED)
+    , _threadPools(threadPools)
     , _console(console)
     , _logger(logger)
     , _components(components)
@@ -46,11 +49,6 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
 
 	if (_console)
 	{
-		_console->setCommandCallback([this](const std::string& str) {
-			_console->onNewInput(str);
-			_commandExecutorCV.notify_one();
-		});
-
 		_userManager->setConnectedUserCallback(
 		    [this](std::shared_ptr<ghost::User> user) {
 			    if (user)
@@ -65,6 +63,9 @@ Module::Module(const std::string& name, const std::shared_ptr<Console>& console,
 Module::~Module()
 {
 	if (_console) _console->stop();
+
+	// The thread pool is the last thing to stop, to give a chance to the components to clean-up their executors
+	for (auto& pool : _threadPools) pool.second->stop(true);
 }
 
 bool Module::setState(State state)
@@ -103,6 +104,9 @@ void Module::start()
 	if (getState() != ghost::internal::Module::STOPPED) // only start if module is stopped
 		return;
 
+	// Start the thread pool
+	for (auto& pool : _threadPools) pool.second->start();
+
 	if (_console) _console->start();
 
 	// Call the initialization routine
@@ -125,32 +129,37 @@ void Module::start()
 
 	// Set the module to running
 	setState(ghost::internal::Module::RUNNING);
-	if (_console) _commandExecutor = std::thread(std::bind(&Module::commandExecutor, this));
+	if (_console)
+		_threadPools[""]->makeScheduledExecutor()->scheduleAtFixedRate(
+		    std::bind(&Module::commandExecutor, this), std::chrono::milliseconds(10));
 
 	// Call the running routine as long as the module is running and it returns true
-	bool runFinshed = false;
 	ghost::internal::Module::State currentState = getState();
-	while (!runFinshed && currentState == ghost::internal::Module::RUNNING)
+	_threadPools[""]->makeScheduledExecutor()->scheduleAtFixedRate(
+	    [&]() {
+		    if (getState() == ghost::internal::Module::RUNNING)
+		    {
+			    bool runResult = run();
+			    if (!runResult) setState(ghost::internal::Module::DISPOSING);
+		    }
+		    else
+			    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	    },
+	    std::chrono::milliseconds(0));
+	while (currentState == ghost::internal::Module::RUNNING)
 	{
-		runFinshed = !run(); // run as long as the return value is true and the module state is running
+		_threadPools[""]->work(); // while the module is running, participate in the default thread pool
 		currentState = getState();
 	}
 
 	// Dipose the module
 	if (currentState == ghost::internal::Module::RUNNING || currentState == ghost::internal::Module::DISPOSING)
 		stop();
-
-	if (_console)
-	{
-		_commandExecutorCV.notify_one();
-		_commandExecutor.join();
-	}
 }
 
 void Module::stop()
 {
-	if (getState() == ghost::internal::Module::STOPPED ||
-	    getState() == ghost::internal::Module::DISPOSING) // only stop if module is running or intializing
+	if (getState() == ghost::internal::Module::STOPPED) // only stop if module is running or intializing
 		return;
 
 	setState(ghost::internal::Module::DISPOSING);
@@ -161,6 +170,9 @@ void Module::stop()
 	for (const auto& component : _components) component->stop();
 
 	if (_console) _console->stop();
+
+	// The thread pool is the last thing to stop, to give a chance to the components to clean-up their executors
+	for (auto& pool : _threadPools) pool.second->stop(true);
 }
 
 std::shared_ptr<ghost::Console> Module::getConsole() const
@@ -186,6 +198,20 @@ std::shared_ptr<ghost::UserManager> Module::getUserManager() const
 const ghost::CommandLine& Module::getProgramOptions() const
 {
 	return _options;
+}
+
+std::shared_ptr<ghost::ThreadPool> Module::getThreadPool(const std::string& label) const
+{
+	if (_threadPools.find(label) == _threadPools.end()) return nullptr;
+	return _threadPools.at(label);
+}
+
+std::shared_ptr<ghost::ThreadPool> Module::addThreadPool(const std::string& label, size_t threadsCount)
+{
+	if (_threadPools.find(label) != _threadPools.end()) return _threadPools.at(label);
+
+	_threadPools[label] = std::make_shared<ghost::internal::ThreadPool>(threadsCount);
+	return _threadPools.at(label);
 }
 
 const std::string& Module::getModuleName() const
@@ -251,19 +277,12 @@ void Module::dispose()
 
 void Module::commandExecutor()
 {
-	while (getState() == ghost::internal::Module::RUNNING)
+	if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
 	{
-		std::unique_lock<std::mutex> lock(_commandExecutorMutex);
-		_commandExecutorCV.wait(
-		    lock, [&] { return getState() != ghost::internal::Module::RUNNING || _console->hasCommands(); });
-
-		if (getState() == ghost::internal::Module::RUNNING && _console->hasCommands())
-		{
-			auto command = _console->getCommand();
-			ghost::CommandExecutionContext context(ghost::Session::createLocal());
-			context.setConsole(_console);
-			_interpreter->execute(command, context);
-			_console->flush();
-		}
+		auto command = _console->getCommand();
+		ghost::CommandExecutionContext context(ghost::Session::createLocal());
+		context.setConsole(_console);
+		_interpreter->execute(command, context);
+		_console->flush();
 	}
 }

@@ -22,6 +22,7 @@
 #include <chrono>
 #include <ghost/module/CommandLine.hpp>
 #include <ghost/module/Logger.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -52,7 +53,7 @@ public:
 		TEARING_DOWN
 	};
 
-	Systemtest(const std::shared_ptr<ghost::Logger>& logger);
+	Systemtest(const std::shared_ptr<ghost::ThreadPool>& threadPool, const std::shared_ptr<ghost::Logger>& logger);
 	virtual ~Systemtest() = default;
 
 	bool execute(const Systemtest::Parameters& params);
@@ -83,6 +84,7 @@ protected:
 	{
 	}
 
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	std::shared_ptr<ghost::Logger> _logger;
 
 private:

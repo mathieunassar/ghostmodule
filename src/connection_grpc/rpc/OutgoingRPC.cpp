@@ -26,12 +26,15 @@
 
 using namespace ghost::internal;
 
-OutgoingRPC::OutgoingRPC(const std::string& serverIp, int serverPort, size_t dedicatedThreads)
-    : _completionQueue(new grpc::CompletionQueue()) // Will be owned by the executor
+OutgoingRPC::OutgoingRPC(const std::shared_ptr<ghost::ThreadPool>& threadPool, const std::string& serverIp,
+			 int serverPort, size_t dedicatedThreads)
+    : WriterRPC(threadPool)
+    , _threadPool(threadPool)
+    , _completionQueue(new grpc::CompletionQueue()) // Will be owned by the executor
     , _serverIp(serverIp)
     , _serverPort(serverPort)
-    , _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>())
-    , _executor(_completionQueue) // now owns the completion queue
+    , _rpc(std::make_shared<RPC<ReaderWriter, ContextType>>(threadPool))
+    , _executor(_completionQueue, _threadPool) // now owns the completion queue
 {
 	_rpc->getStateMachine().setStateChangedCallback(
 	    std::bind(&OutgoingRPC::onRPCStateChanged, this, std::placeholders::_1));
@@ -55,25 +58,17 @@ bool OutgoingRPC::start()
 	auto channel = grpc::CreateChannel(serverAddress, grpc::InsecureChannelCredentials());
 	_stub = ghost::protobuf::connectiongrpc::ServerClientService::NewStub(channel);
 
+	// Connect and wait that the connection succeeds
 	RPCConnect<ReaderWriter, ContextType> connectOperation(_rpc, _stub, _completionQueue);
 	connectOperation.start();
-	// At this point (this call is blocking), start writer and reader async
+	while (connectOperation.isRunning()) _threadPool->yield(std::chrono::milliseconds(1));
 
+	// If the connection failed, the RPC is not in state EXECUTING
 	if (_rpc->getStateMachine().getState() != RPCStateMachine::EXECUTING) return false;
 
-	if (_readerSink)
-	{
-		_readerOperation =
-		    std::make_shared<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>>(_rpc, _readerSink);
-		_readerOperation->start();
-	}
-
-	if (_writerSink)
-	{
-		_writerOperation = std::make_shared<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>>(
-		    _rpc, true, true, _writerSink);
-		_writerOperation->startAsync();
-	}
+	// Start the reader
+	startReader();
+	startWriter();
 
 	return true;
 }
@@ -105,27 +100,27 @@ bool OutgoingRPC::isRunning() const
 
 void OutgoingRPC::setWriterSink(const std::shared_ptr<ghost::WriterSink>& sink)
 {
-	_writerSink = sink;
+	initWriter(_rpc, sink);
 }
 
 void OutgoingRPC::setReaderSink(const std::shared_ptr<ghost::ReaderSink>& sink)
 {
-	_readerSink = sink;
+	initReader(_rpc, sink);
 }
 
 void OutgoingRPC::onRPCStateChanged(RPCStateMachine::State newState)
 {
 	if (newState == RPCStateMachine::INACTIVE || newState == RPCStateMachine::FINISHED)
 	{
-		if (_readerSink) _readerSink->drain();
-		if (_writerSink) _writerSink->drain();
+		drainReader();
+		drainWriter();
 	}
 }
 
 void OutgoingRPC::dispose()
 {
-	if (_writerOperation) _writerOperation->stop();
-	if (_readerOperation) _readerOperation->stop();
+	stopReader();
+	stopWriter();
 
 	_rpc->awaitFinished();
 	_executor.stop();

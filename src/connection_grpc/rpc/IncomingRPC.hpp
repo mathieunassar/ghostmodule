@@ -20,14 +20,15 @@
 #include <functional>
 #include <ghost/connection/ReaderSink.hpp>
 #include <ghost/connection/WriterSink.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 
 #include "RPC.hpp"
 #include "RPCDone.hpp"
-#include "RPCRead.hpp"
 #include "RPCRequest.hpp"
 #include "RPCServerFinish.hpp"
-#include "RPCWrite.hpp"
+#include "ReaderRPC.hpp"
+#include "WriterRPC.hpp"
 
 namespace ghost
 {
@@ -35,7 +36,14 @@ namespace internal
 {
 class RemoteClientGRPC;
 
+/**
+ *	Manages gRPC calls for an incoming connection (a client connection to this server).
+ *	This object is created by ghost::internal::ServerGRPC (and therefore also by ghost::internal::PublisherGRPC).
+ */
 class IncomingRPC
+    : public ReaderRPC<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>,
+		       grpc::ServerContext>,
+      public WriterRPC<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ServerContext>
 {
 public:
 	using ReaderWriter = grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>;
@@ -43,13 +51,11 @@ public:
 	using ServiceType = ghost::protobuf::connectiongrpc::ServerClientService::AsyncService;
 
 	IncomingRPC(ghost::protobuf::connectiongrpc::ServerClientService::AsyncService* service,
-		    grpc::ServerCompletionQueue* completionQueue,
+		    grpc::ServerCompletionQueue* completionQueue, const std::shared_ptr<ghost::ThreadPool>& threadPool,
 		    const std::function<void(std::shared_ptr<RemoteClientGRPC>)>& clientConnectedCallback);
 	~IncomingRPC();
 
 	bool start();
-	void startWriter(const std::shared_ptr<ghost::WriterSink>& sink);
-	void startReader(const std::shared_ptr<ghost::ReaderSink>& sink);
 	bool stop(const grpc::Status& status = grpc::Status::OK);
 
 	void dispose();
@@ -64,13 +70,9 @@ private:
 	void onRPCStateChanged(RPCStateMachine::State newState);
 	std::function<void(std::shared_ptr<RemoteClientGRPC>)> _serverCallback;
 
-	std::shared_ptr<ghost::ReaderSink> _readerSink;
-	std::shared_ptr<ghost::WriterSink> _writerSink;
-
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	std::weak_ptr<RemoteClientGRPC> _parent;
 	std::shared_ptr<RPC<ReaderWriter, ContextType>> _rpc;
-	std::shared_ptr<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>> _writerOperation;
-	std::shared_ptr<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>> _readerOperation;
 	std::shared_ptr<RPCRequest<ReaderWriter, ContextType, ServiceType>> _requestOperation;
 	std::shared_ptr<RPCServerFinish<ReaderWriter, ContextType>> _finishOperation;
 	std::shared_ptr<RPCDone<ReaderWriter, ContextType>> _doneOperation;

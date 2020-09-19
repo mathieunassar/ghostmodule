@@ -19,29 +19,36 @@
 
 #include <grpcpp/client_context.h>
 
-#include <ghost/connection/ReaderSink.hpp>
-#include <ghost/connection/WriterSink.hpp>
 #include <memory>
 
 #include "../CompletionQueueExecutor.hpp"
 #include "RPC.hpp"
-#include "RPCRead.hpp"
-#include "RPCWrite.hpp"
+#include "ReaderRPC.hpp"
+#include "WriterRPC.hpp"
 
 namespace ghost
 {
 namespace internal
 {
-// - give the operations an interface which can be faked
-// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
-
+/**
+ *	Manages gRPC calls for an outgoing connection (the client call connecting to a remote server).
+ *	This object is created by ghost::internal::ClientGRPC (and therefore also by ghost::internal::SubscriberGRPC).
+ *
+ *	The method "setWriterSink" is called by ghost::internal::ClientGRPC.
+ *	The method "setReaderSink" is called by ghost::internal::ClientGRPC and ghost::internal::SubscriberGRPC.
+ *	If one of the aforementioned methods is not called, the corrsponding writer/reader is not started.
+ */
 class OutgoingRPC
+    : public ReaderRPC<grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>,
+		       grpc::ClientContext>,
+      public WriterRPC<grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>, grpc::ClientContext>
 {
 public:
 	using ReaderWriter = grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>;
 	using ContextType = grpc::ClientContext;
 
-	OutgoingRPC(const std::string& serverIp, int serverPort, size_t dedicatedThreads);
+	OutgoingRPC(const std::shared_ptr<ghost::ThreadPool>& threadPool, const std::string& serverIp, int serverPort,
+		    size_t dedicatedThreads);
 	~OutgoingRPC();
 
 	bool start();
@@ -56,17 +63,14 @@ private:
 	void onRPCStateChanged(RPCStateMachine::State newState);
 	void dispose();
 
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	grpc::CompletionQueue* _completionQueue;
 	std::shared_ptr<ghost::protobuf::connectiongrpc::ServerClientService::Stub> _stub;
 
 	std::string _serverIp;
 	int _serverPort;
-	std::shared_ptr<ghost::ReaderSink> _readerSink;
-	std::shared_ptr<ghost::WriterSink> _writerSink;
 
 	std::shared_ptr<RPC<ReaderWriter, ContextType>> _rpc;
-	std::shared_ptr<RPCWrite<ReaderWriter, ContextType, google::protobuf::Any>> _writerOperation;
-	std::shared_ptr<RPCRead<ReaderWriter, ContextType, google::protobuf::Any>> _readerOperation;
 	CompletionQueueExecutor _executor;
 };
 } // namespace internal

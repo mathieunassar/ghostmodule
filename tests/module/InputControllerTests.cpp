@@ -27,6 +27,9 @@ class InputControllerTests : public testing::Test
 protected:
 	void SetUp() override
 	{
+		_threadPool = std::make_shared<ghost::internal::ThreadPool>(std::thread::hardware_concurrency());
+		_threadPool->start();
+
 		_consoleDeviceMock = std::make_shared<ConsoleDeviceMock>();
 		_commandCallbackCallCounter = 0;
 		_modeCallbackCallCounter = 0;
@@ -42,6 +45,7 @@ protected:
 			_inputController.reset();
 		}
 
+		_threadPool->stop(true);
 		_consoleDeviceMock.reset();
 	}
 
@@ -51,13 +55,13 @@ protected:
 		EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(initialMode)).Times(1);
 
 		_inputController = std::make_shared<ghost::internal::InputController>(
-		    _consoleDeviceMock, initialMode,
+		    _threadPool, _consoleDeviceMock, initialMode,
 		    std::bind(&InputControllerTests::commandCallback, this, std::placeholders::_1),
 		    std::bind(&InputControllerTests::modeCallback, this, std::placeholders::_1));
 
 		EXPECT_CALL(*_consoleDeviceMock, setConsoleMode(_)).Times(testing::AnyNumber());
 
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 		    .Times(testing::AnyNumber())
 		    .WillRepeatedly(testing::Return(false));
 	}
@@ -76,12 +80,12 @@ protected:
 		startController();
 
 		// wait to let internal threads reach the test points
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
 	void triggerInputMode()
 	{
-		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+		EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 		    .Times(testing::AnyNumber())
 		    .WillOnce(testing::Return(true))
 		    .WillRepeatedly(testing::Return(false));
@@ -96,6 +100,7 @@ protected:
 		}
 	}
 
+	std::shared_ptr<ghost::internal::ThreadPool> _threadPool;
 	std::shared_ptr<ConsoleDeviceMock> _consoleDeviceMock;
 	std::shared_ptr<ghost::internal::InputController> _inputController;
 
@@ -332,7 +337,7 @@ TEST_F(InputControllerTests, Test_InputController_eventIsNotExecuted_When_newEve
 
 TEST_F(InputControllerTests, Test_InputController_deviceAwaitInputModeIsCalled_When_inputModeIsOuputAndConsoleIsStarted)
 {
-	EXPECT_CALL(*_consoleDeviceMock, awaitInputMode())
+	EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_))
 	    .Times(testing::AnyNumber())
 	    .WillRepeatedly(testing::Return(false));
 
@@ -345,7 +350,7 @@ TEST_F(InputControllerTests,
 	startController();
 	stopController();
 
-	EXPECT_CALL(*_consoleDeviceMock, awaitInputMode()).Times(0);
+	EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_)).Times(0);
 
 	// wait to let internal threads reach the test points
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -353,7 +358,7 @@ TEST_F(InputControllerTests,
 
 TEST_F(InputControllerTests, Test_InputController_deviceAwaitInputModeIsNotCalled_When_inputModeIsInput)
 {
-	EXPECT_CALL(*_consoleDeviceMock, awaitInputMode()).Times(0);
+	EXPECT_CALL(*_consoleDeviceMock, awaitInputMode(_)).Times(0);
 
 	_inputController->switchConsoleMode(ghost::internal::ConsoleDevice::INPUT);
 

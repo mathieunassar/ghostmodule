@@ -106,6 +106,11 @@ public:
 		return true; // we will loop forever. Users can invoke the built-in "exit" command to leave the program.
 	}
 
+	void dispose(const ghost::Module& module)
+	{
+		GHOST_INFO(module.getLogger()) << "disposed";
+	}
+
 	void updateText(const std::string& text)
 	{
 		// note: _theText is accessed concurrently by the command and by MyModule::run.
@@ -123,10 +128,13 @@ int main()
 
 	// Configuration of the module. We provide here all the components to the builder.
 	auto builder = ghost::ModuleBuilder::create();
+	builder->getThreadPool()->resize(0);
 	// This line will provide the intialization method.
 	builder->setInitializeBehavior(std::bind(&MyModule::initialize, &myModule, std::placeholders::_1));
 	// This line will provide the run method, which will be called cyclically.
 	builder->setRunningBehavior(std::bind(&MyModule::run, &myModule, std::placeholders::_1));
+	// This line will provide the dispose method, which will be called when the module disposes.
+	builder->setDisposeBehavior(std::bind(&MyModule::dispose, &myModule, std::placeholders::_1));
 	// We want to manipulate the console; the following line activates this feature.
 	std::shared_ptr<ghost::Console> console = builder->setConsole();
 	// The GhostLogger writes in the ghost::Console, which manages the inputs and outputs.

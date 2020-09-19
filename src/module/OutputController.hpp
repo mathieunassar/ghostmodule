@@ -17,14 +17,13 @@
 #ifndef GHOST_INTERNAL_OUTPUTCONTROLLER_HPP
 #define GHOST_INTERNAL_OUTPUTCONTROLLER_HPP
 
-#include <atomic>
 #include <condition_variable>
 #include <mutex>
-#include <thread>
 
 #include "BlockingQueue.hpp"
 #include "ConsoleDevice.hpp"
 #include "ConsoleStream.hpp"
+#include "ThreadPool.hpp"
 
 namespace ghost
 {
@@ -36,7 +35,8 @@ namespace internal
 class OutputController
 {
 public:
-	OutputController(std::shared_ptr<ConsoleDevice> device, bool redirectStdCout = true);
+	OutputController(const std::shared_ptr<ThreadPool> &threadPool, std::shared_ptr<ConsoleDevice> device,
+			 bool redirectStdCout = true);
 	~OutputController();
 
 	void start();
@@ -62,12 +62,11 @@ private:
 	std::mutex _flushLock;
 
 	/* thread stuff */
-	void writerThread();
-	bool awaitOutput();
-	std::thread _writerThread;
-	std::atomic<bool> _threadEnable;
+	std::shared_ptr<ThreadPool> _threadPool;
+	std::shared_ptr<ghost::ScheduledExecutor> _executor;
+	void writerTask();
 	std::condition_variable _waitForOutput;
-	mutable std::mutex _waitForOutputLock;
+	mutable std::mutex _modeLock;
 
 	/* state */
 	std::shared_ptr<ConsoleDevice> _device;

@@ -18,11 +18,12 @@
 
 using namespace ghost::internal;
 
-OutputController::OutputController(std::shared_ptr<ConsoleDevice> device, bool redirectStdCout)
+OutputController::OutputController(const std::shared_ptr<ThreadPool>& threadPool, std::shared_ptr<ConsoleDevice> device,
+				   bool redirectStdCout)
     : _redirecter(nullptr)
     , _activeInputQueue(&_writeQueue1)
     , _activeOutputQueue(&_writeQueue1)
-    , _threadEnable(false)
+    , _threadPool(threadPool)
     , _device(device)
     , _consoleMode(ConsoleDevice::OUTPUT)
 {
@@ -41,32 +42,33 @@ OutputController::~OutputController()
 
 void OutputController::start()
 {
-	if (!_threadEnable)
+	if (!_executor)
 	{
-		_threadEnable = true;
-		_writerThread = std::thread(&OutputController::writerThread, this);
+		_executor = _threadPool->makeScheduledExecutor();
+		_executor->scheduleAtFixedRate(std::bind(&OutputController::writerTask, this),
+					       std::chrono::milliseconds(1));
 	}
 }
 
 void OutputController::stop()
 {
-	if (_threadEnable)
+	if (_executor)
 	{
-		_threadEnable = false;
-		if (_writerThread.joinable()) _writerThread.join();
+		_executor->stop();
+		_executor.reset();
 	}
 }
 
 void OutputController::enable()
 {
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	std::unique_lock<std::mutex> lock(_modeLock);
 	_consoleMode = ConsoleDevice::OUTPUT;
 	_waitForOutput.notify_all();
 }
 
 void OutputController::disable()
 {
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	std::unique_lock<std::mutex> lock(_modeLock);
 	_consoleMode = ConsoleDevice::INPUT;
 }
 
@@ -82,7 +84,7 @@ void OutputController::write(const std::string& line)
 
 void OutputController::flush()
 {
-	if (!_threadEnable) return;
+	if (!_executor) return;
 
 	// take the flush lock to avoid the swap again before the one queue empties
 	std::unique_lock<std::mutex> lock(_flushLock);
@@ -90,10 +92,8 @@ void OutputController::flush()
 	swapQueues(
 	    &_activeInputQueue); // now write() will write in the second queue while the writer empties the first queue
 
-	while (_activeOutputQueue->size() != 0)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1)); // wait 1ms
-	}
+	// While there are lines to write in the queue, execute the tasks
+	while (_activeOutputQueue->size() != 0) writerTask();
 
 	// now _activeOutputQueue is empty and can start writing the content of the other queue
 	swapQueues(&_activeOutputQueue);
@@ -101,7 +101,7 @@ void OutputController::flush()
 
 bool OutputController::isEnabled() const
 {
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
+	std::unique_lock<std::mutex> lock(_modeLock);
 	return _consoleMode == ConsoleDevice::OUTPUT;
 }
 
@@ -120,39 +120,24 @@ void OutputController::swapQueues(BlockingQueue<QueueElement<std::string>>** que
 		*queue = &_writeQueue1;
 }
 
-void OutputController::writerThread()
+void OutputController::writerTask()
 {
-	while (_threadEnable)
-	{
-		if (!awaitOutput()) // wait until the console mode is input
-			return;
+	std::unique_lock<std::mutex> modeLock(_modeLock);
 
-		std::unique_lock<std::mutex> lock(_writeQueueSwitchLock);
-		BlockingQueue<QueueElement<std::string>>* queue =
-		    _activeOutputQueue; // choose the queue with the lock in case of flush
-		lock.unlock();
-		QueueElement<std::string> entry;
+	// Only process the outputs if the mode is output
+	bool isOutputMode = _waitForOutput.wait_for(modeLock, std::chrono::milliseconds(0),
+						    [&]() { return _consoleMode == ConsoleDevice::OUTPUT; });
+	if (!isOutputMode) return;
 
-		if (!queue->tryGet(std::chrono::milliseconds(1), entry)) continue;
+	std::unique_lock<std::mutex> queueSwitchLock(_writeQueueSwitchLock);
+	BlockingQueue<QueueElement<std::string>>* queue =
+	    _activeOutputQueue; // choose the queue with the lock in case of flush
+	queueSwitchLock.unlock();
 
-		if (!awaitOutput()) // wait again since pop() is blocking and could take a while
-			return;
+	QueueElement<std::string> entry;
+	if (!queue->tryGetAndPop(std::chrono::milliseconds(0), entry)) return;
 
-		queue->pop();
-		_device->write(entry.element);
-		entry.result->set_value(
-		    true); // (idea) the promise could be used to know when the entry is effectively executed...
-	}
-}
-
-bool OutputController::awaitOutput()
-{
-	std::unique_lock<std::mutex> lock(_waitForOutputLock);
-	while (_consoleMode == ConsoleDevice::INPUT && _threadEnable)
-	{
-		_waitForOutput.wait_for(lock, std::chrono::milliseconds(100));
-	}
-	lock.unlock();
-
-	return _threadEnable;
+	_device->write(entry.element);
+	// (idea) the promise could be used to know when the entry is effectively executed...
+	entry.result->set_value(true);
 }

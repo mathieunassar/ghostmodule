@@ -25,20 +25,24 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	RPC Operation used by client calls to end the RPC.
+ *	Gracefully shuts down the communication between the client and the server,
+ *	and switches the RPC state to finish on completion.
+ */
 template <typename ReaderWriter, typename ContextType>
 class RPCFinish : public RPCOperation<ReaderWriter, ContextType>
 {
 public:
 	RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 		  const grpc::Status& status = grpc::Status::CANCELLED);
-	~RPCFinish();
 
 	const grpc::Status& getStatus() const;
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
 
 private:
 	grpc::Status _status;
@@ -49,15 +53,8 @@ private:
 template <typename ReaderWriter, typename ContextType>
 RPCFinish<ReaderWriter, ContextType>::RPCFinish(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
 						const grpc::Status& status)
-    : RPCOperation<ReaderWriter, ContextType>(parent, false, true) // restart = false, blocking = false
-    , _status(status)
+    : RPCOperation<ReaderWriter, ContextType>(parent), _status(status)
 {
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCFinish<ReaderWriter, ContextType>::~RPCFinish()
-{
-	RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -72,7 +69,7 @@ bool RPCFinish<ReaderWriter, ContextType>::initiateOperation()
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
+void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
@@ -81,7 +78,7 @@ void RPCFinish<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCFinish<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
+void RPCFinish<ReaderWriter, ContextType>::onOperationFailed()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;

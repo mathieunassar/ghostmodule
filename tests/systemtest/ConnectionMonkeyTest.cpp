@@ -18,11 +18,13 @@
 
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
 #include <thread>
+#include "../../src/connection_grpc/PublisherGRPC.hpp"
 
 const std::string ConnectionMonkeyTest::TEST_NAME = "ConnectionMonkey";
 
-ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::Logger>& logger)
-    : Systemtest(logger)
+ConnectionMonkeyTest::ConnectionMonkeyTest(const std::shared_ptr<ghost::ThreadPool>& threadPool,
+					   const std::shared_ptr<ghost::Logger>& logger)
+    : Systemtest(threadPool, logger)
     , _lastSentId(0)
     , _minPort(7600)
     , _maxPort(7610)
@@ -44,7 +46,7 @@ bool ConnectionMonkeyTest::setUp()
 	GHOST_INFO(_logger) << "  \\____|____/";
 
 	_connectionManager = ghost::ConnectionManager::create();
-	ghost::ConnectionGRPC::initialize(_connectionManager);
+	ghost::ConnectionGRPC::initialize(_connectionManager, _threadPool);
 
 	_lastSentId = 0;
 
@@ -145,8 +147,8 @@ bool ConnectionMonkeyTest::createPublisherAction()
 		_publishers[chosenPort] = publisher;
 		_publishersCreated++;
 		GHOST_INFO(_logger) << "createPublisherAction on port " << chosenPort
-				    << ": started new publisher - waiting 200 ms for setup";
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				    << ": started new publisher - waiting 500 ms for setup";
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
 	return true;
@@ -165,6 +167,15 @@ bool ConnectionMonkeyTest::createSubscriberAction()
 	config.setServerIpAddress("127.0.0.1");
 	config.setServerPortNumber(chosenPort);
 
+	std::shared_ptr<ghost::internal::PublisherGRPC> publisherGRPC;
+	size_t subscribersCount = 0;
+	if (_publishers.find(chosenPort) != _publishers.end())
+	{
+		publisherGRPC = std::static_pointer_cast<ghost::internal::PublisherGRPC>(_publishers.at(chosenPort));
+		subscribersCount = publisherGRPC->countSubscribers();
+	}
+
+	GHOST_INFO(_logger) << "There are " << subscribersCount << " subscribers to that publisher.";
 	std::shared_ptr<ghost::Subscriber> subscriber = _connectionManager->createSubscriber(config);
 	bool startResult = subscriber->start();
 
@@ -176,8 +187,10 @@ bool ConnectionMonkeyTest::createSubscriberAction()
 		_subscribers[chosenPort].push_back(subscriber);
 		_subscribersCreated++;
 		GHOST_INFO(_logger) << "createSubscriberAction on port " << chosenPort
-				    << ": started new subscriber - waiting 200 ms for setup";
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				    << ": started new subscriber - waiting until the publisher knows it";
+
+		while (publisherGRPC->countSubscribers() < subscribersCount + 1)
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	else
 	{

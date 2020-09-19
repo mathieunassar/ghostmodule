@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include <ghost/connection/internal/ConnectionFactoryRule.hpp>
+#include <ghost/connection/ConnectionFactoryRule.hpp>
 
-using namespace ghost::internal;
+using namespace ghost;
 
 ConnectionFactoryRule::ConnectionFactoryRule(const ghost::ConnectionConfiguration& minimumConfiguration)
     : _minimumConfiguration(minimumConfiguration)

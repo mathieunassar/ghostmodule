@@ -18,14 +18,16 @@
 
 using namespace ghost::internal;
 
-SubscriberGRPC::SubscriberGRPC(const ghost::ConnectionConfiguration& config)
-    : SubscriberGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config))
+SubscriberGRPC::SubscriberGRPC(const ghost::ConnectionConfiguration& config,
+			       const std::shared_ptr<ghost::ThreadPool>& threadPool)
+    : SubscriberGRPC(ghost::NetworkConnectionConfiguration::initializeFrom(config), threadPool)
 {
 }
 
-SubscriberGRPC::SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config)
+SubscriberGRPC::SubscriberGRPC(const ghost::NetworkConnectionConfiguration& config,
+			       const std::shared_ptr<ghost::ThreadPool>& threadPool)
     : ghost::Subscriber(config)
-    , _client(config.getServerIpAddress(), config.getServerPortNumber(), config.getThreadPoolSize())
+    , _client(threadPool, config.getServerIpAddress(), config.getServerPortNumber(), config.getThreadPoolSize())
 {
 	_client.setReaderSink(getReaderSink());
 }

@@ -24,6 +24,7 @@
 #include <atomic>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection/Server.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <memory>
 
 #include "ClientManager.hpp"
@@ -38,25 +39,27 @@ class IncomingRPC;
 /**
  * Server implementation using the gRPC library. Runs a gRPC server which accepts connections, and create
  * a writing/sending interface which is returned to the server object.
- * @author	Mathieu Nassar
- * @date	25.05.2018
  */
 class ServerGRPC : public ghost::Server
 {
 public:
-	ServerGRPC(const ghost::ConnectionConfiguration& config);
-	ServerGRPC(const ghost::NetworkConnectionConfiguration& config);
+	ServerGRPC(const ghost::ConnectionConfiguration& config, const std::shared_ptr<ghost::ThreadPool>& threadPool);
+	ServerGRPC(const ghost::NetworkConnectionConfiguration& config,
+		   const std::shared_ptr<ghost::ThreadPool>& threadPool);
 
 	bool start() override;
 	bool stop() override;
 	bool isRunning() const override;
+	bool isShutdown() const;
 
+	void shutdown();
 	void setClientHandler(std::shared_ptr<ClientHandler> handler) override;
 	const std::shared_ptr<ClientHandler> getClientHandler() const;
 
 private:
 	void onClientConnected(std::shared_ptr<RemoteClientGRPC> client);
 
+	std::shared_ptr<ghost::ThreadPool> _threadPool;
 	ghost::NetworkConnectionConfiguration _configuration;
 	std::atomic<bool> _running;
 

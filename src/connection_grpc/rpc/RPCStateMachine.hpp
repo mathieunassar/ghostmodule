@@ -25,16 +25,25 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	State machine representing all the possible states of an RPC.
+ */
 class RPCStateMachine
 {
 public:
 	enum State
 	{
+		/// The RPC is created, it was not initialized yet
 		CREATED,
+		/// The RPC has been initiated, and is connecting or waiting for an incoming connection.
 		INITIALIZING,
+		/// The RPC is connected to a peer and active.
 		EXECUTING,
+		/// Final: an operation failed, or the connection is shutting down
 		INACTIVE,
+		/// The RPC is being gracefully shut down by the user
 		DISPOSING,
+		/// Final: the RPC gracefully shut down and is now inactive
 		FINISHED
 	};
 

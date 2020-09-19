@@ -16,6 +16,8 @@ ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/UserManager.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Session.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Module.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ModuleBuilder.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ThreadPool.hpp
+${GHOST_MODULE_ROOT_DIR}/include/ghost/module/ScheduledExecutor.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/Logger.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/LoggerLine.hpp
 ${GHOST_MODULE_ROOT_DIR}/include/ghost/module/GhostLogger.hpp
@@ -52,6 +54,8 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/UserManager.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Session.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Module.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleBuilder.hpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ThreadPool.hpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ScheduledExecutor.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/GhostLogger.hpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/StdoutLogger.hpp
 )
@@ -97,6 +101,8 @@ ${GHOST_MODULE_ROOT_DIR}/src/module/Session.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/Module.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleBuilder.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/ModuleExtension.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ThreadPool.cpp
+${GHOST_MODULE_ROOT_DIR}/src/module/ScheduledExecutor.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/GhostLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/StdoutLogger.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/module/LoggerLine.cpp
@@ -143,6 +149,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 		${GHOST_MODULE_ROOT_DIR}/tests/module/InputControllerTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/module/OutputControllerTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/module/ConsoleTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/module/ThreadPoolTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/module/ConsoleDeviceMock.hpp
 	)
 

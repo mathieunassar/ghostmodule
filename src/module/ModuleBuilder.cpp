@@ -33,6 +33,8 @@ void ghost::ModuleBuilder::setModuleToExtension(const std::shared_ptr<ghost::Mod
 
 ModuleBuilder::ModuleBuilder() : _options("undefined")
 {
+	// This is the default thread pool
+	_threadPools[""] = std::make_shared<ThreadPool>(std::thread::hardware_concurrency());
 }
 
 ModuleBuilder& ModuleBuilder::setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior)
@@ -60,9 +62,24 @@ ModuleBuilder& ModuleBuilder::setProgramOptions(int argc, char* argv[])
 	return *this;
 }
 
+std::shared_ptr<ghost::ThreadPool> ModuleBuilder::getThreadPool(const std::string& label) const
+{
+	if (_threadPools.find(label) == _threadPools.end()) return nullptr;
+	return _threadPools.at(label);
+}
+
+std::shared_ptr<ghost::ThreadPool> ModuleBuilder::addThreadPool(const std::string& label, size_t threadsCount)
+{
+	if (_threadPools.find(label) != _threadPools.end()) return _threadPools.at(label);
+
+	_threadPools[label] = std::make_shared<ghost::internal::ThreadPool>(threadsCount);
+	return _threadPools.at(label);
+}
+
 std::shared_ptr<ghost::Console> ModuleBuilder::setConsole()
 {
-	_console = std::shared_ptr<Console>(new ghost::internal::Console());
+	// the console gets the default thread pool
+	_console = std::shared_ptr<Console>(new ghost::internal::Console(_threadPools[""]));
 	return _console;
 }
 
@@ -92,7 +109,7 @@ std::shared_ptr<ghost::Module> ModuleBuilder::build(const std::string& moduleNam
 
 	// Create the module and give it the components
 	auto module =
-	    std::make_shared<ghost::internal::Module>(moduleName, _console, _logger, _options, components,
+	    std::make_shared<ghost::internal::Module>(moduleName, _threadPools, _console, _logger, _options, components,
 						      _initializationBehavior, _runningBehavior, _disposeBehavior);
 
 	// Give a weak_ptr of the parent module to its components

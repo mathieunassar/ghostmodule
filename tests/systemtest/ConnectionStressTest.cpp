@@ -20,15 +20,16 @@
 
 const std::string ConnectionStressTest::TEST_NAME = "ConnectionStress";
 
-ConnectionStressTest::ConnectionStressTest(const std::shared_ptr<ghost::Logger>& logger)
-    : Systemtest(logger), _messageSentIndex(0)
+ConnectionStressTest::ConnectionStressTest(const std::shared_ptr<ghost::ThreadPool>& threadPool,
+					   const std::shared_ptr<ghost::Logger>& logger)
+    : Systemtest(threadPool, logger), _messageSentIndex(0)
 {
 }
 
 bool ConnectionStressTest::setUp()
 {
 	_connectionManager = ghost::ConnectionManager::create();
-	ghost::ConnectionGRPC::initialize(_connectionManager);
+	ghost::ConnectionGRPC::initialize(_connectionManager, _threadPool);
 	_messageSentIndex = 0;
 	_messageReceivedIndex.clear();
 

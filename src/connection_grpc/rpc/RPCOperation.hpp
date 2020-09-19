@@ -21,7 +21,6 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <thread>
 
 #include "RPC.hpp"
 
@@ -35,11 +34,8 @@ namespace internal
  *	manages the lifetime of the operation.
  *	The class ensures that the operation is not executed twice simultaneously.
  *
- *	Operations can be configured to be blocking and/or automatically restarted.
- *	- If an operation is non-blocking and autorestarted, then it will be restarted from the
- *	completion queue thread (calling start will not block).
- *	- If an operation is blocking and autorestarted, then calling start is blocking until the RPC
- *	is finsihed.
+ *	It is the responsibility of the class instantiating an RPCOperation to restart the call if necessary
+ *	and to block execution until an operation is completed (if necessary).
  */
 template <typename ReaderWriter, typename ContextType>
 class RPCOperation
@@ -51,13 +47,12 @@ public:
 		IN_PROGRESS
 	};
 
-	RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent, bool autoRestart, bool blocking,
-		     bool accountAsRunningOperation = true);
-	virtual ~RPCOperation();
+	RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
+	virtual ~RPCOperation() = default;
 
-	bool startAsync();
 	bool start();
-	void stop();
+	bool isRunning() const;
+	void onFinish(const std::function<void()>& callback);
 
 	std::function<void(bool)> _operationCompletedCallback;
 
@@ -66,25 +61,19 @@ protected:
 	/// @return true if the completion of this operation must be waited for.
 	virtual bool initiateOperation() = 0;
 	/// This will be called if the processor is called with ok = false
-	virtual void onOperationSucceeded(bool rpcFinished)
-	{
-	}
+	virtual void onOperationSucceeded(){};
 	/// This will be called if the processor is called with ok = true
-	virtual void onOperationFailed(bool rpcFinished)
-	{
-	}
+	virtual void onOperationFailed(){};
+	/// RPCDone will return false, because it is not needed to wait for the response from the completion queue
+	virtual bool accountsAsRunningOperation() const;
 
 	std::weak_ptr<RPC<ReaderWriter, ContextType>> _rpc;
-	bool _autoRestart;
-	bool _blocking;
-	bool _accountAsRunningOperation;
-	std::thread _executor;
 	OperationProgress _state;
-	std::mutex _operationMutex;
-	std::condition_variable _operationCompletedConditionVariable;
+	mutable std::mutex _operationMutex;
 
 private:
 	void onOperationCompleted(bool ok);
+	std::function<void()> _finishCallback;
 };
 
 #include "RPCOperation.impl.hpp"

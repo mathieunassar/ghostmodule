@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP
-#define GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP
+#ifndef GHOST_CONNECTION_CONNECTIONFACTORYRULE_HPP
+#define GHOST_CONNECTION_CONNECTIONFACTORYRULE_HPP
 
 #include <ghost/connection/Connection.hpp>
 #include <ghost/connection/ConnectionConfiguration.hpp>
@@ -23,17 +23,20 @@
 
 namespace ghost
 {
-namespace internal
-{
-/* base class */
+/**
+ *	Base class for connection creation rules within the ghost::ConnectionFactory.
+ *	The create method is used to generate the connection linked to this rule.
+ */
 class ConnectionFactoryRule
 {
 public:
 	ConnectionFactoryRule(const ghost::ConnectionConfiguration& minimumConfiguration);
 	virtual ~ConnectionFactoryRule() = default;
 
-	/// returns true if the candidate configuration fulfills the minimum configuration requirements
-	/// Note: empty values in the minimum configuration mean that any value is allowed for this parameter
+	/**
+	 *	returns true if the candidate configuration fulfills the minimum configuration requirements
+	 *	Note: empty values in the minimum configuration mean that any value is allowed for this parameter
+	 */
 	bool matches(const ghost::ConnectionConfiguration& candidate) const;
 	/// creates an instance of the corresponding connection, with the given configuration in parameters.
 	virtual std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const = 0;
@@ -42,22 +45,6 @@ protected:
 	ghost::ConnectionConfiguration _minimumConfiguration;
 };
 
-/* Generic class */
-template <typename ConnectionType>
-class ConnectionFactoryGenericRule : public ConnectionFactoryRule
-{
-public:
-	ConnectionFactoryGenericRule(const ghost::ConnectionConfiguration& minimumConfiguration)
-	    : ConnectionFactoryRule(minimumConfiguration)
-	{
-	}
-
-	std::shared_ptr<ghost::Connection> create(const ghost::ConnectionConfiguration& config) const override
-	{
-		return std::make_shared<ConnectionType>(config);
-	}
-};
-} // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_CONNECTIONFACTORYRULE_HPP
+#endif // GHOST_CONNETION_CONNECTIONFACTORYRULE_HPP

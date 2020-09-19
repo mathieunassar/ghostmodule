@@ -25,32 +25,29 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Registers a callback to the RPC that will be notified when done.
+ *	The callback is not always called by gRPC, which is why "accountsAsRunningOperation" returns false.
+ */
 template <typename ReaderWriter, typename ContextType>
 class RPCDone : public RPCOperation<ReaderWriter, ContextType>
 {
 public:
 	RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent);
-	~RPCDone();
 
 protected:
 	bool initiateOperation() override;
-	void onOperationSucceeded(bool rpcFinished) override;
-	void onOperationFailed(bool rpcFinished) override;
+	void onOperationSucceeded() override;
+	void onOperationFailed() override;
+	bool accountsAsRunningOperation() const override;
 };
 
 /////////////////////////// Template definition ///////////////////////////
 
 template <typename ReaderWriter, typename ContextType>
 RPCDone<ReaderWriter, ContextType>::RPCDone(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
-    : RPCOperation<ReaderWriter, ContextType>(
-	  parent, false, false, false) // restart = false, blocking = false, accountAsRunningOperation = false
+    : RPCOperation<ReaderWriter, ContextType>(parent)
 {
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCDone<ReaderWriter, ContextType>::~RPCDone()
-{
-	RPCOperation<ReaderWriter, ContextType>::stop();
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -64,7 +61,7 @@ bool RPCDone<ReaderWriter, ContextType>::initiateOperation()
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
+void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
@@ -73,12 +70,18 @@ void RPCDone<ReaderWriter, ContextType>::onOperationSucceeded(bool rpcFinished)
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCDone<ReaderWriter, ContextType>::onOperationFailed(bool rpcFinished)
+void RPCDone<ReaderWriter, ContextType>::onOperationFailed()
 {
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
 
 	rpc->getStateMachine().setState(RPCStateMachine::FINISHED);
+}
+
+template <typename ReaderWriter, typename ContextType>
+bool RPCDone<ReaderWriter, ContextType>::accountsAsRunningOperation() const
+{
+	return false;
 }
 
 } // namespace internal

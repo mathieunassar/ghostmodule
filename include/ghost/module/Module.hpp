@@ -22,6 +22,7 @@
 #include <ghost/module/Console.hpp>
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/ModuleExtension.hpp>
+#include <ghost/module/ThreadPool.hpp>
 #include <ghost/module/UserManager.hpp>
 #include <memory>
 #include <string>
@@ -97,11 +98,37 @@ public:
 	 */
 	virtual const ghost::CommandLine& getProgramOptions() const = 0;
 	/**
+	 *	A ghost::ThreadPool can be used to submit tasks to the pool of threads
+	 *	managed by the module.
+	 *	A ghost::ScheduledExecutor can also be created from the pool to submit
+	 *	tasks periodically.
+	 *	Users should avoid blocking threads for a longer period of time. Instead,
+	 *	it is recommended to schedule the execution of a task with a given rate.
+	 *	For example, instead of scheduling a task surrounded by "while(true)",
+	 *	users should prefer to schedule the task periodically. This allows the
+	 *	thread pool to optimize the usage of threads, and to stop the execution
+	 *	of the program when the thread pool stops.
+	 *	Per default one thread pool is started by the module, with an empty name.
+	 *	Users can configured multiple thread pool at module-build time or during runtime.
+	 *	@param label the name of the thread pool to return
+	 *	@return the corresponding thread pool if it exists, nullptr otherwise.
+	 */
+	virtual std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label = "") const = 0;
+	/**
+	 *	Adds a ghost::ThreadPool to the module's execution. The pool is returned
+	 *	and is not started automatically, so that the pool may be configured before
+	 *	it gets started.
+	 *	@param label the name of the thread pool to add.
+	 *	@param threadsCount the number of threads managed by the thread pool to add.
+	 *	@return the thread pool created by the module, stored with the given label.
+	 */
+	virtual std::shared_ptr<ghost::ThreadPool> addThreadPool(const std::string& label, size_t threadsCount) = 0;
+	/**
 	 *	@returns the name of the module.
 	 */
 	virtual const std::string& getModuleName() const = 0;
 	/**
-	 *	@return the component of this module whose type mathces the template parameter.
+	 *	@return the component of this module whose type matches the template parameter.
 	 *		If no such component exists in the module, returns nullptr.
 	 */
 	template <typename ComponentType>

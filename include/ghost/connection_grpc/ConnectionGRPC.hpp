@@ -20,6 +20,7 @@
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
+#include <ghost/module/ThreadPool.hpp>
 
 namespace ghost
 {
@@ -27,6 +28,10 @@ namespace ghost
  *	Manages the ghost_connection_grpc content.
  *	Use the "initialize" method to load new rules for the connection manager's factory.
  *	The initialization method can be called multiple times with different minimum configurations.
+ *
+ *	This extension uses a ghost::ThreadPool to efficiently manage threading resources for
+ *	connection calls.
+ *	All Connection calls are non-blocking.
  *
  *	To use GRPC as a communication technology in the connection library, use the create methods
  *	of the ghost::ConnectionManager after this initialization with configurations of type
@@ -43,10 +48,12 @@ public:
 	 *	that specifically requires gRPC as the network support for the creation of connections.
 	 *
 	 *	@params connectionManager	the connection manager used by this program.
+	 *	@params threadPool	the thread pool to be used by gRPC connections.
 	 *	@params minimumConfiguration	the minimum configuration that can create gRPC-based connections.
 	 */
 	static void initialize(
 	    const std::shared_ptr<ghost::ConnectionManager>& connectionManager,
+	    const std::shared_ptr<ghost::ThreadPool>& threadPool,
 	    const ghost::NetworkConnectionConfiguration& minimumConfiguration = ghost::ConnectionConfigurationGRPC());
 };
 } // namespace ghost

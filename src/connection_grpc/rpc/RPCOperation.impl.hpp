@@ -15,28 +15,11 @@
  */
 
 template <typename ReaderWriter, typename ContextType>
-RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent,
-						      bool autoRestart, bool blocking, bool accountAsRunningOperation)
-    : _rpc(parent)
-    , _autoRestart(autoRestart)
-    , _blocking(blocking)
-    , _accountAsRunningOperation(accountAsRunningOperation)
-    , _state(OperationProgress::IDLE)
+RPCOperation<ReaderWriter, ContextType>::RPCOperation(std::weak_ptr<RPC<ReaderWriter, ContextType>> parent)
+    : _rpc(parent), _state(OperationProgress::IDLE)
 {
 	_operationCompletedCallback =
 	    std::bind(&RPCOperation<ReaderWriter, ContextType>::onOperationCompleted, this, std::placeholders::_1);
-}
-
-template <typename ReaderWriter, typename ContextType>
-RPCOperation<ReaderWriter, ContextType>::~RPCOperation()
-{
-}
-
-template <typename ReaderWriter, typename ContextType>
-bool RPCOperation<ReaderWriter, ContextType>::startAsync()
-{
-	_executor = std::thread([this] { start(); });
-	return true;
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -45,46 +28,43 @@ bool RPCOperation<ReaderWriter, ContextType>::start()
 	auto rpc = _rpc.lock();
 	if (!rpc) return false;
 
-	while (rpc->getStateMachine().getState() != RPCStateMachine::FINISHED)
-	{
-		std::unique_lock<std::mutex> lock(_operationMutex);
+	// Do not start RPCs that are already finished
+	auto rpcState = rpc->getStateMachine().getState();
+	if (rpcState == RPCStateMachine::FINISHED || rpcState == RPCStateMachine::INACTIVE) return false;
 
-		// Do not start operations parallely.
-		if (_state == OperationProgress::IN_PROGRESS) return false;
+	std::unique_lock<std::mutex> lock(_operationMutex);
 
-		// Tell the implementation to do the call. It should return true if it actually made one.
-		bool initiated = initiateOperation();
-		if (initiated)
-		{
-			// Switch states to prevent parallel executions and tell the RPC that something is ongoing.
-			_state = OperationProgress::IN_PROGRESS;
-			if (_accountAsRunningOperation) rpc->startOperation();
+	// Do not start RPCs that are already started
+	if (_state == OperationProgress::IN_PROGRESS) return false;
 
-			// If this call is blocking, wait until it finishes
-			if (_blocking)
-				_operationCompletedConditionVariable.wait(
-				    lock, [this] { return _state == OperationProgress::IDLE; });
-		}
+	// Start the implementation
+	bool initiated = initiateOperation();
+	if (!initiated) return false;
 
-		// If this call is not blocking, potential restarts will happen when the operation completes
-		if (!_blocking || !_autoRestart) return true;
-	}
-	return false;
+	// If it worked, switch the operation progress state and record that an operation is running
+	_state = OperationProgress::IN_PROGRESS;
+	if (accountsAsRunningOperation()) rpc->startOperation();
+
+	return true;
 }
 
 template <typename ReaderWriter, typename ContextType>
-void RPCOperation<ReaderWriter, ContextType>::stop()
+bool RPCOperation<ReaderWriter, ContextType>::isRunning() const
 {
-	{
-		std::unique_lock<std::mutex> lock(_operationMutex);
+	std::unique_lock<std::mutex> lock(_operationMutex);
+	return _state == OperationProgress::IN_PROGRESS;
+}
 
-		_blocking = false;
-		if (_accountAsRunningOperation)
-			_operationCompletedConditionVariable.wait(lock,
-								  [this] { return _state == OperationProgress::IDLE; });
-	}
+template <typename ReaderWriter, typename ContextType>
+void RPCOperation<ReaderWriter, ContextType>::onFinish(const std::function<void()>& callback)
+{
+	_finishCallback = callback;
+}
 
-	if (_executor.joinable()) _executor.join();
+template <typename ReaderWriter, typename ContextType>
+bool RPCOperation<ReaderWriter, ContextType>::accountsAsRunningOperation() const
+{
+	return true;
 }
 
 template <typename ReaderWriter, typename ContextType>
@@ -93,31 +73,21 @@ void RPCOperation<ReaderWriter, ContextType>::onOperationCompleted(bool ok)
 	auto rpc = _rpc.lock();
 	if (!rpc) return;
 
-	bool willRestart = false;
-	{
-		std::unique_lock<std::mutex> lock(_operationMutex);
+	std::unique_lock<std::mutex> lock(_operationMutex);
 
-		// The operation completed, we can start another one right away.
-		_state = OperationProgress::IDLE;
+	// The operation completed, we can start another one right away.
+	_state = OperationProgress::IDLE;
 
-		// finishOperation returns true if the RPC is still operating
-		bool rpcFinished = false;
-		if (_accountAsRunningOperation) rpcFinished = !rpc->finishOperation();
+	// tell the RPC that an operation finished
+	if (accountsAsRunningOperation()) rpc->finishOperation();
 
-		// Let the implementation do something with the result.
-		if (ok)
-			onOperationSucceeded(rpcFinished);
-		else
-			onOperationFailed(rpcFinished);
+	// Let the implementation do something with the result.
+	if (ok)
+		onOperationSucceeded();
+	else
+		onOperationFailed();
 
-		// Collect information about the current state before releasing waiting threads.
-		willRestart =
-		    _autoRestart && !_blocking && ok && rpc->getStateMachine().getState() == RPCStateMachine::EXECUTING;
-	}
-
-	// Free "start" threads that are potentially waiting for this.
-	_operationCompletedConditionVariable.notify_all();
-
-	// If autorestart is configured and the call is not blocking, do it here
-	if (willRestart) start();
+	// free the mutex because the callback may trigger the destruction of this object
+	lock.unlock();
+	if (_finishCallback) _finishCallback();
 }

@@ -29,7 +29,8 @@
 class ConnectionStressTest : public Systemtest
 {
 public:
-	ConnectionStressTest(const std::shared_ptr<ghost::Logger>& logger);
+	ConnectionStressTest(const std::shared_ptr<ghost::ThreadPool>& threadPool,
+			     const std::shared_ptr<ghost::Logger>& logger);
 
 	std::string getName() const override;
 

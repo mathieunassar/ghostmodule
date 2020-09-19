@@ -19,6 +19,7 @@
 
 #include <ghost/connection/Client.hpp>
 #include <ghost/connection/NetworkConnectionConfiguration.hpp>
+#include <ghost/module/ThreadPool.hpp>
 
 #include "rpc/OutgoingRPC.hpp"
 
@@ -26,15 +27,17 @@ namespace ghost
 {
 namespace internal
 {
-// RemoteGRPCClient vs GRPCClient (find better names) use RPC + operations for ghost workflow
-// - give the operations an interface which can be faked
-// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
-
+/**
+ *	Utilizes an ghost::internal::OutgoingRPC to fulfill the ghost::Client interface.
+ *	Initialized the RPC with a writerSink and a readerSink from the ghost::ReabableConnection
+ *	and ghost::WritableConnection.
+ */
 class ClientGRPC : public ghost::Client
 {
 public:
-	ClientGRPC(const ghost::ConnectionConfiguration& config);
-	ClientGRPC(const ghost::NetworkConnectionConfiguration& config);
+	ClientGRPC(const ghost::ConnectionConfiguration& config, const std::shared_ptr<ghost::ThreadPool>& threadPool);
+	ClientGRPC(const ghost::NetworkConnectionConfiguration& config,
+		   const std::shared_ptr<ghost::ThreadPool>& threadPool);
 
 	bool start() override;
 	bool stop() override;

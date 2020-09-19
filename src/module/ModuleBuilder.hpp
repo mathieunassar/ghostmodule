@@ -31,12 +31,23 @@ class ModuleBuilder : public ghost::ModuleBuilder
 public:
 	ModuleBuilder();
 
+	// Module lifetime
 	ModuleBuilder& setInitializeBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
 	ModuleBuilder& setRunningBehavior(const std::function<bool(const ghost::Module&)>& behavior) override;
 	ModuleBuilder& setDisposeBehavior(const std::function<void(const ghost::Module&)>& behavior) override;
+
+	// Program options
 	ModuleBuilder& setProgramOptions(int argc, char* argv[]) override;
+
+	// Thread pools
+	std::shared_ptr<ghost::ThreadPool> getThreadPool(const std::string& label = "") const override;
+	std::shared_ptr<ghost::ThreadPool> addThreadPool(const std::string& label, size_t threadsCount) override;
+
+	// Observability
 	std::shared_ptr<ghost::Console> setConsole() override;
 	ModuleBuilder& setLogger(const std::shared_ptr<ghost::Logger>& logger) override;
+
+	// Extensions
 	ModuleBuilder& addExtensionBuilder(const std::shared_ptr<ghost::ModuleExtensionBuilder>& builder) override;
 
 	std::shared_ptr<ghost::Module> build(const std::string& moduleName = "") override;
@@ -47,6 +58,7 @@ private:
 	std::function<void(const ghost::Module&)> _disposeBehavior;
 	std::vector<std::shared_ptr<ghost::ModuleExtensionBuilder>> _componentBuilders;
 	ghost::CommandLine _options;
+	std::map<std::string, std::shared_ptr<ThreadPool>> _threadPools;
 	std::shared_ptr<Console> _console;
 	std::shared_ptr<ghost::Logger> _logger;
 };
