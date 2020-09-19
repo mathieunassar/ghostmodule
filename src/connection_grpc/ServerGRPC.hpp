@@ -39,8 +39,6 @@ class IncomingRPC;
 /**
  * Server implementation using the gRPC library. Runs a gRPC server which accepts connections, and create
  * a writing/sending interface which is returned to the server object.
- * @author	Mathieu Nassar
- * @date	25.05.2018
  */
 class ServerGRPC : public ghost::Server
 {

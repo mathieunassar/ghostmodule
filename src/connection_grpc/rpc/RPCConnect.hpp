@@ -29,6 +29,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Connect operation used by an outgoing connection (@see ghost::internal::OutgoingRPC) to connect
+ *	to a server.
+ */
 template <typename ReaderWriter, typename ContextType>
 class RPCConnect : public RPCOperation<ReaderWriter, ContextType>
 {

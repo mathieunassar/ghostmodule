@@ -61,8 +61,6 @@ ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/ClientManager.cpp
 )
 
 file(GLOB source_connectiongrpc_lib_rpc
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/ReaderRPC.cpp
-${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/WriterRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/OutgoingRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/IncomingRPC.cpp
 ${GHOST_MODULE_ROOT_DIR}/src/connection_grpc/rpc/RPCStateMachine.cpp

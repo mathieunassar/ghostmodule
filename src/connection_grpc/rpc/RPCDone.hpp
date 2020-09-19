@@ -25,6 +25,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Registers a callback to the RPC that will be notified when done.
+ *	The callback is not always called by gRPC, which is why "accountsAsRunningOperation" returns false.
+ */
 template <typename ReaderWriter, typename ContextType>
 class RPCDone : public RPCOperation<ReaderWriter, ContextType>
 {

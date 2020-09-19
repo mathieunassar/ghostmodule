@@ -26,6 +26,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Single read operation for outgoing and incoming connections.
+ *	The operation completes once a message is read or the connection is shut down.
+ */
 template <typename ReaderWriter, typename ContextType, typename ReadMessageType>
 class RPCRead : public RPCOperation<ReaderWriter, ContextType>
 {

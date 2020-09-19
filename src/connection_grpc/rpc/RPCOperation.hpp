@@ -34,11 +34,8 @@ namespace internal
  *	manages the lifetime of the operation.
  *	The class ensures that the operation is not executed twice simultaneously.
  *
- *	Operations can be configured to be blocking and/or automatically restarted.
- *	- If an operation is non-blocking and autorestarted, then it will be restarted from the
- *	completion queue thread (calling start will not block).
- *	- If an operation is blocking and autorestarted, then calling start is blocking until the RPC
- *	is finsihed.
+ *	It is the responsibility of the class instantiating an RPCOperation to restart the call if necessary
+ *	and to block execution until an operation is completed (if necessary).
  */
 template <typename ReaderWriter, typename ContextType>
 class RPCOperation

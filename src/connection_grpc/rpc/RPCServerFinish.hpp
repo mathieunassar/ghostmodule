@@ -25,6 +25,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Operation called by a server to shut down the communication with a client.
+ *	The operation is parameterized with the gRPC status that needs to be sent to the client.
+ */
 template <typename ReaderWriter, typename ContextType>
 class RPCServerFinish : public RPCOperation<ReaderWriter, ContextType>
 {

@@ -26,6 +26,11 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Starts concurrently listening to RPCs with the help of the provided
+ *	ghost::ThreadPool.
+ *	Manages the gRPC completion queue and processes tags that have been updated.
+ */
 class CompletionQueueExecutor
 {
 public:

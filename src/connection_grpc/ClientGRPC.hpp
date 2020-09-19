@@ -27,10 +27,11 @@ namespace ghost
 {
 namespace internal
 {
-// RemoteGRPCClient vs GRPCClient (find better names) use RPC + operations for ghost workflow
-// - give the operations an interface which can be faked
-// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
-
+/**
+ *	Utilizes an ghost::internal::OutgoingRPC to fulfill the ghost::Client interface.
+ *	Initialized the RPC with a writerSink and a readerSink from the ghost::ReabableConnection
+ *	and ghost::WritableConnection.
+ */
 class ClientGRPC : public ghost::Client
 {
 public:

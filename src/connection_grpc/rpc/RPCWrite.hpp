@@ -26,6 +26,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Write operation for incoming and outgoing connections.
+ *	This operation fails if there is nothing to write in the writerSink.
+ */
 template <typename ReaderWriter, typename ContextType, typename WriteMessageType>
 class RPCWrite : public RPCOperation<ReaderWriter, ContextType>
 {

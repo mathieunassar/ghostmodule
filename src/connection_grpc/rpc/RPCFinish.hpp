@@ -25,6 +25,11 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	RPC Operation used by client calls to end the RPC.
+ *	Gracefully shuts down the communication between the client and the server,
+ *	and switches the RPC state to finish on completion.
+ */
 template <typename ReaderWriter, typename ContextType>
 class RPCFinish : public RPCOperation<ReaderWriter, ContextType>
 {

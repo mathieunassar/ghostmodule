@@ -25,6 +25,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Base class for a reading connection (IncomingRPC and OutgoingRPC).
+ *	Manages the RPCRead calls and populates the readerSink with newly received messages.
+ */
 template <typename ReaderWriter, typename ContextType>
 class ReaderRPC
 {

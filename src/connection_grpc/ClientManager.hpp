@@ -29,6 +29,12 @@ namespace internal
 {
 class RemoteClientGRPC;
 
+/**
+ *	Manager for gRPC clients represented by a RemoteClientGRPC (internally containing
+ *	ghost::internal::IncomingRPC objects).
+ *	Acts as a collection of clients and can shut down all clients.
+ *	Periodically deletes clients that are shut down and not used anymore.
+ */
 class ClientManager
 {
 public:

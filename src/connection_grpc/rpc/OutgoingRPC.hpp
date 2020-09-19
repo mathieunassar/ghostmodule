@@ -30,9 +30,14 @@ namespace ghost
 {
 namespace internal
 {
-// - give the operations an interface which can be faked
-// - RPCRead, RPCReadOne, RPCWrite, RPCWriteOne, RPCConnect, RPCFinsh
-
+/**
+ *	Manages gRPC calls for an outgoing connection (the client call connecting to a remote server).
+ *	This object is created by ghost::internal::ClientGRPC (and therefore also by ghost::internal::SubscriberGRPC).
+ *
+ *	The method "setWriterSink" is called by ghost::internal::ClientGRPC.
+ *	The method "setReaderSink" is called by ghost::internal::ClientGRPC and ghost::internal::SubscriberGRPC.
+ *	If one of the aforementioned methods is not called, the corrsponding writer/reader is not started.
+ */
 class OutgoingRPC
     : public ReaderRPC<grpc::ClientAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>,
 		       grpc::ClientContext>,

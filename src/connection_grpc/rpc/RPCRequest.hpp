@@ -28,6 +28,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Operation used by a server connection to listen to client requests.
+ *	On success, the corresponding RPC object represents the incoming client connection.
+ */
 template <typename ReaderWriter, typename ContextType, typename ServiceType>
 class RPCRequest : public RPCOperation<ReaderWriter, ContextType>
 {

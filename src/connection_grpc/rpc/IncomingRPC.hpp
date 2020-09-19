@@ -36,6 +36,10 @@ namespace internal
 {
 class RemoteClientGRPC;
 
+/**
+ *	Manages gRPC calls for an incoming connection (a client connection to this server).
+ *	This object is created by ghost::internal::ServerGRPC (and therefore also by ghost::internal::PublisherGRPC).
+ */
 class IncomingRPC
     : public ReaderRPC<grpc::ServerAsyncReaderWriter<google::protobuf::Any, google::protobuf::Any>,
 		       grpc::ServerContext>,

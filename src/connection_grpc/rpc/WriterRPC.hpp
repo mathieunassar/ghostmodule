@@ -26,6 +26,11 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Base class for a writing connection (IncomingRPC and OutgoingRPC).
+ *	Manages the RPCWrite calls and creates them when messages to be sent are received through
+ *	the writerSink.
+ */
 template <typename ReaderWriter, typename ContextType>
 class WriterRPC
 {

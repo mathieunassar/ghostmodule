@@ -27,6 +27,10 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Utilizes an ghost::internal::OutgoingRPC to fulfill the ghost::Subscriber interface.
+ *	Initialized the RPC with a readerSink from the ghost::ReabableConnection.
+ */
 class SubscriberGRPC : public ghost::Subscriber
 {
 public:

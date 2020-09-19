@@ -29,6 +29,15 @@ namespace ghost
 {
 namespace internal
 {
+/**
+ *	Starts a ghost::internal::ServerGRPC to listen to incoming ghost::internal::RemoteClientGRPC
+ *	and stores them in its ghost::internal::PublisherClientHandler.
+ *	Uses the ghost::ReaderSink from the ghost::WritableConnection to get messages and sends them
+ *	to all the registered clients.
+ *	
+ *	Periodically checks for new messages (10ms fixed rate) and reads messages until
+ *	the sink is empty when messages are available.
+ */
 class PublisherGRPC : public ghost::Publisher
 {
 public:
