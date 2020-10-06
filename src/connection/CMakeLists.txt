@@ -99,7 +99,7 @@ if (UNIX)
 	target_link_libraries(ghost_connection pthread)
 endif()
 
-target_link_libraries(ghost_connection ${CONAN_LIBS_PROTOBUF})
+target_link_libraries(ghost_connection CONAN_PKG::protobuf)
 
 ##### Unit tests #####
 
@@ -113,7 +113,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 		${GHOST_MODULE_ROOT_DIR}/tests/connection/ConnectionTests.cpp)
 
 	add_executable(connection_tests ${source_connection_tests})
-	target_link_libraries(connection_tests ghost_connection ${CONAN_LIBS_GTEST})
+	target_link_libraries(connection_tests ghost_connection CONAN_PKG::gtest)
 	
 	gtest_add_tests(TARGET connection_tests)
 

@@ -25,6 +25,6 @@ file(GLOB source_systemtest
 
 if ((DEFINED BUILD_SYSTEMTESTS) AND (${BUILD_SYSTEMTESTS}))
 	add_executable(ghost_systemtest ${header_systemtest} ${source_systemtest})
-	target_link_libraries(ghost_systemtest ghost_module ghost_persistence ghost_connection ghost_connection_grpc ${CONAN_LIBS_GTEST})
+	target_link_libraries(ghost_systemtest ghost_module ghost_persistence ghost_connection ghost_connection_grpc CONAN_PKG::gtest)
 	set_property(TARGET ghost_systemtest PROPERTY FOLDER "tests")
 endif()
