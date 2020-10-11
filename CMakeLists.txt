@@ -30,7 +30,7 @@ if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
 	conan_check(REQUIRED)
 	conan_cmake_run(CONANFILE conanfile.txt
-					BASIC_SETUP
+					BASIC_SETUP CMAKE_TARGETS
 					BUILD missing)
 
 	set(PROTOC_OUTPUT ${GHOST_MODULE_ROOT_DIR}/protobuf/)

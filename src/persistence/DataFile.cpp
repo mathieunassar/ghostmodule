@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "SaveFile.hpp"
+#include "DataFile.hpp"
 
 #include <fcntl.h>
 
@@ -27,24 +27,22 @@
 #include <unistd.h>
 #endif
 
-#include "SaveData.hpp"
-
 using namespace ghost::internal;
 
-SaveFile::SaveFile(const std::string& filename) : _filename(filename)
+DataFile::DataFile(const std::string& filename) : _filename(filename)
 {
 }
 
-SaveFile::~SaveFile()
+DataFile::~DataFile()
 {
 	close();
 }
 
-bool SaveFile::open(Mode mode, bool overwrite)
+bool DataFile::open(Mode mode, bool overwrite)
 {
 	close(); // close anything if it was open
 
-	if (mode == SaveFile::READ)
+	if (mode == DataFile::READ)
 	{
 #ifdef _WIN32
 		int handle = _open(_filename.c_str(), _O_RDONLY | _O_BINARY);
@@ -99,7 +97,7 @@ bool SaveFile::open(Mode mode, bool overwrite)
 	return true;
 }
 
-bool SaveFile::close()
+bool DataFile::close()
 {
 	bool success = true;
 	if (_codedInputStream) // file was open for reading
@@ -119,7 +117,7 @@ bool SaveFile::close()
 }
 
 // writes the list of data in a row in the file
-bool SaveFile::write(const std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
+bool DataFile::write(const std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data)
 {
 	if (!_codedOutputStream) return false; // the file is not open for writing
 
@@ -146,7 +144,7 @@ bool SaveFile::write(const std::list<std::shared_ptr<ghost::internal::SaveData>>
 }
 
 // parses the file and returns the list of data
-bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
+bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data)
 {
 	if (!_codedInputStream) return false; // the file was not open for reading
 
@@ -168,7 +166,7 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 
 		if (size == 0) // this is the end of a data set!
 		{
-			auto newData = std::make_shared<ghost::internal::SaveData>(nextDataSetName);
+			auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
 			newData->setData(set);
 			data.push_back(newData);
 			set.clear();
@@ -188,7 +186,7 @@ bool SaveFile::read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data)
 
 	if (!set.empty() && !nextDataSetName.empty()) // add the last set if it is not empty
 	{
-		auto newData = std::make_shared<ghost::internal::SaveData>(nextDataSetName);
+		auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
 		newData->setData(set);
 		data.push_back(newData);
 	}

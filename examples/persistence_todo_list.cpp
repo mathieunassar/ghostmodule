@@ -17,7 +17,8 @@
 #include <ghost/module/GhostLogger.hpp>
 #include <ghost/module/Module.hpp>
 #include <ghost/module/ModuleBuilder.hpp>
-#include <ghost/persistence/SaveManager.hpp>
+#include <ghost/persistence/DataManager.hpp>
+#include <ghost/persistence/DatabaseFile.hpp>
 
 #include "protobuf/persistency_todo_list.pb.h"
 
@@ -30,35 +31,41 @@ class TodoListModule
 public:
 	// This method will initialize the ghost::SaveManager, which is used by this example
 	// to save the TODO elements between program executions.
-	// The structure of the save file used in this example is simple: it will contain a single
-	// save file ("Todolist.dat"), which will contain a list of Google Protobuf messages defined
+	// The structure of the data file used in this example is simple: it will contain a single
+	// data file ("Todolist.dat"), which will contain a list of Google Protobuf messages defined
 	// in the "examples/protobuf" folder of this repository (the example uses the "Todo" message).
 	bool initialize(const ghost::Module& module)
 	{
 		// First, create an instance of the ghost::SaveManager, that uses "." as its root path to
 		// save the data.
-		_saveManager = ghost::SaveManager::create(".");
-		std::string filename = TODO_LIST_NAME + ".dat";
+		_dataManager = ghost::DataManager::create();
+
+		auto fileDatabases = ghost::DatabaseFile::load(".", {TODO_LIST_NAME});
 
 		// Try to load existing data. It should return true if the program was already executed once.
-		if (_saveManager->load({filename}))
+		if (!fileDatabases.empty())
 		{
 			// If data was loaded, we will work on the first data set (ghost::SaveData) available in the
 			// save.
-			auto existingData = _saveManager->getData(TODO_LIST_NAME);
-			if (existingData.find(filename) != existingData.end() && existingData.at(filename).size() > 0)
+			_database = fileDatabases[TODO_LIST_NAME];
+			_dataManager->addDatabase(_database, TODO_LIST_NAME);
+
+			auto existingData = _dataManager->getCollection(TODO_LIST_NAME);
+			if (existingData.find(TODO_LIST_NAME) != existingData.end() &&
+			    existingData.at(TODO_LIST_NAME).size() > 0)
 			{
-				_todoList = existingData.at(filename).front();
+				_todoList = existingData.at(TODO_LIST_NAME).front();
 				GHOST_INFO(module.getLogger()) << "Loaded existing todo list.";
 			}
 		}
 		if (!_todoList)
 		{
 			// If no data was loaded, let's create a first data set with the name "TodoList".
-			// When "save" is called on the save manager, this data set will be saved in a file called
-			// "TodoList.dat".
-			_todoList = ghost::SaveData::create(TODO_LIST_NAME);
-			_saveManager->addData(_todoList);
+			// When "save" is called on the file database, this data set will be saved in a file called
+			// "TodoList".
+			_database = ghost::DatabaseFile::create(TODO_LIST_NAME);
+			_dataManager->addDatabase(_database, TODO_LIST_NAME);
+			_todoList = _database->addCollection(TODO_LIST_NAME);
 		}
 
 		return true;
@@ -77,10 +84,14 @@ public:
 			else if (module.getProgramOptions().getParameter<std::string>("__0") == "remove")
 				removeTodo(module);
 			else
+			{
 				GHOST_INFO(module.getLogger()) << "Usage: program [list | add | remove]";
+			}
 		}
 		else
+		{
 			GHOST_INFO(module.getLogger()) << "Usage: program [list | add | remove]";
+		}
 
 		return false;
 	}
@@ -88,7 +99,9 @@ public:
 	void listTodo(const ghost::Module& module)
 	{
 		if (_todoList->size() == 0)
+		{
 			GHOST_INFO(module.getLogger()) << "There are no TODOs in the list";
+		}
 		else
 		{
 			GHOST_INFO(module.getLogger()) << "Current TODOs: ";
@@ -98,7 +111,10 @@ public:
 				// The following lines loads the content of the save file into a Todo Protobuf message.
 				ghost::examples::protobuf::Todo todo;
 				bool getResult = _todoList->get(todo, i);
-				if (getResult) GHOST_INFO(module.getLogger()) << "TODO #" << i << ": " << todo.title();
+				if (getResult)
+				{
+					GHOST_INFO(module.getLogger()) << "TODO #" << i << ": " << todo.title();
+				}
 			}
 		}
 	}
@@ -113,7 +129,7 @@ public:
 		// message and adds it to the ghost::SaveData object.
 		_todoList->put(todo);
 		// Once we are done working on the save, we can save it on the disk.
-		_saveManager->save(true);
+		_database->save(true);
 		GHOST_INFO(module.getLogger()) << "Added new TODO.";
 	}
 
@@ -126,13 +142,14 @@ public:
 		// and removes it from the ghost::SaveData object.
 		_todoList->remove(id);
 		// Here again, we save the new content of the save to the disk.
-		_saveManager->save(true);
+		_database->save(true);
 		GHOST_INFO(module.getLogger()) << "Removed TODO";
 	}
 
 private:
-	std::shared_ptr<ghost::SaveManager> _saveManager;
-	std::shared_ptr<ghost::SaveData> _todoList;
+	std::shared_ptr<ghost::DataManager> _dataManager;
+	std::shared_ptr<ghost::DatabaseFile> _database;
+	std::shared_ptr<ghost::DataCollection> _todoList;
 
 	const std::string TODO_LIST_NAME = "TodoList";
 };

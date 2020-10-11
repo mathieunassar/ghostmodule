@@ -94,7 +94,7 @@ if (UNIX)
 	target_link_libraries(ghost_connection_grpc pthread)
 endif()
 
-target_link_libraries(ghost_connection_grpc ghost_module ghost_connection ${CONAN_LIBS_GRPC} ${CONAN_LIBS_PROTOBUF} ${CONAN_LIBS_C-ARES} ${CONAN_LIBS_ZLIB})
+target_link_libraries(ghost_connection_grpc ghost_module ghost_connection CONAN_PKG::grpc CONAN_PKG::protobuf CONAN_PKG::c-ares CONAN_PKG::zlib)
 
 ##### Unit tests #####
 
@@ -105,7 +105,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 		${GHOST_MODULE_ROOT_DIR}/tests/connection/ConnectionTestUtils.cpp)
 
 	add_executable(connection_grpc_tests ${source_connection_gprc_tests})
-	target_link_libraries(connection_grpc_tests ghost_connection_grpc ${CONAN_LIBS_GTEST})
+	target_link_libraries(connection_grpc_tests ghost_connection_grpc CONAN_PKG::gtest)
 	
 	gtest_add_tests(TARGET connection_grpc_tests)
 

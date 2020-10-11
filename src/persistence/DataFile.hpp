@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_SAVE_FILE_HPP
-#define GHOST_INTERNAL_SAVE_FILE_HPP
+#ifndef GHOST_INTERNAL_DATAFILE_HPP
+#define GHOST_INTERNAL_DATAFILE_HPP
 
 #include <google/protobuf/any.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -24,13 +24,13 @@
 #include <memory>
 #include <string>
 
-#include "SaveData.hpp"
+#include "DataCollectionFile.hpp"
 
 namespace ghost
 {
 namespace internal
 {
-class SaveFile
+class DataFile
 {
 public:
 	enum Mode
@@ -39,16 +39,16 @@ public:
 		WRITE
 	};
 
-	SaveFile(const std::string& filename);
-	~SaveFile();
+	DataFile(const std::string& filename);
+	~DataFile();
 
 	bool open(Mode mode, bool overwrite = true);
 	bool close();
 
 	// writes the list of data in a row in the file
-	bool write(const std::list<std::shared_ptr<ghost::internal::SaveData>>& data);
+	bool write(const std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data);
 	// parses the file and returns the list of data
-	bool read(std::list<std::shared_ptr<ghost::internal::SaveData>>& data);
+	bool read(std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data);
 
 private:
 	std::string _filename;
@@ -64,4 +64,4 @@ private:
 } // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_SAVE_FILE_HPP
+#endif // GHOST_INTERNAL_DATAFILE_HPP
