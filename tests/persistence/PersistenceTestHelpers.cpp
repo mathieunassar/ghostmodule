@@ -18,9 +18,10 @@
 
 using namespace ghost::internal;
 
-std::list<std::shared_ptr<ghost::internal::SaveData>> generateTestdata(size_t saveDataSize, size_t dataPerSet)
+std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata(
+    size_t saveDataSize, size_t dataPerSet, const std::shared_ptr<ghost::Database>& database)
 {
-	std::list<std::shared_ptr<ghost::internal::SaveData>> testData;
+	std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> testData;
 	for (int j = 0; j < saveDataSize; j++)
 	{
 		std::vector<std::shared_ptr<google::protobuf::Any>> data;
@@ -34,17 +35,22 @@ std::list<std::shared_ptr<ghost::internal::SaveData>> generateTestdata(size_t sa
 			data.push_back(any);
 		}
 		std::string saveDataName = "super" + std::to_string(j);
-		auto savedata = ghost::SaveData::create(saveDataName);
-		auto saveDataInt = std::dynamic_pointer_cast<ghost::internal::SaveData>(savedata);
-		saveDataInt->setData(data);
+		std::shared_ptr<DataCollectionFile> savedata;
+		auto fileDatabase = std::dynamic_pointer_cast<ghost::DatabaseFile>(database);
+		if (fileDatabase)
+			savedata =
+			    std::static_pointer_cast<DataCollectionFile>(fileDatabase->addCollection(saveDataName));
+		else
+			savedata = std::make_shared<DataCollectionFile>(saveDataName);
+		savedata->setData(data);
 
-		testData.push_back(saveDataInt);
+		testData.push_back(savedata);
 	}
 	return testData;
 }
 
-void compareTestData(const std::list<std::shared_ptr<ghost::internal::SaveData>>& data1,
-		     const std::list<std::shared_ptr<ghost::internal::SaveData>>& data2)
+void compareTestData(const std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data1,
+		     const std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data2)
 {
 	auto it = data1.begin();
 	auto it2 = data2.begin();
@@ -53,8 +59,8 @@ void compareTestData(const std::list<std::shared_ptr<ghost::internal::SaveData>>
 		ASSERT_TRUE(it2 != data2.end());
 		ASSERT_TRUE((*it)->getName() == (*it2)->getName());
 
-		auto testData = std::dynamic_pointer_cast<ghost::internal::SaveData>(*it);
-		auto testData2 = std::dynamic_pointer_cast<ghost::internal::SaveData>(*it2);
+		auto testData = std::dynamic_pointer_cast<ghost::internal::DataCollectionFile>(*it);
+		auto testData2 = std::dynamic_pointer_cast<ghost::internal::DataCollectionFile>(*it2);
 		ASSERT_TRUE(testData && testData2);
 
 		auto d1 = testData->getData();

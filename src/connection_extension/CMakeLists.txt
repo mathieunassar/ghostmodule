@@ -48,7 +48,7 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	)
 
 	add_executable(connection_extension_tests ${source_connection_extension_tests})
-	target_link_libraries(connection_extension_tests ghost_connection_extension ${CONAN_LIBS_GTEST})
+	target_link_libraries(connection_extension_tests ghost_connection_extension CONAN_PKG::gtest)
 
 	gtest_add_tests(TARGET connection_extension_tests)
 

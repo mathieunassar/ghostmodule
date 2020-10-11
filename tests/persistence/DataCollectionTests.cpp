@@ -18,11 +18,11 @@
 
 #include <iostream>
 
-#include "../../src/persistence/SaveData.hpp"
+#include "../../src/persistence/DataCollectionFile.hpp"
 #include "../protobuf/tests.pb.h"
 #include "PersistenceTestHelpers.hpp"
 
-class SaveDataTest : public testing::Test
+class DataCollectionFileTest : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -39,12 +39,14 @@ protected:
 	static const std::string EXPECTED_FIELD1_VALUE_FOR_I1J0;
 };
 
-const std::string SaveDataTest::TEST_DATA_NAME = "Test";
-const std::string SaveDataTest::TEST_DATA_FIELD1 = "Field";
-const std::string SaveDataTest::EXPECTED_FIELD1_VALUE_FOR_I0J0 = "field100"; // from "generateTestData's implementation
-const std::string SaveDataTest::EXPECTED_FIELD1_VALUE_FOR_I1J0 = "field110"; // from "generateTestData's implementation
+const std::string DataCollectionFileTest::TEST_DATA_NAME = "Test";
+const std::string DataCollectionFileTest::TEST_DATA_FIELD1 = "Field";
+const std::string DataCollectionFileTest::EXPECTED_FIELD1_VALUE_FOR_I0J0 =
+    "field100"; // from "generateTestData's implementation
+const std::string DataCollectionFileTest::EXPECTED_FIELD1_VALUE_FOR_I1J0 =
+    "field110"; // from "generateTestData's implementation
 
-TEST_F(SaveDataTest, test_saveData_replace_When_ok)
+TEST_F(DataCollectionFileTest, test_dataCollectionFile_replace_When_ok)
 {
 	auto testData = generateTestdata(2, 5);
 
@@ -67,7 +69,7 @@ TEST_F(SaveDataTest, test_saveData_replace_When_ok)
 	ASSERT_TRUE(msg.field1() == msg2.field1());
 }
 
-TEST_F(SaveDataTest, test_saveData_putget_When_ok)
+TEST_F(DataCollectionFileTest, test_dataCollectionFile_putget_When_ok)
 {
 	auto testData = generateTestdata(2, 5);
 
@@ -87,7 +89,7 @@ TEST_F(SaveDataTest, test_saveData_putget_When_ok)
 	ASSERT_TRUE(msg.field1() == msg2.field1());
 }
 
-TEST_F(SaveDataTest, test_saveData_get_When_wrongTypeProvided)
+TEST_F(DataCollectionFileTest, test_dataCollectionFile_get_When_wrongTypeProvided)
 {
 	auto testData = generateTestdata(1, 0);
 	auto data1 = testData.front();
@@ -102,7 +104,7 @@ TEST_F(SaveDataTest, test_saveData_get_When_wrongTypeProvided)
 	ASSERT_TRUE(!getSuccess);
 }
 
-TEST_F(SaveDataTest, test_saveData_replace_When_differentTypeProvided)
+TEST_F(DataCollectionFileTest, test_dataCollectionFile_replace_When_differentTypeProvided)
 {
 	auto testData = generateTestdata(1, 1);
 	auto data1 = testData.front();
@@ -123,7 +125,7 @@ TEST_F(SaveDataTest, test_saveData_replace_When_differentTypeProvided)
 	ASSERT_TRUE(msg2.field1() == msg3.field1());
 }
 
-TEST_F(SaveDataTest, test_saveData_remove_When_ok)
+TEST_F(DataCollectionFileTest, test_dataCollectionFile_remove_When_ok)
 {
 	auto testData = generateTestdata(1, 2);
 	auto data1 = testData.front();
@@ -148,9 +150,9 @@ TEST_F(SaveDataTest, test_saveData_remove_When_ok)
 	ASSERT_TRUE(!removeSuccess3);
 }
 
-TEST_F(SaveDataTest, test_SaveData_getIf_When_oneElementMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_getIf_When_oneElementMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	msg.set_field1(TEST_DATA_FIELD1);
 	data->put(msg);
@@ -161,9 +163,9 @@ TEST_F(SaveDataTest, test_SaveData_getIf_When_oneElementMatches)
 	ASSERT_EQ(gotIf.size(), 1);
 }
 
-TEST_F(SaveDataTest, test_SaveData_getIf_When_twoElementsMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_getIf_When_twoElementsMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	msg.set_field1(TEST_DATA_FIELD1);
 	msg2.set_field1(TEST_DATA_FIELD1);
@@ -175,9 +177,9 @@ TEST_F(SaveDataTest, test_SaveData_getIf_When_twoElementsMatches)
 	ASSERT_EQ(gotIf.size(), 2);
 }
 
-TEST_F(SaveDataTest, test_SaveData_getIf_When_noElementMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_getIf_When_noElementMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	data->put(msg);
 	data->put(msg2);
@@ -187,9 +189,9 @@ TEST_F(SaveDataTest, test_SaveData_getIf_When_noElementMatches)
 	ASSERT_EQ(gotIf.size(), 0);
 }
 
-TEST_F(SaveDataTest, test_SaveData_getIf_When_dataHasAnotherType)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_getIf_When_dataHasAnotherType)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg;
 	msg.set_field1(TEST_DATA_FIELD1);
 	ghost::internal::protobuf::TestMessage2 msg2;
@@ -201,9 +203,9 @@ TEST_F(SaveDataTest, test_SaveData_getIf_When_dataHasAnotherType)
 	ASSERT_EQ(gotIf.size(), 1);
 }
 
-TEST_F(SaveDataTest, test_SaveData_removeIf_When_oneElementMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_removeIf_When_oneElementMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	msg.set_field1(TEST_DATA_FIELD1);
 	data->put(msg);
@@ -215,9 +217,9 @@ TEST_F(SaveDataTest, test_SaveData_removeIf_When_oneElementMatches)
 	ASSERT_EQ(data->size(), 1);
 }
 
-TEST_F(SaveDataTest, test_SaveData_removeIf_When_twoElementsMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_removeIf_When_twoElementsMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	msg.set_field1(TEST_DATA_FIELD1);
 	msg2.set_field1(TEST_DATA_FIELD1);
@@ -230,9 +232,9 @@ TEST_F(SaveDataTest, test_SaveData_removeIf_When_twoElementsMatches)
 	ASSERT_EQ(data->size(), 0);
 }
 
-TEST_F(SaveDataTest, test_SaveData_removeIf_When_noElementMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_removeIf_When_noElementMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	data->put(msg);
 	data->put(msg2);
@@ -243,9 +245,9 @@ TEST_F(SaveDataTest, test_SaveData_removeIf_When_noElementMatches)
 	ASSERT_EQ(data->size(), 2);
 }
 
-TEST_F(SaveDataTest, test_SaveData_removeIf_When_dataHasAnotherType)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_removeIf_When_dataHasAnotherType)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg;
 	msg.set_field1(TEST_DATA_FIELD1);
 	ghost::internal::protobuf::TestMessage2 msg2;
@@ -258,9 +260,9 @@ TEST_F(SaveDataTest, test_SaveData_removeIf_When_dataHasAnotherType)
 	ASSERT_EQ(data->size(), 1);
 }
 
-TEST_F(SaveDataTest, test_SaveData_replaceIf_When_oneElementMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_replaceIf_When_oneElementMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	msg.set_field1(TEST_DATA_FIELD1);
 	data->put(msg);
@@ -283,9 +285,9 @@ TEST_F(SaveDataTest, test_SaveData_replaceIf_When_oneElementMatches)
 	ASSERT_TRUE(up.field1().empty());
 }
 
-TEST_F(SaveDataTest, test_SaveData_replaceIf_When_twoElementsMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_replaceIf_When_twoElementsMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	msg.set_field1(TEST_DATA_FIELD1);
 	msg2.set_field1(TEST_DATA_FIELD1);
@@ -309,9 +311,9 @@ TEST_F(SaveDataTest, test_SaveData_replaceIf_When_twoElementsMatches)
 	ASSERT_TRUE(up.field1() == TEST_DATA_NAME);
 }
 
-TEST_F(SaveDataTest, test_SaveData_replaceIf_When_noElementMatches)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_replaceIf_When_noElementMatches)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg, msg2;
 	data->put(msg);
 	data->put(msg2);
@@ -333,9 +335,9 @@ TEST_F(SaveDataTest, test_SaveData_replaceIf_When_noElementMatches)
 	ASSERT_TRUE(up.field1().empty());
 }
 
-TEST_F(SaveDataTest, test_SaveData_replaceIf_When_dataHasAnotherType)
+TEST_F(DataCollectionFileTest, test_DataCollectionFile_replaceIf_When_dataHasAnotherType)
 {
-	std::shared_ptr<ghost::SaveData> data = ghost::SaveData::create("");
+	auto data = std::make_shared<ghost::internal::DataCollectionFile>("");
 	ghost::internal::protobuf::TestMessage1 msg;
 	msg.set_field1(TEST_DATA_FIELD1);
 	ghost::internal::protobuf::TestMessage2 msg2;

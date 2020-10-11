@@ -18,13 +18,13 @@
 
 #include <iostream>
 
-#include "../../src/persistence/SaveFile.hpp"
+#include "../../src/persistence/DataFile.hpp"
 #include "../protobuf/tests.pb.h"
 #include "PersistenceTestHelpers.hpp"
 
 using namespace ghost::internal;
 
-class SaveFileTest : public testing::Test
+class DataFileTest : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -38,66 +38,66 @@ protected:
 	static const std::string TEST_FILE_NAME;
 };
 
-const std::string SaveFileTest::TEST_FILE_NAME = "file1.dat";
+const std::string DataFileTest::TEST_FILE_NAME = "file1.dat";
 
-TEST_F(SaveFileTest, test_SaveFile_open_WhenOk)
+TEST_F(DataFileTest, test_DataFile_open_WhenOk)
 {
-	SaveFile file(TEST_FILE_NAME);
+	DataFile file(TEST_FILE_NAME);
 
-	bool resultOpen = file.open(SaveFile::WRITE);
+	bool resultOpen = file.open(DataFile::WRITE);
 	ASSERT_TRUE(resultOpen);
 	// close is done by the destructor
 }
 
-TEST_F(SaveFileTest, test_SaveFile_open_When_fileExistsButShouldNotOverwrite)
+TEST_F(DataFileTest, test_DataFile_open_When_fileExistsButShouldNotOverwrite)
 {
-	SaveFile file(TEST_FILE_NAME);
+	DataFile file(TEST_FILE_NAME);
 
-	bool resultOpen = file.open(SaveFile::WRITE);
+	bool resultOpen = file.open(DataFile::WRITE);
 	ASSERT_TRUE(resultOpen);
 	bool resultClose = file.close();
 	ASSERT_TRUE(resultClose);
 
-	SaveFile file2(TEST_FILE_NAME);
+	DataFile file2(TEST_FILE_NAME);
 
-	bool resultOpen2 = file2.open(SaveFile::WRITE, false);
+	bool resultOpen2 = file2.open(DataFile::WRITE, false);
 	ASSERT_FALSE(resultOpen2);
 }
 
-TEST_F(SaveFileTest, test_SaveFile_open_When_fileExistsAndShouldOverwrite)
+TEST_F(DataFileTest, test_DataFile_open_When_fileExistsAndShouldOverwrite)
 {
-	SaveFile file(TEST_FILE_NAME);
+	DataFile file(TEST_FILE_NAME);
 
-	bool resultOpen = file.open(SaveFile::WRITE);
+	bool resultOpen = file.open(DataFile::WRITE);
 	ASSERT_TRUE(resultOpen);
 	file.close();
 
-	SaveFile file2(TEST_FILE_NAME);
+	DataFile file2(TEST_FILE_NAME);
 
-	bool resultOpen2 = file2.open(SaveFile::WRITE, true);
+	bool resultOpen2 = file2.open(DataFile::WRITE, true);
 	ASSERT_TRUE(resultOpen2);
 }
 
-TEST_F(SaveFileTest, test_SaveFile_writeread_When_ok)
+TEST_F(DataFileTest, test_DataFile_writeread_When_ok)
 {
-	SaveFile file(TEST_FILE_NAME);
+	DataFile file(TEST_FILE_NAME);
 
-	bool resultOpen = file.open(SaveFile::WRITE);
+	bool resultOpen = file.open(DataFile::WRITE);
 	ASSERT_TRUE(resultOpen);
 
-	std::list<std::shared_ptr<ghost::internal::SaveData>> testData = generateTestdata(50, 50);
+	std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> testData = generateTestdata(50, 50);
 
 	bool writeSuccess = file.write(testData);
 	ASSERT_TRUE(writeSuccess);
 
 	file.close();
 
-	SaveFile file2(TEST_FILE_NAME);
+	DataFile file2(TEST_FILE_NAME);
 
-	bool resultOpen2 = file2.open(SaveFile::READ);
+	bool resultOpen2 = file2.open(DataFile::READ);
 	ASSERT_TRUE(resultOpen2);
 
-	std::list<std::shared_ptr<ghost::internal::SaveData>> testData2;
+	std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> testData2;
 	bool readResult = file2.read(testData2);
 	ASSERT_TRUE(readResult);
 

@@ -14,37 +14,38 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_INTERNAL_SAVE_DATA_HPP
-#define GHOST_INTERNAL_SAVE_DATA_HPP
+#ifndef GHOST_INTERNAL_DATACOLLECTIONFILE_HPP
+#define GHOST_INTERNAL_DATACOLLECTIONFILE_HPP
 
-#include <ghost/persistence/SaveData.hpp>
+#include <ghost/persistence/DataCollection.hpp>
 
 namespace ghost
 {
 namespace internal
 {
-/**
- *	Internal implementation of ghost::SaveData.
- */
-class SaveData : public ghost::SaveData
+class DataCollectionFile : public ghost::DataCollection
 {
 public:
-	SaveData(const std::string& name);
-	virtual ~SaveData() = default;
+	DataCollectionFile(const std::string& name);
 
 	bool remove(size_t index) override;
 	const std::string& getName() const override;
 	size_t size() const override;
-	const std::vector<std::shared_ptr<google::protobuf::Any>>& getData() const override;
 
-	std::vector<std::shared_ptr<google::protobuf::Any>>& getAllData() override;
-	void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data) override;
+	std::vector<std::shared_ptr<google::protobuf::Any>>& getData();
+	void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data);
+
+protected:
+	std::vector<std::shared_ptr<google::protobuf::Any>> fetch(const std::string& typeName = "") override;
+	bool push(const std::shared_ptr<google::protobuf::Any>& data, int index = -1) override;
 
 private:
+	static std::string getTrueTypeName(const google::protobuf::Any& message);
+
 	std::vector<std::shared_ptr<google::protobuf::Any>> _data;
 	std::string _name;
 };
 } // namespace internal
 } // namespace ghost
 
-#endif // GHOST_INTERNAL_SAVE_DATA_HPP
+#endif // GHOST_INTERNAL_DATACOLLECTIONFILE_HPP
