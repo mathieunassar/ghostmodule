@@ -57,7 +57,7 @@ bool DataManager::removeCollection(const std::string& name, const std::string& d
 {
 	if (!database.empty())
 	{
-		if (_databases.find(database) == _databases.end()) return nullptr;
+		if (_databases.find(database) == _databases.end()) return false;
 
 		return _databases.at(database)->removeCollection(name);
 	}
