@@ -23,8 +23,6 @@
 #include "ServerGRPC.hpp"
 #include "SubscriberGRPC.hpp"
 
-using namespace ghost;
-
 void blackholeLogger(gpr_log_func_args* args)
 {
 }
@@ -35,6 +33,9 @@ std::shared_ptr<ghost::ThreadPool> connectionGRPCThreadPool;
 }
 
 // Template specialization for the ghost::ConnectionFactory
+
+namespace ghost
+{
 
 template <>
 void ghost::ConnectionFactory::addServerRule<ghost::internal::ServerGRPC>(const ghost::ConnectionConfiguration& config)
@@ -82,3 +83,5 @@ void ConnectionGRPC::initialize(const std::shared_ptr<ghost::ConnectionManager>&
 
 	connectionGRPCThreadPool.reset();
 }
+
+} // namespace ghost
