@@ -3,21 +3,25 @@
 ##########################################################################################################################################
 
 file(GLOB header_persistence_lib
-	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/SaveData.hpp
-	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/SaveData.impl.hpp
-	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/SaveManager.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/DataManager.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/Database.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/DatabaseFile.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/DataCollection.hpp
+	${GHOST_MODULE_ROOT_DIR}/include/ghost/persistence/internal/DataCollection.impl.hpp
 )
 
 file(GLOB header_persistence_internal_lib
-	${GHOST_MODULE_ROOT_DIR}/src/persistence/SaveFile.hpp
-	${GHOST_MODULE_ROOT_DIR}/src/persistence/SaveData.hpp
-	${GHOST_MODULE_ROOT_DIR}/src/persistence/SaveManager.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DataManager.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DatabaseFile.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DataFile.hpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DataCollectionFile.hpp
 )
 
 file(GLOB source_persistence_lib
-	${GHOST_MODULE_ROOT_DIR}/src/persistence/SaveFile.cpp
-	${GHOST_MODULE_ROOT_DIR}/src/persistence/SaveData.cpp
-	${GHOST_MODULE_ROOT_DIR}/src/persistence/SaveManager.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DataManager.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DatabaseFile.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DataFile.cpp
+	${GHOST_MODULE_ROOT_DIR}/src/persistence/DataCollectionFile.cpp
 )
 
 source_group("API" FILES ${header_persistence_lib})
@@ -45,9 +49,9 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	generate_protoc(${PROTOC_SOURCE_CUSTOM} ${PROTOC_OUTPUT} ${PROTOC_SOURCE_FILE})
 
 	file(GLOB source_persistence_tests
-		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveFileTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveDataTests.cpp
-		${GHOST_MODULE_ROOT_DIR}/tests/persistence/SaveManagerTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/DataFileTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/DataCollectionTests.cpp
+		${GHOST_MODULE_ROOT_DIR}/tests/persistence/DataManagerTests.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/persistence/PersistenceTestHelpers.cpp
 		${GHOST_MODULE_ROOT_DIR}/tests/persistence/PersistenceTestHelpers.hpp
 	)
