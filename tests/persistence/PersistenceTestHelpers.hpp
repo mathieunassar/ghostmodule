@@ -10,8 +10,8 @@
 #include "../../src/persistence/DatabaseFile.hpp"
 #include "../protobuf/tests.pb.h"
 
-std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata(size_t saveDataSize,
-										 size_t dataPerSet, const std::shared_ptr<ghost::Database>& database = nullptr);
+std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata(
+    size_t saveDataSize, size_t dataPerSet, const std::shared_ptr<ghost::Database>& database = nullptr);
 
 void compareTestData(const std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data1,
 		     const std::list<std::shared_ptr<ghost::internal::DataCollectionFile>>& data2);

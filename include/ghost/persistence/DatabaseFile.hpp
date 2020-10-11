@@ -29,8 +29,8 @@ class DatabaseFile : public Database
 public:
 	virtual ~DatabaseFile() = default;
 
-	static std::map<std::string, std::shared_ptr<ghost::DatabaseFile>> load(const std::string& root,
-								    const std::list<std::string>& filenames);
+	static std::map<std::string, std::shared_ptr<ghost::DatabaseFile>> load(
+	    const std::string& root, const std::list<std::string>& filenames);
 	static std::shared_ptr<ghost::DatabaseFile> create(const std::string& filename);
 
 	virtual bool save(bool overwrite) = 0;
