@@ -36,7 +36,6 @@ std::shared_ptr<ghost::ThreadPool> connectionGRPCThreadPool;
 
 namespace ghost
 {
-
 template <>
 void ghost::ConnectionFactory::addServerRule<ghost::internal::ServerGRPC>(const ghost::ConnectionConfiguration& config)
 {
