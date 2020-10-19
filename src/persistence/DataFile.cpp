@@ -123,21 +123,26 @@ bool DataFile::write(const std::list<std::shared_ptr<ghost::internal::DataCollec
 
 	for (auto& d : data)
 	{
-		// write name
-		_codedOutputStream->WriteLittleEndian32(d->getName().size());
+		// write collection's name
+		_codedOutputStream->WriteVarint32(d->getName().size());
 		_codedOutputStream->WriteString(d->getName());
 
-		const auto& dataVector = d->getData();
-		for (const auto& message : dataVector)
-		{
-			_codedOutputStream->WriteLittleEndian32(message->ByteSize());
-			bool serializationSuccess = message->SerializeToCodedStream(_codedOutputStream.get());
+		// write collection's next ID
+		_codedOutputStream->WriteVarint64(d->getNextId());
 
-			if (!serializationSuccess) return false; // failed!!!
+		const auto& data = d->getData();
+		for (const auto& message : data)
+		{
+			// write protobuf data length and data
+			_codedOutputStream->WriteVarint32(message.second.length());
+			_codedOutputStream->WriteString(message.second);
+			
+			// write message id
+			_codedOutputStream->WriteVarint64(message.first);
 		}
 
 		// this means the end of a data set!
-		_codedOutputStream->WriteLittleEndian32(0);
+		_codedOutputStream->WriteVarint32(0);
 	}
 
 	return true;
@@ -150,23 +155,32 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 
 	bool hasNext = true;
 	std::string nextDataSetName = "";
-	std::vector<std::shared_ptr<google::protobuf::Any>> set;
+	google::protobuf::uint64 nextDataSetNextId = 0;
+	std::map<size_t, std::string> set;
 	while (hasNext)
 	{
+		// Read the size of the next message
 		google::protobuf::uint32 size;
-		hasNext = _codedInputStream->ReadLittleEndian32(&size); // read the size of the next message
-		if (!hasNext) break;					// there are no more messages to read
+		hasNext = _codedInputStream->ReadVarint32(&size);
+		if (!hasNext) break; // there are no more messages to read
 
 		if (nextDataSetName.empty())
 		{
+			// Read the name of this set
 			bool readSuccess = _codedInputStream->ReadString(&nextDataSetName, size);
 			if (!readSuccess) return false; // failed!!!
+
+			// Read the next ID of this set
+			readSuccess = _codedInputStream->ReadVarint64(&nextDataSetNextId);
+			if (!readSuccess) return false; // failed!!!
+
 			continue;
 		}
 
 		if (size == 0) // this is the end of a data set!
 		{
-			auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
+			auto newData =
+			    std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName, nextDataSetNextId);
 			newData->setData(set);
 			data.push_back(newData);
 			set.clear();
@@ -174,19 +188,21 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 			continue;
 		}
 
-		auto message = std::make_shared<google::protobuf::Any>();
-
-		google::protobuf::io::CodedInputStream::Limit msgLimit = _codedInputStream->PushLimit(size);
-		bool readSuccess = message->ParseFromCodedStream(_codedInputStream.get());
+		std::string data;
+		
+		bool readSuccess = _codedInputStream->ReadString(&data, size);
 		if (!readSuccess) return false; // failed!!!
 
-		set.push_back(message);
-		_codedInputStream->PopLimit(msgLimit);
+		google::protobuf::uint64 id;
+		readSuccess = _codedInputStream->ReadVarint64(&id);
+		if (!readSuccess) return false; // failed!!!
+
+		set[id] = data;
 	}
 
 	if (!set.empty() && !nextDataSetName.empty()) // add the last set if it is not empty
 	{
-		auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
+		auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName, nextDataSetNextId);
 		newData->setData(set);
 		data.push_back(newData);
 	}

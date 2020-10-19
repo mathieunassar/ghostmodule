@@ -20,6 +20,7 @@
 #include <google/protobuf/any.pb.h>
 
 #include <functional>
+#include <limits>
 #include <list>
 #include <memory>
 #include <string>
@@ -27,34 +28,47 @@
 
 namespace ghost
 {
+/**
+ *	A collection of data available in the database.
+ *	A collection is named and exposes methods to work on the data:
+ *	- get/get_if: finds data in the collection
+ *	- put: adds data to the collection
+ *	- replace/replace_if: replace data in the collection
+ *	- remove/remove_if: remove data from the collection
+ *	Instances of this class are obtained from a ghost::Database object, which provides an
+ *	object that fulfills this interface by implementing the protected methods fetch() and push().
+ */
 class DataCollection
 {
 public:
 	virtual ~DataCollection() = default;
 
 	/**
-	 * @brief Reads data at the given index, and updates the passed parameter if this method succeeds.
+	 * @brief Reads data with the given ID, and updates the passed parameter if this method succeeds.
 	 *
 	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
 	 * @param type [output] data that will be gotten
-	 * @param index position of the object in the data set. If the index is out of range, the method returns false
+	 * @param id id assigned to the data in the data set. If no data corresponds to this index, the method returns
+	 *   false.
 	 * @return true if the data was read and returned in "type"
-	 * @return false if the index is out of range, of if the corresponding data does not match the provided type
+	 * @return false if no data corresponds to this index,
+	 *   or if the corresponding data does not match the provided type
 	 */
 	template <typename DataType>
-	bool get(DataType& type, size_t index);
+	bool get(DataType& type, size_t id);
 
 	/**
-	 * @brief Gets all the data in this ghost::SaveData that matches the provided filter.
+	 * @brief Gets all the data in this ghost::DataCollection that matches the provided filter.
 	 *
-	 * The provided is given the data and must return true if the data is accepted, and false otherwise.
+	 * The filter is given the data and its ID and must return true if the data is accepted, and false otherwise.
 	 *
 	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
 	 * @param filter filter to select the data.
-	 * @return a list of elements of type DataType contained in this ghost::SaveData that matches the filter.
+	 * @return a map of elements of type DataType contained in this ghost::DataCollection that matches the filter.
+	 *   The map's key is the data's ID in the set.
 	 */
 	template <typename DataType>
-	std::list<DataType> get_if(const std::function<bool(const DataType&)>& filter);
+	std::map<size_t, DataType> get_if(const std::function<bool(const DataType&, size_t id)>& filter);
 
 	/**
 	 * @brief Pushes data into the data set, effectively increasing the size by one.
@@ -66,44 +80,44 @@ public:
 	void put(const DataType& type);
 
 	/**
-	 * @brief If data exists at this index, replaces it with the provided data.
+	 * @brief If data exists with this ID, replaces it with the provided data.
 	 *
 	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
 	 * @param type data to add in the set
-	 * @param index position of the object in the data set. If the index is out of range, the method returns false
+	 * @param id id assigned to the data in the data set.
 	 * @return true if the data has been replaced with the given one.
-	 * @return false if the index is out of range
 	 */
 	template <typename DataType>
-	bool replace(const DataType& type, size_t index);
+	bool replace(const DataType& type, size_t id);
 
 	/**
-	 * @brief Executes the provided operation on every element contained in this ghost::SaveData of the provided
-	 * type. If the provided operation function returns true, the data passed as a parameter is updated in the
-	 * ghost::SavaData. Otherwise, no update is performed. The provided operation function is expected to modified
-	 * the data passed as a parameter if an update is wanted.
+	 * @brief Executes the provided operation on every element contained in this ghost::DataCollection of the
+	 * provided type. If the provided operation function returns true, the data passed as a parameter is updated in
+	 * the ghost::DataCollection. Otherwise, no update is performed. The provided operation function is expected to
+	 * modify the data passed as a parameter if an update is wanted.
 	 *
 	 * The provided operation is given the data and must return true if the data is accepted, and false otherwise.
 	 *
 	 * @tparam DataType Data type that needs to be gotten. Currently this type must be a protobuf message.
 	 * @param operation	A function that may update the data passed as a parameter and return true if the
-	 *  ghost::SaveData must be updated.
+	 *  ghost::DataCollection must be updated.
 	 * @return the number of elements that have been updated.
 	 */
 	template <typename DataType>
-	size_t replace_if(const std::function<bool(DataType&)>& operation);
+	size_t replace_if(const std::function<bool(DataType&, size_t id)>& operation);
 
 	/**
-	 * @brief Removes the data at the given index.
+	 * @brief Removes the data with the given ID.
 	 *
-	 * @param index position of the object in the data set. If the index is out of range, the method returns false
+	 * @param id id assigned to the data in the data set. If no data corresponds to this index, the method returns
+	 *   false.
 	 * @return true if data has been removed from the data set
 	 * @return false if no data has been removed from the data set.
 	 */
-	virtual bool remove(size_t index) = 0;
+	virtual bool remove(size_t id) = 0;
 
 	/**
-	 * @brief Removed data from the ghost::SaveData based on a provided condition.
+	 * @brief Removed data from the ghost::DataCollection based on a provided condition.
 	 *
 	 * The provided filter is given the data and must return true if the data must be removed, and false otherwise.
 	 *
@@ -112,7 +126,7 @@ public:
 	 * @return the number of elements that have been removed.
 	 */
 	template <typename DataType>
-	size_t remove_if(const std::function<bool(DataType&)>& filter);
+	size_t remove_if(const std::function<bool(DataType&, size_t id)>& filter);
 
 	/**
 	 * @brief Gets the name of this data set
@@ -130,19 +144,30 @@ public:
 
 protected:
 	/**
-	 * Retrieves data from the database matching the given type name.
-	 * If the type name is left empty, all the data is returned.
-	 * @param typeName name of the type of data to retrieve from the database.
+	 * Retrieves data from the database based on the following:
+	 * - the data type must match that of the message created by the factory "messageFactory".
+	 * - if the idFilter list is not empty, the ID of the returned messages must match one of the
+	 *   listed ids.
+	 * - if the idFilter list is empty, all messages matching the factory type must be returned.
+	 * @param messageFactory function that creates a new message instance of the desired type.
+	 * @param idFilter list of IDs to fetch. If the list is empty, all the matching messages must
+	 *  be retrieved.
+	 * @return a map containing the matching messages. The key represents the ID of the message
+	 *  in the data set.
 	 */
-	virtual std::vector<std::shared_ptr<google::protobuf::Any>> fetch(const std::string& typeName = "") = 0;
+	virtual std::map<size_t, std::shared_ptr<google::protobuf::Message>> fetch(
+	    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory,
+	    std::list<size_t> idFilter = {}) = 0;
 
 	/**
 	 * Adds or replace data from the database.
-	 * If the provided index is bigger than zero, then the provided data replaces the existing data in the database
-	 * at the provided index.
+	 * If the provided hint id is not available in the database, the data is added with a new ID (it does not match the
+	 * provided id). Otherwise, the data is replaced.
+	 * @param data the data to add to the database.
+	 * @param id the hint ID to push the data.
 	 * @return true if the data was successfully pushed to the database, false otherwise.
 	 */
-	virtual bool push(const std::shared_ptr<google::protobuf::Any>& data, int index = -1) = 0;
+	virtual bool push(const google::protobuf::Message& data, size_t id = std::numeric_limits<size_t>::max()) = 0;
 };
 } // namespace ghost
 

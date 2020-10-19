@@ -103,3 +103,16 @@ TEST_F(DataFileTest, test_DataFile_writeread_When_ok)
 
 	compareTestData(testData, testData2);
 }
+
+TEST_F(DataFileTest, test_AnyFields)
+{
+	auto msg1 = ghost::internal::protobuf::TestMessage1::default_instance();
+	google::protobuf::Any any;
+	any.PackFrom(msg1);
+	int fieldCount = any.GetDescriptor()->field_count();
+	for (int i = 0; i < fieldCount; ++i)
+	{
+		const google::protobuf::FieldDescriptor* field = any.GetDescriptor()->field(i);
+		std::cout << "field name: " << field->name() << std::endl;
+	}
+}

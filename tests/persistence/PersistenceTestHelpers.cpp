@@ -24,15 +24,17 @@ std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata
 	std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> testData;
 	for (int j = 0; j < saveDataSize; j++)
 	{
-		std::vector<std::shared_ptr<google::protobuf::Any>> data;
+		std::map<size_t, std::string> data;
 		for (int i = 0; i < dataPerSet; i++)
 		{
 			std::string field1Value = "field1" + std::to_string(i) + std::to_string(j);
 			auto msg = ghost::internal::protobuf::TestMessage1::default_instance();
 			msg.set_field1(field1Value);
-			auto any = std::make_shared<google::protobuf::Any>();
-			any->PackFrom(msg);
-			data.push_back(any);
+			google::protobuf::Any any;
+			any.PackFrom(msg);
+			std::string entry;
+			any.SerializeToString(&entry);
+			data[i] = entry;
 		}
 		std::string saveDataName = "super" + std::to_string(j);
 		std::shared_ptr<DataCollectionFile> savedata;
@@ -41,7 +43,7 @@ std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata
 			savedata =
 			    std::static_pointer_cast<DataCollectionFile>(fileDatabase->addCollection(saveDataName));
 		else
-			savedata = std::make_shared<DataCollectionFile>(saveDataName);
+			savedata = std::make_shared<DataCollectionFile>(saveDataName, data.size());
 		savedata->setData(data);
 
 		testData.push_back(savedata);
@@ -67,18 +69,10 @@ void compareTestData(const std::list<std::shared_ptr<ghost::internal::DataCollec
 		auto d2 = testData2->getData();
 
 		ASSERT_TRUE(d1.size() == d2.size());
-		for (size_t i = 0; i < d1.size(); i++)
+		for (const auto& entry : d1)
 		{
-			const auto& elem = d1[i];
-			const auto& elem2 = d2[i];
-
-			auto msg1 = ghost::internal::protobuf::TestMessage1::default_instance();
-			auto msg2 = ghost::internal::protobuf::TestMessage1::default_instance();
-			bool unpack1 = elem->UnpackTo(&msg1);
-			bool unpack2 = elem2->UnpackTo(&msg2);
-			ASSERT_TRUE(unpack1);
-			ASSERT_TRUE(unpack2);
-			ASSERT_TRUE(msg1.field1() == msg2.field1());
+			ASSERT_TRUE(d2.find(entry.first) != d2.end());
+			ASSERT_EQ(d2.at(entry.first), entry.second);
 		}
 
 		it++;

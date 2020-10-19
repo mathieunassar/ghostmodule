@@ -15,19 +15,17 @@
  */
 
 #include "DataCollectionFile.hpp"
+#include <google/protobuf/util/json_util.h>
 
 using namespace ghost::internal;
 
-DataCollectionFile::DataCollectionFile(const std::string& name) : _name(name)
+DataCollectionFile::DataCollectionFile(const std::string& name, size_t nextId) : _name(name), _nextId(nextId)
 {
 }
 
-bool DataCollectionFile::remove(size_t index)
+bool DataCollectionFile::remove(size_t id)
 {
-	if (index >= _data.size()) return false;
-
-	_data.erase(_data.begin() + index);
-	return true;
+	return _data.erase(id);
 }
 
 const std::string& DataCollectionFile::getName() const
@@ -35,43 +33,71 @@ const std::string& DataCollectionFile::getName() const
 	return _name;
 }
 
+size_t DataCollectionFile::getNextId() const
+{
+	return _nextId;
+}
+
 size_t DataCollectionFile::size() const
 {
 	return _data.size();
 }
 
-std::vector<std::shared_ptr<google::protobuf::Any>>& DataCollectionFile::getData()
+std::map<size_t, std::string>& DataCollectionFile::getData()
 {
 	return _data;
 }
 
-void DataCollectionFile::setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data)
+void DataCollectionFile::setData(const std::map<size_t, std::string>& data)
 {
 	_data = data;
 }
 
-std::vector<std::shared_ptr<google::protobuf::Any>> DataCollectionFile::fetch(const std::string& typeName)
+std::map<size_t, std::shared_ptr<google::protobuf::Message>> DataCollectionFile::fetch(
+    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory, std::list<size_t> idFilter)
 {
-	if (typeName.empty()) return _data;
+	std::map<size_t, std::shared_ptr<google::protobuf::Message>> result;
 
-	std::vector<std::shared_ptr<google::protobuf::Any>> found;
-	for (const auto& d : _data)
+	if (idFilter.empty())
 	{
-		std::string trueType = getTrueTypeName(*d);
-		if (trueType == typeName) found.push_back(d);
+		for (const auto& entry : _data)
+		{
+			auto msg = messageFactory();
+			google::protobuf::Any any;
+			any.ParseFromString(entry.second);
+			if (getTrueTypeName(any) == msg->GetTypeName() && msg->ParseFromString(any.value()))
+				result[entry.first] = msg;
+		}
 	}
-	return found;
-}
-
-bool DataCollectionFile::push(const std::shared_ptr<google::protobuf::Any>& data, int index)
-{
-	if (index < 0)
-		_data.push_back(data);
 	else
 	{
-		if (index >= size()) return false;
-		_data[index] = data;
+		for (const auto& id : idFilter)
+		{
+			if (_data.find(id) == _data.end()) continue;
+
+			auto msg = messageFactory();
+
+			google::protobuf::Any any;
+			any.ParseFromString(_data.at(id));
+			if (getTrueTypeName(any) == msg->GetTypeName() && msg->ParseFromString(any.value()))
+				result[id] = msg;
+		}
 	}
+
+	return result;
+}
+
+bool DataCollectionFile::push(const google::protobuf::Message& data, size_t id)
+{
+	google::protobuf::Any any;
+	any.PackFrom(data);
+	if (_data.find(id) == _data.end())
+	{
+		_data[_nextId] = any.SerializeAsString();
+		++_nextId;
+	}
+	else
+		_data[id] = any.SerializeAsString();
 	return true;
 }
 

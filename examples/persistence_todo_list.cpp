@@ -29,7 +29,7 @@
 class TodoListModule
 {
 public:
-	// This method will initialize the ghost::SaveManager, which is used by this example
+	// This method will initialize the ghost::DataManager, which is used by this example
 	// to save the TODO elements between program executions.
 	// The structure of the data file used in this example is simple: it will contain a single
 	// data file ("Todolist.dat"), which will contain a list of Google Protobuf messages defined
@@ -105,17 +105,11 @@ public:
 		else
 		{
 			GHOST_INFO(module.getLogger()) << "Current TODOs: ";
-			for (size_t i = 0; i < _todoList->size(); ++i)
-			{
-				// The ghost::SaveData stores Google Protobuf messages.
-				// The following lines loads the content of the save file into a Todo Protobuf message.
-				ghost::examples::protobuf::Todo todo;
-				bool getResult = _todoList->get(todo, i);
-				if (getResult)
-				{
-					GHOST_INFO(module.getLogger()) << "TODO #" << i << ": " << todo.title();
-				}
-			}
+			_todoList->get_if<ghost::examples::protobuf::Todo>(
+			    [&](const ghost::examples::protobuf::Todo& todo, size_t id) {
+				    GHOST_INFO(module.getLogger()) << "TODO #" << id << ": " << todo.title();
+				    return true;
+			    });
 		}
 	}
 

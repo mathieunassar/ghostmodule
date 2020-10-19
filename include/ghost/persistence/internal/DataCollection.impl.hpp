@@ -17,27 +17,25 @@
 namespace ghost
 {
 template <typename DataType>
-bool DataCollection::get(DataType& type, size_t index)
+bool DataCollection::get(DataType& type, size_t id)
 {
-	if (index >= size()) return false;
+	auto search = fetch([]() { return std::make_shared<DataType>(); }, {id});
+	if (search.size() == 0) return false;
 
-	return fetch().at(index)->UnpackTo(&type);
+	type = *(std::static_pointer_cast<DataType>(search.at(id)));
+	return true;
 }
 
 template <typename DataType>
-std::list<DataType> DataCollection::get_if(const std::function<bool(const DataType&)>& filter)
+std::map<size_t, DataType> DataCollection::get_if(const std::function<bool(const DataType&, size_t id)>& filter)
 {
-	std::list<DataType> result;
+	std::map<size_t, DataType> result;
 
-	auto matchingMessages = fetch(DataType::default_instance().GetTypeName());
+	auto matchingMessages = fetch([]() { return std::make_shared<DataType>(); });
 	for (const auto& message : matchingMessages)
 	{
-		auto data = DataType::default_instance();
-
-		bool getResult = message->UnpackTo(&data);
-		if (!getResult) continue;
-
-		if (filter(data)) result.push_back(data);
+		DataType msg = *(std::static_pointer_cast<DataType>(message.second));
+		if (filter(msg, message.first)) result[message.first] = std::move(msg);
 	}
 
 	return result;
@@ -47,34 +45,26 @@ std::list<DataType> DataCollection::get_if(const std::function<bool(const DataTy
 template <typename DataType>
 void DataCollection::put(const DataType& type)
 {
-	auto any = std::make_shared<google::protobuf::Any>();
-	any->PackFrom(type);
-	push(any);
+	push(type);
 }
 
 template <typename DataType>
-bool DataCollection::replace(const DataType& type, size_t index)
+bool DataCollection::replace(const DataType& type, size_t id)
 {
-	auto any = std::make_shared<google::protobuf::Any>();
-	any->PackFrom(type);
-	return push(any, index);
+	return push(type, id);
 }
 
 template <typename DataType>
-size_t DataCollection::replace_if(const std::function<bool(DataType&)>& operation)
+size_t DataCollection::replace_if(const std::function<bool(DataType&, size_t id)>& operation)
 {
 	size_t updatedCount = 0;
-	auto matchingMessages = fetch();
-	for (size_t i = 0; i < matchingMessages.size(); ++i)
+	auto matchingMessages = fetch([]() { return std::make_shared<DataType>(); });
+	for (const auto& message : matchingMessages)
 	{
-		auto data = DataType::default_instance();
-
-		bool getResult = matchingMessages[i]->UnpackTo(&data);
-		if (!getResult) continue;
-
-		if (operation(data))
+		DataType msg = *(std::static_pointer_cast<DataType>(message.second));
+		if (operation(msg, message.first))
 		{
-			replace(data, i);
+			replace(msg, message.first);
 			++updatedCount;
 		}
 	}
@@ -83,28 +73,20 @@ size_t DataCollection::replace_if(const std::function<bool(DataType&)>& operatio
 }
 
 template <typename DataType>
-size_t DataCollection::remove_if(const std::function<bool(DataType&)>& filter)
+size_t DataCollection::remove_if(const std::function<bool(DataType&, size_t id)>& filter)
 {
 	size_t removedCount = 0;
-	std::list<size_t> indicesToRemove;
 
-	auto matchingMessages = fetch();
-	for (size_t i = 0; i < matchingMessages.size(); ++i)
+	auto matchingMessages = fetch([]() { return std::make_shared<DataType>(); });
+	for (const auto& message : matchingMessages)
 	{
-		auto data = DataType::default_instance();
-
-		bool getResult = matchingMessages[i]->UnpackTo(&data);
-		if (!getResult) continue;
-
-		if (filter(data))
+		DataType msg = *(std::static_pointer_cast<DataType>(message.second));
+		if (filter(msg, message.first))
 		{
-			indicesToRemove.push_back(i);
+			remove(message.first);
 			++removedCount;
 		}
 	}
-
-	// Start from the end because the data size is reduced after each call to "remove"
-	for (auto it = indicesToRemove.rbegin(); it != indicesToRemove.rend(); ++it) remove(*it);
 
 	return removedCount;
 }

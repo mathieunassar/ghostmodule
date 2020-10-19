@@ -18,6 +18,8 @@
 #define GHOST_INTERNAL_DATACOLLECTIONFILE_HPP
 
 #include <ghost/persistence/DataCollection.hpp>
+#include <string>
+#include <vector>
 
 namespace ghost
 {
@@ -26,24 +28,28 @@ namespace internal
 class DataCollectionFile : public ghost::DataCollection
 {
 public:
-	DataCollectionFile(const std::string& name);
+	DataCollectionFile(const std::string& name, size_t nextId);
 
 	bool remove(size_t index) override;
 	const std::string& getName() const override;
+	size_t getNextId() const;
 	size_t size() const override;
 
-	std::vector<std::shared_ptr<google::protobuf::Any>>& getData();
-	void setData(const std::vector<std::shared_ptr<google::protobuf::Any>>& data);
+	std::map<size_t, std::string>& getData();
+	void setData(const std::map<size_t, std::string>& data);
 
 protected:
-	std::vector<std::shared_ptr<google::protobuf::Any>> fetch(const std::string& typeName = "") override;
-	bool push(const std::shared_ptr<google::protobuf::Any>& data, int index = -1) override;
+	std::map<size_t, std::shared_ptr<google::protobuf::Message>> fetch(
+	    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory,
+	    std::list<size_t> idFilter = {}) override;
+	bool push(const google::protobuf::Message& data, size_t index = std::numeric_limits<size_t>::max()) override;
 
 private:
 	static std::string getTrueTypeName(const google::protobuf::Any& message);
 
-	std::vector<std::shared_ptr<google::protobuf::Any>> _data;
+	std::map<size_t, std::string> _data;
 	std::string _name;
+	size_t _nextId;
 };
 } // namespace internal
 } // namespace ghost

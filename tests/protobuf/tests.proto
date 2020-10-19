@@ -17,5 +17,5 @@ message TestMessage1
 
 message TestMessage2
 {
-	string field1 = 1;
+	int64 field4 = 1;
 }

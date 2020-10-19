@@ -72,7 +72,7 @@ void DatabaseFile::close()
 
 std::shared_ptr<ghost::DataCollection> DatabaseFile::addCollection(const std::string& name)
 {
-	auto newCollection = std::make_shared<DataCollectionFile>(name);
+	auto newCollection = std::make_shared<DataCollectionFile>(name, 0);
 	_data.push_back(newCollection);
 	return newCollection;
 }
