@@ -55,7 +55,7 @@ public:
 	 *   or if the corresponding data does not match the provided type
 	 */
 	template <typename DataType>
-	bool get(DataType& type, size_t id);
+	bool get(DataType& type, const std::string& id);
 
 	/**
 	 * @brief Gets all the data in this ghost::DataCollection that matches the provided filter.
@@ -68,16 +68,18 @@ public:
 	 *   The map's key is the data's ID in the set.
 	 */
 	template <typename DataType>
-	std::map<size_t, DataType> get_if(const std::function<bool(const DataType&, size_t id)>& filter);
+	std::map<std::string, DataType> get_if(
+	    const std::function<bool(const DataType&, const std::string& id)>& filter);
 
 	/**
 	 * @brief Pushes data into the data set, effectively increasing the size by one.
 	 *
 	 * @tparam DataType Type of data that is being added. Currently this type must be a protobuf message.
 	 * @param type data to put in the data set.
+	 * @return the id assigned to the new data
 	 */
 	template <typename DataType>
-	void put(const DataType& type);
+	std::string put(const DataType& type);
 
 	/**
 	 * @brief If data exists with this ID, replaces it with the provided data.
@@ -88,7 +90,7 @@ public:
 	 * @return true if the data has been replaced with the given one.
 	 */
 	template <typename DataType>
-	bool replace(const DataType& type, size_t id);
+	bool replace(const DataType& type, const std::string& id);
 
 	/**
 	 * @brief Executes the provided operation on every element contained in this ghost::DataCollection of the
@@ -104,7 +106,7 @@ public:
 	 * @return the number of elements that have been updated.
 	 */
 	template <typename DataType>
-	size_t replace_if(const std::function<bool(DataType&, size_t id)>& operation);
+	size_t replace_if(const std::function<bool(DataType&, const std::string& id)>& operation);
 
 	/**
 	 * @brief Removes the data with the given ID.
@@ -114,7 +116,7 @@ public:
 	 * @return true if data has been removed from the data set
 	 * @return false if no data has been removed from the data set.
 	 */
-	virtual bool remove(size_t id) = 0;
+	virtual bool remove(const std::string& id) = 0;
 
 	/**
 	 * @brief Removed data from the ghost::DataCollection based on a provided condition.
@@ -126,7 +128,7 @@ public:
 	 * @return the number of elements that have been removed.
 	 */
 	template <typename DataType>
-	size_t remove_if(const std::function<bool(DataType&, size_t id)>& filter);
+	size_t remove_if(const std::function<bool(DataType&, const std::string& id)>& filter);
 
 	/**
 	 * @brief Gets the name of this data set
@@ -155,19 +157,19 @@ protected:
 	 * @return a map containing the matching messages. The key represents the ID of the message
 	 *  in the data set.
 	 */
-	virtual std::map<size_t, std::shared_ptr<google::protobuf::Message>> fetch(
+	virtual std::map<std::string, std::shared_ptr<google::protobuf::Message>> fetch(
 	    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory,
-	    std::list<size_t> idFilter = {}) = 0;
+	    std::list<std::string> idFilter = {}) = 0;
 
 	/**
 	 * Adds or replace data from the database.
-	 * If the provided hint id is not available in the database, the data is added with a new ID (it does not match the
-	 * provided id). Otherwise, the data is replaced.
+	 * If the provided hint id is not available in the database, the data is added with a new ID (it does not match
+	 * the provided id). Otherwise, the data is replaced.
 	 * @param data the data to add to the database.
 	 * @param id the hint ID to push the data.
-	 * @return true if the data was successfully pushed to the database, false otherwise.
+	 * @return the id assigned to the pushed/replaced data, or an empty string if the operation failed.
 	 */
-	virtual bool push(const google::protobuf::Message& data, size_t id = std::numeric_limits<size_t>::max()) = 0;
+	virtual std::string push(const google::protobuf::Message& data, const std::string& id = "") = 0;
 };
 } // namespace ghost
 

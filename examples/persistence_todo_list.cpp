@@ -106,7 +106,7 @@ public:
 		{
 			GHOST_INFO(module.getLogger()) << "Current TODOs: ";
 			_todoList->get_if<ghost::examples::protobuf::Todo>(
-			    [&](const ghost::examples::protobuf::Todo& todo, size_t id) {
+			    [&](const ghost::examples::protobuf::Todo& todo, const std::string& id) {
 				    GHOST_INFO(module.getLogger()) << "TODO #" << id << ": " << todo.title();
 				    return true;
 			    });
@@ -131,10 +131,9 @@ public:
 	{
 		GHOST_INFO(module.getLogger()) << "Enter the ID (#) of the TODO to remove: ";
 		auto title = module.getConsole()->getLine();
-		int id = std::stoi(title);
 		// Similarly to the "addTodo" method, this method requests the ID of a TODO to remove
 		// and removes it from the ghost::SaveData object.
-		_todoList->remove(id);
+		_todoList->remove(title);
 		// Here again, we save the new content of the save to the disk.
 		_database->save(true);
 		GHOST_INFO(module.getLogger()) << "Removed TODO";

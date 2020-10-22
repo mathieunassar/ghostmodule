@@ -127,9 +127,6 @@ bool DataFile::write(const std::list<std::shared_ptr<ghost::internal::DataCollec
 		_codedOutputStream->WriteVarint32(d->getName().size());
 		_codedOutputStream->WriteString(d->getName());
 
-		// write collection's next ID
-		_codedOutputStream->WriteVarint64(d->getNextId());
-
 		const auto& data = d->getData();
 		for (const auto& message : data)
 		{
@@ -138,7 +135,8 @@ bool DataFile::write(const std::list<std::shared_ptr<ghost::internal::DataCollec
 			_codedOutputStream->WriteString(message.second);
 			
 			// write message id
-			_codedOutputStream->WriteVarint64(message.first);
+			_codedOutputStream->WriteVarint32(message.first.length());
+			_codedOutputStream->WriteString(message.first);
 		}
 
 		// this means the end of a data set!
@@ -155,8 +153,7 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 
 	bool hasNext = true;
 	std::string nextDataSetName = "";
-	google::protobuf::uint64 nextDataSetNextId = 0;
-	std::map<size_t, std::string> set;
+	std::map<std::string, std::string> set;
 	while (hasNext)
 	{
 		// Read the size of the next message
@@ -170,17 +167,13 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 			bool readSuccess = _codedInputStream->ReadString(&nextDataSetName, size);
 			if (!readSuccess) return false; // failed!!!
 
-			// Read the next ID of this set
-			readSuccess = _codedInputStream->ReadVarint64(&nextDataSetNextId);
-			if (!readSuccess) return false; // failed!!!
-
 			continue;
 		}
 
 		if (size == 0) // this is the end of a data set!
 		{
 			auto newData =
-			    std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName, nextDataSetNextId);
+			    std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
 			newData->setData(set);
 			data.push_back(newData);
 			set.clear();
@@ -193,8 +186,12 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 		bool readSuccess = _codedInputStream->ReadString(&data, size);
 		if (!readSuccess) return false; // failed!!!
 
-		google::protobuf::uint64 id;
-		readSuccess = _codedInputStream->ReadVarint64(&id);
+		google::protobuf::uint32 idSize;
+		readSuccess = _codedInputStream->ReadVarint32(&idSize);
+		if (!readSuccess) break; // there are no more messages to read
+
+		std::string id;
+		readSuccess = _codedInputStream->ReadString(&id, idSize);
 		if (!readSuccess) return false; // failed!!!
 
 		set[id] = data;
@@ -202,7 +199,7 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 
 	if (!set.empty() && !nextDataSetName.empty()) // add the last set if it is not empty
 	{
-		auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName, nextDataSetNextId);
+		auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
 		newData->setData(set);
 		data.push_back(newData);
 	}

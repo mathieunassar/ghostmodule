@@ -28,28 +28,26 @@ namespace internal
 class DataCollectionFile : public ghost::DataCollection
 {
 public:
-	DataCollectionFile(const std::string& name, size_t nextId);
+	DataCollectionFile(const std::string& name);
 
-	bool remove(size_t index) override;
+	bool remove(const std::string& index) override;
 	const std::string& getName() const override;
-	size_t getNextId() const;
 	size_t size() const override;
 
-	std::map<size_t, std::string>& getData();
-	void setData(const std::map<size_t, std::string>& data);
+	std::map<std::string, std::string>& getData();
+	void setData(const std::map<std::string, std::string>& data);
 
 protected:
-	std::map<size_t, std::shared_ptr<google::protobuf::Message>> fetch(
+	std::map<std::string, std::shared_ptr<google::protobuf::Message>> fetch(
 	    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory,
-	    std::list<size_t> idFilter = {}) override;
-	bool push(const google::protobuf::Message& data, size_t index = std::numeric_limits<size_t>::max()) override;
+	    std::list<std::string> idFilter = {}) override;
+	std::string push(const google::protobuf::Message& data, const std::string& index) override;
 
 private:
 	static std::string getTrueTypeName(const google::protobuf::Any& message);
 
-	std::map<size_t, std::string> _data;
+	std::map<std::string, std::string> _data;
 	std::string _name;
-	size_t _nextId;
 };
 } // namespace internal
 } // namespace ghost

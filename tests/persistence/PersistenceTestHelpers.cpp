@@ -24,7 +24,7 @@ std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata
 	std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> testData;
 	for (int j = 0; j < saveDataSize; j++)
 	{
-		std::map<size_t, std::string> data;
+		std::map<std::string, std::string> data;
 		for (int i = 0; i < dataPerSet; i++)
 		{
 			std::string field1Value = "field1" + std::to_string(i) + std::to_string(j);
@@ -34,7 +34,7 @@ std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata
 			any.PackFrom(msg);
 			std::string entry;
 			any.SerializeToString(&entry);
-			data[i] = entry;
+			data[std::to_string(i)] = entry;
 		}
 		std::string saveDataName = "super" + std::to_string(j);
 		std::shared_ptr<DataCollectionFile> savedata;
@@ -43,7 +43,7 @@ std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> generateTestdata
 			savedata =
 			    std::static_pointer_cast<DataCollectionFile>(fileDatabase->addCollection(saveDataName));
 		else
-			savedata = std::make_shared<DataCollectionFile>(saveDataName, data.size());
+			savedata = std::make_shared<DataCollectionFile>(saveDataName);
 		savedata->setData(data);
 
 		testData.push_back(savedata);

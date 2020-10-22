@@ -17,7 +17,7 @@
 namespace ghost
 {
 template <typename DataType>
-bool DataCollection::get(DataType& type, size_t id)
+bool DataCollection::get(DataType& type, const std::string& id)
 {
 	auto search = fetch([]() { return std::make_shared<DataType>(); }, {id});
 	if (search.size() == 0) return false;
@@ -27,9 +27,10 @@ bool DataCollection::get(DataType& type, size_t id)
 }
 
 template <typename DataType>
-std::map<size_t, DataType> DataCollection::get_if(const std::function<bool(const DataType&, size_t id)>& filter)
+std::map<std::string, DataType> DataCollection::get_if(
+    const std::function<bool(const DataType&, const std::string& id)>& filter)
 {
-	std::map<size_t, DataType> result;
+	std::map<std::string, DataType> result;
 
 	auto matchingMessages = fetch([]() { return std::make_shared<DataType>(); });
 	for (const auto& message : matchingMessages)
@@ -43,19 +44,19 @@ std::map<size_t, DataType> DataCollection::get_if(const std::function<bool(const
 
 // adds data to the data set
 template <typename DataType>
-void DataCollection::put(const DataType& type)
+std::string DataCollection::put(const DataType& type)
 {
-	push(type);
+	return push(type);
 }
 
 template <typename DataType>
-bool DataCollection::replace(const DataType& type, size_t id)
+bool DataCollection::replace(const DataType& type, const std::string& id)
 {
-	return push(type, id);
+	return !push(type, id).empty();
 }
 
 template <typename DataType>
-size_t DataCollection::replace_if(const std::function<bool(DataType&, size_t id)>& operation)
+size_t DataCollection::replace_if(const std::function<bool(DataType&, const std::string& id)>& operation)
 {
 	size_t updatedCount = 0;
 	auto matchingMessages = fetch([]() { return std::make_shared<DataType>(); });
@@ -73,7 +74,7 @@ size_t DataCollection::replace_if(const std::function<bool(DataType&, size_t id)
 }
 
 template <typename DataType>
-size_t DataCollection::remove_if(const std::function<bool(DataType&, size_t id)>& filter)
+size_t DataCollection::remove_if(const std::function<bool(DataType&, const std::string& id)>& filter)
 {
 	size_t removedCount = 0;
 

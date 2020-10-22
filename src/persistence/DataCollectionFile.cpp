@@ -15,15 +15,18 @@
  */
 
 #include "DataCollectionFile.hpp"
-#include <google/protobuf/util/json_util.h>
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 using namespace ghost::internal;
 
-DataCollectionFile::DataCollectionFile(const std::string& name, size_t nextId) : _name(name), _nextId(nextId)
+DataCollectionFile::DataCollectionFile(const std::string& name) : _name(name)
 {
 }
 
-bool DataCollectionFile::remove(size_t id)
+bool DataCollectionFile::remove(const std::string& id)
 {
 	return _data.erase(id);
 }
@@ -33,30 +36,25 @@ const std::string& DataCollectionFile::getName() const
 	return _name;
 }
 
-size_t DataCollectionFile::getNextId() const
-{
-	return _nextId;
-}
-
 size_t DataCollectionFile::size() const
 {
 	return _data.size();
 }
 
-std::map<size_t, std::string>& DataCollectionFile::getData()
+std::map<std::string, std::string>& DataCollectionFile::getData()
 {
 	return _data;
 }
 
-void DataCollectionFile::setData(const std::map<size_t, std::string>& data)
+void DataCollectionFile::setData(const std::map<std::string, std::string>& data)
 {
 	_data = data;
 }
 
-std::map<size_t, std::shared_ptr<google::protobuf::Message>> DataCollectionFile::fetch(
-    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory, std::list<size_t> idFilter)
+std::map<std::string, std::shared_ptr<google::protobuf::Message>> DataCollectionFile::fetch(
+    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory, std::list<std::string> idFilter)
 {
-	std::map<size_t, std::shared_ptr<google::protobuf::Message>> result;
+	std::map<std::string, std::shared_ptr<google::protobuf::Message>> result;
 
 	if (idFilter.empty())
 	{
@@ -87,18 +85,19 @@ std::map<size_t, std::shared_ptr<google::protobuf::Message>> DataCollectionFile:
 	return result;
 }
 
-bool DataCollectionFile::push(const google::protobuf::Message& data, size_t id)
+std::string DataCollectionFile::push(const google::protobuf::Message& data, const std::string& id)
 {
 	google::protobuf::Any any;
 	any.PackFrom(data);
-	if (_data.find(id) == _data.end())
+	if (id.empty())
 	{
-		_data[_nextId] = any.SerializeAsString();
-		++_nextId;
+		std::string uuid = boost::uuids::to_string(boost::uuids::random_generator()());
+		_data[uuid] = any.SerializeAsString();
+		return uuid;
 	}
-	else
-		_data[id] = any.SerializeAsString();
-	return true;
+
+	_data[id] = any.SerializeAsString();
+	return id;
 }
 
 std::string DataCollectionFile::getTrueTypeName(const google::protobuf::Any& message)
