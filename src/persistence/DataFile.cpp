@@ -133,7 +133,7 @@ bool DataFile::write(const std::list<std::shared_ptr<ghost::internal::DataCollec
 			// write protobuf data length and data
 			_codedOutputStream->WriteVarint32(message.second.length());
 			_codedOutputStream->WriteString(message.second);
-			
+
 			// write message id
 			_codedOutputStream->WriteVarint32(message.first.length());
 			_codedOutputStream->WriteString(message.first);
@@ -172,8 +172,7 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 
 		if (size == 0) // this is the end of a data set!
 		{
-			auto newData =
-			    std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
+			auto newData = std::make_shared<ghost::internal::DataCollectionFile>(nextDataSetName);
 			newData->setData(set);
 			data.push_back(newData);
 			set.clear();
@@ -182,7 +181,7 @@ bool DataFile::read(std::list<std::shared_ptr<ghost::internal::DataCollectionFil
 		}
 
 		std::string data;
-		
+
 		bool readSuccess = _codedInputStream->ReadString(&data, size);
 		if (!readSuccess) return false; // failed!!!
 
