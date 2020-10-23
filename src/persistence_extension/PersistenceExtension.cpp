@@ -15,6 +15,7 @@
  */
 
 #include "PersistenceExtension.hpp"
+
 #include <ghost/module/Module.hpp>
 
 using namespace ghost::internal;

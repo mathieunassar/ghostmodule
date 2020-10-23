@@ -18,6 +18,7 @@
 
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
 #include <thread>
+
 #include "../../src/connection_grpc/PublisherGRPC.hpp"
 
 const std::string ConnectionMonkeyTest::TEST_NAME = "ConnectionMonkey";

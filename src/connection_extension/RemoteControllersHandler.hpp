@@ -21,6 +21,7 @@
 #include <ghost/module/CommandLineInterpreter.hpp>
 #include <ghost/module/Logger.hpp>
 #include <ghost/module/ThreadPool.hpp>
+
 #include "RemoteHandler.hpp"
 
 namespace ghost

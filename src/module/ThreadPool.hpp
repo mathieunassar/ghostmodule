@@ -26,6 +26,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+
 #include "ScheduledExecutor.hpp"
 
 namespace ghost

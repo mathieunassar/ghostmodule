@@ -15,6 +15,7 @@
  */
 
 #include "GhostLogger.hpp"
+
 #include <iostream>
 
 using namespace ghost::internal;

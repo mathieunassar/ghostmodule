@@ -16,10 +16,10 @@
 
 #include "CommandLineInterpreter.hpp"
 
-#include <ghost/module/Command.hpp>
-
 #include <algorithm>
+#include <ghost/module/Command.hpp>
 #include <iomanip>
+
 #include "CommandLineParser.hpp"
 #include "commands/HelpCommand.hpp"
 #include "commands/LoginCommand.hpp"

@@ -20,6 +20,7 @@
 #include <ghost/connection_extension/ConnectionExtension.hpp>
 #include <ghost/module/ModuleExtension.hpp>
 #include <memory>
+
 #include "RemoteAccessServer.hpp"
 #include "RemoteControlClient.hpp"
 

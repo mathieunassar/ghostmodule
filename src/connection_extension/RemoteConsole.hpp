@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_REMOTECONSOLE_HPP
 
 #include <google/protobuf/wrappers.pb.h>
+
 #include <ghost/connection/Client.hpp>
 #include <ghost/module/Console.hpp>
 #include <list>

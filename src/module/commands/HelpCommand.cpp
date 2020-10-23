@@ -16,9 +16,9 @@
 
 #include "HelpCommand.hpp"
 
+#include <ghost/module/GhostLogger.hpp>
 #include <iostream>
 
-#include <ghost/module/GhostLogger.hpp>
 #include "../CommandLineInterpreter.hpp"
 
 using namespace ghost::internal;

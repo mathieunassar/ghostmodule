@@ -15,6 +15,7 @@
  */
 
 #include "RemoteHandler.hpp"
+
 #include <ghost/module/CommandExecutionContext.hpp>
 
 using namespace ghost::internal;

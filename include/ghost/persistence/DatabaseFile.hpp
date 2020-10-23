@@ -33,7 +33,7 @@ namespace ghost
  *	name).
  *	File databases can be added to the ghost::DataManager after they are created or loaded with
  *	the methods specific to this class.
- *	
+ *
  *	Saving the file to the disk is NOT automatic! Please call the "save()" method to write the data.
  */
 class DatabaseFile : public ghost::Database

@@ -20,6 +20,7 @@
 #include <ghost/connection/WriterSink.hpp>
 #include <ghost/module/ThreadPool.hpp>
 #include <memory>
+
 #include "RPCWrite.hpp"
 
 namespace ghost

@@ -20,6 +20,7 @@
 #include <ghost/module/UserManager.hpp>
 #include <map>
 #include <vector>
+
 #include "User.hpp"
 #include "UserGroup.hpp"
 

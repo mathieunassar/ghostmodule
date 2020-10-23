@@ -94,8 +94,8 @@ public:
 	 */
 	virtual bool removeCollections(const std::string& name, const std::string& database = "") = 0;
 	/**
-	 *	Returns all the collections in all the databases that match the provided name. If the database parameter is
-	 *	not empty, returns all the collections in that database that match the provided name.
+	 *	Returns all the collections in all the databases that match the provided name. If the database parameter
+	 *is not empty, returns all the collections in that database that match the provided name.
 	 *	@param name name of the collections to find
 	 *	@param database name of a database in which the collection must be found, or empty. If the parameter
 	 *		is left empty, matching collections are found from all the databases.

@@ -15,9 +15,11 @@
  */
 
 #include <gtest/gtest.h>
+
 #include <future>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/module/StdoutLogger.hpp>
+
 #include "../connection/ConnectionTestUtils.hpp"
 #include "../src/connection_extension/RemoteAccessServer.hpp"
 #include "../src/connection_extension/RemoteConsole.hpp"

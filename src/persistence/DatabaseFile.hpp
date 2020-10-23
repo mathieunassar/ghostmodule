@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_DATABASEFILE_HPP
 
 #include <ghost/persistence/DatabaseFile.hpp>
+
 #include "DataCollectionFile.hpp"
 
 namespace ghost

@@ -22,6 +22,7 @@
 #include <ghost/module/ThreadPool.hpp>
 #include <memory>
 #include <vector>
+
 #include "RemoteControllersHandler.hpp"
 
 namespace ghost

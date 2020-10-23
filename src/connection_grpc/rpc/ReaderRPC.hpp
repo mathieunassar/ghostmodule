@@ -19,6 +19,7 @@
 
 #include <ghost/connection/ReaderSink.hpp>
 #include <memory>
+
 #include "RPCRead.hpp"
 
 namespace ghost

@@ -16,9 +16,9 @@
 
 #include <ghost/connection_grpc/ConnectionConfigurationGRPC.hpp>
 #include <ghost/connection_grpc/ConnectionGRPC.hpp>
-#include "ConnectionFactoryRuleGRPC.hpp"
 
 #include "ClientGRPC.hpp"
+#include "ConnectionFactoryRuleGRPC.hpp"
 #include "PublisherGRPC.hpp"
 #include "ServerGRPC.hpp"
 #include "SubscriberGRPC.hpp"

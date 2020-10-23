@@ -15,6 +15,7 @@
  */
 
 #include "ScheduledExecutor.hpp"
+
 #include "ThreadPool.hpp"
 
 using namespace ghost::internal;

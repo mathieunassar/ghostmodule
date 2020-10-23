@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_REMOTECONTROLCLIENT_HPP
 
 #include <google/protobuf/wrappers.pb.h>
+
 #include <ghost/connection/Client.hpp>
 #include <ghost/connection/ConnectionManager.hpp>
 #include <ghost/module/CommandLineInterpreter.hpp>

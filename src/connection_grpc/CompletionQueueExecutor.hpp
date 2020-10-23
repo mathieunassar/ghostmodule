@@ -18,6 +18,7 @@
 #define GHOST_INTERNAL_NETWORK_COMPLETIONQUEUEEXECUTOR_HPP
 
 #include <grpcpp/completion_queue.h>
+
 #include <functional>
 #include <ghost/module/ThreadPool.hpp>
 #include <list>
