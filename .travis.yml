@@ -3,7 +3,6 @@ matrix:
     - os: linux
       language: python
       python: 3.7
-      dist: bionic
       compiler: gcc
       cache:
         directories:
@@ -13,6 +12,7 @@ matrix:
           packages:
             - cmake
             - clang-format
+          update: true
     - os: osx
       osx_image: xcode11.3
       python: 3.7
