@@ -71,9 +71,9 @@ bool ConsoleDeviceWindows::awaitInputMode(const std::chrono::steady_clock::durat
 	if (!gotInput) // _enable is false or time is over
 		return false;
 
-	if (!ReadConsoleInput(_hStdin,	  // input buffer handle
-			      irInBuf,	  // buffer to read into
-			      128,	  // size of read buffer
+	if (!ReadConsoleInput(_hStdin,    // input buffer handle
+			      irInBuf,    // buffer to read into
+			      128,	// size of read buffer
 			      &cNumRead)) // number of records read
 		return false;
 
