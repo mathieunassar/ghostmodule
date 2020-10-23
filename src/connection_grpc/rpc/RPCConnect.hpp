@@ -89,7 +89,7 @@ void RPCConnect<ReaderWriter, ContextType>::onOperationFailed()
 	auto rpc = RPCOperation<ReaderWriter, ContextType>::_rpc.lock();
 	if (!rpc) return;
 
-	rpc->getStateMachine().setState(RPCStateMachine::FINISHED); // RPC could not start, finish it!
+	rpc->getStateMachine().setState(RPCStateMachine::INACTIVE); // RPC could not start, finish it!
 }
 
 } // namespace internal

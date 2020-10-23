@@ -64,7 +64,11 @@ bool OutgoingRPC::start()
 	while (connectOperation.isRunning()) _threadPool->yield(std::chrono::milliseconds(1));
 
 	// If the connection failed, the RPC is not in state EXECUTING
-	if (_rpc->getStateMachine().getState() != RPCStateMachine::EXECUTING) return false;
+	if (_rpc->getStateMachine().getState() != RPCStateMachine::EXECUTING)
+	{
+		stop();
+		return false;
+	}
 
 	// Start the reader
 	startReader();
