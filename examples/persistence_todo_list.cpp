@@ -19,6 +19,8 @@
 #include <ghost/module/ModuleBuilder.hpp>
 #include <ghost/persistence/DataManager.hpp>
 #include <ghost/persistence/DatabaseFile.hpp>
+#include <ghost/persistence_extension/PersistenceExtension.hpp>
+#include <ghost/persistence_extension/PersistenceExtensionBuilder.hpp>
 
 #include "protobuf/persistency_todo_list.pb.h"
 
@@ -36,10 +38,7 @@ public:
 	// in the "examples/protobuf" folder of this repository (the example uses the "Todo" message).
 	bool initialize(const ghost::Module& module)
 	{
-		// First, create an instance of the ghost::SaveManager, that uses "." as its root path to
-		// save the data.
-		_dataManager = ghost::DataManager::create();
-
+		auto dataManager = module.getExtension<ghost::PersistenceExtension>()->getDataManager();
 		auto fileDatabases = ghost::DatabaseFile::load(".", {TODO_LIST_NAME});
 
 		// Try to load existing data. It should return true if the program was already executed once.
@@ -48,9 +47,9 @@ public:
 			// If data was loaded, we will work on the first data set (ghost::SaveData) available in the
 			// save.
 			_database = fileDatabases[TODO_LIST_NAME];
-			_dataManager->addDatabase(_database, TODO_LIST_NAME);
+			dataManager->addDatabase(_database, TODO_LIST_NAME);
 
-			auto existingData = _dataManager->getCollection(TODO_LIST_NAME);
+			auto existingData = dataManager->getCollections(TODO_LIST_NAME);
 			if (existingData.find(TODO_LIST_NAME) != existingData.end() &&
 			    existingData.at(TODO_LIST_NAME).size() > 0)
 			{
@@ -64,7 +63,7 @@ public:
 			// When "save" is called on the file database, this data set will be saved in a file called
 			// "TodoList".
 			_database = ghost::DatabaseFile::create(TODO_LIST_NAME);
-			_dataManager->addDatabase(_database, TODO_LIST_NAME);
+			dataManager->addDatabase(_database, TODO_LIST_NAME);
 			_todoList = _database->addCollection(TODO_LIST_NAME);
 		}
 
@@ -140,7 +139,6 @@ public:
 	}
 
 private:
-	std::shared_ptr<ghost::DataManager> _dataManager;
 	std::shared_ptr<ghost::DatabaseFile> _database;
 	std::shared_ptr<ghost::DataCollection> _todoList;
 
@@ -162,6 +160,10 @@ int main(int argc, char** argv)
 	builder->setLogger(ghost::GhostLogger::create(console));
 	// Parse the program options to determine what to do:
 	builder->setProgramOptions(argc, argv);
+
+	auto persistenceBuilder = ghost::PersistenceExtensionBuilder::create();
+	builder->addExtensionBuilder(persistenceBuilder);
+
 	// The following line creates the module with all the parameters, and names it "myModuleInstance0".
 	std::shared_ptr<ghost::Module> module = builder->build();
 

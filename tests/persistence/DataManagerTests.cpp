@@ -55,7 +55,7 @@ TEST_F(DataManagerTest, test_DataManager_addget_When_ok)
 {
 	auto data1 = _dataManager->addCollection(TEST_FILE_NAME, TEST_DATA_NAME);
 
-	auto getResult = _dataManager->getCollection(data1->getName());
+	auto getResult = _dataManager->getCollections(data1->getName());
 	ASSERT_TRUE(getResult.size() == 1);
 	ASSERT_TRUE(getResult.count(TEST_FILE_NAME) == 1);
 
@@ -71,7 +71,7 @@ TEST_F(DataManagerTest, test_DataManager_addgetWorks_When_twoSameNamesDifferentF
 	auto data1 = _dataManager->addCollection(TEST_FILE_NAME, TEST_DATA_NAME);
 	auto data2 = _dataManager->addCollection(TEST_FILE2_NAME, TEST_DATA_NAME);
 
-	auto getResult = _dataManager->getCollection(data1->getName());
+	auto getResult = _dataManager->getCollections(data1->getName());
 	ASSERT_TRUE(getResult.size() == 2);
 	ASSERT_TRUE(getResult.count(TEST_FILE_NAME) == 1);
 	ASSERT_TRUE(getResult.count(TEST_FILE2_NAME) == 1);
@@ -89,10 +89,10 @@ TEST_F(DataManagerTest, test_DataManager_remove_When_ok)
 {
 	auto data1 = _dataManager->addCollection(TEST_FILE_NAME, TEST_DATA_NAME);
 
-	bool removeSuccess = _dataManager->removeCollection(data1->getName());
+	bool removeSuccess = _dataManager->removeCollections(data1->getName());
 	ASSERT_TRUE(removeSuccess);
 
-	auto getResult2 = _dataManager->getCollection(data1->getName());
+	auto getResult2 = _dataManager->getCollections(data1->getName());
 	ASSERT_TRUE(getResult2.count(TEST_FILE_NAME) == 0);
 	ASSERT_TRUE(getResult2.size() == 0);
 }
@@ -104,10 +104,10 @@ TEST_F(DataManagerTest, test_DataManager_remove_When_twoSameNamesDifferentFiles)
 	auto data1 = _dataManager->addCollection(TEST_FILE_NAME, TEST_DATA_NAME);
 	auto data2 = _dataManager->addCollection(TEST_FILE2_NAME, TEST_DATA_NAME);
 
-	bool removeSuccess = _dataManager->removeCollection(data1->getName(), TEST_FILE_NAME);
+	bool removeSuccess = _dataManager->removeCollections(data1->getName(), TEST_FILE_NAME);
 	ASSERT_TRUE(removeSuccess);
 
-	auto getResult2 = _dataManager->getCollection(data1->getName());
+	auto getResult2 = _dataManager->getCollections(data1->getName());
 	ASSERT_TRUE(getResult2.count(TEST_FILE_NAME) == 0);
 	ASSERT_TRUE(getResult2.size() == 1);
 
@@ -142,7 +142,7 @@ TEST_F(DataManagerTest, test_DataManager_saveload_When_ok)
 										      data3.front()};
 	std::list<std::shared_ptr<ghost::internal::DataCollectionFile>> resultData;
 
-	auto result = _dataManager->getCollection(data1.front()->getName());
+	auto result = _dataManager->getCollections(data1.front()->getName());
 	ASSERT_EQ(result.size(), 3);
 	ASSERT_EQ(result.count(TEST_FILE_NAME), 1);
 	ASSERT_EQ(result.count(TEST_FILE2_NAME), 1);

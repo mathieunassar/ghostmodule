@@ -33,8 +33,8 @@ public:
 	void close() override;
 
 	std::shared_ptr<ghost::DataCollection> addCollection(const std::string& name) override;
-	bool removeCollection(const std::string& name) override;
-	std::list<std::shared_ptr<ghost::DataCollection>> getCollection(const std::string& name) const override;
+	bool removeCollections(const std::string& name) override;
+	std::list<std::shared_ptr<ghost::DataCollection>> getCollections(const std::string& name) const override;
 
 	bool save(bool overwrite) override;
 

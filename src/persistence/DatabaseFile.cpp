@@ -77,7 +77,7 @@ std::shared_ptr<ghost::DataCollection> DatabaseFile::addCollection(const std::st
 	return newCollection;
 }
 
-bool DatabaseFile::removeCollection(const std::string& name)
+bool DatabaseFile::removeCollections(const std::string& name)
 {
 	bool removedSome = false;
 	auto it = _data.begin();
@@ -94,7 +94,7 @@ bool DatabaseFile::removeCollection(const std::string& name)
 	return removedSome;
 }
 
-std::list<std::shared_ptr<ghost::DataCollection>> DatabaseFile::getCollection(const std::string& name) const
+std::list<std::shared_ptr<ghost::DataCollection>> DatabaseFile::getCollections(const std::string& name) const
 {
 	std::list<std::shared_ptr<ghost::DataCollection>> found;
 	for (const auto& data : _data)

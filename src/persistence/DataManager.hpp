@@ -30,6 +30,8 @@ namespace internal
 class DataManager : public ghost::DataManager
 {
 public:
+	void stop() override;
+
 	void addDatabase(std::shared_ptr<ghost::Database> database, const std::string& name) override;
 	std::shared_ptr<ghost::Database> getDatabase(const std::string& name) const override;
 	bool hasDatabase(const std::string& name) const override;
@@ -37,8 +39,8 @@ public:
 
 	std::shared_ptr<ghost::DataCollection> addCollection(const std::string& database,
 							     const std::string& name) override;
-	bool removeCollection(const std::string& name, const std::string& database = "") override;
-	std::map<std::string, std::list<std::shared_ptr<ghost::DataCollection>>> getCollection(
+	bool removeCollections(const std::string& name, const std::string& database = "") override;
+	std::map<std::string, std::list<std::shared_ptr<ghost::DataCollection>>> getCollections(
 	    const std::string& name, const std::string& database = "") const override;
 
 private:

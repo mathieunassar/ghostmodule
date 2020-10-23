@@ -23,6 +23,11 @@ std::shared_ptr<ghost::DataManager> ghost::DataManager::create()
 	return std::make_shared<ghost::internal::DataManager>();
 }
 
+void DataManager::stop()
+{
+	for (const auto& database : _databases) database.second->close();
+}
+
 void DataManager::addDatabase(std::shared_ptr<ghost::Database> database, const std::string& name)
 {
 	_databases[name] = database;
@@ -53,36 +58,36 @@ std::shared_ptr<ghost::DataCollection> DataManager::addCollection(const std::str
 	return _databases.at(database)->addCollection(name);
 }
 
-bool DataManager::removeCollection(const std::string& name, const std::string& database)
+bool DataManager::removeCollections(const std::string& name, const std::string& database)
 {
 	if (!database.empty())
 	{
 		if (_databases.find(database) == _databases.end()) return false;
 
-		return _databases.at(database)->removeCollection(name);
+		return _databases.at(database)->removeCollections(name);
 	}
 
 	// else
 	bool removedSome = false;
-	for (const auto& database : _databases) removedSome = removedSome || database.second->removeCollection(name);
+	for (const auto& database : _databases) removedSome = removedSome || database.second->removeCollections(name);
 	return removedSome;
 }
 
-std::map<std::string, std::list<std::shared_ptr<ghost::DataCollection>>> DataManager::getCollection(
+std::map<std::string, std::list<std::shared_ptr<ghost::DataCollection>>> DataManager::getCollections(
     const std::string& name, const std::string& database) const
 {
 	if (!database.empty())
 	{
 		if (_databases.find(database) == _databases.end()) return {};
 
-		auto result = _databases.at(database)->getCollection(name);
+		auto result = _databases.at(database)->getCollections(name);
 		return {{database, result}};
 	}
 
 	std::map<std::string, std::list<std::shared_ptr<ghost::DataCollection>>> result;
 	for (const auto& database : _databases)
 	{
-		auto found = database.second->getCollection(name);
+		auto found = database.second->getCollections(name);
 		if (found.size() != 0) result[database.first] = found;
 	}
 

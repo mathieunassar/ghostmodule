@@ -30,8 +30,9 @@ class ModuleBuilder;
  *	For example, the Ghost library "ghost_connected_module" provides a component
  *	that adds connectivity to the module.
  *
- *	An implementation of a ghost::ModuleComponent must define a public member of type
- *	std::string called "NAME" to be usable by a ghost::Module object.
+ *	An implementation of a ghost::ModuleExtension must define a public method with the signature:
+ *	static const std::string getExtensionName();
+ *	to be usable by ghost::Module.
  */
 class ModuleExtension
 {

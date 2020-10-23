@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GHOST_DATA_COLLECTION_HPP
-#define GHOST_DATA_COLLECTION_HPP
+#ifndef GHOST_DATACOLLECTION_HPP
+#define GHOST_DATACOLLECTION_HPP
 
 #include <google/protobuf/any.pb.h>
 
@@ -42,7 +42,6 @@ class DataCollection
 {
 public:
 	virtual ~DataCollection() = default;
-
 	/**
 	 * @brief Reads data with the given ID, and updates the passed parameter if this method succeeds.
 	 *
@@ -56,7 +55,6 @@ public:
 	 */
 	template <typename DataType>
 	bool get(DataType& type, const std::string& id);
-
 	/**
 	 * @brief Gets all the data in this ghost::DataCollection that matches the provided filter.
 	 *
@@ -70,7 +68,6 @@ public:
 	template <typename DataType>
 	std::map<std::string, DataType> get_if(
 	    const std::function<bool(const DataType&, const std::string& id)>& filter);
-
 	/**
 	 * @brief Pushes data into the data set, effectively increasing the size by one.
 	 *
@@ -80,7 +77,6 @@ public:
 	 */
 	template <typename DataType>
 	std::string put(const DataType& type);
-
 	/**
 	 * @brief If data exists with this ID, replaces it with the provided data.
 	 *
@@ -91,7 +87,6 @@ public:
 	 */
 	template <typename DataType>
 	bool replace(const DataType& type, const std::string& id);
-
 	/**
 	 * @brief Executes the provided operation on every element contained in this ghost::DataCollection of the
 	 * provided type. If the provided operation function returns true, the data passed as a parameter is updated in
@@ -107,7 +102,6 @@ public:
 	 */
 	template <typename DataType>
 	size_t replace_if(const std::function<bool(DataType&, const std::string& id)>& operation);
-
 	/**
 	 * @brief Removes the data with the given ID.
 	 *
@@ -117,7 +111,6 @@ public:
 	 * @return false if no data has been removed from the data set.
 	 */
 	virtual bool remove(const std::string& id) = 0;
-
 	/**
 	 * @brief Removed data from the ghost::DataCollection based on a provided condition.
 	 *
@@ -129,14 +122,12 @@ public:
 	 */
 	template <typename DataType>
 	size_t remove_if(const std::function<bool(DataType&, const std::string& id)>& filter);
-
 	/**
 	 * @brief Gets the name of this data set
 	 *
 	 * @return the name of this data set
 	 */
 	virtual const std::string& getName() const = 0;
-
 	/**
 	 * @brief Returns the size of this data set, i.e. the number of data that it contains.
 	 *
@@ -160,11 +151,9 @@ protected:
 	virtual std::map<std::string, std::shared_ptr<google::protobuf::Message>> fetch(
 	    const std::function<std::shared_ptr<google::protobuf::Message>()>& messageFactory,
 	    std::list<std::string> idFilter = {}) = 0;
-
 	/**
 	 * Adds or replace data from the database.
-	 * If the provided hint id is not available in the database, the data is added with a new ID (it does not match
-	 * the provided id). Otherwise, the data is replaced.
+	 * If the provided hint id is empty, the data is added with a new ID. Otherwise, the data is replaced.
 	 * @param data the data to add to the database.
 	 * @param id the hint ID to push the data.
 	 * @return the id assigned to the pushed/replaced data, or an empty string if the operation failed.
@@ -175,4 +164,4 @@ protected:
 
 #include "internal/DataCollection.impl.hpp"
 
-#endif // GHOST_DATA_COLLECTION_HPP
+#endif // GHOST_DATACOLLECTION_HPP
