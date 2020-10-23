@@ -34,21 +34,26 @@ public:
 	// This method will initialize the ghost::DataManager, which is used by this example
 	// to save the TODO elements between program executions.
 	// The structure of the data file used in this example is simple: it will contain a single
-	// data file ("Todolist.dat"), which will contain a list of Google Protobuf messages defined
+	// data file ("Todolist"), which will contain a list of Google Protobuf messages defined
 	// in the "examples/protobuf" folder of this repository (the example uses the "Todo" message).
 	bool initialize(const ghost::Module& module)
 	{
+		// First, get he data manager from the persistence extension
 		auto dataManager = module.getExtension<ghost::PersistenceExtension>()->getDataManager();
+
+		// The next step is to look for the "TodoList" file on the disk, in order to load the previously
+		// entered Todos (starting from the second execution)
 		auto fileDatabases = ghost::DatabaseFile::load(".", {TODO_LIST_NAME});
 
-		// Try to load existing data. It should return true if the program was already executed once.
+		// Check if some files were found. It should be true if the program was already executed once.
 		if (!fileDatabases.empty())
 		{
-			// If data was loaded, we will work on the first data set (ghost::SaveData) available in the
-			// save.
+			// Here, we add the loaded database to the data manager so that we can retrieve it later
 			_database = fileDatabases[TODO_LIST_NAME];
 			dataManager->addDatabase(_database, TODO_LIST_NAME);
 
+			// And we get the data collection on which we will work... We could also do that directly on
+			// _database
 			auto existingData = dataManager->getCollections(TODO_LIST_NAME);
 			if (existingData.find(TODO_LIST_NAME) != existingData.end() &&
 			    existingData.at(TODO_LIST_NAME).size() > 0)
@@ -104,9 +109,12 @@ public:
 		else
 		{
 			GHOST_INFO(module.getLogger()) << "Current TODOs: ";
+			// To list the content of the collection, we use a filter that receives messages of the same
+			// type and their ID from the database. The method also returns the elements for which the
+			// filter returned true.
 			_todoList->get_if<ghost::examples::protobuf::Todo>(
 			    [&](const ghost::examples::protobuf::Todo& todo, const std::string& id) {
-				    GHOST_INFO(module.getLogger()) << "TODO #" << id << ": " << todo.title();
+				    GHOST_INFO(module.getLogger()) << "TODO # " << id << ": " << todo.title();
 				    return true;
 			    });
 		}
@@ -161,6 +169,7 @@ int main(int argc, char** argv)
 	// Parse the program options to determine what to do:
 	builder->setProgramOptions(argc, argv);
 
+	// In the next two lines we add the persistence extension in order to work with the ghost::DataManager
 	auto persistenceBuilder = ghost::PersistenceExtensionBuilder::create();
 	builder->addExtensionBuilder(persistenceBuilder);
 
