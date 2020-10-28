@@ -25,8 +25,7 @@ include(${GHOST_MODULE_ROOT_DIR}/cmake/ghost.cmake)
 # fetch the dependencies with conan
 if (((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 	OR (NOT DEFINED BUILD_PERSISTENCE) OR (${BUILD_PERSISTENCE})
-	OR (NOT DEFINED BUILD_CONNECTION) OR (${BUILD_CONNECTION})
-	OR (NOT DEFINED BUILD_CONNECTIONGRPC) OR (${BUILD_CONNECTIONGRPC}))
+	OR (NOT DEFINED BUILD_CONNECTION) OR (${BUILD_CONNECTION}))
 	include(${GHOST_MODULE_ROOT_DIR}/cmake/conan.cmake)
 	conan_check(REQUIRED)
 	conan_cmake_run(CONANFILE conanfile.txt
@@ -92,4 +91,3 @@ include_directories(
 ##########################################################################################################################################
 
 add_subdirectory(src)
-add_subdirectory(tests/systemtest)

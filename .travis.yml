@@ -31,7 +31,6 @@ before_install:
 install:
 # Automatic detection of your arch, compiler, etc.
   - conan user
-  - conan remote add inexorgame "https://api.bintray.com/conan/inexorgame/inexor-conan"
 
 script:
   - mkdir build

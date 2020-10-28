@@ -12,7 +12,6 @@ install:
   - pip.exe install conan
   - conan user # Create the conan data directory
   - conan --version
-  - conan remote add inexorgame "https://api.bintray.com/conan/inexorgame/inexor-conan"
 
 build_script:
   - mkdir build
