@@ -54,14 +54,3 @@ if ((DEFINED BUILD_TESTS) AND (${BUILD_TESTS}))
 
 	set_property(TARGET connection_extension_tests PROPERTY FOLDER "tests")
 endif()
-
-##### Examples #####
-
-if ((DEFINED BUILD_EXAMPLES) AND (${BUILD_EXAMPLES}))
-	# minimum code to create a remote module
-	add_executable(connection_extension_daemon
-		${GHOST_MODULE_ROOT_DIR}/examples/connection_extension_daemon.cpp)
-	target_link_libraries(connection_extension_daemon ghost_module ghost_connection ghost_connection_grpc ghost_connection_extension)
-
-	set_property(TARGET connection_extension_daemon PROPERTY FOLDER "examples")
-endif()
