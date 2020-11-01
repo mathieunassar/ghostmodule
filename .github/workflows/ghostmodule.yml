@@ -1,0 +1,75 @@
+name: ghostmodule-ci
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2016, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Select Visual Studio 2017
+        uses: ilammy/msvc-dev-cmd@v1.4.1
+        with:
+          arch: x86_x64
+     
+      - name: Select XCode
+        if: matrix.os == 'macos-latest'
+        run: |
+          sudo xcode-select -s /Applications/Xcode_11.7.app/Contents/Developer
+          clang -v
+             
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+              
+      - name: Install Conan
+        run: |
+          pip3 --version
+          pip3 install conan
+          
+      - name: Cache Conan Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.conan/data
+          key: ${{ runner.os }}-build-ghostmodule-grpc-${{ hashFiles('conanfile.txt') }}
+
+      - name: Conan Configuration
+        run: |
+          conan user
+          conan remote add ghostrobotics "https://api.bintray.com/conan/mathieunassar/ghostrobotics"
+      
+      - name: Conan Install Dependencies
+        run: conan install .
+      
+      - name: Build Setup
+        run: mkdir build
+      
+      - name: CMake Configure (Windows)
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON -DBUILD_SYSTEMTESTS=ON -G "Visual Studio 15 2017 Win64" ..
+        working-directory: ./build
+        if: matrix.os == 'windows-2016'
+      
+      - name: CMake Configure (other OS)
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON -DBUILD_SYSTEMTESTS=ON ..
+        working-directory: ./build
+        if: matrix.os != 'windows-2016'
+      
+      - name: CMake Build
+        run: cmake --build . --config Release
+        working-directory: ./build
+        
+      - name: CTest
+        run: ctest . -C Release
+        working-directory: ./build
